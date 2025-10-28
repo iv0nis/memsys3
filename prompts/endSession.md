@@ -4,255 +4,118 @@ Tu (DevAgent) has de documentar aquesta sessió de treball al sistema Memory del
 
 ## Objectiu
 
-Registrar automàticament què s'ha fet durant aquesta sessió perquè el pròxim DevAgent tingui context complet.
+Registrar què s'ha fet durant aquesta sessió perquè el pròxim DevAgent tingui context complet.
 
-## Tasques a Realitzar
+## Workflow
 
 ### 1. Recopilar Evidències Objectives
 
-Abans d'auto-analitzar, recull evidències de què s'ha fet durant la sessió.
+Recull evidències de què s'ha fet:
 
-**Si el projecte usa Git:**
 ```bash
-# Veure què s'ha canviat
-git status
-git diff --stat
-git log --oneline -5
+# Git (si disponible)
+git status && git diff --stat && git log --oneline -5
 
-# Fitxers modificats (staged i unstaged)
-git diff --name-only
-```
+# Fitxers modificats (ajusta -mmin segons durada sessió)
+find . -type f -mmin -180 -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*'
 
-**Fitxers modificats recentment:**
-```bash
-# Últimes 2-3 hores (ajusta -mmin segons durada sessió estimada)
-find . -type f -mmin -180 -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' -not -path '*/__pycache__/*'
-```
-
-**Bash history (últims comandos executats):**
-```bash
+# Bash history
 history | tail -30
 ```
 
-**Notes:**
-- Aquestes evidències són **opcionals però recomanades**
-- Et donen pistes objectives de què s'ha tocat
-- No substitueixen el teu context de conversa, només el complementen
-- Si no hi ha git o alguna eina falla, continua igualment amb el teu context intern
+**Notes:** Aquestes evidències són opcionals però recomanades. Si alguna falla, continua amb el teu context intern.
 
 ### 2. Auto-analitzar la Sessió
 
-Amb les evidències recollides (si n'hi ha) i el teu context intern de la conversa, identifica:
+Identifica:
+- **Features/Tasques**: Què has implementat, bugs resolts, refactorings
+- **Problemes Resolts**: Obstacles trobats i com els has solucionat
+- **Decisions Preses**: Decisions tècniques o arquitectòniques (importants → ADR)
+- **Tech afegida/eliminada**: Dependencies, tools i per què
+- **Deployments**: URLs, serveis desplegats
+- **Pròxims Passos**: Què queda pendent
 
-**Features/Tasques Implementades:**
-- Quins fitxers has creat, editat o esborrat (Read, Edit, Write)
-- Quines funcionalitats noves has desenvolupat
-- Quins bugs has resolt
-- Quins refactorings has fet
+### 3. Comprovar Rotacions Automàtiques
 
-**Problemes Resolts:**
-- Quins errors o obstacles has trobat
-- Com els has solucionat
-- Quins beneficis ha portat la solució
-
-**Decisions Preses:**
-- Quines decisions tècniques o arquitectòniques has pres amb l'usuari
-- Justificació de cada decisió
-- Si són decisions arquitectòniques importants → necessiten ADR
-
-**Tecnologies/Llibreries:**
-- Què has afegit al projecte (dependencies, tools)
-- Què has eliminat o substituït
-- Per què (motiu de cada canvi)
-
-**Deployments:**
-- Quins serveis has desplegat
-- URLs resultants
-- Notes sobre el deployment
-
-**Pròxims Passos:**
-- Què queda pendent
-- Què s'ha mencionat per fer en futures sessions
-
-### 3. Usar el Template
-
-Llegeix `memory/templates/sessions-template.yaml` i segueix la seva estructura.
-
-### 4. Comprovar Rotació de Sessions (si cal)
-
-Abans d'afegir la nova sessió, comprova si `sessions.yaml` ha superat el límit de línies.
-
-**Comprovar mida:**
+**Sessions.yaml:**
 ```bash
 wc -l memory/full/sessions.yaml
+# Si > 1800 línies:
+ls memory/full/sessions_*.yaml 2>/dev/null  # Trobar proper número
+cp memory/full/sessions.yaml memory/full/sessions_N.yaml  # Copiar
+wc -l memory/full/sessions_N.yaml  # Verificar
+# Crear nou sessions.yaml amb header YAML buit
 ```
 
-**Si supera 1800 línies:**
-
-1. **Trobar proper número lliure:**
-   ```bash
-   # Comprovar quins fitxers existeixen
-   ls memory/full/sessions_*.yaml 2>/dev/null
-   # Identificar el proper número (si existeix sessions_2.yaml, usar sessions_3.yaml)
-   ```
-
-2. **Rotació Segura (pas a pas):**
-   ```bash
-   # A. PRIMER: Copiar el fitxer actual (preservar dades)
-   cp memory/full/sessions.yaml memory/full/sessions_N.yaml
-
-   # B. Verificar que la còpia existeix i té contingut
-   wc -l memory/full/sessions_N.yaml
-
-   # C. Si la verificació és OK, crear nou sessions.yaml amb header bàsic
-   # (Escriure només l'estructura YAML base, sense sessions)
-
-   # D. Confirmar rotació
-   echo "✓ Rotació completada: sessions.yaml → sessions_N.yaml"
-   echo "✓ Nou sessions.yaml creat per continuar"
-   ```
-
-**Avantatges d'aquest flux:**
-- ✅ No perd dades (copia abans)
-- ✅ Verifica que la còpia existeix
-- ✅ Sessions antigues intactes a sessions_N.yaml
-- ✅ sessions.yaml sempre existeix amb les més recents
-- ✅ Context Agent pot llegir sessions.yaml sense problemes de límit
-
-**Si NO supera 1800 línies:**
-- Continua amb el flux normal (afegir al principi)
-
-### 5. Afegir Sessió a `memory/full/sessions.yaml`
-
-- Afegeix la nova sessió **al PRINCIPI** de l'array `sessions:` (ordre cronològic invers)
-- ID i data: YYYY-MM-DD d'avui
-- Títol: Descriptiu i concís (ex: "Implementació Feature X + Fix Bug Y")
-- Durada: Estima basant-te en la conversa
-- Participants: Tu com a DevAgent
-
-**IMPORTANT:**
-- Sigues concís però complet
-- Evita detalls massa granulars (typos, canvis de styling menors)
-- Evita ser massa vague ("millorat sistema")
-- Troba el balanç (veure exemples al template)
-
-### 6. Actualitzar `memory/project-status.yaml`
-
-Actualitza les següents seccions:
-
-**metadata:**
-- `ultima_actualitzacio`: Data d'avui
-- `actualitzat_per`: "Claude (Session [Títol])"
-
-**estat_actual:**
-- `ultima_feature`: Última feature implementada aquesta sessió (si n'hi ha)
-
-**features:**
-- Si has completat una feature, canvia `estat: operatiu`
-- Si has creat una feature nova, afegeix-la
-
-**historic_sessions:**
-- Afegeix entrada amb data, durada i objectiu resumit
-
-**pendents_prioritaris:**
-- Marca com completades les tasques fetes
-- Afegeix noves tasques identificades
-
-### 7. Crear ADRs si Cal
-
-Si has pres **decisions arquitectòniques importants** (no decisions menors):
-
-**Exemples de decisions que necessiten ADR:**
-- Triar una llibreria/framework en lloc d'un altre
-- Canviar l'arquitectura del sistema
-- Decidir un patró de disseny
-- Canviar stack tecnològic
-
-**Exemples que NO necessiten ADR:**
-- Canviar un color de botó
-- Afegir validació a un formulari
-- Fixar un bug menor
-- Refactoritzar una funció
-
-Si cal ADR:
-
-**1. Comprovar Rotació d'ADRs (si cal):**
-
-Abans de crear l'ADR, comprova si `adr.yaml` ha superat el límit de línies.
-
+**adr.yaml:**
 ```bash
 wc -l memory/full/adr.yaml
+# Si > 1800 línies: mateix procés → adr_N.yaml
 ```
 
-**Si supera 1800 línies:**
+**Rotació = Copia segura + Verificació + Nou fitxer buit**
 
-Rotació Segura (mateix procés que sessions):
-```bash
-# A. Trobar proper número lliure
-ls memory/full/adr_*.yaml 2>/dev/null
+### 4. Documentar
 
-# B. Copiar el fitxer actual (preservar dades)
-cp memory/full/adr.yaml memory/full/adr_N.yaml
+**A. Afegir Sessió a `memory/full/sessions.yaml`:**
+- Afegir al PRINCIPI de l'array `sessions:`
+- Usar `memory/templates/sessions-template.yaml` com a guia
+- ID i data: YYYY-MM-DD d'avui
+- Títol descriptiu i concís
+- Sigues complet però evita detalls massa granulars
 
-# C. Verificar que la còpia existeix
-wc -l memory/full/adr_N.yaml
+**B. Crear ADRs si cal (a `memory/full/adr.yaml`):**
 
-# D. Crear nou adr.yaml amb header YAML bàsic
-# (Escriure només estructura base: adrs: [])
+Només si has pres **decisions arquitectòniques importants**:
+- Triar llibreria/framework en lloc d'un altre
+- Canviar arquitectura del sistema
+- Decidir patró de disseny
+- Canviar stack tecnològic
 
-# E. Confirmar rotació
-echo "✓ Rotació ADRs completada: adr.yaml → adr_N.yaml"
+**NO crear ADR per:**
+- Canvis cosmètics (colors, padding)
+- Validacions de formularis
+- Bugs menors
+- Refactorings de funcions
+
+Si crees ADR:
+1. Comprovar rotació adr.yaml (pas 3)
+2. Usar `memory/templates/adr-template.yaml`
+3. Linkear ADR des de sessió (camp `adr_relacionada`)
+
+**C. Actualitzar `memory/project-status.yaml`:**
+- `metadata.ultima_actualitzacio`: Data d'avui
+- `metadata.actualitzat_per`: "Claude (Session [Títol])"
+- `estat_actual.ultima_feature`: Si has completat feature
+- `features`: Canviar `estat: operatiu` si s'ha completat
+- `historic_sessions`: Afegir entrada resumida
+- `pendents_prioritaris`: Actualitzar segons pròxims passos
+
+### 5. Informar l'Usuari
+
+Resum breu de què s'ha documentat:
+
+```
+✅ Sessió documentada a memory/full/sessions.yaml
+✅ [N] ADRs creades (si n'hi ha)
+✅ project-status.yaml actualitzat
+✅ Rotació feta (si calia): sessions.yaml → sessions_N.yaml
+
+Highlights de la sessió:
+- [Feature principal implementada]
+- [Problema crític resolt]
+- [Decisió arquitectònica presa]
+
+Pròxims passos: [Top 2-3 tasques pendents]
 ```
 
-**Si NO supera 1800 línies:**
-- Continua amb el flux normal
+## Notes Importants
 
-**2. Crear l'ADR:**
-1. Llegeix `memory/templates/adr-template.yaml`
-2. Crea entrada a `memory/full/adr.yaml`
-3. Linkeja l'ADR des de la sessió (camp `adr_relacionada`)
-
-### 8. Interacció amb l'Usuari
-
-**Pregunta només si:**
-- No estàs segur de com titular la sessió
-- No pots estimar la durada
-- Tens dubte sobre si una decisió necessita ADR
-- Falta context crític que no pots inferir
-
-**NO preguntis:**
-- Confirmació per cada canvi individual
-- Aprovació de la documentació (assumeix que està correcta)
-- Detalls que pots inferir del context
-
-## Workflow Recomanat
-
-1. **Recull evidències** (git status, find, history)
-2. **Auto-analitza** la conversa i identifica canvis
-3. **Llegeix** els templates i fitxers actuals
-4. **Comprova rotació** (si sessions.yaml > 1800 línies, rotació segura)
-5. **Genera** l'entrada de sessió en YAML
-6. **Afegeix** a `full/sessions.yaml` al principi
-7. **Actualitza** `project-status.yaml`
-8. **Crea ADRs** si cal
-9. **Informa** l'usuari que la sessió s'ha documentat (resum breu)
-
-## Notes
-
-- **Format**: YAML estricte (tabs → 2 espais)
-- **Multiline strings**: Usa `|` per textos llargs
-- **Consistència**: Segueix l'estil de sessions anteriors
-- **Tokens**: No et preocupis per tokens aquí, sigues complet
-- **Context Agent**: Ell ja s'encarregarà de filtrar després
-
-## Exemple de Sortida Esperada
-
-Al final hauràs:
-✅ Fet rotació de sessions si calia (sessions.yaml → sessions_N.yaml)
-✅ Afegit sessió a `memory/full/sessions.yaml`
-✅ Actualitzat `memory/project-status.yaml`
-✅ Creat ADRs a `memory/full/adr.yaml` (si cal)
-📝 Informat l'usuari amb resum de què s'ha documentat
+- **Format YAML**: Indentació estricta (2 espais), usa `|` per multiline
+- **Consistència**: Segueix estil de sessions/ADRs anteriors
+- **NO preguntar**: Assumeix que la documentació és correcta (pregunta només si falta context crític)
+- **Context Agent**: No et preocupis per tokens aquí, ell filtrarà després
+- **Rotació automàtica**: Preserva SEMPRE les dades (sessions_N.yaml, adr_N.yaml)
 
 ---
 
