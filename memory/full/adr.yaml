@@ -1,0 +1,15 @@
+# Architecture Decision Records
+# Documentació completa de totes les decisions arquitectòniques del projecte
+# Format: Segueix templates/adr-template.yaml
+
+adrs:
+  # Exemple:
+  # - id: "001"
+  #   titol: "Utilitzar Framework X per frontend"
+  #   data: "YYYY-MM-DD"
+  #   estat: accepted
+  #   area: frontend
+  #   context: "Context de la decisió..."
+  #   decisio: "La decisió presa..."
+  #   alternatives: [...]
+  #   consequencies: [...]
