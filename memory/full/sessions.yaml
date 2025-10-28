@@ -1,0 +1,16 @@
+# Sessions Log
+# Històric de totes les sessions de treball significatives
+# Format: Segueix templates/sessions-template.yaml
+
+sessions:
+  # Exemple:
+  # - id: "YYYY-MM-DD"
+  #   titol: "Implementació Feature X"
+  #   data: "YYYY-MM-DD"
+  #   durada: "~3h"
+  #   participants: ["DevAgent"]
+  #   objectiu: "Implementar feature X amb tecnologia Y"
+  #   features_implementades: [...]
+  #   problemes_resolts: [...]
+  #   decisions_preses: [...]
+  #   proxims_passos: [...]
