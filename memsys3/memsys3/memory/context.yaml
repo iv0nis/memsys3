@@ -1,0 +1,137 @@
+# Context Compilat per Development Agents
+# Aquest fitxer és generat pel Context Agent (CA)
+# Carrega'l amb @memory/context.yaml per tenir context complet del projecte
+
+metadata:
+  compilat_per: "Context Agent"
+  ultima_compilacio: "YYYY-MM-DD HH:MM:SS"
+  versio_context: "1.0"
+
+# ============================================
+# PROJECT INFO
+# ============================================
+project:
+  nom: "Nom del Projecte"
+  descripcio: "Descripció breu del projecte en 1-2 línies"
+  fase: "Development / MVP / Production"
+  ultima_feature: "Última feature implementada"
+  seguent_milestone: "Pròxim milestone planificat"
+
+# ============================================
+# FEATURES OPERATIVES
+# ============================================
+features:
+  feature_exemple:
+    nom: "Nom de la Feature"
+    url: "https://exemple.com"
+    estat: "operatiu"
+    descripcio: "Què fa aquesta feature"
+
+  # CA afegeix tantes features com siguin rellevants
+
+# ============================================
+# STACK TECNOLÒGIC
+# ============================================
+stack:
+  frontend: "Framework Frontend + versió"
+  backend: "Runtime + Framework Backend"
+  database: "Base de dades (si n'hi ha)"
+  deploy: "Plataforma de deployment"
+
+# ============================================
+# URLS PRINCIPALS
+# ============================================
+urls:
+  production: "https://production-url.com"
+  staging: "https://staging-url.com"
+  # CA afegeix URLs rellevants
+
+# ============================================
+# ADRs RELLEVANTS
+# Decisions arquitectòniques que qualsevol agent ha de conèixer
+# CA selecciona basant-se en impacte global i rellevància
+# ============================================
+adrs:
+  - id: "001"
+    titol: "Exemple: Triar Framework X per frontend"
+    decisio: "Utilitzar Framework X en lloc de Y"
+    motiu: "X ofereix millor performance i ecosistema més gran"
+    impacte: "Afecta tota l'arquitectura frontend del projecte"
+
+  - id: "002"
+    titol: "Exemple: Estratègia de deployment"
+    decisio: "Deploy serverless a Platform Z"
+    motiu: "Reducció de cost i millor escalabilitat"
+    impacte: "Com es desplega i manté el projecte"
+
+  # CA afegeix més ADRs segons rellevància
+  # NO hi ha límit fix, només el criteri del CA i 2000 línies totals
+
+# ============================================
+# ÚLTIMA SESSIÓ (o últimes sessions rellevants)
+# Context històric recent per entendre estat actual
+# ============================================
+ultima_sessio:
+  data: "YYYY-MM-DD"
+  durada: "~Xh"
+  que_es_va_fer:
+    - "Feature principal implementada durant la sessió"
+    - "Problema significatiu resolt"
+    - "Refactoring o millora important"
+  decisions:
+    - "Decisió tècnica presa amb justificació"
+    - "Trade-off acceptat i per què"
+  proxims_passos:
+    - "Tasca pendent més important"
+    - "Blocker conegut a resoldre"
+
+# ============================================
+# GOTCHAS CRÍTICS
+# Errors/configuracions que trenquen el projecte si no es coneixen
+# CA filtra només els imprescindibles
+# ============================================
+gotchas:
+  - id: "gotcha_exemple_1"
+    problema: "Problema crític que cal saber"
+    solucio: "Com resoldre-ho o evitar-ho"
+
+  - id: "gotcha_exemple_2"
+    problema: "Configuració contra-intuitiva del stack"
+    solucio: "Passos per configurar correctament"
+
+  # CA afegeix només gotchas actius i crítics
+
+# ============================================
+# PENDENTS PRIORITARIS
+# Tasques més importants del projecte ara mateix
+# ============================================
+pendents:
+  - prioritat: 1
+    tasca: "Tasca més crítica"
+    detall: "Context breu de per què és important"
+
+  - prioritat: 2
+    tasca: "Segona tasca prioritària"
+    detall: "Context addicional"
+
+  # CA prioritza basant-se en project-status.yaml
+
+# ============================================
+# NOTES DE COMPILACIÓ DEL CA
+# Informació sobre el procés de compilació
+# ============================================
+notes_compilacio:
+  adrs_totals: "Total d'ADRs a memory/full/adr.yaml"
+  adrs_incloses: "ADRs seleccionades per aquest context"
+  sessions_totals: "Total de sessions a memory/full/sessions.yaml"
+  sessions_incloses: "Sessions sintetitzades en aquest context"
+  criteris_filtratge: "Criteris usats: impacte global, rellevància actual, informació no òbvia"
+  linies_totals: "~X línies (màx 2000)"
+  tokens_aproximats: "~Y tokens"
+
+# ============================================
+# NOTES D'ÚS
+# ============================================
+# Aquest fitxer és COMPILAT, no editar manualment
+# Per actualitzar: executar @prompts/compile-context.md
+# Per més detalls: veure memory/full/adr.yaml i memory/full/sessions.yaml

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Memory Visualizer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1>🧠 Agent Memory Visualizer</h1>
+        <p class="subtitle">Visual representation of the agent's context and knowledge</p>
+        <div class="status-indicator">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">Loading...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="agent-view">🤖 Agent View</button>
+      <button class="tab" data-tab="full-history">📚 Full History</button>
+      <button class="tab" data-tab="project-status">📊 Project Status</button>
+      <button class="tab" data-tab="stats">📈 Stats</button>
+    </nav>
+
+    <!-- Tab Content -->
+    <main class="content">
+      <!-- Agent View Tab -->
+      <div class="tab-content active" id="agent-view">
+        <div class="section">
+          <h2>Context Compilat (el que veu DevAI)</h2>
+          <div class="info-box">
+            <p>Aquest és el context que els Development Agents carreguen per entendre el projecte.</p>
+            <p>Màxim ~2500-3000 tokens, compilat pel Context Agent.</p>
+          </div>
+
+          <div class="card">
+            <h3>Project Info</h3>
+            <div id="agentProject" class="data-section"></div>
+          </div>
+
+          <div class="card">
+            <h3>Features</h3>
+            <div id="agentFeatures" class="features-grid"></div>
+          </div>
+
+          <div class="card">
+            <h3>ADRs Rellevants</h3>
+            <div id="agentADRs" class="adrs-list"></div>
+          </div>
+
+          <div class="card">
+            <h3>Última Sessió</h3>
+            <div id="agentSession" class="session-info"></div>
+          </div>
+
+          <div class="card">
+            <h3>Gotchas Crítics</h3>
+            <div id="agentGotchas" class="gotchas-list"></div>
+          </div>
+
+          <div class="card">
+            <h3>Pendents Prioritaris</h3>
+            <div id="agentPendents" class="pendents-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full History Tab -->
+      <div class="tab-content" id="full-history">
+        <div class="section">
+          <h2>Històric Complet</h2>
+          <div class="info-box">
+            <p>Tot l'històric de decisions i sessions. El Context Agent filtra això per crear la vista compilada.</p>
+          </div>
+
+          <div class="card">
+            <h3>Totes les ADRs</h3>
+            <div id="fullADRs" class="adrs-timeline"></div>
+          </div>
+
+          <div class="card">
+            <h3>Sessions Històriques</h3>
+            <div id="fullSessions" class="sessions-timeline"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Status Tab -->
+      <div class="tab-content" id="project-status">
+        <div class="section">
+          <h2>Project Status</h2>
+          <div class="info-box">
+            <p>Estat actual del projecte amb tota la informació de features, stack, URLs i més.</p>
+          </div>
+
+          <div id="projectStatusContent"></div>
+        </div>
+      </div>
+
+      <!-- Stats Tab -->
+      <div class="tab-content" id="stats">
+        <div class="section">
+          <h2>Estadístiques de Compilació</h2>
+          <div class="info-box">
+            <p>Informació sobre què ha filtrat el Context Agent i per què.</p>
+          </div>
+
+          <div class="stats-grid" id="statsContent">
+            <div class="stat-card">
+              <div class="stat-value" id="statContextTokens">-</div>
+              <div class="stat-label">Context Tokens</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statADRsTotal">-</div>
+              <div class="stat-label">Total ADRs</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statADRsFiltered">-</div>
+              <div class="stat-label">ADRs Filtrades</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statSessionsTotal">-</div>
+              <div class="stat-label">Total Sessions</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statLastCompiled">-</div>
+              <div class="stat-label">Última Compilació</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Notes de Compilació</h3>
+            <div id="compilationNotes"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="viewer.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+# Context Template
+# Aquest és el fitxer que carrega DevAI per entendre el projecte
+# És compilat pel Context Agent (CA) des de memory/full/
+# Límit ÚNIC: màxim 2000 línies total
+
+metadata:
+  compilat_per: "Context Agent"
+  ultima_compilacio: "[TIMESTAMP]"
+  versio_context: "[NUMERO_VERSIO]"
+
+# ============================================
+# PROJECT INFO
+# ============================================
+project:
+  nom: "[NOM_PROJECTE]"
+  descripcio: "[DESCRIPCIÓ_1_LÍNIA]"
+  fase: "[FASE_ACTUAL]"
+  ultima_feature: "[ÚLTIMA_FEATURE]"
+  seguent_milestone: "[PRÒXIM_MILESTONE]"
+
+# ============================================
+# FEATURES OPERATIVES
+# ============================================
+features:
+  feature_1:
+    nom: "[NOM]"
+    url: "[URL]"
+    estat: "[operatiu|desenvolupament|pendent]"
+    descripcio: "[DESCRIPCIÓ_BREU]"
+
+  # CA afegeix tantes features com necessari
+
+# ============================================
+# STACK TECNOLÒGIC
+# ============================================
+stack:
+  frontend: "[FRAMEWORK + VERSIÓ]"
+  backend: "[RUNTIME + FRAMEWORK]"
+  database: "[DATABASE si n'hi ha]"
+  deploy: "[PLATFORM]"
+  # Només l'essencial del stack
+
+# ============================================
+# URLS PRINCIPALS
+# ============================================
+urls:
+  production: "[URL_PRINCIPAL]"
+  staging: "[URL_STAGING si n'hi ha]"
+  # CA afegeix URLs rellevants
+
+# ============================================
+# ADRs RELLEVANTS
+# CA selecciona amb criteri intel·ligent segons impacte global
+# NO hi ha límit fix, només criteri i 2000 línies totals
+# ============================================
+adrs:
+  - id: "001"
+    titol: "[TÍTOL_ADR]"
+    decisio: "[QUÈ ES VA DECIDIR]"
+    motiu: "[PER QUÈ]"
+    impacte: "[IMPACTE_GLOBAL]"
+
+  # CA afegeix més ADRs segons rellevància
+  # Decisions amb impacte global, no òbvies, arquitectòniques
+
+# ============================================
+# ÚLTIMA SESSIÓ (o sessions recents)
+# CA sintetitza sessions més impactants
+# ============================================
+ultima_sessio:
+  data: "[YYYY-MM-DD]"
+  durada: "[~Xh]"
+  que_es_va_fer:
+    - "[FEATURE_PRINCIPAL_IMPLEMENTADA]"
+    - "[PROBLEMA_SIGNIFICATIU_RESOLT]"
+    - "[REFACTORING_IMPORTANT]"
+  decisions:
+    - "[DECISIÓ_TÈCNICA_PRESA]"
+    - "[TRADE-OFF_ACCEPTAT]"
+  proxims_passos:
+    - "[TASCA_PENDENT_IMPORTANT]"
+    - "[BLOCKER_CONEGUT]"
+
+# Si hi ha múltiples sessions recents rellevants, CA pot afegir més
+
+# ============================================
+# GOTCHAS CRÍTICS
+# Errors/configuracions que trenquen el projecte si no es coneixen
+# CA filtra amb criteri: només imprescindibles
+# ============================================
+gotchas:
+  - id: "[ID_DESCRIPTIU]"
+    problema: "[PROBLEMA_CRÍTIC]"
+    solucio: "[COM_RESOLDRE]"
+
+  # CA afegeix només gotchas actius i crítics
+  # Contra-intuitius, que trenquen desenvolupament, repetitius
+
+# ============================================
+# PENDENTS PRIORITARIS
+# Tasques més importants del projecte ara
+# CA prioritza segons project-status i context recent
+# ============================================
+pendents:
+  - prioritat: 1
+    tasca: "[TASCA_MÉS_CRÍTICA]"
+    detall: "[PER_QUÈ_ÉS_IMPORTANT]"
+
+  - prioritat: 2
+    tasca: "[SEGONA_PRIORITAT]"
+    detall: "[CONTEXT_ADDICIONAL]"
+
+  # CA afegeix segons prioritat real, no límit fix
+
+# ============================================
+# NOTES DE COMPILACIÓ DEL CA
+# Transparència del procés de compilació
+# ============================================
+notes_compilacio:
+  adrs_totals: "[N total a memory/full/adr.yaml]"
+  adrs_incloses: "[M seleccionades per context]"
+  sessions_totals: "[X total a memory/full/sessions.yaml]"
+  sessions_incloses: "[Y sintetitzades en context]"
+  tokens_inicials: "[Tokens llegits de full/]"
+  tokens_finals: "[Tokens del context.yaml generat]"
+  arxivament: "[Si s'ha activat Pla Contingència: sessions/ADRs arxivades a history/]"
+  criteris_filtratge: "[Criteris intel·ligents usats: impacte global, rellevància actual, etc.]"
+  linies_totals: "[~X línies de 2000 màxim]"
+
+# ============================================
+# NOTES D'ÚS
+# ============================================
+# Aquest fitxer és COMPILAT automàticament, no editar manualment
+# Per actualitzar: executar @prompts/compile-context.md
+# Per més detalls: veure memory/full/adr.yaml i memory/full/sessions.yaml
+# Si context massa gran: CA mourà dades a memory/history/ (no llegit)
