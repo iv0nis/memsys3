@@ -1,0 +1,93 @@
+# Sessions Log Template (YAML)
+# Històric de totes les sessions de treball significatives
+# Format cronològic invers (més recent primer)
+
+sessions:
+  - id: "YYYY-MM-DD"
+    titol: "[Títol Descriptiu de la Sessió]"
+    data: "YYYY-MM-DD"
+    durada: "[Xh o X dies]"
+    participants: ["Nom/Agent"]
+    objectiu: "[Què es volia aconseguir en aquesta sessió]"
+
+    features_implementades:
+      - nom: "[Feature 1]"
+        descripcio: "Descripció breu del que s'ha fet"
+      - nom: "[Feature 2]"
+        descripcio: "Descripció breu"
+      - nom: "[Tasca 3]"
+        descripcio: "Descripció breu"
+
+    problemes_resolts:
+      - problema: "[Problema 1]"
+        solucio: "[Com es va resoldre]"
+      - problema: "[Problema 2]"
+        solucio: "[Com es va resoldre]"
+
+    decisions_preses:
+      - decisio: "[Decisió 1]"
+        justificacio: "Breu justificació"
+        adr_relacionada: null  # Si és decisió arquitectònica important, ID de l'ADR
+      - decisio: "[Decisió 2]"
+        justificacio: "Breu justificació"
+        adr_relacionada: null
+
+    tecnologies_afegides:
+      - nom: "[Llibreria 1]"
+        motiu: "Per què s'ha afegit"
+      - nom: "[Tool 2]"
+        motiu: "Propòsit"
+
+    deployments:
+      - servei: "[Servei 1]"
+        url: "https://..."
+      - servei: "[Servei 2]"
+        url: "https://..."
+
+    proxims_passos:
+      - "[Tasca pendent 1]"
+      - "[Tasca pendent 2]"
+      - "[Tasca pendent 3]"
+
+    notes_addicionals: |
+      Qualsevol context extra, blockers trobats, aprenentatges, etc.
+      Suporta text multilínia.
+
+# ============================================
+# INSTRUCCIONS D'ÚS
+# ============================================
+
+instruccions:
+  ordre: "Afegeix noves sessions al PRINCIPI de l'array (ordre invers cronològic)"
+  concisio: "Sigues concís però complet - detalls suficients per entendre context"
+  adr_links: "Linkeja ADRs (camp adr_relacionada) si es prenen decisions arquitectòniques"
+  consistencia: "Usa sempre el mateix format per facilitar parsing del Context Agent"
+
+# ============================================
+# EXEMPLES DE BONA DOCUMENTACIÓ
+# ============================================
+
+exemples:
+  bo: |
+    features_implementades:
+      - nom: "Exportació PDF professional"
+        descripcio: |
+          Canviat de html2canvas a jsPDF per millor qualitat
+          Format A4 amb marges 20mm
+          10 clàusules legals LAU incloses
+
+  massa_detallat: |
+    # EVITAR això:
+    features_implementades:
+      - nom: "Canviat padding del botó"
+        descripcio: "De 10px a 12px"
+      - nom: "Actualitzat color"
+        descripcio: "De #fff a #f0f0f0"
+      - nom: "Fixat typo"
+        descripcio: "descipcion → descripcion a línia 234"
+
+  massa_vague: |
+    # EVITAR això:
+    features_implementades:
+      - nom: "Millorat sistema de processament"
+        descripcio: "Fixats bugs"
