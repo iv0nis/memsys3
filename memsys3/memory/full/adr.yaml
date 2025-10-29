@@ -1,15 +1,418 @@
-# Architecture Decision Records
-# Documentació completa de totes les decisions arquitectòniques del projecte
-# Format: Segueix templates/adr-template.yaml
+# Architecture Decision Records - memsys3
+# Decisions arquitectòniques del projecte memsys3
 
 adrs:
-  # Exemple:
-  # - id: "001"
-  #   titol: "Utilitzar Framework X per frontend"
-  #   data: "YYYY-MM-DD"
-  #   estat: accepted
-  #   area: frontend
-  #   context: "Context de la decisió..."
-  #   decisio: "La decisió presa..."
-  #   alternatives: [...]
-  #   consequencies: [...]
+  - id: "006"
+    titol: "Sistema de rutas unificado memsys3/"
+    data: "2025-10-29"
+    estat: accepted
+    area: arquitectura
+
+    context: |
+      Durante el desarrollo inicial se creó confusión sobre las rutas en el sistema.
+      Los prompts referencian archivos usando rutas relativas, pero cuando memsys3
+      se despliega en diferentes proyectos, esas rutas deben ser consistentes.
+
+      Inicialmente había inconsistencias:
+      - Algunos prompts usaban `memory/`, otros `@memory/`
+      - No estaba claro si las rutas eran del template o del deployment
+      - Los READMEs mezclaban niveles (template vs sistema desplegado)
+
+    decisio: |
+      TODAS las rutas en memsys3_templates/ deben usar el prefijo `memsys3/`:
+
+      - `memsys3/memory/context.yaml`
+      - `memsys3/agents/main-agent.yaml`
+      - `memsys3/prompts/compile-context.md`
+      - etc.
+
+      Razón: Durante deployment, memsys3_templates/ se copia a la raíz del proyecto
+      como `memsys3/`, por lo tanto todas las rutas internas funcionan correctamente.
+
+      Además:
+      - compile-context.md debe referenciar explícitamente `memsys3/agents/context-agent.yaml`
+      - main-agent.yaml incluye restricción de NO proponer compile-context.md
+      - READMEs separados por meta-nivel (repositorio vs sistema desplegado)
+
+    alternatives:
+      - nom: "Rutas relativas sin prefijo"
+        pros:
+          - Más cortas
+          - Simples
+        contras:
+          - Ambigüedad sobre qué carpeta
+          - Conflictos en proyectos con carpeta 'memory/'
+          - Difícil saber qué es de memsys3
+        per_que_descartada: "No escalable, genera confusión"
+
+      - nom: "Rutas absolutas desde raíz"
+        pros:
+          - Sin ambigüedad
+        contras:
+          - Dependiente de estructura del proyecto
+          - No portable
+        per_que_descartada: "No es portable entre proyectos"
+
+    consequencies:
+      positives:
+        - "Claridad total: siempre se sabe que es de memsys3"
+        - "Portabilidad: funciona en cualquier proyecto"
+        - "Actualizable: fácil saber qué archivos actualizar"
+        - "Sin conflictos con carpetas del proyecto"
+      negatives:
+        - "Rutas más largas en prompts"
+        - "Requiere disciplina al crear nuevos prompts"
+      impacte: "Cómo se estructuran y referencian todos los archivos del sistema"
+
+  - id: "007"
+    titol: "Separación de meta-niveles en READMEs"
+    data: "2025-10-29"
+    estat: accepted
+    area: documentación
+
+    context: |
+      Inicialmente había un solo README que mezclaba:
+      - Explicación de qué es memsys3 (para quien lo descubre)
+      - Instrucciones de uso del sistema (para quien lo usa)
+      - Información de templates y deployment
+      - Dog-fooding del propio memsys3
+
+      Esto generaba confusión porque no estaba claro el "nivel" de cada información.
+
+    decisio: |
+      Crear READMEs separados por meta-nivel:
+
+      1. README.md (raíz repositorio):
+         - Meta-nivel: REPOSITORIO PÚBLICO
+         - Audiencia: Quien descubre memsys3 en GitHub
+         - Contenido: Qué es, cómo instalarlo, estructura del repo
+         - Incluye: Explicación de dog-fooding (memsys3_templates/ vs memsys3/)
+
+      2. memsys3_templates/README.md:
+         - Meta-nivel: SISTEMA DESPLEGADO
+         - Audiencia: Agents y developers DENTRO de un proyecto
+         - Contenido: Cómo usar el sistema YA desplegado
+         - NO menciona: Templates, deployment, ni meta-información
+         - Escrito como si ya estuviera en producción
+
+      3. docs/DEVELOPMENT.md:
+         - Meta-nivel: DESARROLLO DE MEMSYS3
+         - Audiencia: Contribuidores/desarrolladores de memsys3
+         - Contenido: Workflow de desarrollo, sistema de rutas, checklist
+
+      4. docs/UPDATE.md:
+         - Meta-nivel: ACTUALIZACIÓN
+         - Audiencia: Quien ya tiene memsys3 y quiere actualizar
+         - Contenido: Qué archivos actualizar, qué preservar
+
+    alternatives:
+      - nom: "Un solo README para todo"
+        pros:
+          - Simple
+          - Todo en un lugar
+        contras:
+          - Confusión de niveles
+          - No está claro quién es la audiencia
+          - Mezcla información de template vs deployment
+        per_que_descartada: "Demasiada ambigüedad, difícil de mantener"
+
+    consequencies:
+      positives:
+        - "Claridad total de meta-niveles"
+        - "Cada README tiene audiencia específica"
+        - "Agents leen README agnóstico sin confusión"
+        - "Developers tienen guía clara de contribución"
+      negatives:
+        - "Más archivos que mantener"
+        - "Requiere disciplina para actualizar todos"
+      impacte: "Cómo se estructura toda la documentación del proyecto"
+
+  - id: "008"
+    titol: "Main-Agent NO debe proponer compile-context"
+    data: "2025-10-29"
+    estat: accepted
+    area: workflow
+
+    context: |
+      El Main-Agent trabaja durante sesiones acumulando tokens. compile-context.md
+      requiere leer TODOS los archivos de memory/full/ (puede ser >50K tokens).
+
+      Si el Main-Agent propone ejecutar compile-context, acumula:
+      - Tokens de la sesión actual
+      - Tokens de leer todo memory/full/
+      - Tokens de generar context.yaml
+
+      Esto es ineficiente y puede superar límites de contexto.
+
+    decisio: |
+      Main-Agent tiene restricción explícita en agents/main-agent.yaml:
+      - NO proponer ejecutar @memsys3/prompts/compile-context.md
+      - Solo sugerir endSession al finalizar sesión
+      - El user decide cuándo compilar (en nueva instancia limpia)
+
+      compile-context.md debe ejecutarse en una NUEVA INSTANCIA sin tokens acumulados.
+
+    alternatives:
+      - nom: "Main-Agent ejecuta compile-context"
+        pros:
+          - Automático
+          - Conveniente
+        contras:
+          - Acumula demasiados tokens
+          - Ineficiente
+          - Puede superar límites
+        per_que_descartada: "Consume demasiados tokens innecesariamente"
+
+      - nom: "Compilación automática en cada endSession"
+        pros:
+          - Context siempre actualizado
+        contras:
+          - Cada endSession sería muy pesado
+          - No siempre es necesario recompilar
+        per_que_descartada: "Overhead innecesario"
+
+    consequencies:
+      positives:
+        - "Eficiencia de tokens optimizada"
+        - "Main-Agent se enfoca en desarrollo"
+        - "Context Agent trabaja con instancia limpia"
+        - "User controla cuándo compilar"
+      negatives:
+        - "Requiere paso manual extra de compilación"
+        - "Context puede quedar desactualizado entre compilaciones"
+      impacte: "Cómo se gestiona el workflow de compilación de contexto"
+
+  - id: "001"
+    titol: "Criteri intel·ligent del Context Agent vs límits arbitraris"
+    data: "2025-10-28"
+    estat: accepted
+    area: arquitectura
+
+    context: |
+      Els sistemes anteriors usaven límits rígids (màx 7 ADRs, màx 15 línies per sessió)
+      que no s'adaptaven a la realitat del projecte. Projectes petits perdien context,
+      projectes grans no podien expressar-se adequadament.
+
+    decisio: |
+      El Context Agent usa criteri intel·ligent basant-se en la pregunta:
+      "Què ha de saber QUALSEVOL agent descontextualitzat per treballar aquí?"
+
+      Límit ÚNIC: màxim 2000 línies al context.yaml final.
+      NO hi ha límits arbitraris per ADRs, sessions, gotchas, etc.
+
+    alternatives:
+      - nom: "Mantenir límits arbitraris"
+        pros:
+          - Predictible
+          - Fàcil d'implementar
+        contras:
+          - No s'adapta a realitat del projecte
+          - Perd informació crítica o inclou informació irrellevant
+        per_que_descartada: "Massa rígid, no escala amb complexitat del projecte"
+
+      - nom: "Cap límit (context il·limitat)"
+        pros:
+          - Tot el context disponible
+        contras:
+          - Consumeix massa tokens
+          - Supera límits de Read tool (2000 línies)
+        per_que_descartada: "No sostenible, problemes tècnics amb Read"
+
+    consequencies:
+      positives:
+        - "Context adaptatiu segons necessitats del projecte"
+        - "CA decideix amb visió panoràmica completa"
+        - "Projectes petits mantenen tot, projectes grans filtren intel·ligentment"
+        - "Més flexible i escalable"
+      negatives:
+        - "Menys predictible (depèn criteri CA)"
+        - "Pot variar entre compilacions"
+      impacte: "Com es compila tot el context del sistema"
+
+  - id: "002"
+    titol: "Rotació automàtica de sessions/ADRs (>1800 línies)"
+    data: "2025-10-28"
+    estat: accepted
+    area: escalabilitat
+
+    context: |
+      Read tool té límit de 2000 línies. Si sessions.yaml o adr.yaml creixen
+      massa, els agents no poden llegir-los.
+
+    decisio: |
+      Quan sessions.yaml o adr.yaml superen 1800 línies:
+      - endSession.md detecta automàticament
+      - Fa rotació segura: copia → verifica → crea nou
+      - sessions.yaml → sessions_N.yaml
+      - adr.yaml → adr_N.yaml
+
+      Context Agent llegeix TOTS els fitxers rotats fins detectar >150K tokens.
+
+    alternatives:
+      - nom: "Limit fix de sessions/ADRs"
+        pros:
+          - Simple
+        contras:
+          - Perd històric
+        per_que_descartada: "No volem perdre dades mai"
+
+      - nom: "Base de dades"
+        pros:
+          - Sense límits
+        contras:
+          - Complexitat addicional
+          - Dependència externa
+        per_que_descartada: "YAML files són suficients i simples"
+
+    consequencies:
+      positives:
+        - "Sistema escala infinitament"
+        - "No es perden dades mai"
+        - "Automàtic, sense intervenció manual"
+        - "Preserva històric complet"
+      negatives:
+        - "Múltiples fitxers (sessions_1, sessions_2, etc.)"
+        - "CA ha de llegir múltiples fitxers"
+      impacte: "Com es gestiona el creixement de dades històriques"
+
+  - id: "003"
+    titol: "Pla de Contingència amb arxivament intel·ligent (>150K tokens)"
+    data: "2025-10-28"
+    estat: accepted
+    area: escalabilitat
+
+    context: |
+      Fins i tot amb rotació, projectes molt grans poden acumular massa dades.
+      Si full/ (amb tots els fitxers rotats) supera 150K tokens, el CA no pot
+      processar-ho eficientment.
+
+    decisio: |
+      Quan total de full/ supera 150K tokens:
+      1. CA identifica ADRs/sessions irrellevants amb criteri intel·ligent
+      2. Les mou a memory/history/ (que NO es llegeix)
+      3. Redueix a ~120K tokens
+      4. Continua compilació normal
+
+      Dades a history/ estan preservades, recuperables si cal.
+
+    alternatives:
+      - nom: "Esborrar dades antigues"
+        pros:
+          - Neteja automàtica
+        contras:
+          - Perd informació irreversiblement
+        per_que_descartada: "NEVER delete data"
+
+      - nom: "Comprimir fitxers"
+        pros:
+          - Redueix mida
+        contras:
+          - CA no pot llegir comprimit
+        per_que_descartada: "No resol problema de tokens"
+
+    consequencies:
+      positives:
+        - "Estalvi real de tokens (history/ NO es llegeix)"
+        - "Dades preservades, no perdudes"
+        - "Sistema escala il·limitadament"
+        - "Reversible (pots recuperar de history/)"
+      negatives:
+        - "Dades arxivades no visibles per CA"
+        - "Depèn criteri CA per arxivar"
+      impacte: "Com es gestionen projectes amb molt històric"
+
+  - id: "004"
+    titol: "YAML per tot (incloent sessions)"
+    data: "2025-10-28"
+    estat: accepted
+    area: format
+
+    context: |
+      Sessions originalment eren .md (Markdown). Templates i ADRs ja eren YAML.
+      Inconsistència de formats dificultava parsing i estalvi de tokens.
+
+    decisio: |
+      Tot el sistema usa YAML:
+      - sessions.yaml (abans sessions.md)
+      - adr.yaml
+      - project-status.yaml
+      - context.yaml
+      - Tots els templates .yaml
+
+    alternatives:
+      - nom: "Markdown per sessions"
+        pros:
+          - Més llegible per humans
+        contras:
+          - Inconsistent amb resta
+          - Més tokens (~30% més)
+          - Difícil parsejar per LLMs
+        per_que_descartada: "Volíem consistència i eficiència"
+
+      - nom: "JSON"
+        pros:
+          - Estàndard web
+        contras:
+          - Menys llegible
+          - No suporta multiline strings fàcilment
+        per_que_descartada: "YAML millor per documentació"
+
+    consequencies:
+      positives:
+        - "Consistència total del sistema"
+        - "~30% estalvi tokens vs Markdown"
+        - "Millor per LLMs (estructura clara)"
+        - "Fàcil parsejar amb js-yaml"
+      negatives:
+        - "Menys familiar per alguns devs"
+        - "Requereix indentació estricta"
+      impacte: "Format de tota la documentació del sistema"
+
+  - id: "005"
+    titol: "deploy.md com a prompt (no script shell)"
+    data: "2025-10-28"
+    estat: accepted
+    area: usabilitat
+
+    context: |
+      Necessitàvem manera de desplegar memsys3 en nous projectes.
+      Opcions: script shell automàtic vs prompt per Main-Agent.
+
+    decisio: |
+      Crear prompts/deploy.md que el Main-Agent executa.
+      L'agent fa briefing amb user per personalitzar el deployment:
+      - Pregunta sobre projecte, stack, comportament
+      - Copia templates
+      - Crea fitxers específics basant-se en respostes
+
+      Més flexible que script automàtic.
+
+    alternatives:
+      - nom: "Script shell (setup.sh)"
+        pros:
+          - Automàtic
+          - Ràpid
+        contras:
+          - Menys flexible
+          - No pot fer briefing amb user
+          - Requeriria CLI interactiu complex
+        per_que_descartada: "Prompt amb agent és més intel·ligent i flexible"
+
+      - nom: "Manual (README instructions)"
+        pros:
+          - Simple
+        contras:
+          - Propens a errors humans
+          - Lent
+        per_que_descartada: "Volíem automatització"
+
+    consequencies:
+      positives:
+        - "Deployment guiat i intel·ligent"
+        - "Personalització segons necessitats"
+        - "Agent pot adaptar-se a respostes"
+        - "Consistent amb filosofia de prompts"
+      negatives:
+        - "Requereix AI agent per executar"
+        - "No funciona sense agent"
+      impacte: "Com els usuaris despleguen memsys3 en els seus projectes"

@@ -39,17 +39,17 @@ Identifica:
 
 **Sessions.yaml:**
 ```bash
-wc -l memory/full/sessions.yaml
+wc -l memsys3/memory/full/sessions.yaml
 # Si > 1800 línies:
-ls memory/full/sessions_*.yaml 2>/dev/null  # Trobar proper número
-cp memory/full/sessions.yaml memory/full/sessions_N.yaml  # Copiar
-wc -l memory/full/sessions_N.yaml  # Verificar
+ls memsys3/memory/full/sessions_*.yaml 2>/dev/null  # Trobar proper número
+cp memsys3/memory/full/sessions.yaml memsys3/memory/full/sessions_N.yaml  # Copiar
+wc -l memsys3/memory/full/sessions_N.yaml  # Verificar
 # Crear nou sessions.yaml amb header YAML buit
 ```
 
 **adr.yaml:**
 ```bash
-wc -l memory/full/adr.yaml
+wc -l memsys3/memory/full/adr.yaml
 # Si > 1800 línies: mateix procés → adr_N.yaml
 ```
 
@@ -57,14 +57,14 @@ wc -l memory/full/adr.yaml
 
 ### 4. Documentar
 
-**A. Afegir Sessió a `memory/full/sessions.yaml`:**
+**A. Afegir Sessió a `memsys3/memory/full/sessions.yaml`:**
 - Afegir al PRINCIPI de l'array `sessions:`
-- Usar `memory/templates/sessions-template.yaml` com a guia
+- Usar `memsys3/memory/templates/sessions-template.yaml` com a guia
 - ID i data: YYYY-MM-DD d'avui
 - Títol descriptiu i concís
 - Sigues complet però evita detalls massa granulars
 
-**B. Crear ADRs si cal (a `memory/full/adr.yaml`):**
+**B. Crear ADRs si cal (a `memsys3/memory/full/adr.yaml`):**
 
 Només si has pres **decisions arquitectòniques importants**:
 - Triar llibreria/framework en lloc d'un altre
@@ -80,10 +80,10 @@ Només si has pres **decisions arquitectòniques importants**:
 
 Si crees ADR:
 1. Comprovar rotació adr.yaml (pas 3)
-2. Usar `memory/templates/adr-template.yaml`
+2. Usar `memsys3/memory/templates/adr-template.yaml`
 3. Linkear ADR des de sessió (camp `adr_relacionada`)
 
-**C. Actualitzar `memory/project-status.yaml`:**
+**C. Actualitzar `memsys3/memory/project-status.yaml`:**
 - `metadata.ultima_actualitzacio`: Data d'avui
 - `metadata.actualitzat_per`: "Claude (Session [Títol])"
 - `estat_actual.ultima_feature`: Si has completat feature
@@ -96,9 +96,9 @@ Si crees ADR:
 Resum breu de què s'ha documentat:
 
 ```
-✅ Sessió documentada a memory/full/sessions.yaml
+✅ Sessió documentada a memsys3/memory/full/sessions.yaml
 ✅ [N] ADRs creades (si n'hi ha)
-✅ project-status.yaml actualitzat
+✅ memsys3/memory/project-status.yaml actualitzat
 ✅ Rotació feta (si calia): sessions.yaml → sessions_N.yaml
 
 Highlights de la sessió:

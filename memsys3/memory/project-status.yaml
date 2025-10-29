@@ -1,41 +1,97 @@
-# Project Status
-# Estat actual del projecte
-# Format: Segueix templates/project-status-template.yaml
+# Project Status - memsys3
 
 metadata:
-  ultima_actualitzacio: "YYYY-MM-DD"
-  actualitzat_per: "DevAgent"
-  fase: "Development"
+  ultima_actualitzacio: "2025-10-29"
+  actualitzat_per: "Claude (Session: Alineación Completa del Sistema)"
+  fase: "Development v1.1"
 
 visio_general:
-  que_es: "Descripció breu del projecte"
-  objectiu: "Objectiu principal del projecte"
-  client: "Nom del client o projecte intern"
+  que_es: "Sistema de gestió de context per AI Development Agents"
+  objectiu: "Optimitzar consum de tokens proporcionant context compacte i rellevant"
+  client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development"
-  ultima_feature: "Última feature implementada"
-  seguent_milestone: "Pròxim milestone planificat"
+  fase: "Development v1.1"
+  ultima_feature: "Sistema de rutas unificado y separación de meta-niveles"
+  seguent_milestone: "Validar deployment en proyecto de prueba"
 
 features:
-  # Exemple:
-  # feature_name:
-  #   nom: "Nom de la feature"
-  #   url: "https://..."
-  #   estat: "operatiu"
-  #   descripcio: "Descripció breu"
+  context_agent:
+    nom: "Context Agent"
+    estat: "operatiu"
+    descripcio: "Agent que compila context complet amb criteri intel·ligent (màx 2000 línies)"
+
+  rotacio_automatica:
+    nom: "Rotació Automàtica"
+    estat: "operatiu"
+    descripcio: "Sistema de rotació sessions/ADRs quan superen 1800 línies"
+
+  pla_contingencia:
+    nom: "Pla de Contingència"
+    estat: "operatiu"
+    descripcio: "Arxivament intel·ligent a history/ quan >150K tokens"
+
+  visualitzador:
+    nom: "Memory Visualizer"
+    estat: "operatiu"
+    descripcio: "Dashboard web per veure la 'ment' dels agents (4 pestanyes)"
+
+  prompts:
+    nom: "Prompts Reutilitzables"
+    estat: "operatiu"
+    descripcio: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas memsys3/"
+
+  documentacio:
+    nom: "Sistema de Documentación Multi-nivel"
+    estat: "operatiu"
+    descripcio: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
 
 stack_tecnologic:
-  frontend: "Framework frontend"
-  backend: "Framework backend"
-  database: "Base de dades"
-  deploy: "Plataforma de deployment"
+  frontend: "HTML/CSS/JS (visualitzador)"
+  backend: "Python 3.x (servidor visualitzador)"
+  database: "Cap (YAML files)"
+  deploy: "GitHub + clonat local"
+  llenguatge_docs: "YAML + Markdown"
 
 urls:
-  # production: "https://..."
-  # staging: "https://..."
+  repository: "https://github.com/iv0nis/memsys3"
 
 pendents_prioritaris:
-  # - prioritat: 1
-  #   tasca: "Tasca pendent"
-  #   detall: "Detalls de la tasca"
+  - prioritat: 1
+    tasca: "Compilar nuevo context.yaml con CA"
+    detall: "En instancia limpia, aplicar nuevas ADRs y session"
+
+  - prioritat: 2
+    tasca: "Validar deployment en proyecto de prueba"
+    detall: "Copiar memsys3_templates/ a proyecto test, verificar rutas"
+
+  - prioritat: 3
+    tasca: "Testing sistema de actualización (UPDATE.md)"
+    detall: "Validar workflow de actualización en proyecto existente"
+
+  - prioritat: 4
+    tasca: "Validar rotació automàtica en projecte real"
+    detall: "Comprovar que funciona quan sessions.yaml supera 1800 línies"
+
+  - prioritat: 5
+    tasca: "Posible: script de validación automática de rutas"
+    detall: "grep automático para detectar rutas sin prefijo memsys3/"
+
+decisions_clau:
+  filosofia: "Criteri intel·ligent del CA, NO límits arbitraris"
+  escalabilitat: "Rotació + arxivament automàtic"
+  preservacio: "Dades SEMPRE preservades (history/, sessions_N.yaml, adr_N.yaml)"
+  rutas: "Sistema unificado memsys3/ para portabilidad y claridad"
+  documentacion: "Meta-niveles separados según audiencia"
+  workflow: "Main-Agent NO compila, solo sugiere endSession"
+
+historic_sessions:
+  - data: "2025-10-29"
+    durada: "~3-4h"
+    objectiu: "Alineación completa: sistema de rutas unificado y separación de meta-niveles"
+    highlights: "3 ADRs críticas, todas rutas actualizadas a memsys3/, 4 niveles documentación, restricción Main-Agent"
+
+  - data: "2025-10-28"
+    durada: "~8h"
+    objectiu: "Creació inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
+    highlights: "Context Agent criteri intel·ligent, rotació automàtica, Pla Contingència, publicat a GitHub"
