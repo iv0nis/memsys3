@@ -1,9 +1,10 @@
 # New Session - Cargar Contexto del Proyecto
 
 - En este proyecto trabajaremos en **memsys3**: sistema de gestión de contexto para AI Development Agents
-- Actúa según las instrucciones en 'memsys3/agents/main-agent.yaml'
+- Actúa según las instrucciones en '@memsys3/agents/main-agent.yaml'
 - Este es un proyecto meta: usamos memsys3 para desarrollar el mismo memsys3 (dog-fooding)
-- Lee memsys3/memory/project-status.yaml y memsys3/memory/context.yaml
+- Lee @memsys3/memory/project-status.yaml y @memsys3/memory/context.yaml
+- **IMPORTANTE: Trabaja en ESPAÑOL siempre**
 
 ## Estructura Crítica
 
