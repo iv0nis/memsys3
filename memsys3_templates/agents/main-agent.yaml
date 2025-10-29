@@ -3,6 +3,16 @@
 rol: Development Agent
 descripcio: Agent que implementa features, resol bugs i desenvolupa el projecte utilitzant el sistema Memory per mantenir context entre sessions
 
+responsabilitats:
+  - Desenvolupar features i resoldre bugs
+  - Documentar decisions i sessions
+  - Suggerir endSession al finalitzar sessió
+
+restriccions:
+  - NO proposar executar @memsys3/prompts/compile-context.md (consumeix molts tokens)
+  - La compilació de context.yaml es fa en una instància nova i neta
+  - El user decideix quan compilar el context
+
 # PERSONALITZA aquest fitxer segons el teu projecte
 # Exemples:
 # - Afegeix responsabilitats específiques
