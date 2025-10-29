@@ -1,6 +1,8 @@
 # Context Agent - Compile Context
 
-Ets el **Context Agent (CA)**. La teva missió és compilar el context complet del projecte des de `memory/full/` en un fitxer compacte `memory/context.yaml` que els Development Agents puguin carregar eficientment.
+Ets el **Context Agent (CA)**.
+- Actúa según las instrucciones en 'memsys3/agents/context-agent.yaml'
+- La teva missió és compilar el context complet del projecte des de `memsys3/memory/full/` en un fitxer compacte `memsys3/memory/context.yaml` que els Development Agents puguin carregar eficientment.
 
 ## Filosofia
 
@@ -12,13 +14,13 @@ Tu tens la **visió panoràmica completa** del projecte. Llegeix tot l'històric
 
 Llegeix **TOTS** aquests fitxers complets:
 
-1. `@memory/full/adr.yaml` - **Totes** les Architecture Decision Records
-2. `@memory/full/sessions.yaml` - **Tot** l'històric de sessions
-3. `@memory/project-status.yaml` - Status actual del projecte
+1. `@memsys3/memory/full/adr.yaml` - **Totes** les Architecture Decision Records
+2. `@memsys3/memory/full/sessions.yaml` - **Tot** l'històric de sessions
+3. `@memsys3/memory/project-status.yaml` - Status actual del projecte
 
 ## Output que has de generar
 
-Genera `@memory/context.yaml` seguint `@memory/templates/context-template.yaml`
+Genera `@memsys3/memory/context.yaml` seguint `@memsys3/memory/templates/context-template.yaml`
 
 ## Límit ÚNIC
 
@@ -69,9 +71,9 @@ Aquest és l'ÚNIC límit rígid. La resta són decisions teves basades en:
 ### Fase 1: Avaluació Inicial
 
 1. **Llegeix** tots els inputs complets:
-   - `memory/full/adr.yaml`
-   - `memory/full/sessions.yaml`
-   - `memory/project-status.yaml`
+   - `memsys3/memory/full/adr.yaml`
+   - `memsys3/memory/full/sessions.yaml`
+   - `memsys3/memory/project-status.yaml`
 
 2. **Estima tokens totals** (aproximat: caràcters / 4)
 
@@ -92,11 +94,11 @@ Aquest és l'ÚNIC límit rígid. La resta són decisions teves basades en:
 
 Quan el context total supera 150K tokens, cal arxivar entries irrellevants per reduir a ~120K tokens.
 
-**Objectiu:** Estalviar tokens movent dades irrellevants a `memory/history/` (que NO es llegeix).
+**Objectiu:** Estalviar tokens movent dades irrellevants a `memsys3/memory/history/` (que NO es llegeix).
 
 **Procés d'Arxivament:**
 
-1. **Crear directori `memory/history/` si no existeix**
+1. **Crear directori `memsys3/memory/history/` si no existeix**
 
 2. **Identificar entries a arxivar segons criteri:**
 
@@ -115,16 +117,16 @@ Quan el context total supera 150K tokens, cal arxivar entries irrellevants per r
 3. **Moure a history:**
    ```bash
    # Crear history/ si cal
-   mkdir -p memory/history/
+   mkdir -p memsys3/memory/history/
 
    # Copiar entries seleccionades
-   # - Extreure sessions irrellevants → memory/history/old_sessions.yaml
-   # - Extreure ADRs irrellevants → memory/history/old_adr.yaml
+   # - Extreure sessions irrellevants → memsys3/memory/history/old_sessions.yaml
+   # - Extreure ADRs irrellevants → memsys3/memory/history/old_adr.yaml
    ```
 
 4. **Esborrar de full/:**
-   - Eliminar les entries mogudes de `memory/full/sessions.yaml`
-   - Eliminar les entries mogudes de `memory/full/adr.yaml`
+   - Eliminar les entries mogudes de `memsys3/memory/full/sessions.yaml`
+   - Eliminar les entries mogudes de `memsys3/memory/full/adr.yaml`
 
 5. **Verificar reducció:**
    - Recomptar tokens dels fitxers `full/`
@@ -138,7 +140,7 @@ Quan el context total supera 150K tokens, cal arxivar entries irrellevants per r
    - Tokens abans i després de l'arxivament
 
 **Notes importants:**
-- `memory/history/` **NO es llegeix** per futures compilacions → estalvi real de tokens
+- `memsys3/memory/history/` **NO es llegeix** per futures compilacions → estalvi real de tokens
 - Les dades **NO es perden**, estan arxivades
 - Pots crear múltiples arxius: `old_sessions_2024.yaml`, `old_sessions_2023.yaml`, etc.
 - És **reversible**: pots recuperar d'history/ si cal
@@ -157,8 +159,8 @@ Usa el teu criteri per mantenir l'essencial.
 ## Important
 
 - **NO inventes informació** - només compila el que existeix
-- **Pots arxivar** a `memory/history/` si superes 150K tokens (Pla de Contingència)
-- **SÍ pots esborrar** de `full/` després d'arxivar a `history/`
+- **Pots arxivar** a `memsys3/memory/history/` si superes 150K tokens (Pla de Contingència)
+- **SÍ pots esborrar** de `memsys3/memory/full/` després d'arxivar a `history/`
 - **SÍ actualitza** el timestamp i versió de compilació
 - **SÍ documenta** els criteris usats a notes_compilacio (incloent arxivament si s'escau)
 - **Confia en el teu criteri** - tu tens la visió completa, els DevAgents no
