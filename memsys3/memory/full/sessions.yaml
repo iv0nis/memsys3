@@ -134,6 +134,15 @@ sessions:
       - ruta: "memsys3/prompts/newSession.md"
         cambio: "Personalizado para memsys3 con explicación de estructura crítica"
 
+      - ruta: "memsys3/prompts/compile-context.md"
+        cambio: "CRÍTICO: Actualizado con rutas memsys3/ y referencia a context-agent.yaml"
+
+      - ruta: "memsys3_templates/prompts/github.md"
+        cambio: "Creado: template agnóstico de prompt para subir a GitHub"
+
+      - ruta: "memsys3/prompts/github.md"
+        cambio: "Creado: versión específica (español) de prompt GitHub"
+
       - ruta: "docs/DEVELOPMENT.md"
         cambio: "Creado: guía completa de desarrollo, sistema de rutas, workflow"
 
@@ -164,10 +173,17 @@ sessions:
       Esta sesión cierra varios frentes críticos que impedían avanzar con confianza.
       El sistema ahora tiene una estructura clara, documentada y mantenible.
 
-      Archivos modificados: 11 archivos críticos
+      Archivos modificados: 14 archivos críticos
       ADRs creadas: 3
       Documentación nueva: 2 guías completas (DEVELOPMENT, UPDATE)
-      Tokens aproximados: ~100K
+      Prompts nuevos: github.md (template + específico)
+
+      Deployment:
+      - Force push a GitHub con versión completa v1.1
+      - 2 commits adicionales (fix compile-context, feat github.md)
+      - Tag v0.2.1 creado y pusheado
+
+      Tokens aproximados: ~115K
 
   - id: "2025-10-28"
     titol: "Creació memsys3 v1.0 + Deploy System"
