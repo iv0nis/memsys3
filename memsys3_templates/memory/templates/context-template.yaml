@@ -1,6 +1,6 @@
 # Context Template
 # Aquest és el fitxer que carrega DevAI per entendre el projecte
-# És compilat pel Context Agent (CA) des de memory/full/
+# És compilat pel Context Agent (CA) des de memsys3/memory/full/
 # Límit ÚNIC: màxim 2000 línies total
 
 metadata:
@@ -117,9 +117,9 @@ pendents:
 # Transparència del procés de compilació
 # ============================================
 notes_compilacio:
-  adrs_totals: "[N total a memory/full/adr.yaml]"
+  adrs_totals: "[N total a memsys3/memory/full/adr.yaml]"
   adrs_incloses: "[M seleccionades per context]"
-  sessions_totals: "[X total a memory/full/sessions.yaml]"
+  sessions_totals: "[X total a memsys3/memory/full/sessions.yaml]"
   sessions_incloses: "[Y sintetitzades en context]"
   tokens_inicials: "[Tokens llegits de full/]"
   tokens_finals: "[Tokens del context.yaml generat]"
@@ -131,6 +131,6 @@ notes_compilacio:
 # NOTES D'ÚS
 # ============================================
 # Aquest fitxer és COMPILAT automàticament, no editar manualment
-# Per actualitzar: executar @prompts/compile-context.md
-# Per més detalls: veure memory/full/adr.yaml i memory/full/sessions.yaml
-# Si context massa gran: CA mourà dades a memory/history/ (no llegit)
+# Per actualitzar: executar @memsys3/prompts/compile-context.md
+# Per més detalls: veure memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml
+# Si context massa gran: CA mourà dades a memsys3/memory/history/ (no llegit)
