@@ -2,27 +2,27 @@
 
 rol: Context Agent
 descripcio: Agent especialitzat en compilar context complet del projecte en un fitxer compacte optimitzat per DevAI
-objectiu: Generar memory/context.yaml amb màxim 2500-3000 tokens mantenint informació crítica
+objectiu: Generar memsys3/memory/context.yaml amb màxim 2500-3000 tokens mantenint informació crítica
 
 # ============================================
 # INPUTS - QUÈ LLEGIR
 # ============================================
 inputs:
   obligatoris:
-    - path: memory/project-status.yaml
+    - path: memsys3/memory/project-status.yaml
       descripcio: Estat actual del projecte amb features, stack, URLs
       accio: Llegir complet i extreure info clau
 
-    - path: memory/full/adr.yaml
+    - path: memsys3/memory/full/adr.yaml
       descripcio: Totes les Architecture Decision Records històriques
       accio: Filtrar segons criteris i seleccionar les més rellevants
 
-    - path: memory/full/sessions.md
+    - path: memsys3/memory/full/sessions.yaml
       descripcio: Històric complet de sessions de treball
       accio: Extreure i sintetitzar última sessió
 
   opcionals:
-    - path: memory/templates/
+    - path: memsys3/memory/templates/
       descripcio: Templates per referència d'estructura
       accio: Usar context-template.yaml com a base per output
 
@@ -30,10 +30,10 @@ inputs:
 # OUTPUT - QUÈ GENERAR
 # ============================================
 output:
-  path: memory/context.yaml
+  path: memsys3/memory/context.yaml
   format: YAML
   max_tokens: 3000
-  base_template: memory/templates/context-template.yaml
+  base_template: memsys3/memory/templates/context-template.yaml
   estructura:
     - metadata
     - project
@@ -98,10 +98,10 @@ limits:
 # ============================================
 instruccions:
   pas_1_llegir:
-    - Carrega memory/project-status.yaml complet
-    - Carrega memory/full/adr.yaml complet
-    - Carrega memory/full/sessions.md complet
-    - Carrega memory/templates/context-template.yaml per estructura
+    - Carrega memsys3/memory/project-status.yaml complet
+    - Carrega memsys3/memory/full/adr.yaml complet
+    - Carrega memsys3/memory/full/sessions.yaml complet
+    - Carrega memsys3/memory/templates/context-template.yaml per estructura
 
   pas_2_extreure:
     project:
@@ -142,7 +142,7 @@ instruccions:
       - "No usar base de dades en MVP"
 
   pas_4_sintetitzar_sessio:
-    - Agafar última sessió de full/sessions.md
+    - Agafar última sessió de full/sessions.yaml
     - Extreure:
         data: copiar literal
         durada: copiar literal
@@ -165,7 +165,7 @@ instruccions:
     - Copiar literal: prioritat, tasca, detall
 
   pas_7_generar_output:
-    - Usar memory/templates/context-template.yaml com a base
+    - Usar memsys3/memory/templates/context-template.yaml com a base
     - Omplir amb dades extretes i filtrades dels passos anteriors
     - Afegir metadata:
         compilat_per: "Context Agent"
@@ -184,7 +184,7 @@ instruccions:
     - Objectiu: 2500-3000 tokens
 
   pas_9_escriure:
-    - Escriure a memory/context.yaml
+    - Escriure a memsys3/memory/context.yaml
     - NO modificar cap altre fitxer
     - NO esborrar res de full/
 
@@ -248,7 +248,7 @@ exemples:
 # INVOCACIÓ
 # ============================================
 com_executar:
-  via_prompt: "@prompts/compile-context.md"
+  via_prompt: "@memsys3/prompts/compile-context.md"
   via_slash: "/compile-context"
   manual: "Carrega aquest fitxer i segueix les instruccions pas a pas"
 

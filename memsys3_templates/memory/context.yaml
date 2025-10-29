@@ -1,6 +1,6 @@
 # Context Compilat per Development Agents
 # Aquest fitxer és generat pel Context Agent (CA)
-# Carrega'l amb @memory/context.yaml per tenir context complet del projecte
+# Carrega'l amb @memsys3/memory/context.yaml per tenir context complet del projecte
 
 metadata:
   compilat_per: "Context Agent"
@@ -121,9 +121,9 @@ pendents:
 # Informació sobre el procés de compilació
 # ============================================
 notes_compilacio:
-  adrs_totals: "Total d'ADRs a memory/full/adr.yaml"
+  adrs_totals: "Total d'ADRs a memsys3/memory/full/adr.yaml"
   adrs_incloses: "ADRs seleccionades per aquest context"
-  sessions_totals: "Total de sessions a memory/full/sessions.yaml"
+  sessions_totals: "Total de sessions a memsys3/memory/full/sessions.yaml"
   sessions_incloses: "Sessions sintetitzades en aquest context"
   criteris_filtratge: "Criteris usats: impacte global, rellevància actual, informació no òbvia"
   linies_totals: "~X línies (màx 2000)"
@@ -133,5 +133,5 @@ notes_compilacio:
 # NOTES D'ÚS
 # ============================================
 # Aquest fitxer és COMPILAT, no editar manualment
-# Per actualitzar: executar @prompts/compile-context.md
-# Per més detalls: veure memory/full/adr.yaml i memory/full/sessions.yaml
+# Per actualitzar: executar @memsys3/prompts/compile-context.md
+# Per més detalls: veure memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml
