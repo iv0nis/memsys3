@@ -2,6 +2,303 @@
 # Històric de sessions de desenvolupament de memsys3
 
 sessions:
+  - id: "2025-10-31-implementacion-adr009"
+    titol: "Implementación ADR-009 y Corrección de Inconsistencias"
+    data: "2025-10-31"
+    durada: "~2h"
+    participants: ["Claude (Development Agent)", "User (ivonis)"]
+    objectiu: "Implementar ADR-009 completamente (gotchas en sessions.yaml), corregir todas las inconsistencias detectadas (rutas, referencias obsoletas), y alinear 100% templates con instancia dog-fooding"
+
+    features_implementades:
+      - nom: "Campo gotchas en sessions-template.yaml"
+        descripcio: "Añadido campo gotchas con estructura: tipus, problema, solucio, criticitat (alta|mitjana|baixa). Incluye ejemplos de gotchas buenos vs malos"
+
+      - nom: "Eliminación gotchas_i_issues de project-status-template.yaml"
+        descripcio: "Removida sección gotchas_i_issues (-17 líneas) según ADR-009. Gotchas ahora viven en sessions.yaml"
+
+      - nom: "Actualización context-agent.yaml"
+        descripcio: "Modificado pas_5_filtrar_gotchas para leer de full/sessions.yaml, ordenar por criticitat+recencia, y extraer top 5 más críticos"
+
+      - nom: "Actualización endSession.md"
+        descripcio: "Añadidas instrucciones sobre documentar gotchas en sessions con criticitat. Context-Agent extraerá top 5 de TODAS las sessions"
+
+      - nom: "Corrección deploy.md"
+        descripcio: "Eliminada referencia obsoleta gotchas_i_issues: {} del template de project-status.yaml (CRÍTICO - bloqueaba deployment limpio)"
+
+      - nom: "Corrección rutas sin prefijo memsys3/"
+        descripcio: "Actualizados 5 archivos: README.md, UPDATE.md, 2x viz/README.md, context-template.yaml - todos usan @memsys3/prompts/ ahora"
+
+      - nom: "Estandarización notación rutas"
+        descripcio: "Corregidas inconsistencias 'memsys3/' vs '@memsys3/' en compile-context.md y deploy.md. Notación estándar: @memsys3/"
+
+      - nom: "Deployment templates en dog-fooding"
+        descripcio: "Copiados todos los templates actualizados a memsys3/ para validación mediante dog-fooding"
+
+    problemes_resolts:
+      - problema: "deploy.md generaba project-status.yaml con campo obsoleto gotchas_i_issues"
+        solucio: "Eliminado gotchas_i_issues: {} de ambos deploy.md (template + instancia). Deployment ahora genera archivos limpios alineados con ADR-009"
+
+      - problema: "Ejemplos en documentación usaban @prompts/ sin prefijo memsys3/"
+        solucio: "Actualizados 5 archivos para usar @memsys3/prompts/ consistentemente"
+
+      - problema: "Inconsistencia notación: algunos archivos usaban 'memsys3/' otros '@memsys3/'"
+        solucio: "Estandarizado a @memsys3/ en todos los archivos (compile-context.md, deploy.md)"
+
+    decisions_preses:
+      - decisio: "Usar validación exhaustiva mediante agente Explore"
+        justificacio: "Para detectar todas las inconsistencias (rutas, referencias obsoletas, bugs) antes de deployment real. Encontró 12 tipos de inconsistencias agrupadas en 4 categorías"
+        adr_relacionada: null
+
+      - decisio: "Estándar de notación: @memsys3/ siempre"
+        justificacio: "Notación estándar de Claude Code, más conciso, facilita búsquedas con grep, mejora consistencia"
+        adr_relacionada: null
+
+      - decisio: "Corregir inconsistencias MEDIA/BAJA además de CRÍTICAS"
+        justificacio: "Aprovechar sesión para dejar sistema 100% limpio y consistente, evitar deuda técnica"
+        adr_relacionada: null
+
+    gotchas:
+      - tipus: "warning"
+        problema: "deploy.md puede propagar campos obsoletos si no se actualiza con cada ADR"
+        solucio: "Revisar deploy.md cuando se creen ADRs que modifiquen estructura de templates"
+        criticitat: "alta"
+
+    proxims_passos:
+      - "Probar deployment completo en proyecto UOC (Ciencia de Datos) - Prioridad 2"
+      - "Migrar repos: memsys3_dev (privado) vs memsys3 (público) - Prioridad 3"
+      - "Actualizar deploy.md con nuevo workflow (clone temporal, briefing, borrar) - Prioridad 4"
+      - "Validar rotación automática en proyecto real - Prioridad 5"
+      - "Validar Plan Contingencia (>150K tokens) - Prioridad 6"
+
+    notes_addicionals: |
+      Sesión muy productiva: implementación completa de ADR-009 + corrección exhaustiva de inconsistencias.
+
+      El agente Explore encontró 12 tipos de inconsistencias en 4 categorías:
+      - CRÍTICA: deploy.md con gotchas_i_issues obsoleto
+      - MEDIA: Rutas sin prefijo memsys3/ en 5 ubicaciones
+      - BAJA: Notación inconsistente 'memsys3/' vs '@memsys3/'
+      - INFORMATIVA: Idioma mezclado (por diseño, correcto)
+
+      Total: 9 archivos corregidos con inconsistencias, 21 archivos modificados en total.
+      Sistema ahora 100% alineado con ADR-009 y sin inconsistencias detectables.
+
+  - id: "2025-10-31-validacion-deployment"
+    titol: "Validación de Deployment y Filosofía de Templates"
+    data: "2025-10-31"
+    durada: "~3h"
+    participants: ["Claude (Development Agent)", "User (ivonis)"]
+    objectiu: "Validar protocolo de deployment en proyecto real, resolver confusiones sobre templates/ y gotchas, documentar filosofía completa del sistema"
+
+    features_implementades:
+      - nom: "Análisis completo de deployment"
+        descripcio: |
+          - Revisado proyecto destino: "Introducción a la Ciencia de Datos" (UOC)
+          - Identificado proto-memsys3 existente (prompts/, newSession.md básico)
+          - Validado que deployment debe ser desde cero (no actualización)
+          - Análisis de estructura ms3t: qué copiar, qué rellenar, qué conservar
+
+      - nom: "Rediseño conceptual del deployment"
+        descripcio: |
+          - Propuesta de separación repos: memsys3_dev (privado) vs memsys3 (público)
+          - Protocolo actualizado: clone como memsys3_temp, copiar, briefing, borrar temp
+          - Validación de que ms3t = estructura EXACTA del producto final
+          - Clarificación: templates/ son guías permanentes, NO se borran post-deployment
+
+      - nom: "Resolución de confusión templates/"
+        descripcio: |
+          - Análisis detallado de memory/templates/ (adr, sessions, project-status, context)
+          - Descubierto que contienen: estructura, instrucciones, ejemplos buenas prácticas
+          - Confirmado que Main-Agent consulta templates/ durante endSession
+          - Decisión: templates/ permanecen como documentación activa (~15KB)
+
+      - nom: "Reubicación de gotchas"
+        descripcio: |
+          - Identificado que gotchas en project-status.yaml no tiene sentido conceptual
+          - Decisión: gotchas se documentan en sessions.yaml (contextualizados)
+          - Context-Agent extrae de TODAS las sessions y selecciona top 5 críticos
+          - Criterios: criticitat + recència + impacte
+
+      - nom: "ADR-009 creada"
+        descripcio: |
+          - Título: "Templates com a documentació activa permanent + gotchas en sessions"
+          - Documenta: concepto ms3t, templates/ permanentes, gotchas en sessions
+          - Workflow de deployment completo con clone temporal
+          - Alternativas consideradas y descartadas
+          - 125 líneas, área: arquitectura
+
+      - nom: "Actualización de docs/DEVELOPMENT.md"
+        descripcio: |
+          - Nueva sección completa: "Filosofía: Estructura y Deployment"
+          - Explicación de ms3t como estructura exacta del producto
+          - Qué es memory/templates/ y por qué es permanente
+          - Workflow de deployment paso a paso
+          - Dónde se documentan gotchas y justificación
+          - Estructura repos dev vs público (futuro)
+          - +140 líneas de documentación
+
+    problemes_resolts:
+      - problema: "Confusión sobre templates dentro de templates (memsys3_templates/memory/templates/)"
+        solucio: |
+          Clarificado que ms3t/ = estructura del producto final completa.
+          memory/templates/ son GUÍAS permanentes que Main-Agent consulta.
+          NO son templates de templates, son documentación activa.
+
+      - problema: "¿Se borran templates/ después del deployment?"
+        solucio: |
+          NO. Análisis reveló que contienen info crítica: estructura, instrucciones,
+          ejemplos de buenas prácticas. Main-Agent necesita consultarlos durante endSession.
+
+      - problema: "Gotchas descontextualizados en project-status.yaml"
+        solucio: |
+          Movidos conceptualmente a sessions.yaml donde surgen temporalmente.
+          Context-Agent los extrae y prioriza. Mantiene project-status limpio.
+
+      - problema: "Workflow de deployment no contemplaba clonación temporal"
+        solucio: |
+          Actualizado protocolo: git clone como memsys3_temp, copiar a memsys3/,
+          briefing con templates/, borrar memsys3_temp/. Evita conflictos de nombres.
+
+    decisions_preses:
+      - decisio: "Templates como documentación activa permanente"
+        justificacio: "Contienen info que Main-Agent necesita durante todo el proyecto"
+        adr_relacionada: "009"
+
+      - decisio: "Gotchas en sessions.yaml (no en project-status)"
+        justificacio: "Gotchas surgen durante sesiones, deben estar contextualizados"
+        adr_relacionada: "009"
+
+      - decisio: "ms3t = estructura exacta del producto (TODO se copia)"
+        justificacio: "Elimina ambigüedad sobre qué copiar, qué borrar, qué rellenar"
+        adr_relacionada: "009"
+
+      - decisio: "Repos separados: memsys3_dev (privado) vs memsys3 (público)"
+        justificacio: "Desarrollo privado con dog-fooding, distribución pública limpia"
+        adr_relacionada: "009"
+
+    tecnologies_afegides: []
+
+    deployments: []
+
+    proxims_passos:
+      - "Actualizar sessions-template.yaml para añadir campo gotchas con criticitat"
+      - "Eliminar gotchas_i_issues de project-status-template.yaml"
+      - "Ajustar context-agent.yaml para leer gotchas desde sessions (no project-status)"
+      - "Actualizar endSession.md para mencionar documentación de gotchas en sessions"
+      - "Probar deployment completo en proyecto Ciencia de Datos UOC"
+      - "Migrar repo actual a memsys3_dev y crear memsys3 público"
+      - "Actualizar deploy.md con nuevo workflow (clone temporal, briefing, borrar)"
+
+    notes_addicionals: |
+      Sesión crítica de validación conceptual. Se descubrieron y resolvieron confusiones
+      fundamentales sobre la filosofía de templates y deployment que existían desde el inicio.
+
+      La clave fue entender que memory/templates/ NO son "templates del template", sino
+      GUÍAS PERMANENTES que documentan cómo usar el sistema. Esta distinción era confusa
+      por el nombre "templates" dentro de "memsys3_templates".
+
+      Consideración futura: Renombrar memory/templates/ a memory/guides/ para más claridad,
+      pero se mantiene templates/ por ahora para no romper nada.
+
+      El análisis del proyecto de Ciencia de Datos reveló que deployment real requiere
+      atención a proto-memsys3 existentes y decisión de qué conservar vs reemplazar.
+
+  - id: "2025-10-29-limpieza"
+    titol: "Limpieza Completa del Sistema de Rutas"
+    data: "2025-10-29"
+    durada: "~2h"
+    participants: ["Claude (Development Agent)", "User (ivonis)"]
+    objectiu: "Corregir y verificar todas las rutas del sistema para usar prefijo memsys3/ consistentemente, eliminar residuos y validar compilación"
+
+    features_implementades:
+      - nom: "Corrección sistemática de rutas"
+        descripcio: |
+          - Actualizado context-agent.yaml (memsys3/ y memsys3_templates/)
+          - Actualizado memory/README.md con todas las rutas memsys3/
+          - Actualizado memory/context.yaml y context-template.yaml
+          - Actualizado deploy.md: copia desde memsys3_templates/ hacia memsys3/
+          - Actualizado mind.md: cd memsys3/memory/viz
+          - Corregidas referencias @memory/ → @memsys3/memory/
+          - Corregidas referencias @prompts/ → @memsys3/prompts/
+
+      - nom: "Eliminación de residuos"
+        descripcio: |
+          - Eliminado memsys3_templates/memsys3/ (30 archivos residuales)
+          - Eliminado memsys3_templates/memsys3_dev/ (20 archivos residuales)
+          - Resultado: -6543 líneas de código duplicado
+          - Estructura limpia: memsys3_templates/{agents,memory,prompts}
+
+      - nom: "Validación completa"
+        descripcio: |
+          - Verificada lectura exitosa de archivos con rutas memsys3/
+          - Compilación de context.yaml exitosa con Context Agent
+          - Resultado: 556 líneas de 2000 máx, versión 1.2
+          - 8 ADRs incluidas, 2 sessions, NO requirió Plan Contingencia
+
+    problemes_resolts:
+      - problema: "Confusión sobre rutas: memory/ vs memsys3/memory/"
+        solucio: |
+          Sistemáticamente actualizado TODO el sistema para usar memsys3/ como prefijo
+          Esto garantiza portabilidad cuando se despliega en otros proyectos
+
+      - problema: "Residuos de iteraciones anteriores en memsys3_templates/"
+        solucio: |
+          Identificados y eliminados subdirectorios memsys3/ y memsys3_dev/
+          Estructura correcta: templates agnósticos en raíz sin duplicados
+
+      - problema: "Referencias inconsistentes @memory/, @prompts/, @agents/"
+        solucio: |
+          Auditoría completa con grep, corrección sistemática
+          Verificación final: <5 referencias restantes (históricas en ADRs)
+
+    decisions_preses:
+      - decisio: "NO copiar archivos entre memsys3/ y memsys3_templates/"
+        justificacio: "Templates deben ser agnósticos, memsys3/ es instancia específica dog-fooding"
+        adr_relacionada: null
+
+      - decisio: "Eliminar subdirectorios residuales sin preguntar"
+        justificacio: "Claramente duplicados con rutas antiguas incorrectas"
+        adr_relacionada: null
+
+    archivos_criticos_modificados:
+      - ruta: "memsys3/agents/context-agent.yaml"
+        cambio: "Rutas con memsys3/, @memsys3/prompts/"
+
+      - ruta: "memsys3_templates/agents/context-agent.yaml"
+        cambio: "Rutas con memsys3/ en template agnóstico"
+
+      - ruta: "memsys3/prompts/deploy.md"
+        cambio: "Copia DESDE memsys3_templates/ HACIA memsys3/"
+
+      - ruta: "memsys3_templates/memory/*.yaml"
+        cambio: "Todas referencias con prefijo memsys3/"
+
+    proxims_passos:
+      - "Documentar esta sesión en sessions.yaml (este paso)"
+      - "Actualizar project-status.yaml con última feature"
+      - "Considerar nueva ADR si sistema de rutas lo amerita"
+      - "Testing de deployment en proyecto nuevo para validar rutas"
+
+    notes_addicionals: |
+      Esta sesión fue crítica para la limpieza y consistencia del sistema.
+
+      Logros principales:
+      1. Sistema de rutas 100% consistente con memsys3/
+      2. Eliminación de 6543 líneas de código duplicado
+      3. Estructura de memsys3_templates/ limpia y clara
+      4. Validación exitosa de compilación con Context Agent
+
+      Aprendizajes:
+      - Templates en memsys3_templates/ deben ser agnósticos
+      - NO copiar entre memsys3/ (dog-fooding) y memsys3_templates/ (producto)
+      - El prefijo memsys3/ es CRÍTICO para portabilidad
+
+      Deployment:
+      - 1 commit: refactor: limpieza completa del sistema de rutas
+      - Tag v0.3.0 creado y pusheado a GitHub
+      - 50 archivos modificados: 8 actualizados, 42 eliminados
+
+      Tokens aproximados: ~105K
+
   - id: "2025-10-29"
     titol: "Alineación Completa del Sistema - Meta-niveles y Rutas"
     data: "2025-10-29"

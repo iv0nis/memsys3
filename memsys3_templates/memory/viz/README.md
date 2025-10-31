@@ -54,7 +54,7 @@ El servidor usa només llibreries estàndard de Python, no cal instal·lar res.
 - Comprova la consola del navegador per errors
 
 **"context.yaml not found"?**
-Normal si encara no has executat el Context Agent. Executa `@prompts/compile-context.md` primer.
+Normal si encara no has executat el Context Agent. Executa `@memsys3/prompts/compile-context.md` primer.
 
 ## 📁 Fitxers
 

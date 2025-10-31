@@ -33,6 +33,7 @@ Identifica:
 - **Decisions Preses**: Decisions tècniques o arquitectòniques (importants → ADR)
 - **Tech afegida/eliminada**: Dependencies, tools i per què
 - **Deployments**: URLs, serveis desplegats
+- **Gotchas**: Errors crítics, warnings, traps trobats durant la sessió (amb criticitat)
 - **Pròxims Passos**: Què queda pendent
 
 ### 3. Comprovar Rotacions Automàtiques
@@ -63,6 +64,11 @@ wc -l memsys3/memory/full/adr.yaml
 - ID i data: YYYY-MM-DD d'avui
 - Títol descriptiu i concís
 - Sigues complet però evita detalls massa granulars
+- **IMPORTANT - Gotchas**: Si has trobat errors crítics, warnings o traps:
+  - Documentar-los al camp `gotchas:` de la sessió
+  - Incloure: `tipus`, `problema`, `solucio`, `criticitat` (alta|mitjana|baixa)
+  - Només gotchas rellevants (errors que trenquen, contra-intuitius, recurrents)
+  - Context-Agent extraurà els top 5 més crítics de TOTES les sessions
 
 **B. Crear ADRs si cal (a `memsys3/memory/full/adr.yaml`):**
 
