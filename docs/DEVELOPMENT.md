@@ -268,7 +268,7 @@ Archivos que contienen muchas referencias a rutas y deben revisarse siempre:
    - Usa templates: `memsys3/memory/templates/`
 
 5. **memsys3_templates/prompts/mind.md**
-   - Comando: `cd memsys3/memory/viz && python3 serve.py`
+   - Comando: `cd memsys3/viz && python3 serve.py`
 
 ## Main-Agent vs Context-Agent
 

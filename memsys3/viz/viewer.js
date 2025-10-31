@@ -315,7 +315,7 @@ function renderStats() {
   const notes = contextData.notes_compilacio;
 
   document.getElementById('statADRsTotal').textContent = notes.adrs_totals || '-';
-  document.getElementById('statADRsFiltered').textContent = notes.adrs_filtrades || '-';
+  document.getElementById('statADRsFiltered').textContent = notes.adrs_incloses || '-';
   document.getElementById('statSessionsTotal').textContent = notes.sessions_totals || '-';
 
   if (contextData.metadata) {
