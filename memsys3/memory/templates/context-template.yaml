@@ -131,6 +131,6 @@ notes_compilacio:
 # NOTES D'ÚS
 # ============================================
 # Aquest fitxer és COMPILAT automàticament, no editar manualment
-# Per actualitzar: executar @prompts/compile-context.md
+# Per actualitzar: executar @memsys3/prompts/compile-context.md
 # Per més detalls: veure memory/full/adr.yaml i memory/full/sessions.yaml
 # Si context massa gran: CA mourà dades a memory/history/ (no llegit)

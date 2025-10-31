@@ -44,6 +44,16 @@ sessions:
       - servei: "[Servei 2]"
         url: "https://..."
 
+    gotchas:
+      - tipus: "[warning|error|gotcha]"
+        problema: "[Descripció del problema o trap trobat]"
+        solucio: "[Com resoldre-ho o evitar-ho]"
+        criticitat: "[alta|mitjana|baixa]"
+      - tipus: "[TIPUS]"
+        problema: "[PROBLEMA]"
+        solucio: "[SOLUCIÓ]"
+        criticitat: "[CRITICITAT]"
+
     proxims_passos:
       - "[Tasca pendent 1]"
       - "[Tasca pendent 2]"
@@ -91,3 +101,24 @@ exemples:
     features_implementades:
       - nom: "Millorat sistema de processament"
         descripcio: "Fixats bugs"
+
+  gotchas_bons: |
+    # AIXÍ SÍ - Gotchas crítics i útils:
+    gotchas:
+      - tipus: "error"
+        problema: "useAuth() hook només funciona dins de AuthProvider"
+        solucio: "Wrap component principal amb <AuthProvider>"
+        criticitat: "alta"
+
+      - tipus: "warning"
+        problema: "Vercel activa Deployment Protection per defecte"
+        solucio: "Desactivar a Settings > Deployment Protection"
+        criticitat: "mitjana"
+
+  gotchas_dolents: |
+    # EVITAR això - No són gotchas crítics:
+    gotchas:
+      - tipus: "gotcha"
+        problema: "El botó no té focus state"
+        solucio: "Afegir outline al CSS"
+        criticitat: "baixa"  # Massa trivial

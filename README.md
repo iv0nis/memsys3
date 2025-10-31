@@ -56,7 +56,7 @@ cd /path/to/your/project/memsys3
 # Edita agents/main-agent.yaml según tu workflow
 
 # 3. Compila el contexto inicial
-# Ejecuta con tu AI agent: @prompts/compile-context.md
+# Ejecuta con tu AI agent: @memsys3/prompts/compile-context.md
 
 # 4. Visualiza
 cd memory
