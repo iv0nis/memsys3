@@ -121,7 +121,6 @@ pendents_prioritaris:
   # Altrament deixa buit
 
 decisions_clau: {}
-gotchas_i_issues: {}
 convencions_codi: {}
 historic_sessions: []
 ```
@@ -132,9 +131,9 @@ Edita `memsys3/prompts/newSession.md` amb la informació del projecte:
 
 ```markdown
 - En aquest projecte treballarem en [DESCRIPCIO_DEL_PROJECTE].
-- Actúa segons les instruccions a 'memsys3/agents/main-agent.yaml'
+- Actúa segons les instruccions a '@memsys3/agents/main-agent.yaml'
 - [COMPORTAMENT_ESPECIFIC_SI_USER_HA_DEMANAT]
-- Llegeix memsys3/memory/project-status.yaml i memsys3/memory/context.yaml
+- Llegeix @memsys3/memory/project-status.yaml i @memsys3/memory/context.yaml
 ```
 
 ### 6. Personalitzar agents/main-agent.yaml (opcional)

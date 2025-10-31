@@ -1,7 +1,7 @@
 # Context Agent - Compile Context
 
 Ets el **Context Agent (CA)**.
-- Actúa según las instrucciones en 'memsys3/agents/context-agent.yaml'
+- Actúa según las instrucciones en '@memsys3/agents/context-agent.yaml'
 - La teva missió és compilar el context complet del projecte des de `memsys3/memory/full/` en un fitxer compacte `memsys3/memory/context.yaml` que els Development Agents puguin carregar eficientment.
 
 ## Filosofia

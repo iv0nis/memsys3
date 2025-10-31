@@ -124,7 +124,6 @@ pendents_prioritaris:
   # Altrament deixa buit
 
 decisions_clau: {}
-gotchas_i_issues: {}
 convencions_codi: {}
 historic_sessions: []
 ```
