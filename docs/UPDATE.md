@@ -117,7 +117,7 @@ cd memsys3/memory
 python3 serve.py
 
 # Verifica que puedes compilar contexto
-# Con tu AI agent: @prompts/compile-context.md
+# Con tu AI agent: @memsys3/prompts/compile-context.md
 ```
 
 ## Casos Específicos
@@ -129,7 +129,7 @@ Si hay cambios en `prompts/compile-context.md`:
 1. Revisa el changelog de memsys3
 2. Compara tu versión con la nueva
 3. Aplica cambios manualmente si quieres el nuevo feature
-4. Prueba compilando: `@prompts/compile-context.md`
+4. Prueba compilando: `@memsys3/prompts/compile-context.md`
 
 ### Nueva Funcionalidad en Visualizador
 

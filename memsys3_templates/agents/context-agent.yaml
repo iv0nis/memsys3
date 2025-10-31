@@ -77,13 +77,18 @@ limits:
   gotchas:
     maxim: 5
     caracters_per_gotcha: 150
+    origen: full/sessions.yaml (camp gotchas de cada sessió)
     criteris:
-      - Només errors que trenquen el projecte
+      - Criticitat alta prioritària
+      - Errors que trenquen el projecte
       - Contra-intuitius
       - Es repeteixen sovint
+      - Recencia (sessions més recents pesen més)
     format:
+      tipus: 1 línia
       problema: 2 línies màxim
       solucio: 1 línia
+      criticitat: alta|mitjana|baixa
 
   pendents:
     maxim: 5
@@ -155,9 +160,11 @@ instruccions:
         mantenir: features, problemes crítics, decisions arquitectòniques
 
   pas_5_filtrar_gotchas:
-    - Agafar de project-status.yaml → gotchas_i_issues
+    - Extreure gotchas de TOTES les sessions a full/sessions.yaml
+    - Agregar tots els gotchas trobats en sessions
+    - Ordenar per criticitat (alta > mitjana > baixa) i recencia
     - Seleccionar top 5 més crítics
-    - Per cada gotcha: id, problema (breu), solucio (breu)
+    - Per cada gotcha: tipus, problema (breu), solucio (breu), criticitat
     - Màxim 150 caràcters per gotcha
 
   pas_6_copiar_pendents:

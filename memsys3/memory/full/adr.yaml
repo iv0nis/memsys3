@@ -416,3 +416,128 @@ adrs:
         - "Requereix AI agent per executar"
         - "No funciona sense agent"
       impacte: "Com els usuaris despleguen memsys3 en els seus projectes"
+
+  - id: "009"
+    titol: "Templates com a documentació activa permanent + gotchas en sessions"
+    data: "2025-10-31"
+    estat: accepted
+    area: arquitectura
+
+    context: |
+      Durant la validació del deployment va sorgir confusió sobre tres aspectes:
+
+      1. **Templates dins de templates**: memsys3_templates/ és una carpeta-template completa,
+         però dins té memory/templates/. Això genera la pregunta: què és template de què?
+
+      2. **Ús de templates/**: Inicialment es va pensar en borrar memory/templates/ després
+         del deployment, però en revisar el contingut es va descobrir que conté:
+         - Estructura exacta d'ADRs, sessions, project-status
+         - Instruccions d'ús (ordre cronològic, límits, etc.)
+         - Exemples de bona vs mala documentació
+         - Especificacions que endSession.md no detalla
+
+      3. **Ubicació de gotchas**: project-status-template.yaml inclou secció gotchas_i_issues,
+         però els gotchas surgen DURANT sessions de treball, no són característiques estàtiques
+         del projecte.
+
+    decisio: |
+      **1. Concepte de memsys3_templates/ (ms3t):**
+      - ms3t/ = Estructura EXACTA del producte final
+      - Tots els arxius es copien durant deployment (inclòs memory/templates/)
+      - memory/templates/ NO es borra després del deployment
+
+      **2. memory/templates/ = Guías permanents:**
+      - Main-Agent consulta templates/ durant endSession.md
+      - "Com estructuro aquesta sessió?" → sessions-template.yaml
+      - "Quins camps té una ADR?" → adr-template.yaml
+      - "Què puc actualitzar a project-status?" → project-status-template.yaml
+      - Templates són documentació ACTIVA, no només guies de deployment
+
+      **3. Gotchas documentats en sessions.yaml:**
+      - Main-Agent documenta gotchas en cada sessió on apareixen
+      - Structure en sessions.yaml:
+        ```yaml
+        sessions:
+          - id: "2025-10-31"
+            gotchas:
+              - tipus: "warning|gotcha|issue"
+                problema: "[DESCRIPCIÓ]"
+                solucio: "[COM RESOLDRE]"
+                criticitat: "alta|mitjana|baixa"
+        ```
+      - Context-Agent extreu gotchas de TOTES les sessions
+      - CA usa criteri intel·ligent per seleccionar top 5 més crítics
+      - Criteris: criticitat + recència + impacte
+      - project-status.yaml NO conté gotchas (només info general del projecte)
+
+      **4. Templates amb comentaris explicatius:**
+      - Camps amb [PLACEHOLDER] i comentaris inline
+      - Exemples de bones pràctiques
+      - deploy.md usa templates com a guia per fer briefing
+
+      **5. Workflow de deployment actualitzat:**
+      ```bash
+      # Usuari diu:
+      "Clona https://github.com/iv0nis/memsys3 com memsys3_temp
+       i executa memsys3_temp/memsys3/prompts/deploy.md"
+
+      # Flux:
+      1. git clone https://github.com/iv0nis/memsys3 memsys3_temp
+      2. cp -r memsys3_temp/memsys3/* ./memsys3/
+      3. Briefing usant templates/ com guia
+      4. Emplenar camps buits a project-status.yaml, main-agent.yaml
+      5. rm -rf memsys3_temp/
+
+      # Resultat: memsys3/ amb memory/templates/ inclòs (permanent)
+      ```
+
+    alternatives:
+      - nom: "Borrar templates/ després del deployment"
+        pros:
+          - Menys arxius al projecte desplegat (~15KB menys)
+          - Més net
+        contras:
+          - Main-Agent perd referència de com documentar
+          - endSession.md no té guia d'estructura
+          - Exemples de bones pràctiques es perden
+        per_que_descartada: "Templates són crítics per Main-Agent durant tot el projecte"
+
+      - nom: "Gotchas en project-status.yaml"
+        pros:
+          - Centralitzat en un sol lloc
+          - Fàcil de trobar
+        contras:
+          - Descontextualitzats (no se sap quan van aparèixer)
+          - project-status més inflat
+          - No té sentit conceptual (gotchas surgen durant sessions)
+        per_que_descartada: "Gotchas són esdeveniments de sessions, no característiques estàtiques"
+
+      - nom: "Crear fitxer gotchas.yaml separat"
+        pros:
+          - Dedicat només a gotchas
+        contras:
+          - Un fitxer més
+          - Descontextualitzats igualment
+          - CA hauria de llegir un fitxer extra
+        per_que_descartada: "Sessions ja documenten context temporal dels gotchas"
+
+    consequencies:
+      positives:
+        - "Deployment més simple: copiar tot, no borrar templates/"
+        - "Main-Agent sempre té referència de com documentar correctament"
+        - "Gotchas contextualitzats (quan van aparèixer, en quina sessió)"
+        - "CA té flexibilitat per prioritzar gotchas segons criteri"
+        - "project-status.yaml més net (només info general)"
+        - "Templates enriquits amb comentaris guien briefing de deployment"
+        - "~15KB extra en projecte (4 templates, acceptable)"
+      negatives:
+        - "memory/templates/ es manté però no es borra (pot semblar residual)"
+        - "Gotchas dispersos entre sessions (cal llegir totes per compilar)"
+        - "Templates/ com a nom pot generar confusió (són guies, no templates)"
+      impacte: "Com es desplega memsys3, com Main-Agent documenta sessions, on es guarden gotchas"
+
+    notes: |
+      Aquesta ADR resol confusions crítiques descobertes durant validació de deployment.
+
+      Consideració futura: Potser renombrar memory/templates/ a memory/guides/ per més
+      claredat conceptual, però es manté templates/ per no trencar res ara.

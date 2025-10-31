@@ -98,23 +98,6 @@ decisions_clau:
 
   # Afegeix més decisions importants aquí
 
-# Gotchas, warnings i coses a recordar
-# Documenta aquí els errors comuns, warnings importants, etc.
-gotchas_i_issues:
-  gotcha_exemple_1:  # ID del gotcha
-    tipus: "[gotcha|issue|warning]"
-    problema: "[DESCRIPCIÓ DEL PROBLEMA]"
-    solucio: "[COM RESOLDRE-HO]"  # Opcional
-    workaround: "[SOLUCIÓ TEMPORAL]"  # Opcional
-    notes: "[NOTES ADDICIONALS]"  # Opcional
-
-  gotcha_exemple_2:
-    tipus: "[TIPUS]"
-    problema: "[PROBLEMA]"
-    solucio: "[SOLUCIÓ]"
-
-  # Afegeix més gotchas aquí
-
 # Convencions de codi del projecte
 convencions_codi:
   idioma:

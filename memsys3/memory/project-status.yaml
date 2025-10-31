@@ -1,9 +1,9 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualitzacio: "2025-10-29"
-  actualitzat_per: "Claude (Session: Alineación Completa del Sistema)"
-  fase: "Development v1.1"
+  ultima_actualitzacio: "2025-10-31"
+  actualitzat_per: "Claude (Session: Implementación ADR-009 y Corrección de Inconsistencias)"
+  fase: "Development v1.3"
 
 visio_general:
   que_es: "Sistema de gestió de context per AI Development Agents"
@@ -11,9 +11,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v1.1"
-  ultima_feature: "Sistema de rutas unificado y separación de meta-niveles"
-  seguent_milestone: "Validar deployment en proyecto de prueba"
+  fase: "Development v1.3"
+  ultima_feature: "Implementación completa ADR-009 + corrección exhaustiva inconsistencias (rutas, referencias obsoletas)"
+  seguent_milestone: "Probar deployment real en proyecto UOC con sistema 100% alineado"
 
 features:
   context_agent:
@@ -58,24 +58,24 @@ urls:
 
 pendents_prioritaris:
   - prioritat: 1
-    tasca: "Compilar nuevo context.yaml con CA"
-    detall: "En instancia limpia, aplicar nuevas ADRs y session"
+    tasca: "Probar deployment completo en proyecto UOC"
+    detall: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar)"
 
   - prioritat: 2
-    tasca: "Validar deployment en proyecto de prueba"
-    detall: "Copiar memsys3_templates/ a proyecto test, verificar rutas"
+    tasca: "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
+    detall: "Separar desarrollo interno de distribución pública según decisión ADR-009"
 
   - prioritat: 3
-    tasca: "Testing sistema de actualización (UPDATE.md)"
-    detall: "Validar workflow de actualización en proyecto existente"
+    tasca: "Actualizar deploy.md con nuevo workflow"
+    detall: "Incorporar clonación temporal, uso de templates como guías, briefing estructurado"
 
   - prioritat: 4
     tasca: "Validar rotació automàtica en projecte real"
     detall: "Comprovar que funciona quan sessions.yaml supera 1800 línies"
 
   - prioritat: 5
-    tasca: "Posible: script de validación automática de rutas"
-    detall: "grep automático para detectar rutas sin prefijo memsys3/"
+    tasca: "Validar Pla Contingència (>150K tokens)"
+    detall: "Simular proyecto grande, verificar archivado a history/"
 
 decisions_clau:
   filosofia: "Criteri intel·ligent del CA, NO límits arbitraris"
@@ -84,8 +84,27 @@ decisions_clau:
   rutas: "Sistema unificado memsys3/ para portabilidad y claridad"
   documentacion: "Meta-niveles separados según audiencia"
   workflow: "Main-Agent NO compila, solo sugiere endSession"
+  templates: "memory/templates/ son guías permanentes, NO se borran post-deployment"
+  gotchas: "Se documentan en sessions.yaml (contextualizados), NO en project-status"
+  deployment: "Clone temporal memsys3_temp, copiar, briefing con templates, borrar temp"
+  notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-10-31"
+    durada: "~2h"
+    objectiu: "Implementación ADR-009 y corrección de inconsistencias"
+    highlights: "8 features implementadas, 3 problemas resueltos, corrección CRÍTICA deploy.md, 9 archivos corregidos, sistema 100% alineado ADR-009"
+
+  - data: "2025-10-31"
+    durada: "~3h"
+    objectiu: "Validación de deployment y filosofía de templates"
+    highlights: "ADR-009 (templates permanentes + gotchas en sessions), actualizado DEVELOPMENT.md (+140 líneas), clarificada filosofía ms3t"
+
+  - data: "2025-10-29"
+    durada: "~2h"
+    objectiu: "Limpieza completa del sistema de rutas"
+    highlights: "Corrección sistemática rutas memsys3/, eliminación 6543 líneas residuos, validación compilación exitosa, v0.3.0"
+
   - data: "2025-10-29"
     durada: "~3-4h"
     objectiu: "Alineación completa: sistema de rutas unificado y separación de meta-niveles"
