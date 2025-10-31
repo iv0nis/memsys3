@@ -2,7 +2,7 @@
 
 metadata:
   ultima_actualitzacio: "2025-10-31"
-  actualitzat_per: "Claude (Session: Implementación ADR-009 y Corrección de Inconsistencias)"
+  actualitzat_per: "Claude (Session: Preparación Deployment y Corrección 9 Bugs)"
   fase: "Development v1.3"
 
 visio_general:
@@ -12,8 +12,8 @@ visio_general:
 
 estat_actual:
   fase: "Development v1.3"
-  ultima_feature: "Implementación completa ADR-009 + corrección exhaustiva inconsistencias (rutas, referencias obsoletas)"
-  seguent_milestone: "Probar deployment real en proyecto UOC con sistema 100% alineado"
+  ultima_feature: "Sistema preparado para deployment: viz/ en raíz, history/ creado, deploy.md con ADR-009, 9 bugs críticos corregidos"
+  seguent_milestone: "Testing deployment real en proyecto UOC"
 
 features:
   context_agent:
@@ -90,6 +90,11 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-10-31"
+    durada: "~3h"
+    objectiu: "Preparación deployment y corrección 9 bugs críticos"
+    highlights: "viz/ a raíz, history/ creado, deploy.md reescrito con ADR-009, análisis exhaustivo 26 issues, resueltos 4 CRÍTICOS + 5 ALTOS, protección pérdida datos"
+
   - data: "2025-10-31"
     durada: "~2h"
     objectiu: "Implementación ADR-009 y corrección de inconsistencias"

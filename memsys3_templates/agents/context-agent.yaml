@@ -2,7 +2,7 @@
 
 rol: Context Agent
 descripcio: Agent especialitzat en compilar context complet del projecte en un fitxer compacte optimitzat per DevAI
-objectiu: Generar memsys3/memory/context.yaml amb màxim 2500-3000 tokens mantenint informació crítica
+objectiu: Generar memsys3/memory/context.yaml amb màxim 2000 línies (~2000-3000 tokens) mantenint informació crítica
 
 # ============================================
 # INPUTS - QUÈ LLEGIR
@@ -32,7 +32,7 @@ inputs:
 output:
   path: memsys3/memory/context.yaml
   format: YAML
-  max_tokens: 3000
+  max_linies: 2000
   base_template: memsys3/memory/templates/context-template.yaml
   estructura:
     - metadata
@@ -180,15 +180,15 @@ instruccions:
         versio_context: incrementar versió
     - Afegir notes_compilacio:
         adrs_totals: número total de full/adr.yaml
-        adrs_filtrades: número inclòs al context
+        adrs_incloses: número inclòs al context
         sessions_totals: número total sessions
         criteris_filtratge: breu explicació
 
   pas_8_validar:
-    - Comptar tokens aproximats (chars / 4)
-    - Si > 3000 tokens: reduir més
-    - Si < 2000 tokens: probablement massa agressiu
-    - Objectiu: 2500-3000 tokens
+    - Comptar línies totals de context.yaml generat
+    - Si > 2000 línies: reduir més (filtrar ADRs menys crítiques, sintetitzar més)
+    - Si < 1500 línies: probablement correcte, però verifica que no falta info crítica
+    - Objectiu: ~1800-2000 línies màxim
 
   pas_9_escriure:
     - Escriure a memsys3/memory/context.yaml

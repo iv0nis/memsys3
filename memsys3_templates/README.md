@@ -82,7 +82,7 @@ Para ver el dashboard visual:
 
 O manualmente:
 ```bash
-cd memsys3/memory/viz
+cd memsys3/viz
 python3 serve.py
 ```
 

@@ -24,7 +24,7 @@ cp -r memsys3/ /path/to/nou/projecte/
 # Executa: @memsys3/prompts/compile-context.md
 
 # 5. Visualitza la "ment" dels agents
-cd memsys3/memory/viz
+cd memsys3/viz
 python serve.py
 ```
 
@@ -275,7 +275,7 @@ Interfície visual per veure la "ment" dels agents.
 @memsys3/prompts/mind.md
 
 # Opció 3: Manual
-cd memsys3/memory/viz
+cd memsys3/viz
 python serve.py
 ```
 
@@ -287,7 +287,7 @@ python serve.py
 
 **Ús:** Ideal per fer revisions visuals del context, detectar gaps, o presentar l'estat del projecte.
 
-**Documentació completa:** Veure `memsys3/memory/viz/README.md`
+**Documentació completa:** Veure `memsys3/viz/README.md`
 
 ---
 
