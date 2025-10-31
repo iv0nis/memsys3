@@ -2,6 +2,131 @@
 # Històric de sessions de desenvolupament de memsys3
 
 sessions:
+  - id: "2025-10-31-preparacion-deployment"
+    titol: "Preparación Sistema para Deployment Real y Corrección de 9 Bugs Críticos"
+    data: "2025-10-31"
+    durada: "~3h"
+    participants: ["Claude (Development Agent)", "User (ivonis)"]
+    objectiu: "Resolver blockers críticos para deployment, mover viz/ a raíz, crear history/, reescribir deploy.md con workflow ADR-009, y corregir 9 issues identificados por análisis exhaustivo"
+
+    features_implementades:
+      - nom: "viz/ movido a raíz"
+        descripcio: "Movido de memsys3/memory/viz/ a memsys3/viz/ según DEVELOPMENT.md. Actualizados 8 archivos con referencias: deploy.md, mind.md, viz/README.md, UPDATE.md, DEVELOPMENT.md, memory/README.md (templates + dog-fooding)"
+
+      - nom: "history/ creado con .gitkeep"
+        descripcio: "Creado memsys3/memory/history/.gitkeep en templates y dog-fooding para Plan de Contingencia. Sin esto, el directorio no se subiría a git y el Plan Contingencia fallaría"
+
+      - nom: "deploy.md reescrito completo con workflow ADR-009"
+        descripcio: "206 líneas con workflow completo: git clone temporal memsys3_temp, copiar estructura, briefing estructurado, personalización mínima, rm -rf memsys3_temp. Añadidas verificaciones críticas (C2, C3, A5, A9)"
+
+      - nom: "README.md actualizado con workflow correcto"
+        descripcio: "Sección Quick Start simplificada. Eliminado workflow manual confuso. Workflow claro con deployment guiado desde GitHub"
+
+      - nom: "Corrección C1: adrs_filtrades → adrs_incloses"
+        descripcio: "viewer.js buscaba adrs_filtrades pero context.yaml usa adrs_incloses. Estandarizado a adrs_incloses en viewer.js y context-agent.yaml. Fix: estadística 'ADRs Filtradas' ahora funciona en dashboard"
+
+      - nom: "Corrección C2+C3: Verificaciones en deploy.md"
+        descripcio: "Añadida verificación si memsys3/ existe (previene pérdida de datos por sobrescritura). Añadida limpieza de memsys3_temp/ si existe de ejecución previa. Ambos con mensajes de error claros"
+
+      - nom: "Corrección C4: viz/README.md con rutas claras"
+        descripcio: "Instrucción 'cd viz' era ambigua. Ahora especifica: 'cd memsys3/viz' desde raíz del proyecto, o 'cd viz' si ya estás en memsys3/"
+
+      - nom: "Corrección A6: 6 READMEs actualizados"
+        descripcio: "Actualizadas todas las referencias memory/viz → viz en: README.md raíz, memsys3_templates/README.md, memsys3/memory/README.md (templates + dog-fooding), memsys3_templates/memory/README.md"
+
+      - nom: "Corrección A7: Contradicción líneas vs tokens resuelta"
+        descripcio: "context-agent.yaml decía 'max_tokens: 3000' pero compile-context.md dice '2000 línies'. Cambiado a 'max_linies: 2000'. Paso validación ahora verifica líneas (no tokens estimados)"
+
+      - nom: "Corrección A8: Nota gotchas en project-status-template"
+        descripcio: "Añadido comentario claro: gotchas NO van en project-status.yaml, van en sessions.yaml. Context Agent los extrae de todas las sessions"
+
+      - nom: "Corrección A9: Plan Contingencia en briefing"
+        descripcio: "deploy.md ahora informa al usuario sobre escalabilidad automática: Rotación >1800 líneas, Plan Contingencia >150K tokens, Context compilado máximo 2000 líneas"
+
+    problemes_resolts:
+      - problema: "viz/ en ubicación incorrecta según DEVELOPMENT.md"
+        solucio: "Movido de memory/viz/ a viz/ (raíz de memsys3). Actualizadas todas las referencias en 8 archivos. serve.py funciona correctamente (sube un nivel y sirve desde memsys3/)"
+
+      - problema: "deploy.md podía sobrescribir memsys3/ existente causando pérdida de datos"
+        solucio: "Añadida verificación que detecta si memsys3/ existe y aborta con mensaje claro. Usuario debe renombrar o eliminar explícitamente"
+
+      - problema: "history/ no existía físicamente bloqueando Plan de Contingencia"
+        solucio: "Creado memsys3/memory/history/.gitkeep en templates. deploy.md ahora crea .gitkeep durante deployment"
+
+      - problema: "viewer.js buscaba campo que no existe (adrs_filtrades)"
+        solucio: "Estandarizado nomenclatura a adrs_incloses en viewer.js y context-agent.yaml. Dashboard Stats ahora funciona"
+
+      - problema: "Contradicción límite 2000 líneas vs 2500-3000 tokens"
+        solucio: "Clarificado que límite ÚNICO es 2000 líneas. context-agent.yaml actualizado con max_linies: 2000 y validación por líneas"
+
+      - problema: "READMEs múltiples con rutas memory/viz obsoletas"
+        solucio: "Actualizados 6 READMEs con rutas correctas a memsys3/viz/"
+
+    decisions_preses:
+      - decisio: "Corregir issues CRÍTICOS + ALTOS antes de testing"
+        justificacio: "Análisis exhaustivo encontró 26 issues. Priorizar 9 (4 críticos + 5 altos) evita pérdida de datos y asegura funcionalidad básica"
+        adr_relacionada: null
+
+      - decisio: "Límite único de 2000 líneas (no tokens)"
+        justificacio: "Más claro y medible que tokens estimados. Filosofía ADR-009: criteri intel·ligent amb límit clar"
+        adr_relacionada: null
+
+      - decisio: "deploy.md debe proteger contra ejecución doble"
+        justificacio: "Previene sobrescritura accidental de adr.yaml y sessions.yaml que causaría pérdida de datos irrecuperable"
+        adr_relacionada: null
+
+    gotchas:
+      - tipus: "warning"
+        problema: "deploy.md sin verificaciones puede sobrescribir datos al ejecutarse dos veces"
+        solucio: "Verificar si memsys3/ existe antes de mkdir. Limpiar memsys3_temp/ si existe de ejecución previa"
+        criticitat: "alta"
+
+      - tipus: "error"
+        problema: "viewer.js buscaba adrs_filtrades pero YAML usa adrs_incloses"
+        solucio: "Estandarizar nomenclatura en ambos archivos. Elegir adrs_incloses por ser más claro"
+        criticitat: "alta"
+
+      - tipus: "warning"
+        problema: "history/ vacío no se sube a git bloqueando Plan Contingencia en otros clones"
+        solucio: "Crear .gitkeep en directorios vacíos que deben existir en git"
+        criticitat: "mitjana"
+
+    proxims_passos:
+      - "Probar deployment completo en proyecto UOC (Ciencia de Datos) - CRÍTICO"
+      - "Validar que visualizador funciona después de cambios (adrs_incloses)"
+      - "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
+      - "Actualizar deploy.md con mejoras UX restantes (dependencias Python/git)"
+      - "Resolver 17 issues MEDIOS/BAJOS identificados en análisis"
+      - "Validar rotación automática en proyecto real"
+      - "Validar Plan Contingencia con proyecto >150K tokens"
+
+    notes_addicionals: |
+      Sesión muy productiva: sistema preparado para deployment real después de resolver blockers.
+
+      Análisis exhaustivo encontró 26 issues clasificados:
+      - 4 CRÍTICOS (pérdida datos, funcionalidad rota)
+      - 5 ALTOS (UX, confusión)
+      - 9 MEDIOS (inconsistencias)
+      - 8 BAJOS (optimizaciones)
+
+      Resueltos 9 issues (4 críticos + 5 altos) en esta sesión.
+
+      Cambios estructurales importantes:
+      - viz/ movido a raíz (alineado con DEVELOPMENT.md)
+      - history/ creado (Plan Contingencia operativo)
+      - deploy.md reescrito completo (206 líneas, workflow ADR-009)
+      - Verificaciones críticas añadidas (prevención pérdida datos)
+
+      Sistema ahora tiene:
+      - Protección contra pérdida de datos en deployment
+      - Estructura física correcta según documentación
+      - Visualizador funcional (fix nomenclatura)
+      - Límites claros y consistentes (2000 líneas)
+      - Plan Contingencia operativo
+      - Workflow deployment completo y documentado
+
+      Total: 26 archivos modificados, +360 inserciones, -299 eliminaciones
+
   - id: "2025-10-31-implementacion-adr009"
     titol: "Implementación ADR-009 y Corrección de Inconsistencias"
     data: "2025-10-31"

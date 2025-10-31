@@ -98,6 +98,11 @@ decisions_clau:
 
   # Afegeix més decisions importants aquí
 
+# NOTA: gotchas i warnings NO van aquí
+# Els gotchas es documenten a memory/full/sessions.yaml (camp 'gotchas:')
+# Context Agent els extraurà de totes les sessions i seleccionarà els top 5 més crítics
+# Veure memory/templates/sessions-template.yaml per detalls
+
 # Convencions de codi del projecte
 convencions_codi:
   idioma:

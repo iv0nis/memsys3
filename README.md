@@ -25,42 +25,38 @@ Cuando trabajas con AI agents en proyectos grandes:
 
 ## ⚡ Quick Start
 
-### 1. Instalación
+### 1. Deployment
+
+Desde la raíz de tu proyecto, con tu AI agent ejecuta:
 
 ```bash
-# Clona el repositorio
-git clone https://github.com/iv0nis/memsys3.git
-
-# Copia memsys3_templates a la raíz de tu proyecto como 'memsys3/'
-cp -r memsys3/memsys3_templates /path/to/your/project/memsys3
-```
-
-### 2. Configuración Inicial
-
-**Opción A: Deployment Guiado (Recomendado)**
-```bash
-# Con tu AI agent, ejecuta el prompt de deploy
+# El agent clonará temporalmente el repo, copiará la estructura,
+# te hará un briefing y personalizará el deployment
 @memsys3/prompts/deploy.md
 ```
 
-El agent te hará un briefing y personalizará el deployment según tu proyecto.
+El workflow es:
+1. Clone temporal de memsys3 desde GitHub
+2. Copia de estructura a tu proyecto/memsys3/
+3. Briefing sobre tu proyecto (stack, objetivos, etc.)
+4. Personalización de archivos (project-status.yaml, newSession.md)
+5. Limpieza del clone temporal
 
-**Opción B: Manual**
+**Resultado**: Sistema memsys3 completamente funcional y personalizado.
+
+### 2. Primeros Pasos
+
+Una vez desplegado:
+
 ```bash
-cd /path/to/your/project/memsys3
+# 1. Compila el contexto inicial
+@memsys3/prompts/compile-context.md
 
-# 1. Personaliza el project-status.yaml inicial
-# Edita memory/project-status.yaml con info de tu proyecto
+# 2. Visualiza la "mente" de los agents
+@memsys3/prompts/mind.md
 
-# 2. Personaliza el agent (opcional)
-# Edita agents/main-agent.yaml según tu workflow
-
-# 3. Compila el contexto inicial
-# Ejecuta con tu AI agent: @memsys3/prompts/compile-context.md
-
-# 4. Visualiza
-cd memory
-python3 serve.py
+# 3. Comienza a trabajar
+@memsys3/prompts/newSession.md
 ```
 
 ### 3. Uso con AI Agents
@@ -148,7 +144,7 @@ memsys3/                          # Repositorio GitHub
 Interfaz visual para ver la "mente" de los agents:
 
 ```bash
-cd memsys3/memory/viz
+cd memsys3/viz
 python3 serve.py
 ```
 

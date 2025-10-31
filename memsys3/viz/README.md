@@ -5,8 +5,13 @@ Interfície web per visualitzar la "ment" dels agents - el context, ADRs, sessio
 ## 🚀 Ús Ràpid
 
 ```bash
-cd memory/viz
-python serve.py
+# Desde la raíz del proyecto:
+cd memsys3/viz
+python3 serve.py
+
+# O si ya estás en memsys3/:
+cd viz
+python3 serve.py
 ```
 
 S'obrirà automàticament al navegador a `http://localhost:8080`
