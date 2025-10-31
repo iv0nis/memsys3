@@ -13,7 +13,7 @@ Executa el Memory Visualizer per veure la "ment" dels agents de forma visual.
 Executa el següent comando:
 
 ```bash
-cd memsys3/memory/viz && python3 serve.py
+cd memsys3/viz && python3 serve.py
 ```
 
 **Important:**

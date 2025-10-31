@@ -14,9 +14,9 @@ Esta guía es para cuando hay **cambios/mejoras en memsys3_templates/** y quiere
 
 Archivos que puedes actualizar sin perder datos:
 
-**Visualizador (memory/viz/):**
+**Visualizador (viz/):**
 ```bash
-cp -r memsys3/memsys3_templates/memory/viz/* tu-proyecto/memsys3/memory/viz/
+cp -r memsys3/memsys3_templates/viz/* tu-proyecto/memsys3/viz/
 ```
 
 **Documentación del sistema:**
@@ -85,7 +85,7 @@ cp -r tu-proyecto/memsys3 tu-proyecto/memsys3_backup_$(date +%Y%m%d)
 cd tu-proyecto
 
 # Visualizador
-cp -r path/to/memsys3/memsys3_templates/memory/viz/* memsys3/memory/viz/
+cp -r path/to/memsys3/memsys3_templates/viz/* memsys3/viz/
 
 # Templates
 cp path/to/memsys3/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
@@ -136,7 +136,7 @@ Si hay cambios en `prompts/compile-context.md`:
 Actualización directa (safe):
 
 ```bash
-cp -r memsys3/memsys3_templates/memory/viz/* tu-proyecto/memsys3/memory/viz/
+cp -r memsys3/memsys3_templates/viz/* tu-proyecto/memsys3/viz/
 ```
 
 ### Cambios en Templates YAML
@@ -153,7 +153,7 @@ cp memsys3/memsys3_templates/memory/templates/*.yaml tu-proyecto/memsys3/memory/
 
 ```bash
 # Verifica permisos
-chmod +x memsys3/memory/viz/serve.py
+chmod +x memsys3/viz/serve.py
 
 # Verifica paths en viewer.js
 # Deben apuntar a tus archivos correctos
@@ -173,7 +173,7 @@ chmod +x memsys3/memory/viz/serve.py
 ## Checklist de Actualización
 
 - [ ] Backup de `memsys3/` completo
-- [ ] Actualizar visualizador (`memory/viz/`)
+- [ ] Actualizar visualizador (`viz/`)
 - [ ] Actualizar templates (`memory/templates/`)
 - [ ] Actualizar documentación (`memory/README.md`)
 - [ ] Revisar diff de prompts
