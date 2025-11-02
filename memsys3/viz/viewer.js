@@ -1,6 +1,6 @@
-// Memory Visualizer - Carrega i renderitza YAMLs
+// Memory Visualizer - Carga y renderiza YAMLs
 
-// Utilitzem js-yaml carregat via CDN
+// Utilizamos js-yaml cargado via CDN
 
 // State
 let contextData = null;
@@ -102,11 +102,11 @@ function renderAgentView() {
   // Project info
   const project = contextData.project || {};
   document.getElementById('agentProject').innerHTML = `
-    <p><strong>Nom:</strong> ${project.nom || 'N/A'}</p>
-    <p><strong>Descripció:</strong> ${project.descripcio || 'N/A'}</p>
+    <p><strong>Nombre:</strong> ${project.nom || 'N/A'}</p>
+    <p><strong>Descripción:</strong> ${project.descripcio || 'N/A'}</p>
     <p><strong>Fase:</strong> ${project.fase || 'N/A'}</p>
     <p><strong>Última feature:</strong> ${project.ultima_feature || 'N/A'}</p>
-    <p><strong>Següent milestone:</strong> ${project.seguent_milestone || 'N/A'}</p>
+    <p><strong>Siguiente milestone:</strong> ${project.seguent_milestone || 'N/A'}</p>
   `;
 
   // Features
@@ -131,24 +131,24 @@ function renderAgentView() {
       <div class="adr-header">
         <div class="adr-title">ADR-${adr.id}: ${adr.titol}</div>
       </div>
-      <p><strong>Decisió:</strong> ${adr.decisio}</p>
-      <p><strong>Motiu:</strong> ${adr.motiu}</p>
-      <p><strong>Impacte:</strong> ${adr.impacte}</p>
+      <p><strong>Decisión:</strong> ${adr.decisio}</p>
+      <p><strong>Motivo:</strong> ${adr.motiu}</p>
+      <p><strong>Impacto:</strong> ${adr.impacte}</p>
     </div>
   `).join('');
   document.getElementById('agentADRs').innerHTML = adrsHTML || '<p>No ADRs</p>';
 
-  // Última sessió
+  // Última sesión
   const session = contextData.ultima_sessio || {};
   const sessionHTML = `
-    <p><strong>Data:</strong> ${session.data || 'N/A'}</p>
-    <p><strong>Durada:</strong> ${session.durada || 'N/A'}</p>
+    <p><strong>Fecha:</strong> ${session.data || 'N/A'}</p>
+    <p><strong>Duración:</strong> ${session.durada || 'N/A'}</p>
     ${session.que_es_va_fer ? `
-      <h4>Què es va fer:</h4>
+      <h4>Qué se hizo:</h4>
       <ul>${(Array.isArray(session.que_es_va_fer) ? session.que_es_va_fer : []).map(item => `<li>${item}</li>`).join('')}</ul>
     ` : ''}
     ${session.decisions ? `
-      <h4>Decisions:</h4>
+      <h4>Decisiones:</h4>
       <ul>${(Array.isArray(session.decisions) ? session.decisions : []).map(item => `<li>${item}</li>`).join('')}</ul>
     ` : ''}
   `;
@@ -159,7 +159,7 @@ function renderAgentView() {
   const gotchasHTML = (Array.isArray(gotchas) ? gotchas : []).map(g => `
     <div class="gotcha-item">
       <strong>${g.id}:</strong> ${g.problema}<br>
-      <em>Solució: ${g.solucio}</em>
+      <em>Solución: ${g.solucio}</em>
     </div>
   `).join('');
   document.getElementById('agentGotchas').innerHTML = gotchasHTML || '<p>No gotchas</p>';
@@ -185,8 +185,8 @@ function renderFullHistory() {
           <div class="adr-title">ADR-${adr.id}: ${adr.titol}</div>
           <span class="adr-badge badge-${adr.estat}">${adr.estat}</span>
         </div>
-        <p><strong>Data:</strong> ${adr.data}</p>
-        <p><strong>Àrea:</strong> ${adr.area}</p>
+        <p><strong>Fecha:</strong> ${adr.data}</p>
+        <p><strong>Área:</strong> ${adr.area}</p>
         <p>${adr.decisio}</p>
       </div>
     `).join('');
@@ -199,17 +199,17 @@ function renderFullHistory() {
   if (fullSessions && fullSessions.sessions) {
     const sessionsHTML = fullSessions.sessions.map(session => {
       const featuresHTML = session.features_implementades ?
-        '<h4>Features Implementades:</h4><ul>' +
+        '<h4>Features Implementadas:</h4><ul>' +
         session.features_implementades.map(f => `<li><strong>${f.nom}:</strong> ${f.descripcio}</li>`).join('') +
         '</ul>' : '';
 
       const problemesHTML = session.problemes_resolts ?
-        '<h4>Problemes Resolts:</h4><ul>' +
+        '<h4>Problemas Resueltos:</h4><ul>' +
         session.problemes_resolts.map(p => `<li><strong>${p.problema}:</strong> ${p.solucio}</li>`).join('') +
         '</ul>' : '';
 
       const decisionsHTML = session.decisions_preses ?
-        '<h4>Decisions Preses:</h4><ul>' +
+        '<h4>Decisiones Tomadas:</h4><ul>' +
         session.decisions_preses.map(d => {
           const adrLink = d.adr_relacionada ? ` <span class="adr-link">(ADR-${d.adr_relacionada})</span>` : '';
           return `<li><strong>${d.decisio}:</strong> ${d.justificacio}${adrLink}</li>`;
@@ -217,7 +217,7 @@ function renderFullHistory() {
         '</ul>' : '';
 
       const techHTML = session.tecnologies_afegides ?
-        '<h4>Tecnologies Afegides:</h4><ul>' +
+        '<h4>Tecnologías Añadidas:</h4><ul>' +
         session.tecnologies_afegides.map(t => `<li><strong>${t.nom}:</strong> ${t.motiu}</li>`).join('') +
         '</ul>' : '';
 
@@ -227,7 +227,7 @@ function renderFullHistory() {
         '</ul>' : '';
 
       const pendentsHTML = session.proxims_passos ?
-        '<h4>Pròxims Passos:</h4><ul>' +
+        '<h4>Próximos Pasos:</h4><ul>' +
         session.proxims_passos.map(p => `<li>${p}</li>`).join('') +
         '</ul>' : '';
 
@@ -235,18 +235,18 @@ function renderFullHistory() {
         <div class="session-card">
           <h3>${session.titol || session.id}</h3>
           <div class="session-meta">
-            <span><strong>Data:</strong> ${session.data}</span>
-            <span><strong>Durada:</strong> ${session.durada}</span>
-            <span><strong>Participants:</strong> ${Array.isArray(session.participants) ? session.participants.join(', ') : session.participants}</span>
+            <span><strong>Fecha:</strong> ${session.data}</span>
+            <span><strong>Duración:</strong> ${session.durada}</span>
+            <span><strong>Participantes:</strong> ${Array.isArray(session.participants) ? session.participants.join(', ') : session.participants}</span>
           </div>
-          <p class="session-objective"><strong>Objectiu:</strong> ${session.objectiu}</p>
+          <p class="session-objective"><strong>Objetivo:</strong> ${session.objectiu}</p>
           ${featuresHTML}
           ${problemesHTML}
           ${decisionsHTML}
           ${techHTML}
           ${deploysHTML}
           ${pendentsHTML}
-          ${session.notes_addicionals ? `<div class="session-notes"><h4>Notes Addicionals:</h4><pre>${session.notes_addicionals}</pre></div>` : ''}
+          ${session.notes_addicionals ? `<div class="session-notes"><h4>Notas Adicionales:</h4><pre>${session.notes_addicionals}</pre></div>` : ''}
         </div>
       `;
     }).join('');
@@ -256,7 +256,7 @@ function renderFullHistory() {
   }
 }
 
-// Helper per renderitzar dades estructurades
+// Helper para renderizar datos estructurados
 function renderValue(value, level = 0) {
   if (value === null || value === undefined) return '<em>N/A</em>';
 
