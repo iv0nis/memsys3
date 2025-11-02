@@ -4,53 +4,53 @@
 # Límite ÚNICO: máximo 2000 líneas total
 
 metadata:
-  compilat_per: "Context Agent"
-  ultima_compilacio: "2025-10-31"
-  versio_context: "1.5"
+  compilado_por: "Context Agent"
+  ultima_compilacion: "2025-10-31"
+  version_context: "1.5"
 
 # ============================================
 # INFORMACIÓN DEL PROYECTO
 # ============================================
 project:
-  nom: "memsys3"
-  descripcio: "Sistema de gestió de context per AI Development Agents"
+  nombre: "memsys3"
+  descripcion: "Sistema de gestión de contexto para AI Development Agents"
   fase: "Development v1.3"
   ultima_feature: "Sistema preparado para deployment: viz/ en raíz, history/ creado, deploy.md con ADR-009, 9 bugs críticos corregidos"
-  seguent_milestone: "Testing deployment real en proyecto UOC"
+  siguiente_milestone: "Testing deployment real en proyecto UOC"
 
 # ============================================
 # FEATURES OPERATIVAS
 # ============================================
 features:
   context_agent:
-    nom: "Context Agent"
-    estat: "operatiu"
-    descripcio: "Agente que compila contexto completo con criterio inteligente (máx 2000 líneas)"
+    nombre: "Context Agent"
+    estado: "operativo"
+    descripcion: "Agente que compila contexto completo con criterio inteligente (máx 2000 líneas)"
 
-  rotacio_automatica:
-    nom: "Rotación Automática"
-    estat: "operatiu"
-    descripcio: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
+  rotacion_automatica:
+    nombre: "Rotación Automática"
+    estado: "operativo"
+    descripcion: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
 
-  pla_contingencia:
-    nom: "Plan de Contingencia"
-    estat: "operatiu"
-    descripcio: "Archivado inteligente a history/ cuando >150K tokens"
+  plan_contingencia:
+    nombre: "Plan de Contingencia"
+    estado: "operativo"
+    descripcion: "Archivado inteligente a history/ cuando >150K tokens"
 
-  visualitzador:
-    nom: "Memory Visualizer"
-    estat: "operatiu"
-    descripcio: "Dashboard web para ver la 'mente' de los agentes (4 pestañas) - Ubicado en memsys3/viz/"
+  visualizador:
+    nombre: "Memory Visualizer"
+    estado: "operativo"
+    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas) - Ubicado en memsys3/viz/"
 
   prompts:
-    nom: "Prompts Reutilizables"
-    estat: "operatiu"
-    descripcio: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas @memsys3/"
+    nombre: "Prompts Reutilizables"
+    estado: "operativo"
+    descripcion: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas @memsys3/"
 
-  documentacio:
-    nom: "Sistema de Documentación Multi-nivel"
-    estat: "operatiu"
-    descripcio: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
+  documentacion:
+    nombre: "Sistema de Documentación Multi-nivel"
+    estado: "operativo"
+    descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
 
 # ============================================
 # STACK TECNOLÓGICO
@@ -60,7 +60,7 @@ stack:
   backend: "Python 3.x (servidor visualizador)"
   database: "Ninguna (YAML files)"
   deploy: "GitHub + clonado local"
-  llenguatge_docs: "YAML + Markdown"
+  lenguaje_docs: "YAML + Markdown"
 
 # ============================================
 # URLS PRINCIPALES
@@ -74,8 +74,8 @@ urls:
 # ============================================
 adrs:
   - id: "009"
-    titol: "Templates como documentación activa permanente + gotchas en sessions"
-    decisio: |
+    titulo: "Templates como documentación activa permanente + gotchas en sessions"
+    decision: |
       **1. Concepto de memsys3_templates/ (ms3t):**
       - ms3t/ = Estructura EXACTA del producto final
       - Todos los archivos se copian durante deployment (incluido memory/templates/)
@@ -97,73 +97,73 @@ adrs:
       3. Briefing usando templates/ como guía
       4. Rellenar campos vacíos en project-status.yaml, main-agent.yaml
       5. rm -rf memsys3_temp/
-    impacte: "Deployment más simple. Main-Agent siempre tiene referencia. Gotchas contextualizados. CA tiene flexibilidad para priorizar gotchas."
+    impacto: "Deployment más simple. Main-Agent siempre tiene referencia. Gotchas contextualizados. CA tiene flexibilidad para priorizar gotchas."
 
   - id: "006"
-    titol: "Sistema de rutas unificado memsys3/"
-    decisio: |
+    titulo: "Sistema de rutas unificado memsys3/"
+    decision: |
       TODAS las rutas en memsys3_templates/ deben usar el prefijo memsys3/ (notación: @memsys3/).
       Durante deployment, memsys3_templates/ se copia a la raíz del proyecto como memsys3/.
-    impacte: "Claridad total, portabilidad, sin conflictos con carpetas del proyecto."
+    impacto: "Claridad total, portabilidad, sin conflictos con carpetas del proyecto."
 
   - id: "007"
-    titol: "Separación de meta-niveles en READMEs"
-    decisio: |
+    titulo: "Separación de meta-niveles en READMEs"
+    decision: |
       4 READMEs separados: raíz (público), templates (sistema desplegado), DEVELOPMENT (contribución), UPDATE (actualización).
-    impacte: "Claridad total de meta-niveles. Cada audiencia tiene README específico."
+    impacto: "Claridad total de meta-niveles. Cada audiencia tiene README específico."
 
   - id: "008"
-    titol: "Main-Agent NO debe proponer compile-context"
-    decisio: |
+    titulo: "Main-Agent NO debe proponer compile-context"
+    decision: |
       Main-Agent NO propone ejecutar compile-context.md (consume muchos tokens).
       compile-context.md se ejecuta en NUEVA INSTANCIA limpia.
-    impacte: "Eficiencia de tokens optimizada. User controla cuándo compilar."
+    impacto: "Eficiencia de tokens optimizada. User controla cuándo compilar."
 
   - id: "001"
-    titol: "Criterio inteligente del Context Agent vs límites arbitrarios"
-    decisio: |
+    titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
+    decision: |
       El Context Agent usa criterio inteligente: "¿Qué debe saber CUALQUIER agente descontextualizado?"
       Límite ÚNICO: máximo 2000 líneas en el context.yaml final.
-    impacte: "Contexto adaptativo según necesidades del proyecto."
+    impacto: "Contexto adaptativo según necesidades del proyecto."
 
   - id: "002"
-    titol: "Rotación automática de sessions/ADRs (>1800 líneas)"
-    decisio: |
+    titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
+    decision: |
       Cuando sessions.yaml o adr.yaml superan 1800 líneas:
       endSession.md hace rotación segura: sessions_N.yaml, adr_N.yaml.
       Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
-    impacte: "Sistema escala infinitamente. No se pierden datos nunca."
+    impacto: "Sistema escala infinitamente. No se pierden datos nunca."
 
   - id: "003"
-    titol: "Plan de Contingencia con archivado inteligente (>150K tokens)"
-    decisio: |
+    titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
+    decision: |
       Cuando total de full/ supera 150K tokens:
       CA mueve ADRs/sessions irrelevantes a memory/history/ (que NO se lee).
       Reduce a ~120K tokens. Datos preservados, recuperables.
-    impacte: "Ahorro real de tokens. Sistema escala ilimitadamente."
+    impacto: "Ahorro real de tokens. Sistema escala ilimitadamente."
 
   - id: "004"
-    titol: "YAML para todo (incluyendo sessions)"
-    decisio: |
+    titulo: "YAML para todo (incluyendo sessions)"
+    decision: |
       Todo el sistema usa YAML: sessions.yaml, adr.yaml, project-status.yaml, context.yaml, templates.
-    impacte: "Consistencia total. ~30% ahorro tokens vs Markdown."
+    impacto: "Consistencia total. ~30% ahorro tokens vs Markdown."
 
   - id: "005"
-    titol: "deploy.md como prompt (no script shell)"
-    decisio: |
+    titulo: "deploy.md como prompt (no script shell)"
+    decision: |
       deploy.md que Main-Agent ejecuta con briefing personalizado.
       Más flexible que script automático.
-    impacte: "Deployment guiado e inteligente. Personalización según necesidades."
+    impacto: "Deployment guiado e inteligente. Personalización según necesidades."
 
 # ============================================
 # SESIONES RECIENTES
 # Las sesiones más recientes son críticas para entender el estado actual
 # ============================================
-sessions_recents:
+sesiones_recientes:
   - id: "2025-10-31-preparacion-deployment"
     data: "2025-10-31"
-    durada: "~3h"
-    objectiu: "Resolver blockers críticos para deployment, mover viz/, crear history/, reescribir deploy.md con ADR-009"
+    duracion: "~3h"
+    objetivo: "Resolver blockers críticos para deployment, mover viz/, crear history/, reescribir deploy.md con ADR-009"
     highlights:
       - "viz/ movido a raíz (memsys3/viz/) según DEVELOPMENT.md - 8 archivos actualizados"
       - "history/ creado con .gitkeep (templates + dog-fooding) - Plan Contingencia operativo"
@@ -184,8 +184,8 @@ sessions_recents:
 
   - id: "2025-10-31-implementacion-adr009"
     data: "2025-10-31"
-    durada: "~2h"
-    objectiu: "Implementar ADR-009 completamente y corregir todas las inconsistencias"
+    duracion: "~2h"
+    objetivo: "Implementar ADR-009 completamente y corregir todas las inconsistencias"
     highlights:
       - "Campo gotchas añadido en sessions-template.yaml con estructura: tipus, problema, solucio, criticitat"
       - "Eliminada sección gotchas_i_issues de project-status-template.yaml según ADR-009"
@@ -203,9 +203,9 @@ sessions_recents:
 
   - id: "2025-10-31-validacion-deployment"
     data: "2025-10-31"
-    durada: "~3h"
-    objectiu: "Validar protocolo de deployment y resolver confusiones sobre templates"
-    highlights_sintetitzats:
+    duracion: "~3h"
+    objetivo: "Validar protocolo de deployment y resolver confusiones sobre templates"
+    highlights_sintetizados:
       - "ADR-009 creada (125 líneas): templates permanentes + gotchas en sessions"
       - "docs/DEVELOPMENT.md: nueva sección 'Filosofía: Estructura y Deployment' (+140 líneas)"
       - "Clarificado: ms3t = estructura exacta del producto, memory/templates/ NO se borran"
@@ -214,8 +214,8 @@ sessions_recents:
 
   - id: "2025-10-29-limpieza"
     data: "2025-10-29"
-    durada: "~2h"
-    highlights_sintetitzats:
+    duracion: "~2h"
+    highlights_sintetizados:
       - "Corrección sistemática todas las rutas con prefijo @memsys3/"
       - "Eliminación residuos: 6543 líneas duplicadas"
       - "Validación compilación context.yaml exitosa (556 líneas, v1.2)"
@@ -223,8 +223,8 @@ sessions_recents:
 
   - id: "2025-10-29"
     data: "2025-10-29"
-    durada: "~3-4h"
-    highlights_sintetitzats:
+    duracion: "~3-4h"
+    highlights_sintetizados:
       - "3 ADRs críticas: 006 (rutas), 007 (READMEs), 008 (workflow)"
       - "4 niveles documentación establecidos"
       - "Restricción Main-Agent: NO proponer compile-context"
@@ -232,8 +232,8 @@ sessions_recents:
 
   - id: "2025-10-28"
     data: "2025-10-28"
-    durada: "~8h"
-    highlights_sintetitzats:
+    duracion: "~8h"
+    highlights_sintetizados:
       - "Creación inicial memsys3 v1.0"
       - "Context Agent con criterio inteligente, Plan Contingencia, Rotación automática"
       - "Visualizador Web Memory: 4 pestañas, js-yaml, Python server"
@@ -246,45 +246,45 @@ sessions_recents:
 # ============================================
 gotchas:
   - id: "deploy_sobrescritura"
-    tipus: "warning"
+    tipo: "warning"
     problema: "deploy.md sin verificaciones puede sobrescribir memsys3/ existente causando pérdida de datos"
-    solucio: "Verificar si memsys3/ existe antes de mkdir. Limpiar memsys3_temp/ si existe de ejecución previa"
-    criticitat: "alta"
-    sessio: "2025-10-31-preparacion-deployment"
+    solucion: "Verificar si memsys3/ existe antes de mkdir. Limpiar memsys3_temp/ si existe de ejecución previa"
+    criticidad: "alta"
+    sesion: "2025-10-31-preparacion-deployment"
 
   - id: "viewer_nomenclatura"
-    tipus: "error"
+    tipo: "error"
     problema: "viewer.js buscaba adrs_filtrades pero YAML usa adrs_incloses"
-    solucio: "Estandarizar nomenclatura en ambos archivos. Elegir adrs_incloses por ser más claro"
-    criticitat: "alta"
-    sessio: "2025-10-31-preparacion-deployment"
+    solucion: "Estandarizar nomenclatura en ambos archivos. Elegir adrs_incloses por ser más claro"
+    criticidad: "alta"
+    sesion: "2025-10-31-preparacion-deployment"
 
   - id: "deploy_campos_obsoletos"
-    tipus: "warning"
+    tipo: "warning"
     problema: "deploy.md puede propagar campos obsoletos si no se actualiza con cada ADR"
-    solucio: "Revisar deploy.md cuando se creen ADRs que modifiquen estructura de templates"
-    criticitat: "alta"
-    sessio: "2025-10-31-implementacion-adr009"
+    solucion: "Revisar deploy.md cuando se creen ADRs que modifiquen estructura de templates"
+    criticidad: "alta"
+    sesion: "2025-10-31-implementacion-adr009"
 
   - id: "history_gitkeep"
-    tipus: "warning"
+    tipo: "warning"
     problema: "history/ vacío no se sube a git bloqueando Plan Contingencia en otros clones"
-    solucio: "Crear .gitkeep en directorios vacíos que deben existir en git"
-    criticitat: "mitjana"
-    sessio: "2025-10-31-preparacion-deployment"
+    solucion: "Crear .gitkeep en directorios vacíos que deben existir en git"
+    criticidad: "media"
+    sesion: "2025-10-31-preparacion-deployment"
 
   - id: "read_tool_limit"
-    tipus: "warning"
+    tipo: "warning"
     problema: "Read tool té límit de 2000 línies - sessions.yaml o adr.yaml poden créixer infinitament"
-    solucio: "Sistema de rotació automàtica >1800 línies (sessions_N.yaml, adr_N.yaml)"
-    criticitat: "alta"
-    sessio: "2025-10-28"
+    solucion: "Sistema de rotació automàtica >1800 línies (sessions_N.yaml, adr_N.yaml)"
+    criticidad: "alta"
+    sesion: "2025-10-28"
     nota: "Resuelto con ADR-002, pero documentado como gotcha fundamental"
 
 # ============================================
 # PENDENTS PRIORITARIS
 # ============================================
-pendents:
+pendientes:
   - prioritat: 1
     tasca: "Probar deployment completo en proyecto UOC"
     detall: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar). Validar que todas las correcciones funcionan"
@@ -324,15 +324,15 @@ decisions_clau:
 # ============================================
 # NOTES DE COMPILACIÓ DEL CA
 # ============================================
-notes_compilacio:
+notas_compilacion:
   adrs_totals: 9
-  adrs_incloses: 9
-  justificacio_adrs: |
+  adrs_incluidas: 9
+  justificacion_adrs: |
     Todas las ADRs son críticas para entender el sistema. Sin cambios desde última compilación.
 
-  sessions_totals: 7
-  sessions_incloses: 6
-  justificacio_sessions: |
+  sesiones_totales: 7
+  sesiones_incluidas: 6
+  justificacion_sesiones: |
     - 2025-10-31-preparacion-deployment: MÁS RECIENTE, máximo detalle (26 issues, 9 resueltos)
     - 2025-10-31-implementacion-adr009: Reciente, implementación ADR-009 completa
     - 2025-10-31-validacion-deployment: Sintetizada (ya estaba en v1.4)
@@ -340,29 +340,29 @@ notes_compilacio:
     - 2025-10-29: Sintetizada más (reducir detalles)
     - 2025-10-28: Sintetizada (histórico inicial)
 
-  gotchas_extrets: 5
-  justificacio_gotchas: |
+  gotchas_extraidos: 5
+  justificacion_gotchas: |
     Extrets de sessions.yaml con estructura correcta (tipus, criticitat).
     Ordenats per criticitat + recència:
     - 3 ALTOS (deploy_sobrescritura, viewer_nomenclatura, deploy_campos_obsoletos)
     - 1 MEDIO (history_gitkeep)
     - 1 ALTO histórico (read_tool_limit - ADR-002 pero gotcha fundamental)
 
-  tokens_inicials: "~92K tokens (muy por debajo de 150K)"
-  tokens_finals: "~3.5K tokens (estimado del context.yaml generado)"
+  tokens_iniciales: "~92K tokens (muy por debajo de 150K)"
+  tokens_finales: "~3.5K tokens (estimado del context.yaml generado)"
 
-  arxivament: "NO requerido - volumen manejable"
+  archivamiento: "NO requerido - volumen manejable"
 
-  criteris_filtratge: |
+  criterios_filtraje: |
     - Todas las 9 ADRs incluidas (sin cambios)
     - Sessions: Priorizar 2 más recientes con máximo detalle, sintetizar resto
     - Gotchas: Ahora extraídos con estructura correcta de sessions (CRÍTICO: 3 nuevos gotchas documentados en últimas sessions)
     - Pendientes: actualizados según project-status (prioridad 1: testing deployment UOC)
     - Filosofía: mantener decisiones_clau actualizadas con nuevos estándares
 
-  linies_totals: "~512 líneas de 2000 máximo (26% del límite)"
+  lineas_totales: "~512 líneas de 2000 máximo (26% del límite)"
 
-  observacions: |
+  observaciones: |
     Sistema preparado para deployment real después de 3 sesiones intensas el 2025-10-31.
 
     Sesión preparacion-deployment fue CRÍTICA:

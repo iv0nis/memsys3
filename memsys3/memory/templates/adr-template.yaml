@@ -9,9 +9,9 @@
 
 adrs:
   - id: "001"
-    titol: "[Títol de la Decisió]"
+    titulo: "[Títol de la Decisió]"
     data: "YYYY-MM-DD"
-    estat: accepted  # accepted | deprecated | superseded_by
+    estado: accepted  # accepted | deprecated | superseded_by
     area: "[frontend|backend|infrastructure|process]"
 
     context: |
@@ -20,11 +20,11 @@ adrs:
       - ¿Qué necesitábamos conseguir?
       - ¿Qué limitaciones teníamos?
 
-    decisio: |
+    decision: |
       ¿Qué decidimos hacer? Sé claro y conciso.
 
     alternatives:
-      - nom: "[Nom Alternativa A]"
+      - nombre: "[Nom Alternativa A]"
         pros:
           - "[Pro 1]"
           - "[Pro 2]"
@@ -33,7 +33,7 @@ adrs:
           - "[Contra 2]"
         per_que_descartada: "[MOTIU]"
 
-      - nom: "[Nom Alternativa B]"
+      - nombre: "[Nom Alternativa B]"
         pros:
           - "[Pro 1]"
         contras:
@@ -47,24 +47,24 @@ adrs:
       negatives:
         - "[Costo/limitación 1]"
         - "[Costo/limitación 2]"
-      impacte: "[Qué componentes/servicios se ven afectados]"
+      impacto: "[Qué componentes/servicios se ven afectados]"
 
     notes: "[Información adicional, referencias, links]"  # Opcional
 
   - id: "002"
-    titol: "[Siguiente Decisión]"
+    titulo: "[Siguiente Decisión]"
     data: "YYYY-MM-DD"
-    estat: accepted
+    estado: accepted
     area: "[area]"
 
     context: |
       [CONTEXT]
 
-    decisio: |
+    decision: |
       [DECISIÓ]
 
     alternatives:
-      - nom: "[Alternativa]"
+      - nombre: "[Alternativa]"
         pros: []
         contras: []
         per_que_descartada: "[MOTIU]"
@@ -72,14 +72,14 @@ adrs:
     consequencies:
       positives: []
       negatives: []
-      impacte: "[IMPACTE]"
+      impacto: "[IMPACTE]"
 
 # Índice rápido para encontrar ADRs
 # Actualiza esta lista manualmente
 index:
   - id: "001"
-    titol: "[Títol]"
-    estat: accepted
+    titulo: "[Títol]"
+    estado: accepted
   - id: "002"
-    titol: "[Títol]"
-    estat: accepted
+    titulo: "[Títol]"
+    estado: accepted
