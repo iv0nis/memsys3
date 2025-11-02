@@ -237,7 +237,7 @@ sesiones_recientes:
       - "Creación inicial memsys3 v1.0"
       - "Context Agent con criterio inteligente, Plan Contingencia, Rotación automática"
       - "Visualizador Web Memory: 4 pestañas, js-yaml, Python server"
-      - "Publicado a GitHub (21 fitxers, 3056 línies)"
+      - "Publicado a GitHub (21 archivos, 3056 línies)"
 
 # ============================================
 # GOTCHAS CRÍTICS
@@ -275,8 +275,8 @@ gotchas:
 
   - id: "read_tool_limit"
     tipo: "warning"
-    problema: "Read tool té límit de 2000 línies - sessions.yaml o adr.yaml poden créixer infinitament"
-    solucion: "Sistema de rotació automàtica >1800 línies (sessions_N.yaml, adr_N.yaml)"
+    problema: "Read tool tiene límite de 2000 línies - sessions.yaml o adr.yaml pueden créixer infinitament"
+    solucion: "Sistema de rotación automática >1800 líneas (sessions_N.yaml, adr_N.yaml)"
     criticidad: "alta"
     sesion: "2025-10-28"
     nota: "Resuelto con ADR-002, pero documentado como gotcha fundamental"
@@ -298,19 +298,19 @@ pendientes:
     detall: "Del análisis exhaustivo quedan 17 issues por resolver (9 medios + 8 bajos) - deuda técnica controlada"
 
   - prioritat: 4
-    tasca: "Validar rotació automàtica en projecte real"
-    detall: "Comprovar que funciona quan sessions.yaml supera 1800 línies"
+    tasca: "Validar rotación automática en proyecto real"
+    detall: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
 
   - prioritat: 5
-    tasca: "Validar Pla Contingència (>150K tokens)"
+    tasca: "Validar Plan Contingencia (>150K tokens)"
     detall: "Simular proyecto grande, verificar archivado a history/"
 
 # ============================================
 # DECISIONS CLAU DEL PROJECTE
 # ============================================
 decisions_clau:
-  filosofia: "Criteri intel·ligent del CA, NO límits arbitraris"
-  escalabilitat: "Rotació + arxivament automàtic"
+  filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
+  escalabilitat: "Rotación + archivado automático"
   preservacio: "Dades SEMPRE preservades (history/, sessions_N.yaml, adr_N.yaml)"
   rutas: "Sistema unificado @memsys3/ para portabilidad y claridad (notación Claude Code)"
   documentacion: "Meta-niveles separados según audiencia"
@@ -383,9 +383,9 @@ notas_compilacion:
     Quedan 17 issues MEDIOS/BAJOS como deuda técnica controlada.
 
 # ============================================
-# NOTES D'ÚS
+# NOTAS DE USO
 # ============================================
-# Aquest fitxer és COMPILAT automàticament, no editar manualment
-# Per actualitzar: executar @memsys3/prompts/compile-context.md
-# Per més detalls: veure memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml
-# Si context massa gran: CA mourà dades a memsys3/memory/history/ (no llegit)
+# Este archivo es COMPILADO automáticamente, no editar manualmente
+# Para actualizar: ejecutar @memsys3/prompts/compile-context.md
+# Para más detalles: ver memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml
+# Si context demasiado grande: CA moverá datos a memsys3/memory/history/ (no leído)

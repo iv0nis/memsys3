@@ -140,7 +140,7 @@ urls:
   # production: "[URL_SI_EXISTE]"
   # staging: "[URL_SI_EXISTE]"
 
-pendents_prioritaris:
+pendientes_prioritarios:
   # Si user ha mencionado tareas, añádelas
   # De lo contrario deja vacío
 
