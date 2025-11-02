@@ -1,8 +1,8 @@
 # Memory Visualizer
 
-Interfície web per visualitzar la "ment" dels agents - el context, ADRs, sessions i status del projecte.
+Interfaz web para visualizar la "mente" de los agentes - el contexto, ADRs, sesiones y status del proyecto.
 
-## 🚀 Ús Ràpid
+## 🚀 Uso Rápido
 
 ```bash
 # Desde la raíz del proyecto:
@@ -14,71 +14,71 @@ cd viz
 python3 serve.py
 ```
 
-S'obrirà automàticament al navegador a `http://localhost:8080`
+Se abrirá automáticamente en el navegador en `http://localhost:8080`
 
-## 📊 Què mostra?
+## 📊 ¿Qué muestra?
 
 ### 🤖 Agent View
-El context compilat que carreguen els Development Agents:
+El contexto compilado que cargan los Development Agents:
 - Project info
-- Features operatives
-- ADRs rellevants (filtrades pel CA)
-- Última sessió resumida
-- Gotchas crítics
-- Pendents prioritaris
+- Features operativas
+- ADRs relevantes (filtradas por el CA)
+- Última sesión resumida
+- Gotchas críticos
+- Pendientes prioritarios
 
 ### 📚 Full History
-Tot l'històric complet:
-- Totes les ADRs mai escrites
-- Totes les sessions de treball
+Todo el histórico completo:
+- Todas las ADRs escritas
+- Todas las sesiones de trabajo
 
 ### 📊 Project Status
-Estat actual complet del projecte amb features, stack, URLs, etc.
+Estado actual completo del proyecto con features, stack, URLs, etc.
 
 ### 📈 Stats
-Estadístiques de compilació:
-- Quants tokens té el context
-- Quantes ADRs s'han filtrat
-- Última compilació
-- Notes del Context Agent
+Estadísticas de compilación:
+- Cuántos tokens tiene el contexto
+- Cuántas ADRs se han filtrado
+- Última compilación
+- Notas del Context Agent
 
-## 🛠 Requisits
+## 🛠 Requisitos
 
-- Python 3.x (ve preinstal·lat a la majoria de sistemes)
+- Python 3.x (viene preinstalado en la mayoría de sistemas)
 
 ## 🔧 Troubleshooting
 
-**Port 8080 ocupat?**
-Edita `serve.py` i canvia `PORT = 8080` a un altre port.
+**¿Port 8080 ocupado?**
+Edita `serve.py` y cambia `PORT = 8080` a otro puerto.
 
-**Error "No module named..."?**
-El servidor usa només llibreries estàndard de Python, no cal instal·lar res.
+**¿Error "No module named..."?**
+El servidor usa solo librerías estándar de Python, no hace falta instalar nada.
 
-**Pestanyes buides?**
-- Assegura't que existeixen els fitxers YAMLs/MD a `memory/`
-- Comprova la consola del navegador per errors
+**¿Pestañas vacías?**
+- Asegúrate de que existen los archivos YAMLs/MD en `memory/`
+- Comprueba la consola del navegador por errores
 
-**"context.yaml not found"?**
-Normal si encara no has executat el Context Agent. Executa `@memsys3/prompts/compile-context.md` primer.
+**¿"context.yaml not found"?**
+Normal si aún no has ejecutado el Context Agent. Ejecuta `@memsys3/prompts/compile-context.md` primero.
 
-## 📁 Fitxers
+## 📁 Archivos
 
-- `serve.py` - Servidor HTTP mínim
-- `index.html` - Dashboard amb pestanyes
-- `style.css` - Dark theme modern
-- `viewer.js` - Carrega i renderitza YAMLs
-- `README.md` - Aquest fitxer
+- `serve.py` - Servidor HTTP mínimo
+- `index.html` - Dashboard con pestañas
+- `style.css` - Dark theme moderno
+- `viewer.js` - Carga y renderiza YAMLs
+- `README.md` - Este archivo
 
-## 🎨 Personalització
+## 🎨 Personalización
 
-Pots modificar:
-- **Colors**: Edita les CSS variables a `style.css`
-- **Port**: Canvia `PORT` a `serve.py`
-- **Layout**: Modifica `index.html` i `viewer.js`
+Puedes modificar:
+- **Colores**: Edita las variables CSS en `style.css`
+- **Puerto**: Cambia `PORT` en `serve.py`
+- **Layout**: Modifica `index.html` y `viewer.js`
 
-## 📝 Notes
+## 📝 Notas
 
-- El visualitzador llegeix els YAMLs **directament** via fetch()
-- **No modifica** cap fitxer, només lectura
-- Es refresca automàticament en recarregar la pàgina
-- Simple YAML parser integrat (no cal dependències)
+- El visualizador lee los YAMLs **directamente** vía fetch()
+- **No modifica** ningún archivo, solo lectura
+- Se refresca automáticamente al recargar la página
+- Simple YAML parser integrado (no hace falta dependencias)

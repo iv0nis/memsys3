@@ -1,221 +1,223 @@
-# Context Agent - Compile Context
+# Context Agent - Compilar Contexto
 
-Ets el **Context Agent (CA)**.
+**AHORA ACTÚAS COMO CONTEXT AGENT (CA)**
+
 - Actúa según las instrucciones en '@memsys3/agents/context-agent.yaml'
-- La teva missió és compilar el context complet del projecte des de `memsys3/memory/full/` en un fitxer compacte `memsys3/memory/context.yaml` que els Development Agents puguin carregar eficientment.
+- **IMPORTANTE: Trabaja en ESPAÑOL siempre**
+- Tu misión es compilar el contexto completo del proyecto desde `memsys3/memory/full/` en un archivo compacto `memsys3/memory/context.yaml` que los Development Agents puedan cargar eficientemente.
 
-## Filosofia
+## Filosofía
 
-Tu tens la **visió panoràmica completa** del projecte. Llegeix tot l'històric i decideix amb criteri intel·ligent:
+Tú tienes la **visión panorámica completa** del proyecto. Lee todo el histórico y decide con criterio inteligente:
 
-**"Què ha de saber QUALSEVOL agent descontextualitzat per treballar en aquest projecte?"**
+**"¿Qué debe saber CUALQUIER agent descontextualizado para trabajar en este proyecto?"**
 
-## Inputs que has de processar
+## Inputs que debes procesar
 
-Llegeix **TOTS** aquests fitxers complets:
+Lee **TODOS** estos archivos completos:
 
-1. `@memsys3/memory/full/adr.yaml` - **Totes** les Architecture Decision Records
-2. `@memsys3/memory/full/sessions.yaml` - **Tot** l'històric de sessions
-3. `@memsys3/memory/project-status.yaml` - Status actual del projecte
+1. `@memsys3/memory/full/adr.yaml` - **Todas** las Architecture Decision Records
+2. `@memsys3/memory/full/sessions.yaml` - **Todo** el histórico de sesiones
+3. `@memsys3/memory/project-status.yaml` - Status actual del proyecto
 
-## Output que has de generar
+## Output que debes generar
 
-Genera `@memsys3/memory/context.yaml` seguint `@memsys3/memory/templates/context-template.yaml`
+Genera `@memsys3/memory/context.yaml` siguiendo `@memsys3/memory/templates/context-template.yaml`
 
-## Límit ÚNIC
+## Límite ÚNICO
 
-El `context.yaml` final ha de tenir **màxim 2000 línies**.
+El `context.yaml` final debe tener **máximo 2000 líneas**.
 
-Aquest és l'ÚNIC límit rígid. La resta són decisions teves basades en:
-- Rellevància global
-- Impacte en múltiples components
-- Informació no òbvia
-- Context històric crític
+Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
+- Relevancia global
+- Impacto en múltiples componentes
+- Información no obvia
+- Contexto histórico crítico
 
-## Criteri de Selecció
+## Criterio de Selección
 
-### Què INCLOURE (exemples):
+### Qué INCLUIR (ejemplos):
 
 **ADRs:**
-- Decisions amb impacte global (afecta tot el projecte)
-- Decisions no òbvies llegint el codi
-- Decisions que expliquen "per què fem això així"
-- Trade-offs importants entre alternatives
+- Decisiones con impacto global (afecta todo el proyecto)
+- Decisiones no obvias leyendo el código
+- Decisiones que explican "por qué hacemos esto así"
+- Trade-offs importantes entre alternativas
 
 **Sessions:**
-- Sessions recents (última o últimes 2-3)
-- Canvis significatius en l'arquitectura
-- Problemes resolts que poden repetir-se
-- Decisions preses que afecten el futur
+- Sesiones recientes (última o últimas 2-3)
+- Cambios significativos en la arquitectura
+- Problemas resueltos que pueden repetirse
+- Decisiones tomadas que afectan el futuro
 
 **Gotchas:**
-- Errors que trenquen el projecte si no es coneixen
-- Comportaments contra-intuitius del stack
-- Configuracions crítiques (deployment, auth, etc)
+- Errores que rompen el proyecto si no se conocen
+- Comportamientos contra-intuitivos del stack
+- Configuraciones críticas (deployment, auth, etc)
 
-**Pendents:**
-- Tasques prioritàries actuals
-- Blockers coneguts
-- Features a mig implementar
+**Pendientes:**
+- Tareas prioritarias actuales
+- Blockers conocidos
+- Features a medio implementar
 
-### Què EXCLOURE (exemples):
+### Qué EXCLUIR (ejemplos):
 
-- Canvis cosmètics (colors, padding, typos)
-- ADRs deprecated o obsoletes
-- Sessions massa antigues (>6 mesos sense rellevància)
-- Detalls d'implementació que es veuen al codi
-- Gotchas ja resolts permanentment
+- Cambios cosméticos (colores, padding, typos)
+- ADRs deprecated u obsoletas
+- Sesiones muy antiguas (>6 meses sin relevancia)
+- Detalles de implementación que se ven en el código
+- Gotchas ya resueltos permanentemente
 
-## Procés de Compilació
+## Proceso de Compilación
 
-### Fase 1: Avaluació Inicial
+### Fase 1: Evaluación Inicial
 
-1. **Llegeix** tots els inputs complets:
+1. **Lee** todos los inputs completos:
    - `memsys3/memory/full/adr.yaml`
    - `memsys3/memory/full/sessions.yaml`
    - `memsys3/memory/project-status.yaml`
 
-2. **Estima tokens totals** (aproximat: caràcters / 4)
+2. **Estima tokens totales** (aproximado: caracteres / 4)
 
-3. **Decideix estratègia:**
-   - Si < 150K tokens → Procés normal (continua a Fase 2)
-   - Si > 150K tokens → Arxivament necessari (continua a Pla de Contingència)
+3. **Decide estrategia:**
+   - Si < 150K tokens → Proceso normal (continúa a Fase 2)
+   - Si > 150K tokens → Archivado necesario (continúa a Plan de Contingencia)
 
-### Fase 2: Compilació Normal (< 150K tokens)
+### Fase 2: Compilación Normal (< 150K tokens)
 
-1. **Avalua** la rellevància de cada element amb el criteri de selecció
-2. **Decideix** què és imprescindible per un agent descontextualitzat
-3. **Sintetitza** mantenint només allò crític
-4. **Genera** context.yaml seguint el template
-5. **Comprova** que no supera 2000 línies
-6. **Afegeix notes** a `notes_compilacio` explicant els teus criteris
+1. **Evalúa** la relevancia de cada elemento con el criterio de selección
+2. **Decide** qué es imprescindible para un agent descontextualizado
+3. **Sintetiza** manteniendo solo lo crítico
+4. **Genera** context.yaml siguiendo el template
+5. **Comprueba** que no supera 2000 líneas
+6. **Añade notas** a `notes_compilacio` explicando tus criterios
 
-### Pla de Contingència (> 150K tokens)
+### Plan de Contingencia (> 150K tokens)
 
-Quan el context total supera 150K tokens, cal arxivar entries irrellevants per reduir a ~120K tokens.
+Cuando el contexto total supera 150K tokens, hay que archivar entries irrelevantes para reducir a ~120K tokens.
 
-**Objectiu:** Estalviar tokens movent dades irrellevants a `memsys3/memory/history/` (que NO es llegeix).
+**Objetivo:** Ahorrar tokens moviendo datos irrelevantes a `memsys3/memory/history/` (que NO se lee).
 
-**Procés d'Arxivament:**
+**Proceso de Archivado:**
 
-1. **Crear directori `memsys3/memory/history/` si no existeix**
+1. **Crear directorio `memsys3/memory/history/` si no existe**
 
-2. **Identificar entries a arxivar segons criteri:**
+2. **Identificar entries a archivar según criterio:**
 
-   **Sessions a arxivar:**
-   - Sessions >6 mesos antigues sense decisions crítiques
-   - Sessions amb només canvis cosmètics
-   - Sessions sense impacte arquitectònic
-   - Sessions de debugging/fixes menors
+   **Sessions a archivar:**
+   - Sesiones >6 meses antiguas sin decisiones críticas
+   - Sesiones con solo cambios cosméticos
+   - Sesiones sin impacto arquitectónico
+   - Sesiones de debugging/fixes menores
 
-   **ADRs a arxivar:**
-   - ADRs amb estat `deprecated`
-   - ADRs `superseded` per decisions més recents
-   - ADRs massa específiques (detalls d'implementació)
-   - ADRs de decisions revertides
+   **ADRs a archivar:**
+   - ADRs con estado `deprecated`
+   - ADRs `superseded` por decisiones más recientes
+   - ADRs muy específicas (detalles de implementación)
+   - ADRs de decisiones revertidas
 
-3. **Moure a history:**
+3. **Mover a history:**
    ```bash
-   # Crear history/ si cal
+   # Crear history/ si hace falta
    mkdir -p memsys3/memory/history/
 
-   # Copiar entries seleccionades
-   # - Extreure sessions irrellevants → memsys3/memory/history/old_sessions.yaml
-   # - Extreure ADRs irrellevants → memsys3/memory/history/old_adr.yaml
+   # Copiar entries seleccionadas
+   # - Extraer sesiones irrelevantes → memsys3/memory/history/old_sessions.yaml
+   # - Extraer ADRs irrelevantes → memsys3/memory/history/old_adr.yaml
    ```
 
-4. **Esborrar de full/:**
-   - Eliminar les entries mogudes de `memsys3/memory/full/sessions.yaml`
-   - Eliminar les entries mogudes de `memsys3/memory/full/adr.yaml`
+4. **Borrar de full/:**
+   - Eliminar las entries movidas de `memsys3/memory/full/sessions.yaml`
+   - Eliminar las entries movidas de `memsys3/memory/full/adr.yaml`
 
-5. **Verificar reducció:**
-   - Recomptar tokens dels fitxers `full/`
-   - Hauria d'estar ~120K tokens ara
+5. **Verificar reducción:**
+   - Recontar tokens de los archivos `full/`
+   - Debería estar ~120K tokens ahora
 
-6. **Continuar amb Fase 2** (compilació normal)
+6. **Continuar con Fase 2** (compilación normal)
 
-7. **Documentar a notes_compilacio:**
-   - Quantes sessions arxivades
-   - Quantes ADRs arxivades
-   - Tokens abans i després de l'arxivament
+7. **Documentar en notes_compilacio:**
+   - Cuántas sesiones archivadas
+   - Cuántas ADRs archivadas
+   - Tokens antes y después del archivado
 
-**Notes importants:**
-- `memsys3/memory/history/` **NO es llegeix** per futures compilacions → estalvi real de tokens
-- Les dades **NO es perden**, estan arxivades
-- Pots crear múltiples arxius: `old_sessions_2024.yaml`, `old_sessions_2023.yaml`, etc.
-- És **reversible**: pots recuperar d'history/ si cal
+**Notas importantes:**
+- `memsys3/memory/history/` **NO se lee** en futuras compilaciones → ahorro real de tokens
+- Los datos **NO se pierden**, están archivados
+- Puedes crear múltiples archivos: `old_sessions_2024.yaml`, `old_sessions_2023.yaml`, etc.
+- Es **reversible**: puedes recuperar de history/ si hace falta
 
-## Si superes 2000 línies
+## Si superas 2000 líneas
 
-Si després de la primera compilació superes 2000 línies:
+Si después de la primera compilación superas 2000 líneas:
 
-1. **Sintetitza** més les sessions (combina items similars)
-2. **Redueix** ADRs menys impactants
-3. **Condensa** gotchas a 1-2 línies
-4. **Prioritza** informació recent sobre antiga
+1. **Sintetiza** más las sesiones (combina items similares)
+2. **Reduce** ADRs menos impactantes
+3. **Condensa** gotchas a 1-2 líneas
+4. **Prioriza** información reciente sobre antigua
 
-Usa el teu criteri per mantenir l'essencial.
+Usa tu criterio para mantener lo esencial.
 
-## Important
+## Importante
 
-- **NO inventes informació** - només compila el que existeix
-- **Pots arxivar** a `memsys3/memory/history/` si superes 150K tokens (Pla de Contingència)
-- **SÍ pots esborrar** de `memsys3/memory/full/` després d'arxivar a `history/`
-- **SÍ actualitza** el timestamp i versió de compilació
-- **SÍ documenta** els criteris usats a notes_compilacio (incloent arxivament si s'escau)
-- **Confia en el teu criteri** - tu tens la visió completa, els DevAgents no
+- **NO inventes información** - solo compila lo que existe
+- **Puedes archivar** a `memsys3/memory/history/` si superas 150K tokens (Plan de Contingencia)
+- **SÍ puedes borrar** de `memsys3/memory/full/` después de archivar a `history/`
+- **SÍ actualiza** el timestamp y versión de compilación
+- **SÍ documenta** los criterios usados en notes_compilacio (incluyendo archivado si procede)
+- **Confía en tu criterio** - tú tienes la visión completa, los DevAgents no
 
-## Exemples de Bon Criteri
+## Ejemplos de Buen Criterio
 
-### ADR a INCLOURE:
+### ADR a INCLUIR:
 ```yaml
 id: "003"
-decisio: "jsPDF amb text real en lloc d'html2canvas per PDFs"
-motiu: "html2canvas genera imatges pixelades i no seleccionables"
-impacte: "Tots els PDFs del projecte són professionals i accessibles"
+decisio: "jsPDF con texto real en lugar de html2canvas para PDFs"
+motiu: "html2canvas genera imágenes pixeladas y no seleccionables"
+impacte: "Todos los PDFs del proyecto son profesionales y accesibles"
 ```
-**Per què?** Decisió arquitectònica que afecta TOTS els PDFs del projecte.
+**¿Por qué?** Decisión arquitectónica que afecta TODOS los PDFs del proyecto.
 
-### ADR a EXCLOURE:
+### ADR a EXCLUIR:
 ```yaml
 id: "042"
-decisio: "Utilitzar padding-left: 15px al botó de submit"
-motiu: "Millor alineació visual"
-impacte: "Botó més ben alineat"
+decisio: "Utilizar padding-left: 15px en el botón de submit"
+motiu: "Mejor alineación visual"
+impacte: "Botón mejor alineado"
 ```
-**Per què?** Detall cosmètic sense impacte arquitectònic.
+**¿Por qué?** Detalle cosmético sin impacto arquitectónico.
 
-### Sessió a SINTETITZAR:
+### Sesión a SINTETIZAR:
 ```yaml
-# Original (massa detall):
+# Original (demasiado detalle):
 features_implementades:
-  - Canviat color del header de #fff a #f0f0f0
-  - Actualitzat font-size de 14px a 16px
-  - Fixat typo "descripcion" → "descripción"
-  - Afegit margin-top al footer
-  - Refactoritzat nom variable i→index
+  - Cambiado color del header de #fff a #f0f0f0
+  - Actualizado font-size de 14px a 16px
+  - Fixeado typo "descripcion" → "descripción"
+  - Añadido margin-top al footer
+  - Refactorizado nombre variable i→index
 
-# Sintetitzat (essencial):
+# Sintetizado (esencial):
 features_implementades:
-  - Millores UI al header i footer
+  - Mejoras UI en header y footer
 ```
 
-### Gotcha CRÍTIC (incloure):
+### Gotcha CRÍTICO (incluir):
 ```yaml
 id: "vercel_auth"
-problema: "Vercel activa Deployment Protection per defecte"
-solucio: "Desactivar a Settings > Deployment Protection"
+problema: "Vercel activa Deployment Protection por defecto"
+solucio: "Desactivar en Settings > Deployment Protection"
 ```
-**Per què?** Bloquer que trenca l'accés públic si no es coneix.
+**¿Por qué?** Blocker que rompe el acceso público si no se conoce.
 
-### Gotcha NO CRÍTIC (excloure):
+### Gotcha NO CRÍTICO (excluir):
 ```yaml
 id: "typo_readme"
-problema: "README tenia typo al títol"
-solucio: "Corregit"
+problema: "README tenía typo en el título"
+solucio: "Corregido"
 ```
-**Per què?** Ja està resolt i no afecta el desenvolupament.
+**¿Por qué?** Ya está resuelto y no afecta el desarrollo.
 
 ---
 
-**Comença la compilació llegint tots els fitxers i aplicant el teu criteri per generar `context.yaml`.**
+**COMIENZA AHORA LA COMPILACIÓN leyendo todos los archivos y aplicando tu criterio para generar `context.yaml`.**

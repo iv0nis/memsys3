@@ -1,5 +1,5 @@
 # Architecture Decision Records - memsys3
-# Decisions arquitectòniques del projecte memsys3
+# Decisiones arquitectónicas del proyecto memsys3
 
 adrs:
   - id: "006"
@@ -424,38 +424,38 @@ adrs:
     area: arquitectura
 
     context: |
-      Durant la validació del deployment va sorgir confusió sobre tres aspectes:
+      Durante la validación del deployment surgió confusión sobre tres aspectos:
 
-      1. **Templates dins de templates**: memsys3_templates/ és una carpeta-template completa,
-         però dins té memory/templates/. Això genera la pregunta: què és template de què?
+      1. **Templates dentro de templates**: memsys3_templates/ es una carpeta-template completa,
+         pero dentro tiene memory/templates/. Esto genera la pregunta: ¿qué es template de qué?
 
-      2. **Ús de templates/**: Inicialment es va pensar en borrar memory/templates/ després
-         del deployment, però en revisar el contingut es va descobrir que conté:
-         - Estructura exacta d'ADRs, sessions, project-status
-         - Instruccions d'ús (ordre cronològic, límits, etc.)
-         - Exemples de bona vs mala documentació
-         - Especificacions que endSession.md no detalla
+      2. **Uso de templates/**: Inicialmente se pensó en borrar memory/templates/ después
+         del deployment, pero al revisar el contenido se descubrió que contiene:
+         - Estructura exacta de ADRs, sessions, project-status
+         - Instrucciones de uso (orden cronológico, límites, etc.)
+         - Ejemplos de buena vs mala documentación
+         - Especificaciones que endSession.md no detalla
 
-      3. **Ubicació de gotchas**: project-status-template.yaml inclou secció gotchas_i_issues,
-         però els gotchas surgen DURANT sessions de treball, no són característiques estàtiques
-         del projecte.
+      3. **Ubicación de gotchas**: project-status-template.yaml incluye sección gotchas_i_issues,
+         pero los gotchas surgen DURANTE sesiones de trabajo, no son características estáticas
+         del proyecto.
 
     decisio: |
-      **1. Concepte de memsys3_templates/ (ms3t):**
-      - ms3t/ = Estructura EXACTA del producte final
-      - Tots els arxius es copien durant deployment (inclòs memory/templates/)
-      - memory/templates/ NO es borra després del deployment
+      **1. Concepto de memsys3_templates/ (ms3t):**
+      - ms3t/ = Estructura EXACTA del producto final
+      - Todos los archivos se copian durante deployment (incluido memory/templates/)
+      - memory/templates/ NO se borra después del deployment
 
-      **2. memory/templates/ = Guías permanents:**
-      - Main-Agent consulta templates/ durant endSession.md
-      - "Com estructuro aquesta sessió?" → sessions-template.yaml
-      - "Quins camps té una ADR?" → adr-template.yaml
-      - "Què puc actualitzar a project-status?" → project-status-template.yaml
-      - Templates són documentació ACTIVA, no només guies de deployment
+      **2. memory/templates/ = Guías permanentes:**
+      - Main-Agent consulta templates/ durante endSession.md
+      - "¿Cómo estructuro esta sesión?" → sessions-template.yaml
+      - "¿Qué campos tiene un ADR?" → adr-template.yaml
+      - "¿Qué puedo actualizar en project-status?" → project-status-template.yaml
+      - Templates son documentación ACTIVA, no solo guías de deployment
 
-      **3. Gotchas documentats en sessions.yaml:**
-      - Main-Agent documenta gotchas en cada sessió on apareixen
-      - Structure en sessions.yaml:
+      **3. Gotchas documentados en sessions.yaml:**
+      - Main-Agent documenta gotchas en cada sesión donde aparecen
+      - Estructura en sessions.yaml:
         ```yaml
         sessions:
           - id: "2025-10-31"
@@ -465,79 +465,79 @@ adrs:
                 solucio: "[COM RESOLDRE]"
                 criticitat: "alta|mitjana|baixa"
         ```
-      - Context-Agent extreu gotchas de TOTES les sessions
-      - CA usa criteri intel·ligent per seleccionar top 5 més crítics
-      - Criteris: criticitat + recència + impacte
-      - project-status.yaml NO conté gotchas (només info general del projecte)
+      - Context-Agent extrae gotchas de TODAS las sesiones
+      - CA usa criterio inteligente para seleccionar top 5 más críticos
+      - Criterios: criticidad + recencia + impacto
+      - project-status.yaml NO contiene gotchas (solo info general del proyecto)
 
-      **4. Templates amb comentaris explicatius:**
-      - Camps amb [PLACEHOLDER] i comentaris inline
-      - Exemples de bones pràctiques
-      - deploy.md usa templates com a guia per fer briefing
+      **4. Templates con comentarios explicativos:**
+      - Campos con [PLACEHOLDER] y comentarios inline
+      - Ejemplos de buenas prácticas
+      - deploy.md usa templates como guía para hacer briefing
 
-      **5. Workflow de deployment actualitzat:**
+      **5. Workflow de deployment actualizado:**
       ```bash
-      # Usuari diu:
-      "Clona https://github.com/iv0nis/memsys3 com memsys3_temp
-       i executa memsys3_temp/memsys3/prompts/deploy.md"
+      # Usuario dice:
+      "Clona https://github.com/iv0nis/memsys3 como memsys3_temp
+       y ejecuta memsys3_temp/memsys3/prompts/deploy.md"
 
-      # Flux:
+      # Flujo:
       1. git clone https://github.com/iv0nis/memsys3 memsys3_temp
       2. cp -r memsys3_temp/memsys3/* ./memsys3/
-      3. Briefing usant templates/ com guia
-      4. Emplenar camps buits a project-status.yaml, main-agent.yaml
+      3. Briefing usando templates/ como guía
+      4. Rellenar campos vacíos en project-status.yaml, main-agent.yaml
       5. rm -rf memsys3_temp/
 
-      # Resultat: memsys3/ amb memory/templates/ inclòs (permanent)
+      # Resultado: memsys3/ con memory/templates/ incluido (permanente)
       ```
 
     alternatives:
       - nom: "Borrar templates/ després del deployment"
         pros:
-          - Menys arxius al projecte desplegat (~15KB menys)
-          - Més net
+          - Menos archivos en el proyecto desplegado (~15KB menos)
+          - Más limpio
         contras:
-          - Main-Agent perd referència de com documentar
-          - endSession.md no té guia d'estructura
-          - Exemples de bones pràctiques es perden
-        per_que_descartada: "Templates són crítics per Main-Agent durant tot el projecte"
+          - Main-Agent pierde referencia de cómo documentar
+          - endSession.md no tiene guía de estructura
+          - Ejemplos de buenas prácticas se pierden
+        per_que_descartada: "Templates son críticos para Main-Agent durante todo el proyecto"
 
       - nom: "Gotchas en project-status.yaml"
         pros:
-          - Centralitzat en un sol lloc
-          - Fàcil de trobar
+          - Centralizado en un solo lugar
+          - Fácil de encontrar
         contras:
-          - Descontextualitzats (no se sap quan van aparèixer)
-          - project-status més inflat
-          - No té sentit conceptual (gotchas surgen durant sessions)
-        per_que_descartada: "Gotchas són esdeveniments de sessions, no característiques estàtiques"
+          - Descontextualizados (no se sabe cuándo aparecieron)
+          - project-status más inflado
+          - No tiene sentido conceptual (gotchas surgen durante sesiones)
+        per_que_descartada: "Gotchas son eventos de sesiones, no características estáticas"
 
       - nom: "Crear fitxer gotchas.yaml separat"
         pros:
-          - Dedicat només a gotchas
+          - Dedicado solo a gotchas
         contras:
-          - Un fitxer més
-          - Descontextualitzats igualment
-          - CA hauria de llegir un fitxer extra
-        per_que_descartada: "Sessions ja documenten context temporal dels gotchas"
+          - Un archivo más
+          - Descontextualizados igualmente
+          - CA debería leer un archivo extra
+        per_que_descartada: "Sessions ya documentan contexto temporal de los gotchas"
 
     consequencies:
       positives:
-        - "Deployment més simple: copiar tot, no borrar templates/"
-        - "Main-Agent sempre té referència de com documentar correctament"
-        - "Gotchas contextualitzats (quan van aparèixer, en quina sessió)"
-        - "CA té flexibilitat per prioritzar gotchas segons criteri"
-        - "project-status.yaml més net (només info general)"
-        - "Templates enriquits amb comentaris guien briefing de deployment"
-        - "~15KB extra en projecte (4 templates, acceptable)"
+        - "Deployment más simple: copiar todo, no borrar templates/"
+        - "Main-Agent siempre tiene referencia de cómo documentar correctamente"
+        - "Gotchas contextualizados (cuándo aparecieron, en qué sesión)"
+        - "CA tiene flexibilidad para priorizar gotchas según criterio"
+        - "project-status.yaml más limpio (solo info general)"
+        - "Templates enriquecidos con comentarios guían briefing de deployment"
+        - "~15KB extra en proyecto (4 templates, aceptable)"
       negatives:
-        - "memory/templates/ es manté però no es borra (pot semblar residual)"
-        - "Gotchas dispersos entre sessions (cal llegir totes per compilar)"
-        - "Templates/ com a nom pot generar confusió (són guies, no templates)"
-      impacte: "Com es desplega memsys3, com Main-Agent documenta sessions, on es guarden gotchas"
+        - "memory/templates/ se mantiene pero no se borra (puede parecer residual)"
+        - "Gotchas dispersos entre sesiones (hay que leer todas para compilar)"
+        - "Templates/ como nombre puede generar confusión (son guías, no templates)"
+      impacte: "Cómo se despliega memsys3, cómo Main-Agent documenta sesiones, dónde se guardan gotchas"
 
     notes: |
-      Aquesta ADR resol confusions crítiques descobertes durant validació de deployment.
+      Esta ADR resuelve confusiones críticas descubiertas durante validación de deployment.
 
-      Consideració futura: Potser renombrar memory/templates/ a memory/guides/ per més
-      claredat conceptual, però es manté templates/ per no trencar res ara.
+      Consideración futura: Quizás renombrar memory/templates/ a memory/guides/ para más
+      claridad conceptual, pero se mantiene templates/ para no romper nada ahora.

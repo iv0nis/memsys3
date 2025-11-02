@@ -1,16 +1,16 @@
-# Deploy memsys3 - Configura el Sistema Memory per al teu Projecte
+# Deploy memsys3 - Configura el Sistema Memory para tu Proyecto
 
-Tu (DevAgent) has de configurar memsys3 per primer cop en aquest projecte.
+Tu (DevAgent) debes configurar memsys3 por primera vez en este proyecto.
 
-## Objectiu
+## Objetivo
 
-Desplegar l'estructura completa de memsys3 al projecte actual des de GitHub, personalitzar-la i inicialitzar-la.
+Desplegar la estructura completa de memsys3 al proyecto actual desde GitHub, personalizarla e inicializarla.
 
 ## Workflow de Deployment
 
-### Pas 1: Clonar Temporalment memsys3
+### Paso 1: Clonar Temporalmente memsys3
 
-El usuari t'indicarà des de quin directori treballes. Normalment serà el directori arrel del seu projecte.
+El usuario te indicará desde qué directorio trabajas. Normalmente será el directorio raíz de su proyecto.
 
 ```bash
 # Verificar que no hay deployment previo
@@ -31,13 +31,13 @@ if [ -d "memsys3_temp" ]; then
   rm -rf memsys3_temp
 fi
 
-# Clonar el repositori com a directori temporal
+# Clonar el repositorio como directorio temporal
 git clone https://github.com/iv0nis/memsys3 memsys3_temp
 ```
 
-### Pas 2: Copiar Estructura a memsys3/
+### Paso 2: Copiar Estructura a memsys3/
 
-Copia TOTA l'estructura de memsys3_templates/ al directori memsys3/ del projecte:
+Copia TODA la estructura de memsys3_templates/ al directorio memsys3/ del proyecto:
 
 ```bash
 # Crear estructura base
@@ -54,7 +54,7 @@ touch memsys3/memory/history/.gitkeep
 # Copiar templates
 cp memsys3_temp/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
 
-# Copiar visualitzador
+# Copiar visualizador
 cp -r memsys3_temp/memsys3_templates/viz/* memsys3/viz/
 
 # Copiar prompts
@@ -82,28 +82,28 @@ sessions: []
 EOF
 ```
 
-### Pas 3: Briefing amb l'Usuari
+### Paso 3: Briefing con el Usuario
 
-Abans de personalitzar, llegeix `memsys3/memory/templates/project-status-template.yaml` per saber quins camps necessites.
+Antes de personalizar, lee `memsys3/memory/templates/project-status-template.yaml` para saber qué campos necesitas.
 
-Pregunta a l'usuari:
+Pregunta al usuario:
 
-1. **Nom del projecte**: Què estem construint?
-2. **Descripció 1 línia**: Què fa el projecte?
-3. **Objectiu principal**: Quin és el goal del projecte?
-4. **Stack tecnològic**:
-   - Frontend (framework + versió)?
+1. **Nombre del proyecto**: ¿Qué estamos construyendo?
+2. **Descripción 1 línea**: ¿Qué hace el proyecto?
+3. **Objetivo principal**: ¿Cuál es el goal del proyecto?
+4. **Stack tecnológico**:
+   - Frontend (framework + versión)?
    - Backend (si aplica)?
    - Deployment platform?
-5. **Fase actual**: Planificació, MVP, Beta, Producció?
-6. **URLs**: Producció, staging (si existeixen)?
-7. **Convencions**:
+5. **Fase actual**: Planificación, MVP, Beta, Producción?
+6. **URLs**: Producción, staging (si existen)?
+7. **Convenciones**:
    - Idioma UI?
-   - Idioma variables/comentaris?
+   - Idioma variables/comentarios?
 
-### Pas 4: Crear project-status.yaml
+### Paso 4: Crear project-status.yaml
 
-Amb la info recopilada, crea `memsys3/memory/project-status.yaml`:
+Con la info recopilada, crea `memsys3/memory/project-status.yaml`:
 
 ```yaml
 # Project Status - [NOMBRE_PROYECTO]
@@ -128,7 +128,7 @@ features: {}
 stack_tecnologic:
   frontend:
     framework: "[FRAMEWORK]"
-    # Afegeix camps segons resposta usuari
+    # Añade campos según respuesta usuario
 
   backend:
     # Si aplica
@@ -137,95 +137,95 @@ stack_tecnologic:
     platform: "[PLATFORM]"
 
 urls:
-  # production: "[URL_SI_EXISTEIX]"
-  # staging: "[URL_SI_EXISTEIX]"
+  # production: "[URL_SI_EXISTE]"
+  # staging: "[URL_SI_EXISTE]"
 
 pendents_prioritaris:
-  # Si user ha mencionat tasques, afegeix-les
-  # Altrament deixa buit
+  # Si user ha mencionado tareas, añádelas
+  # De lo contrario deja vacío
 
 decisions_clau: {}
 convencions_codi: {}
 historic_sessions: []
 ```
 
-### Pas 5: Personalitzar prompts/newSession.md
+### Paso 5: Personalizar prompts/newSession.md
 
-Edita `memsys3/prompts/newSession.md` amb la informació del projecte:
+Edita `memsys3/prompts/newSession.md` con la información del proyecto:
 
 ```markdown
-- En aquest projecte treballarem en [DESCRIPCIO_DEL_PROJECTE].
-- Actúa segons les instruccions a '@memsys3/agents/main-agent.yaml'
-- [COMPORTAMENT_ESPECIFIC_SI_USER_HA_DEMANAT]
-- Llegeix @memsys3/memory/project-status.yaml i @memsys3/memory/context.yaml
+- En este proyecto trabajaremos en [DESCRIPCION_DEL_PROYECTO].
+- Actúa según las instrucciones en '@memsys3/agents/main-agent.yaml'
+- [COMPORTAMIENTO_ESPECIFICO_SI_USER_HA_PEDIDO]
+- Lee @memsys3/memory/project-status.yaml y @memsys3/memory/context.yaml
 ```
 
-### Pas 6: Personalitzar agents/main-agent.yaml (opcional)
+### Paso 6: Personalizar agents/main-agent.yaml (opcional)
 
-Si l'usuari ha especificat alguna cosa particular sobre el comportament de l'agent, afegeix-ho:
+Si el usuario ha especificado algo particular sobre el comportamiento del agente, añádelo:
 
 ```yaml
 comportament_especific:
-  [SI_USER_HA_DEMANAT]: "[INSTRUCCIO]"
+  [SI_USER_HA_PEDIDO]: "[INSTRUCCION]"
 ```
 
-### Pas 7: Eliminar Clone Temporal
+### Paso 7: Eliminar Clone Temporal
 
 ```bash
 rm -rf memsys3_temp
 ```
 
-### Pas 8: Informar l'Usuari
+### Paso 8: Informar al Usuario
 
-Confirma que el deployment s'ha completat correctament:
+Confirma que el deployment se ha completado correctamente:
 
 ```
-✅ memsys3 deployment completat!
+✅ memsys3 deployment completado!
 
 Estructura creada:
-- memsys3/memory/full/ (adr.yaml, sessions.yaml inicialitzats)
-- memsys3/memory/templates/ (guies permanents)
-- memsys3/memory/history/ (per Plan Contingencia)
-- memsys3/viz/ (visualitzador web)
+- memsys3/memory/full/ (adr.yaml, sessions.yaml inicializados)
+- memsys3/memory/templates/ (guías permanentes)
+- memsys3/memory/history/ (para Plan Contingencia)
+- memsys3/viz/ (visualizador web)
 - memsys3/prompts/ (newSession, endSession, compile-context, etc.)
 - memsys3/agents/ (main-agent, context-agent)
 
-Fitxers personalitzats:
+Archivos personalizados:
 - memsys3/memory/project-status.yaml
 - memsys3/prompts/newSession.md
 
-Pròxims passos:
+Próximos pasos:
 1. Compila context inicial: @memsys3/prompts/compile-context.md
-2. Visualitza la memòria: @memsys3/prompts/mind.md
-3. Comença a treballar amb sessions: @memsys3/prompts/newSession.md
+2. Visualiza la memoria: @memsys3/prompts/mind.md
+3. Comienza a trabajar con sesiones: @memsys3/prompts/newSession.md
 
-Escalabilitat automàtica:
-📈 Rotació automàtica: >1800 línies → sessions_N.yaml, adr_N.yaml
+Escalabilidad automática:
+📈 Rotación automática: >1800 líneas → sessions_N.yaml, adr_N.yaml
 📦 Plan Contingencia: >150K tokens → archivado a history/
-🔍 Context compilat: màxim 2000 línies per sessió
+🔍 Context compilado: máximo 2000 líneas por sesión
 ```
 
-## Notes Importants
+## Notas Importantes
 
-- **Templates permanents**: `memory/templates/` són guies que Main-Agent consultarà durant endSession. NO els esborris.
-- **Clone temporal**: memsys3_temp/ s'esborra després de copiar. És només per deployment.
-- **Personalització mínima**: Només project-status.yaml i newSession.md necessiten personalització. Resta de fitxers són agnòstics.
-- **Idioma**: Pregunta a l'usuari quin idioma vol per la interfície i el codi.
+- **Templates permanentes**: `memory/templates/` son guías que Main-Agent consultará durante endSession. NO los borres.
+- **Clone temporal**: memsys3_temp/ se borra después de copiar. Es solo para deployment.
+- **Personalización mínima**: Solo project-status.yaml y newSession.md necesitan personalización. Resto de archivos son agnósticos.
+- **Idioma**: Pregunta al usuario qué idioma quiere para la interfaz y el código.
 
 ## Troubleshooting
 
 **"git clone falla":**
-- Verifica connexió a internet
-- Comprova que git està instal·lat: `git --version`
+- Verifica conexión a internet
+- Comprueba que git está instalado: `git --version`
 
 **"mkdir falla":**
-- Verifica que estàs al directori correcte del projecte
-- Comprova permisos d'escriptura
+- Verifica que estás en el directorio correcto del proyecto
+- Comprueba permisos de escritura
 
-**"Templates no es copien":**
-- Verifica que memsys3_temp/ existeix
-- Comprova que la ruta memsys3_temp/memsys3_templates/ té els fitxers
+**"Templates no se copian":**
+- Verifica que memsys3_temp/ existe
+- Comprueba que la ruta memsys3_temp/memsys3_templates/ tiene los archivos
 
 ---
 
-**Deployment completat. El sistema està llest per usar.**
+**Deployment completado. El sistema está listo para usar.**

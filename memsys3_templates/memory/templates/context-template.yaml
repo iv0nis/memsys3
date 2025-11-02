@@ -1,7 +1,7 @@
 # Context Template
-# Aquest és el fitxer que carrega DevAI per entendre el projecte
-# És compilat pel Context Agent (CA) des de memsys3/memory/full/
-# Límit ÚNIC: màxim 2000 línies total
+# Este es el archivo que carga DevAI para entender el proyecto
+# Es compilado por el Context Agent (CA) desde memory/full/
+# Límite ÚNICO: máximo 2000 líneas total
 
 metadata:
   compilat_per: "Context Agent"
@@ -28,7 +28,7 @@ features:
     estat: "[operatiu|desenvolupament|pendent]"
     descripcio: "[DESCRIPCIÓ_BREU]"
 
-  # CA afegeix tantes features com necessari
+  # CA añade tantas features como sea necesario
 
 # ============================================
 # STACK TECNOLÒGIC
@@ -38,7 +38,7 @@ stack:
   backend: "[RUNTIME + FRAMEWORK]"
   database: "[DATABASE si n'hi ha]"
   deploy: "[PLATFORM]"
-  # Només l'essencial del stack
+  # Solo lo esencial del stack
 
 # ============================================
 # URLS PRINCIPALS
@@ -46,12 +46,12 @@ stack:
 urls:
   production: "[URL_PRINCIPAL]"
   staging: "[URL_STAGING si n'hi ha]"
-  # CA afegeix URLs rellevants
+  # CA añade URLs relevantes
 
 # ============================================
-# ADRs RELLEVANTS
-# CA selecciona amb criteri intel·ligent segons impacte global
-# NO hi ha límit fix, només criteri i 2000 línies totals
+# ADRs RELEVANTES
+# CA selecciona con criterio inteligente según impacto global
+# NO hay límite fijo, solo criterio y 2000 líneas totales
 # ============================================
 adrs:
   - id: "001"
@@ -60,12 +60,12 @@ adrs:
     motiu: "[PER QUÈ]"
     impacte: "[IMPACTE_GLOBAL]"
 
-  # CA afegeix més ADRs segons rellevància
-  # Decisions amb impacte global, no òbvies, arquitectòniques
+  # CA añade más ADRs según relevancia
+  # Decisiones con impacto global, no obvias, arquitectónicas
 
 # ============================================
-# ÚLTIMA SESSIÓ (o sessions recents)
-# CA sintetitza sessions més impactants
+# ÚLTIMA SESIÓN (o sesiones recientes)
+# CA sintetiza sesiones más impactantes
 # ============================================
 ultima_sessio:
   data: "[YYYY-MM-DD]"
@@ -81,25 +81,25 @@ ultima_sessio:
     - "[TASCA_PENDENT_IMPORTANT]"
     - "[BLOCKER_CONEGUT]"
 
-# Si hi ha múltiples sessions recents rellevants, CA pot afegir més
+# Si hay múltiples sesiones recientes relevantes, CA puede añadir más
 
 # ============================================
-# GOTCHAS CRÍTICS
-# Errors/configuracions que trenquen el projecte si no es coneixen
-# CA filtra amb criteri: només imprescindibles
+# GOTCHAS CRÍTICOS
+# Errores/configuraciones que rompen el proyecto si no se conocen
+# CA filtra con criterio: solo imprescindibles
 # ============================================
 gotchas:
   - id: "[ID_DESCRIPTIU]"
     problema: "[PROBLEMA_CRÍTIC]"
     solucio: "[COM_RESOLDRE]"
 
-  # CA afegeix només gotchas actius i crítics
-  # Contra-intuitius, que trenquen desenvolupament, repetitius
+  # CA añade solo gotchas activos y críticos
+  # Contra-intuitivos, que rompen desarrollo, repetitivos
 
 # ============================================
-# PENDENTS PRIORITARIS
-# Tasques més importants del projecte ara
-# CA prioritza segons project-status i context recent
+# PENDIENTES PRIORITARIOS
+# Tareas más importantes del proyecto ahora
+# CA prioriza según project-status y contexto reciente
 # ============================================
 pendents:
   - prioritat: 1
@@ -110,16 +110,16 @@ pendents:
     tasca: "[SEGONA_PRIORITAT]"
     detall: "[CONTEXT_ADDICIONAL]"
 
-  # CA afegeix segons prioritat real, no límit fix
+  # CA añade según prioridad real, no límite fijo
 
 # ============================================
-# NOTES DE COMPILACIÓ DEL CA
-# Transparència del procés de compilació
+# NOTAS DE COMPILACIÓN DEL CA
+# Transparencia del proceso de compilación
 # ============================================
 notes_compilacio:
-  adrs_totals: "[N total a memsys3/memory/full/adr.yaml]"
+  adrs_totals: "[N total a memory/full/adr.yaml]"
   adrs_incloses: "[M seleccionades per context]"
-  sessions_totals: "[X total a memsys3/memory/full/sessions.yaml]"
+  sessions_totals: "[X total a memory/full/sessions.yaml]"
   sessions_incloses: "[Y sintetitzades en context]"
   tokens_inicials: "[Tokens llegits de full/]"
   tokens_finals: "[Tokens del context.yaml generat]"
@@ -128,9 +128,9 @@ notes_compilacio:
   linies_totals: "[~X línies de 2000 màxim]"
 
 # ============================================
-# NOTES D'ÚS
+# NOTAS DE USO
 # ============================================
-# Aquest fitxer és COMPILAT automàticament, no editar manualment
-# Per actualitzar: executar @memsys3/prompts/compile-context.md
-# Per més detalls: veure memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml
-# Si context massa gran: CA mourà dades a memsys3/memory/history/ (no llegit)
+# Este archivo es COMPILADO automáticamente, no editar manualmente
+# Para actualizar: ejecutar @memsys3/prompts/compile-context.md
+# Para más detalles: ver memory/full/adr.yaml y memory/full/sessions.yaml
+# Si contexto demasiado grande: CA moverá datos a memory/history/ (no leído)

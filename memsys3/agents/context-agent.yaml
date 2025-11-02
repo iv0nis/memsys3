@@ -1,33 +1,33 @@
 # Context Agent (CA) - Configuration & Instructions
 
 rol: Context Agent
-descripcio: Agent especialitzat en compilar context complet del projecte en un fitxer compacte optimitzat per DevAI
-objectiu: Generar memsys3/memory/context.yaml amb màxim 2000 línies (~2000-3000 tokens) mantenint informació crítica
+descripcio: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para DevAI
+objectiu: Generar memsys3/memory/context.yaml con máximo 2000 líneas (~2000-3000 tokens) manteniendo información crítica
 
 # ============================================
-# INPUTS - QUÈ LLEGIR
+# INPUTS - QUÉ LEER
 # ============================================
 inputs:
   obligatoris:
     - path: memsys3/memory/project-status.yaml
-      descripcio: Estat actual del projecte amb features, stack, URLs
-      accio: Llegir complet i extreure info clau
+      descripcio: Estado actual del proyecto con features, stack, URLs
+      accio: Leer completo y extraer info clave
 
     - path: memsys3/memory/full/adr.yaml
-      descripcio: Totes les Architecture Decision Records històriques
-      accio: Filtrar segons criteris i seleccionar les més rellevants
+      descripcio: Todas las Architecture Decision Records históricas
+      accio: Filtrar según criterios y seleccionar las más relevantes
 
     - path: memsys3/memory/full/sessions.yaml
-      descripcio: Històric complet de sessions de treball
-      accio: Extreure i sintetitzar última sessió
+      descripcio: Histórico completo de sesiones de trabajo
+      accio: Extraer y sintetizar última sesión
 
   opcionals:
     - path: memsys3/memory/templates/
-      descripcio: Templates per referència d'estructura
-      accio: Usar context-template.yaml com a base per output
+      descripcio: Templates para referencia de estructura
+      accio: Usar context-template.yaml como base para output
 
 # ============================================
-# OUTPUT - QUÈ GENERAR
+# OUTPUT - QUÉ GENERAR
 # ============================================
 output:
   path: memsys3/memory/context.yaml
@@ -55,35 +55,35 @@ limits:
     linies_per_adr: 4
     total_caracters: 1200
     criteris_seleccio:
-      - Estat "accepted" només
-      - Impacte global alt
-      - Afecta múltiples components
-      - No òbvia llegint codi
-      - Prioritza decisions recents
+      - Estado "accepted" solo
+      - Impacto global alto
+      - Afecta múltiples componentes
+      - No obvia leyendo código
+      - Prioriza decisiones recientes
 
   ultima_sessio:
     maxim_linies: 15
     estructura:
       data: 1 línia
       durada: 1 línia
-      que_es_va_fer: 3-5 items (només els més importants)
-      decisions: 1-3 items (només decisions clau)
+      que_es_va_fer: 3-5 items (solo los más importantes)
+      decisions: 1-3 items (solo decisiones clave)
       proxims_passos: 2-3 items
     accions:
-      - Sintetitzar: combinar items similars
-      - Eliminar: detalls tècnics excessius (canvis de padding, typos, etc.)
-      - Mantenir: features implementades, problemes crítics resolts
+      - Sintetizar: combinar items similares
+      - Eliminar: detalles técnicos excesivos (cambios de padding, typos, etc.)
+      - Mantener: features implementadas, problemas críticos resueltos
 
   gotchas:
     maxim: 5
     caracters_per_gotcha: 150
-    origen: full/sessions.yaml (camp gotchas de cada sessió)
+    origen: full/sessions.yaml (campo gotchas de cada sesión)
     criteris:
-      - Criticitat alta prioritària
-      - Errors que trenquen el projecte
-      - Contra-intuitius
-      - Es repeteixen sovint
-      - Recencia (sessions més recents pesen més)
+      - Criticidad alta prioritaria
+      - Errores que rompen el proyecto
+      - Contra-intuitivos
+      - Se repiten a menudo
+      - Recencia (sesiones más recientes pesan más)
     format:
       tipus: 1 línia
       problema: 2 línies màxim
@@ -92,164 +92,164 @@ limits:
 
   pendents:
     maxim: 5
-    criteris: Top 5 prioritats del project-status.yaml
+    criteris: Top 5 prioridades del project-status.yaml
     format:
       prioritat: número
       tasca: 1 línia
       detall: 1 línia opcional
 
 # ============================================
-# INSTRUCCIONS DE COMPILACIÓ - PAS A PAS
+# INSTRUCCIONES DE COMPILACIÓN - PASO A PASO
 # ============================================
 instruccions:
   pas_1_llegir:
-    - Carrega memsys3/memory/project-status.yaml complet
-    - Carrega memsys3/memory/full/adr.yaml complet
-    - Carrega memsys3/memory/full/sessions.yaml complet
-    - Carrega memsys3/memory/templates/context-template.yaml per estructura
+    - Carga memsys3/memory/project-status.yaml completo
+    - Carga memsys3/memory/full/adr.yaml completo
+    - Carga memsys3/memory/full/sessions.yaml completo
+    - Carga memsys3/memory/templates/context-template.yaml para estructura
 
   pas_2_extreure:
     project:
       - Copia: nom, descripcio, fase, ultima_feature, seguent_milestone
-      - Font: project-status.yaml → visio_general i estat_actual
+      - Fuente: project-status.yaml → visio_general y estat_actual
 
     features:
-      - Copia features operatives amb: nom, url, estat, descripcio
-      - Font: project-status.yaml → features
-      - Ometre: funcionalitats detallades (massa llarg)
+      - Copia features operativas con: nom, url, estat, descripcio
+      - Fuente: project-status.yaml → features
+      - Omitir: funcionalidades detalladas (demasiado largo)
 
     stack:
-      - Copia: frontend, backend, deploy essencials
-      - Font: project-status.yaml → stack_tecnologic
-      - Format: només framework + versió, NO detalls
+      - Copia: frontend, backend, deploy esenciales
+      - Fuente: project-status.yaml → stack_tecnologic
+      - Formato: solo framework + versión, NO detalles
 
     urls:
-      - Copia URLs de producció principals
-      - Font: project-status.yaml → urls
+      - Copia URLs de producción principales
+      - Fuente: project-status.yaml → urls
 
   pas_3_filtrar_adrs:
     criteris_aplicar:
-      - Estat = "accepted"
-      - Ordenar per impacte global (alt → baix)
+      - Estado = "accepted"
+      - Ordenar por impacto global (alto → bajo)
       - Seleccionar top 7
-      - Per cada ADR, extreure: id, titol, decisio, motiu, impacte
-      - Màxim 3-4 línies per ADR
-      - Ometre: alternatives_considerades, notes, context extens
+      - Por cada ADR, extraer: id, titol, decisio, motiu, impacte
+      - Máximo 3-4 líneas por ADR
+      - Omitir: alternatives_considerades, notes, context extenso
 
     exemples_excloure:
       - ADRs deprecated
-      - Decisions massa específiques (colors, padding)
-      - Decisions òbvies llegint el codi
+      - Decisiones demasiado específicas (colores, padding)
+      - Decisiones obvias leyendo el código
 
     exemples_incloure:
-      - "jsPDF vs html2canvas per PDFs"
+      - "jsPDF vs html2canvas para PDFs"
       - "Astro vs Next.js"
-      - "No usar base de dades en MVP"
+      - "No usar base de datos en MVP"
 
   pas_4_sintetitzar_sessio:
-    - Agafar última sessió de full/sessions.yaml
-    - Extreure:
+    - Tomar última sesión de full/sessions.yaml
+    - Extraer:
         data: copiar literal
         durada: copiar literal
-        que_es_va_fer: top 3-5 features/tasques (les més importants)
-        decisions: 1-3 decisions (només clau, ignorar menors)
+        que_es_va_fer: top 3-5 features/tareas (las más importantes)
+        decisions: 1-3 decisiones (solo clave, ignorar menores)
         proxims_passos: 2-3 items
-    - Sintetitzar:
-        combinar: items similars
-        eliminar: typos, canvis de styling, detalls menors
-        mantenir: features, problemes crítics, decisions arquitectòniques
+    - Sintetizar:
+        combinar: items similares
+        eliminar: typos, cambios de styling, detalles menores
+        mantener: features, problemas críticos, decisiones arquitectónicas
 
   pas_5_filtrar_gotchas:
-    - Extreure gotchas de TOTES les sessions a full/sessions.yaml
-    - Agregar tots els gotchas trobats en sessions
-    - Ordenar per criticitat (alta > mitjana > baixa) i recencia
-    - Seleccionar top 5 més crítics
-    - Per cada gotcha: tipus, problema (breu), solucio (breu), criticitat
-    - Màxim 150 caràcters per gotcha
+    - Extraer gotchas de TODAS las sesiones en full/sessions.yaml
+    - Agregar todos los gotchas encontrados en sesiones
+    - Ordenar por criticidad (alta > mitjana > baixa) y recencia
+    - Seleccionar top 5 más críticos
+    - Por cada gotcha: tipus, problema (breve), solucio (breve), criticitat
+    - Máximo 150 caracteres por gotcha
 
   pas_6_copiar_pendents:
-    - Agafar top 5 de project-status.yaml → pendents_prioritaris
+    - Tomar top 5 de project-status.yaml → pendents_prioritaris
     - Copiar literal: prioritat, tasca, detall
 
   pas_7_generar_output:
-    - Usar memsys3/memory/templates/context-template.yaml com a base
-    - Omplir amb dades extretes i filtrades dels passos anteriors
-    - Afegir metadata:
+    - Usar memsys3/memory/templates/context-template.yaml como base
+    - Rellenar con datos extraídos y filtrados de los pasos anteriores
+    - Añadir metadata:
         compilat_per: "Context Agent"
         ultima_compilacio: timestamp actual
-        versio_context: incrementar versió
-    - Afegir notes_compilacio:
+        versio_context: incrementar versión
+    - Añadir notes_compilacio:
         adrs_totals: número total de full/adr.yaml
-        adrs_incloses: número inclòs al context
-        sessions_totals: número total sessions
-        criteris_filtratge: breu explicació
+        adrs_incloses: número incluido en el context
+        sessions_totals: número total sesiones
+        criteris_filtratge: breve explicación
 
   pas_8_validar:
-    - Comptar línies totals de context.yaml generat
-    - Si > 2000 línies: reduir més (filtrar ADRs menys crítiques, sintetitzar més)
-    - Si < 1500 línies: probablement correcte, però verifica que no falta info crítica
-    - Objectiu: ~1800-2000 línies màxim
+    - Contar líneas totales de context.yaml generado
+    - Si > 2000 líneas: reducir más (filtrar ADRs menos críticas, sintetizar más)
+    - Si < 1500 líneas: probablemente correcto, pero verificar que no falta info crítica
+    - Objetivo: ~1800-2000 líneas máximo
 
   pas_9_escriure:
-    - Escriure a memsys3/memory/context.yaml
-    - NO modificar cap altre fitxer
-    - NO esborrar res de full/
+    - Escribir en memsys3/memory/context.yaml
+    - NO modificar ningún otro archivo
+    - NO borrar nada de full/
 
 # ============================================
-# REGLES IMPORTANTS
+# REGLAS IMPORTANTES
 # ============================================
 regles:
   obligatories:
-    - NO inventar informació que no existeix
-    - NO modificar full/ - només lectura
-    - NO esborrar context anterior sense llegir-lo primer
-    - SÍ documentar què has filtrat a notes_compilacio
-    - SÍ mantenir format YAML estricte
-    - SÍ actualitzar timestamp i versió
+    - NO inventar información que no existe
+    - NO modificar full/ - solo lectura
+    - NO borrar context anterior sin leerlo primero
+    - SÍ documentar qué has filtrado en notes_compilacio
+    - SÍ mantener formato YAML estricto
+    - SÍ actualizar timestamp y versión
 
   qualitat:
-    - Prioritzar claredat sobre exhaustivitat
-    - Menys és més: millor ometre que saturar
-    - Mantenir coherència amb templates
-    - Assegurar DevAI pot entendre context en <5min lectura
+    - Priorizar claridad sobre exhaustividad
+    - Menos es más: mejor omitir que saturar
+    - Mantener coherencia con templates
+    - Asegurar que DevAI pueda entender context en <5min lectura
 
 # ============================================
-# EXEMPLES DE BON/MAL FILTRATGE
+# EJEMPLOS DE BUEN/MAL FILTRADO
 # ============================================
 exemples:
   adr_massa_especifica:
-    NO_incloure: "Utilitzar padding-left: 15px al botó d'exemple"
-    motiu: Massa específic, no afecta arquitectura global
+    NO_incloure: "Utilizar padding-left: 15px en el botón de ejemplo"
+    motiu: Demasiado específico, no afecta arquitectura global
 
   adr_rellevant:
     SI_incloure:
-      titol: "jsPDF amb text real vs html2canvas"
-      decisio: "Usar jsPDF amb text real"
-      motiu: "html2canvas genera imatges pixelades"
-      impacte: "Tots els PDFs són seleccionables i professionals"
+      titol: "jsPDF con texto real vs html2canvas"
+      decisio: "Usar jsPDF con texto real"
+      motiu: "html2canvas genera imágenes pixeladas"
+      impacte: "Todos los PDFs son seleccionables y profesionales"
 
   sessio_massa_detallada:
     NO_incloure:
-      - "Canviat color botó #fff → #f0f0f0"
-      - "Fixat typo línia 234"
-      - "Actualitzat README amb link"
-    motiu: Detalls menors sense impacte
+      - "Cambiado color botón #fff → #f0f0f0"
+      - "Arreglado typo línea 234"
+      - "Actualizado README con link"
+    motiu: Detalles menores sin impacto
 
   sessio_ben_sintetitzada:
     SI_incloure:
-      - "Implementat sistema d'exportació de documents"
-      - "Resolt: Documents eren imatges → ara text real seleccionable"
-      - "Decisió: Llibreria X vs Y per millor qualitat"
+      - "Implementado sistema de exportación de documentos"
+      - "Resuelto: Documentos eran imágenes → ahora texto real seleccionable"
+      - "Decisión: Librería X vs Y para mejor calidad"
 
   gotcha_no_critic:
-    NO_incloure: "El botó no té focus state"
-    motiu: No trenca el projecte
+    NO_incloure: "El botón no tiene focus state"
+    motiu: No rompe el proyecto
 
   gotcha_critic:
     SI_incloure:
       id: "vercel_auth"
-      problema: "Vercel activa Deployment Protection per defecte"
-      solucio: "Desactivar a Settings > Deployment Protection"
+      problema: "Vercel activa Deployment Protection por defecto"
+      solucio: "Desactivar en Settings > Deployment Protection"
 
 # ============================================
 # INVOCACIÓ
@@ -257,19 +257,19 @@ exemples:
 com_executar:
   via_prompt: "@memsys3/prompts/compile-context.md"
   via_slash: "/compile-context"
-  manual: "Carrega aquest fitxer i segueix les instruccions pas a pas"
+  manual: "Carga este archivo y sigue las instrucciones paso a paso"
 
 frequencia:
   executar_quan:
-    - Sessió gran completada (>2h treball)
-    - 3+ ADRs noves afegides
-    - full/sessions.md té >10 sessions
-    - context.yaml té >1 setmana
+    - Sesión grande completada (>2h trabajo)
+    - 3+ ADRs nuevas añadidas
+    - full/sessions.md tiene >10 sesiones
+    - context.yaml tiene >1 semana
 
   NO_executar_quan:
-    - Canvi menor de codi
+    - Cambio menor de código
     - Fixes o typos
-    - context.yaml actualitzat recentment
+    - context.yaml actualizado recientemente
 
 # ============================================
 # METADATA
