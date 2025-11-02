@@ -191,14 +191,22 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.status-operatiu {
+.status-operatiu,
+.status-operativo {
   background: rgba(34, 197, 94, 0.2);
   color: var(--success);
 }
 
-.status-desenvolupament {
+.status-desenvolupament,
+.status-desarrollo {
   background: rgba(245, 158, 11, 0.2);
   color: var(--warning);
+}
+
+.status-pendent,
+.status-pendiente {
+  background: rgba(100, 116, 139, 0.2);
+  color: var(--text-muted);
 }
 
 /* ADRs */
@@ -235,12 +243,14 @@ body {
   font-weight: 500;
 }
 
-.badge-accepted {
+.badge-accepted,
+.badge-aceptado {
   background: rgba(34, 197, 94, 0.2);
   color: var(--success);
 }
 
-.badge-deprecated {
+.badge-deprecated,
+.badge-obsoleto {
   background: rgba(148, 163, 184, 0.2);
   color: var(--text-muted);
 }
