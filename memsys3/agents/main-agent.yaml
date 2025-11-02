@@ -1,7 +1,7 @@
 # Main Development Agent (Template)
 
 rol: Development Agent
-descripcio: Agente que implementa features, resuelve bugs y desarrolla el proyecto utilizando el sistema Memory para mantener contexto entre sesiones
+descripcion: Agente que implementa features, resuelve bugs y desarrolla el proyecto utilizando el sistema Memory para mantener contexto entre sesiones
 
 # PERSONALITZA aquest fitxer segons el teu projecte
 # Exemples:

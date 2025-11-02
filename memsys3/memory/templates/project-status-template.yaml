@@ -3,38 +3,38 @@
 # Copia este archivo y rellena los campos marcados con [RELLENAR]
 
 metadata:
-  ultima_actualitzacio: "[DATA]"  # Ejemplo: 2025-10-23
-  actualitzat_per: "[NOM]"  # Quién ha hecho la última actualización
+  ultima_actualizacion: "[DATA]"  # Ejemplo: 2025-10-23
+  actualizado_por: "[NOM]"  # Quién ha hecho la última actualización
   fase: "[FASE]"  # Ejemplos: Planificación, MVP, Beta, Producción, Mantenimiento
 
 visio_general:
   que_es: "[DESCRIPCIÓ 1 LÍNIA]"  # Qué hace el proyecto en una frase
-  objectiu: "[OBJECTIU PRINCIPAL]"  # Qué quiere conseguir
+  objetivo: "[OBJECTIU PRINCIPAL]"  # Qué quiere conseguir
   client: "[CLIENT/STAKEHOLDER]"  # Opcional, si aplica
 
 estat_actual:
   fase: "[FASE ACTUAL]"  # Dónde está el proyecto ahora
   ultima_feature: "[ÚLTIMA FEATURE IMPLEMENTADA]"  # Qué se ha hecho recientemente
-  seguent_milestone: "[PRÒXIM OBJECTIU]"  # Hacia dónde vamos
+  siguiente_milestone: "[PRÒXIM OBJECTIU]"  # Hacia dónde vamos
 
 # Define aquí cada feature/módulo del proyecto
 # Puedes añadir tantas features como necesites siguiendo este esquema:
 features:
   feature_exemple_1:  # ID único de la feature (kebab-case)
-    nom: "[NOM FEATURE]"  # Nombre visual de la feature
+    nombre: "[NOM FEATURE]"  # Nombre visual de la feature
     url: "[URL]"  # URL de producción o staging, si aplica
-    estat: "[operatiu|desenvolupament|pendent|deprecated]"
-    descripcio: "[DESCRIPCIÓ BREU]"  # Qué hace esta feature
+    estado: "[operativo|desarrollo|pendiente|obsoleto]"
+    descripcion: "[DESCRIPCIÓ BREU]"  # Qué hace esta feature
     funcionalitats:  # Lista de capacidades principales
       - "[FUNCIONALITAT 1]"
       - "[FUNCIONALITAT 2]"
     notes: "[NOTES ADDICIONALS]"  # Opcional
 
   feature_exemple_2:
-    nom: "[NOM FEATURE]"
+    nombre: "[NOM FEATURE]"
     url: "[URL]"
-    estat: "[ESTAT]"
-    descripcio: "[DESCRIPCIÓ]"
+    estado: "[ESTAT]"
+    descripcion: "[DESCRIPCIÓ]"
     funcionalitats:
       - "[FUNCIONALITAT 1]"
 
@@ -54,7 +54,7 @@ stack_tecnologic:
     auth: "[SISTEMA AUTH]"  # Opcional: JWT, OAuth, etc.
 
   llibreries_clau:  # Opcional: librerías importantes a destacar
-    - nom: "[NOM LLIBRERIA]"
+    - nombre: "[NOM LLIBRERIA]"
       us: "[PER QUÈ S'USA]"
 
   deploy:
@@ -71,7 +71,7 @@ urls:
   # Añade más URLs según necesidad
 
 # Tareas pendientes ordenadas por prioridad
-pendents_prioritaris:
+pendientes_prioritarios:
   - prioritat: 1
     tasca: "[TASCA MÉS IMPORTANT]"
     detall: "[DETALLS O CONTEXT]"  # Opcional
@@ -87,14 +87,14 @@ pendents_prioritaris:
 # Documenta el "por qué" de decisiones no obvias
 decisions_clau:
   decisio_exemple_1:  # ID de la decisión
-    decisio: "[QUÈ ES VA DECIDIR]"  # La decisión tomada
-    motiu: "[PER QUÈ]"  # Razonamiento detrás de la decisión
+    decision: "[QUÈ ES VA DECIDIR]"  # La decisión tomada
+    motivo: "[PER QUÈ]"  # Razonamiento detrás de la decisión
     alternatives_considerades: "[ALTERNATIVES]"  # Opcional
-    impacte: "[IMPACTE EN EL PROJECTE]"  # Opcional
+    impacto: "[IMPACTE EN EL PROJECTE]"  # Opcional
 
   decisio_exemple_2:
-    decisio: "[DECISIÓ]"
-    motiu: "[MOTIU]"
+    decision: "[DECISIÓ]"
+    motivo: "[MOTIU]"
 
   # Añade más decisiones importantes aquí
 
@@ -132,15 +132,15 @@ comandos_utils:
 # Añade una entrada para cada sesión de trabajo significativa
 historic_sessions:
   - data: "[YYYY-MM-DD]"
-    durada: "[DURADA]"  # Opcional: 2h, 1 día, etc.
-    objectiu: "[OBJECTIU SESSIÓ]"  # Qué se quería conseguir
-    features_implementades:
+    duracion: "[DURADA]"  # Opcional: 2h, 1 día, etc.
+    objetivo: "[OBJECTIU SESSIÓ]"  # Qué se quería conseguir
+    features_implementadas:
       - "[FEATURE 1]"
       - "[FEATURE 2]"
-    problemes_resolts:
+    problemas_resueltos:
       - "[PROBLEMA 1]"
       - "[PROBLEMA 2]"
-    decisions_preses:
+    decisiones_tomadas:
       - "[DECISIÓ 1]"
       - "[DECISIÓ 2]"
     notes: "[NOTES ADDICIONALS]"  # Opcional

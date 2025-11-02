@@ -3,9 +3,9 @@
 
 adrs:
   - id: "006"
-    titol: "Sistema de rutas unificado memsys3/"
+    titulo: "Sistema de rutas unificado memsys3/"
     data: "2025-10-29"
-    estat: accepted
+    estado: aceptado
     area: arquitectura
 
     context: |
@@ -18,7 +18,7 @@ adrs:
       - No estaba claro si las rutas eran del template o del deployment
       - Los READMEs mezclaban niveles (template vs sistema desplegado)
 
-    decisio: |
+    decision: |
       TODAS las rutas en memsys3_templates/ deben usar el prefijo `memsys3/`:
 
       - `memsys3/memory/context.yaml`
@@ -62,12 +62,12 @@ adrs:
       negatives:
         - "Rutas más largas en prompts"
         - "Requiere disciplina al crear nuevos prompts"
-      impacte: "Cómo se estructuran y referencian todos los archivos del sistema"
+      impacto: "Cómo se estructuran y referencian todos los archivos del sistema"
 
   - id: "007"
-    titol: "Separación de meta-niveles en READMEs"
+    titulo: "Separación de meta-niveles en READMEs"
     data: "2025-10-29"
-    estat: accepted
+    estado: aceptado
     area: documentación
 
     context: |
@@ -79,7 +79,7 @@ adrs:
 
       Esto generaba confusión porque no estaba claro el "nivel" de cada información.
 
-    decisio: |
+    decision: |
       Crear READMEs separados por meta-nivel:
 
       1. README.md (raíz repositorio):
@@ -125,12 +125,12 @@ adrs:
       negatives:
         - "Más archivos que mantener"
         - "Requiere disciplina para actualizar todos"
-      impacte: "Cómo se estructura toda la documentación del proyecto"
+      impacto: "Cómo se estructura toda la documentación del proyecto"
 
   - id: "008"
-    titol: "Main-Agent NO debe proponer compile-context"
+    titulo: "Main-Agent NO debe proponer compile-context"
     data: "2025-10-29"
-    estat: accepted
+    estado: aceptado
     area: workflow
 
     context: |
@@ -144,7 +144,7 @@ adrs:
 
       Esto es ineficiente y puede superar límites de contexto.
 
-    decisio: |
+    decision: |
       Main-Agent tiene restricción explícita en agents/main-agent.yaml:
       - NO proponer ejecutar @memsys3/prompts/compile-context.md
       - Solo sugerir endSession al finalizar sesión
@@ -180,12 +180,12 @@ adrs:
       negatives:
         - "Requiere paso manual extra de compilación"
         - "Context puede quedar desactualizado entre compilaciones"
-      impacte: "Cómo se gestiona el workflow de compilación de contexto"
+      impacto: "Cómo se gestiona el workflow de compilación de contexto"
 
   - id: "001"
-    titol: "Criteri intel·ligent del Context Agent vs límits arbitraris"
+    titulo: "Criteri intel·ligent del Context Agent vs límits arbitraris"
     data: "2025-10-28"
-    estat: accepted
+    estado: aceptado
     area: arquitectura
 
     context: |
@@ -193,7 +193,7 @@ adrs:
       que no s'adaptaven a la realitat del projecte. Projectes petits perdien context,
       projectes grans no podien expressar-se adequadament.
 
-    decisio: |
+    decision: |
       El Context Agent usa criteri intel·ligent basant-se en la pregunta:
       "Què ha de saber QUALSEVOL agent descontextualitzat per treballar aquí?"
 
@@ -227,19 +227,19 @@ adrs:
       negatives:
         - "Menys predictible (depèn criteri CA)"
         - "Pot variar entre compilacions"
-      impacte: "Com es compila tot el context del sistema"
+      impacto: "Com es compila tot el context del sistema"
 
   - id: "002"
-    titol: "Rotació automàtica de sessions/ADRs (>1800 línies)"
+    titulo: "Rotació automàtica de sessions/ADRs (>1800 línies)"
     data: "2025-10-28"
-    estat: accepted
+    estado: aceptado
     area: escalabilitat
 
     context: |
       Read tool té límit de 2000 línies. Si sessions.yaml o adr.yaml creixen
       massa, els agents no poden llegir-los.
 
-    decisio: |
+    decision: |
       Quan sessions.yaml o adr.yaml superen 1800 línies:
       - endSession.md detecta automàticament
       - Fa rotació segura: copia → verifica → crea nou
@@ -273,12 +273,12 @@ adrs:
       negatives:
         - "Múltiples fitxers (sessions_1, sessions_2, etc.)"
         - "CA ha de llegir múltiples fitxers"
-      impacte: "Com es gestiona el creixement de dades històriques"
+      impacto: "Com es gestiona el creixement de dades històriques"
 
   - id: "003"
-    titol: "Pla de Contingència amb arxivament intel·ligent (>150K tokens)"
+    titulo: "Pla de Contingència amb arxivament intel·ligent (>150K tokens)"
     data: "2025-10-28"
-    estat: accepted
+    estado: aceptado
     area: escalabilitat
 
     context: |
@@ -286,7 +286,7 @@ adrs:
       Si full/ (amb tots els fitxers rotats) supera 150K tokens, el CA no pot
       processar-ho eficientment.
 
-    decisio: |
+    decision: |
       Quan total de full/ supera 150K tokens:
       1. CA identifica ADRs/sessions irrellevants amb criteri intel·ligent
       2. Les mou a memory/history/ (que NO es llegeix)
@@ -319,19 +319,19 @@ adrs:
       negatives:
         - "Dades arxivades no visibles per CA"
         - "Depèn criteri CA per arxivar"
-      impacte: "Com es gestionen projectes amb molt històric"
+      impacto: "Com es gestionen projectes amb molt històric"
 
   - id: "004"
-    titol: "YAML per tot (incloent sessions)"
+    titulo: "YAML per tot (incloent sessions)"
     data: "2025-10-28"
-    estat: accepted
+    estado: aceptado
     area: format
 
     context: |
       Sessions originalment eren .md (Markdown). Templates i ADRs ja eren YAML.
       Inconsistència de formats dificultava parsing i estalvi de tokens.
 
-    decisio: |
+    decision: |
       Tot el sistema usa YAML:
       - sessions.yaml (abans sessions.md)
       - adr.yaml
@@ -366,19 +366,19 @@ adrs:
       negatives:
         - "Menys familiar per alguns devs"
         - "Requereix indentació estricta"
-      impacte: "Format de tota la documentació del sistema"
+      impacto: "Format de tota la documentació del sistema"
 
   - id: "005"
-    titol: "deploy.md com a prompt (no script shell)"
+    titulo: "deploy.md com a prompt (no script shell)"
     data: "2025-10-28"
-    estat: accepted
+    estado: aceptado
     area: usabilitat
 
     context: |
       Necessitàvem manera de desplegar memsys3 en nous projectes.
       Opcions: script shell automàtic vs prompt per Main-Agent.
 
-    decisio: |
+    decision: |
       Crear prompts/deploy.md que el Main-Agent executa.
       L'agent fa briefing amb user per personalitzar el deployment:
       - Pregunta sobre projecte, stack, comportament
@@ -415,12 +415,12 @@ adrs:
       negatives:
         - "Requereix AI agent per executar"
         - "No funciona sense agent"
-      impacte: "Com els usuaris despleguen memsys3 en els seus projectes"
+      impacto: "Com els usuaris despleguen memsys3 en els seus projectes"
 
   - id: "009"
-    titol: "Templates com a documentació activa permanent + gotchas en sessions"
+    titulo: "Templates com a documentació activa permanent + gotchas en sessions"
     data: "2025-10-31"
-    estat: accepted
+    estado: aceptado
     area: arquitectura
 
     context: |
@@ -440,7 +440,7 @@ adrs:
          pero los gotchas surgen DURANTE sesiones de trabajo, no son características estáticas
          del proyecto.
 
-    decisio: |
+    decision: |
       **1. Concepto de memsys3_templates/ (ms3t):**
       - ms3t/ = Estructura EXACTA del producto final
       - Todos los archivos se copian durante deployment (incluido memory/templates/)
@@ -463,7 +463,7 @@ adrs:
               - tipus: "warning|gotcha|issue"
                 problema: "[DESCRIPCIÓ]"
                 solucio: "[COM RESOLDRE]"
-                criticitat: "alta|mitjana|baixa"
+                criticidad: "alta|media|baja"
         ```
       - Context-Agent extrae gotchas de TODAS las sesiones
       - CA usa criterio inteligente para seleccionar top 5 más críticos
@@ -534,7 +534,7 @@ adrs:
         - "memory/templates/ se mantiene pero no se borra (puede parecer residual)"
         - "Gotchas dispersos entre sesiones (hay que leer todas para compilar)"
         - "Templates/ como nombre puede generar confusión (son guías, no templates)"
-      impacte: "Cómo se despliega memsys3, cómo Main-Agent documenta sesiones, dónde se guardan gotchas"
+      impacto: "Cómo se despliega memsys3, cómo Main-Agent documenta sesiones, dónde se guardan gotchas"
 
     notes: |
       Esta ADR resuelve confusiones críticas descubiertas durante validación de deployment.
