@@ -165,7 +165,7 @@ Edita `memsys3/prompts/newSession.md` con la información del proyecto:
 Si el usuario ha especificado algo particular sobre el comportamiento del agente, añádelo:
 
 ```yaml
-comportament_especific:
+comportamiento_especific:
   [SI_USER_HA_PEDIDO]: "[INSTRUCCION]"
 ```
 
