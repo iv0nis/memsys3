@@ -102,11 +102,11 @@ function renderAgentView() {
   // Project info
   const project = contextData.project || {};
   document.getElementById('agentProject').innerHTML = `
-    <p><strong>Nombre:</strong> ${project.nom || project.nombre || 'N/A'}</p>
-    <p><strong>Descripción:</strong> ${project.descripcio || project.descripcion || 'N/A'}</p>
+    <p><strong>Nombre:</strong> ${project.nombre || 'N/A'}</p>
+    <p><strong>Descripción:</strong> ${project.descripcion || 'N/A'}</p>
     <p><strong>Fase:</strong> ${project.fase || 'N/A'}</p>
     <p><strong>Última feature:</strong> ${project.ultima_feature || 'N/A'}</p>
-    <p><strong>Siguiente milestone:</strong> ${project.seguent_milestone || project.siguiente_milestone || 'N/A'}</p>
+    <p><strong>Siguiente milestone:</strong> ${project.siguiente_milestone || 'N/A'}</p>
   `;
 
   // Features
@@ -115,9 +115,9 @@ function renderAgentView() {
     const f = features[key];
     return `
       <div class="feature-card">
-        <span class="feature-status status-${f.estat || f.estado || 'pendiente'}">${f.estat || f.estado || 'pendiente'}</span>
-        <h4>${f.nom || f.nombre || key}</h4>
-        <p>${f.descripcio || f.descripcion || ''}</p>
+        <span class="feature-status status-${f.estado || 'pendiente'}">${f.estado || 'pendiente'}</span>
+        <h4>${f.nombre || key}</h4>
+        <p>${f.descripcion || ''}</p>
         ${f.url ? `<p><a href="${f.url}" target="_blank">${f.url}</a></p>` : ''}
       </div>
     `;
@@ -129,23 +129,23 @@ function renderAgentView() {
   const adrsHTML = (Array.isArray(adrs) ? adrs : []).map(adr => `
     <div class="adr-card">
       <div class="adr-header">
-        <div class="adr-title">ADR-${adr.id}: ${adr.titol || adr.titulo}</div>
+        <div class="adr-title">ADR-${adr.id}: ${adr.titulo}</div>
       </div>
-      <p><strong>Decisión:</strong> ${adr.decisio || adr.decision}</p>
-      <p><strong>Motivo:</strong> ${adr.motiu || adr.motivo}</p>
-      <p><strong>Impacto:</strong> ${adr.impacte || adr.impacto}</p>
+      <p><strong>Decisión:</strong> ${adr.decision}</p>
+      <p><strong>Motivo:</strong> ${adr.motivo}</p>
+      <p><strong>Impacto:</strong> ${adr.impacto}</p>
     </div>
   `).join('');
   document.getElementById('agentADRs').innerHTML = adrsHTML || '<p>No ADRs</p>';
 
   // Última sesión
-  const session = contextData.ultima_sessio || {};
+  const session = contextData.ultima_sesion || {};
   const sessionHTML = `
     <p><strong>Fecha:</strong> ${session.data || 'N/A'}</p>
-    <p><strong>Duración:</strong> ${session.durada || session.duracion || 'N/A'}</p>
-    ${session.que_es_va_fer || session.que_se_hizo ? `
+    <p><strong>Duración:</strong> ${session.duracion || 'N/A'}</p>
+    ${session.que_se_hizo ? `
       <h4>Qué se hizo:</h4>
-      <ul>${(Array.isArray(session.que_es_va_fer || session.que_se_hizo) ? (session.que_es_va_fer || session.que_se_hizo) : []).map(item => `<li>${item}</li>`).join('')}</ul>
+      <ul>${(Array.isArray(session.que_se_hizo) ? session.que_se_hizo : []).map(item => `<li>${item}</li>`).join('')}</ul>
     ` : ''}
     ${session.decisions ? `
       <h4>Decisiones:</h4>
@@ -164,15 +164,15 @@ function renderAgentView() {
   `).join('');
   document.getElementById('agentGotchas').innerHTML = gotchasHTML || '<p>No gotchas</p>';
 
-  // Pendents
-  const pendents = contextData.pendents || [];
-  const pendentsHTML = (Array.isArray(pendents) ? pendents : []).map(p => `
-    <div class="pendent-item">
+  // Pendientes
+  const pendientes = contextData.pendientes || [];
+  const pendientesHTML = (Array.isArray(pendientes) ? pendientes : []).map(p => `
+    <div class="pendiente-item">
       <strong>P${p.prioritat}:</strong> ${p.tasca}<br>
       ${p.detall ? `<em>${p.detall}</em>` : ''}
     </div>
   `).join('');
-  document.getElementById('agentPendents').innerHTML = pendentsHTML || '<p>No pendents</p>';
+  document.getElementById('agentPendents').innerHTML = pendientesHTML || '<p>No pendientes</p>';
 }
 
 // Render Full History
@@ -182,12 +182,12 @@ function renderFullHistory() {
     const adrsHTML = fullADRs.adrs.map(adr => `
       <div class="adr-card">
         <div class="adr-header">
-          <div class="adr-title">ADR-${adr.id}: ${adr.titol || adr.titulo}</div>
-          <span class="adr-badge badge-${adr.estat || adr.estado}">${adr.estat || adr.estado}</span>
+          <div class="adr-title">ADR-${adr.id}: ${adr.titulo}</div>
+          <span class="adr-badge badge-${adr.estado}">${adr.estado}</span>
         </div>
         <p><strong>Fecha:</strong> ${adr.data}</p>
         <p><strong>Área:</strong> ${adr.area}</p>
-        <p>${adr.decisio || adr.decision}</p>
+        <p>${adr.decision}</p>
       </div>
     `).join('');
     document.getElementById('fullADRs').innerHTML = adrsHTML;
@@ -198,55 +198,55 @@ function renderFullHistory() {
   // Full Sessions
   if (fullSessions && fullSessions.sessions) {
     const sessionsHTML = fullSessions.sessions.map(session => {
-      const featuresHTML = (session.features_implementades || session.features_implementadas) ?
+      const featuresHTML = session.features_implementadas ?
         '<h4>Features Implementadas:</h4><ul>' +
-        (session.features_implementades || session.features_implementadas).map(f => `<li><strong>${f.nom || f.nombre}:</strong> ${f.descripcio || f.descripcion}</li>`).join('') +
+        session.features_implementadas.map(f => `<li><strong>${f.nombre}:</strong> ${f.descripcion}</li>`).join('') +
         '</ul>' : '';
 
-      const problemesHTML = (session.problemes_resolts || session.problemas_resueltos) ?
+      const problemesHTML = session.problemas_resueltos ?
         '<h4>Problemas Resueltos:</h4><ul>' +
-        (session.problemes_resolts || session.problemas_resueltos).map(p => `<li><strong>${p.problema}:</strong> ${p.solucio || p.solucion}</li>`).join('') +
+        session.problemas_resueltos.map(p => `<li><strong>${p.problema}:</strong> ${p.solucion}</li>`).join('') +
         '</ul>' : '';
 
-      const decisionsHTML = (session.decisions_preses || session.decisiones_tomadas) ?
+      const decisionsHTML = session.decisiones_tomadas ?
         '<h4>Decisiones Tomadas:</h4><ul>' +
-        (session.decisions_preses || session.decisiones_tomadas).map(d => {
+        session.decisiones_tomadas.map(d => {
           const adrLink = d.adr_relacionada ? ` <span class="adr-link">(ADR-${d.adr_relacionada})</span>` : '';
-          return `<li><strong>${d.decisio || d.decision}:</strong> ${d.justificacio || d.justificacion}${adrLink}</li>`;
+          return `<li><strong>${d.decision}:</strong> ${d.justificacion}${adrLink}</li>`;
         }).join('') +
         '</ul>' : '';
 
-      const techHTML = (session.tecnologies_afegides || session.tecnologias_agregadas) ?
+      const techHTML = session.tecnologias_agregadas ?
         '<h4>Tecnologías Añadidas:</h4><ul>' +
-        (session.tecnologies_afegides || session.tecnologias_agregadas).map(t => `<li><strong>${t.nom || t.nombre}:</strong> ${t.motiu || t.motivo}</li>`).join('') +
+        session.tecnologias_agregadas.map(t => `<li><strong>${t.nombre}:</strong> ${t.motivo}</li>`).join('') +
         '</ul>' : '';
 
       const deploysHTML = session.deployments ?
         '<h4>Deployments:</h4><ul>' +
-        session.deployments.map(d => `<li><strong>${d.servei || d.servicio}:</strong> <a href="${d.url}" target="_blank">${d.url}</a></li>`).join('') +
+        session.deployments.map(d => `<li><strong>${d.servicio}:</strong> <a href="${d.url}" target="_blank">${d.url}</a></li>`).join('') +
         '</ul>' : '';
 
-      const pendentsHTML = (session.proxims_passos || session.proximos_pasos) ?
+      const proximosHTML = session.proximos_pasos ?
         '<h4>Próximos Pasos:</h4><ul>' +
-        (session.proxims_passos || session.proximos_pasos).map(p => `<li>${p}</li>`).join('') +
+        session.proximos_pasos.map(p => `<li>${p}</li>`).join('') +
         '</ul>' : '';
 
       return `
         <div class="session-card">
-          <h3>${session.titol || session.titulo || session.id}</h3>
+          <h3>${session.titulo || session.id}</h3>
           <div class="session-meta">
             <span><strong>Fecha:</strong> ${session.data}</span>
-            <span><strong>Duración:</strong> ${session.durada || session.duracion}</span>
-            <span><strong>Participantes:</strong> ${Array.isArray(session.participants || session.participantes) ? (session.participants || session.participantes).join(', ') : (session.participants || session.participantes)}</span>
+            <span><strong>Duración:</strong> ${session.duracion}</span>
+            <span><strong>Participantes:</strong> ${Array.isArray(session.participantes) ? session.participantes.join(', ') : session.participantes}</span>
           </div>
-          <p class="session-objective"><strong>Objetivo:</strong> ${session.objectiu || session.objetivo}</p>
+          <p class="session-objective"><strong>Objetivo:</strong> ${session.objetivo}</p>
           ${featuresHTML}
           ${problemesHTML}
           ${decisionsHTML}
           ${techHTML}
           ${deploysHTML}
-          ${pendentsHTML}
-          ${(session.notes_addicionals || session.notas_adicionales) ? `<div class="session-notes"><h4>Notas Adicionales:</h4><pre>${session.notes_addicionals || session.notas_adicionales}</pre></div>` : ''}
+          ${proximosHTML}
+          ${session.notas_adicionales ? `<div class="session-notes"><h4>Notas Adicionales:</h4><pre>${session.notas_adicionales}</pre></div>` : ''}
         </div>
       `;
     }).join('');
@@ -308,18 +308,18 @@ function renderProjectStatus() {
 
 // Render Stats
 function renderStats() {
-  if (!contextData || !(contextData.notes_compilacio || contextData.notas_compilacion)) {
+  if (!contextData || !contextData.notas_compilacion) {
     return;
   }
 
-  const notes = contextData.notes_compilacio || contextData.notas_compilacion;
+  const notes = contextData.notas_compilacion;
 
-  document.getElementById('statADRsTotal').textContent = notes.adrs_totals || notes.adrs_totales || '-';
-  document.getElementById('statADRsFiltered').textContent = notes.adrs_incloses || notes.adrs_incluidas || '-';
-  document.getElementById('statSessionsTotal').textContent = notes.sessions_totals || notes.sesiones_totales || '-';
+  document.getElementById('statADRsTotal').textContent = notes.adrs_totales || '-';
+  document.getElementById('statADRsFiltered').textContent = notes.adrs_incluidas || '-';
+  document.getElementById('statSessionsTotal').textContent = notes.sesiones_totales || '-';
 
   if (contextData.metadata) {
-    document.getElementById('statLastCompiled').textContent = contextData.metadata.ultima_compilacio || contextData.metadata.ultima_compilacion || '-';
+    document.getElementById('statLastCompiled').textContent = contextData.metadata.ultima_compilacion || '-';
   }
 
   // Rough token estimation
@@ -329,7 +329,7 @@ function renderStats() {
 
   // Compilation notes
   document.getElementById('compilationNotes').innerHTML = `
-    <p><strong>Criteris de filtratge:</strong> ${notes.criteris_filtratge || notes.criterios_filtraje || 'N/A'}</p>
+    <p><strong>Criterios de filtraje:</strong> ${notes.criterios_filtraje || 'N/A'}</p>
   `;
 }
 
