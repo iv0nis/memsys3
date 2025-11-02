@@ -237,7 +237,7 @@ sesiones_recientes:
       - "Creación inicial memsys3 v1.0"
       - "Context Agent con criterio inteligente, Plan Contingencia, Rotación automática"
       - "Visualizador Web Memory: 4 pestañas, js-yaml, Python server"
-      - "Publicado a GitHub (21 archivos, 3056 línies)"
+      - "Publicado a GitHub (21 archivos, 3056 líneas)"
 
 # ============================================
 # GOTCHAS CRÍTICS
@@ -275,7 +275,7 @@ gotchas:
 
   - id: "read_tool_limit"
     tipo: "warning"
-    problema: "Read tool tiene límite de 2000 línies - sessions.yaml o adr.yaml pueden créixer infinitament"
+    problema: "Read tool tiene límite de 2000 líneas - sessions.yaml o adr.yaml pueden crecer infinitament"
     solucion: "Sistema de rotación automática >1800 líneas (sessions_N.yaml, adr_N.yaml)"
     criticidad: "alta"
     sesion: "2025-10-28"
