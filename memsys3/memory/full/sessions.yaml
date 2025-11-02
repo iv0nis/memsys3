@@ -2,6 +2,57 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-11-02-fase3-correcciones"
+    titulo: "Corrección FASE 3 - Traducir Valores Descriptivos YAML (101 instancias)"
+    data: "2025-11-02"
+    duracion: "~2.5h"
+    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    objetivo: "Corregir error crítico de FASE 3: keys YAML traducidos pero valores descriptivos NO traducidos (101 instancias de catalán residual)"
+
+    features_implementadas:
+      - nombre: "Corrección valores descriptivos YAML (8 archivos)"
+        descripcion: "Traducidos ~40 palabras catalanas en valores descriptivos: automàtica→automática, rotació→rotación, intel·ligent→inteligente, línies→líneas, Pla→Plan, Contingència→Contingencia, Fa→Hace, criteri→criterio, arxivament→archivado, irrellevants→irrelevantes, massa→demasiados, però→pero, això→esto, només→solo, molt→muy, dades→datos, fitxers→archivos, poden→pueden, creixen→crecen, llegeix→lee, tots els→todos los, mou→mueve, pot→puede, Estalvi→Ahorro, es llegeix→se lee, Eliminats→Eliminados, límits→límites, visió→visión, decideix→decide, què→qué, descontextualitzat→descontextualizado, té→tiene, màxim→máximo. Total: 101 instancias eliminadas."
+
+      - nombre: "Sincronización templates (8 archivos)"
+        descripcion: "Copiados 8 archivos corregidos de memsys3/ a memsys3_templates/: context.yaml, project-status.yaml, adr.yaml, sessions.yaml, 2 templates, 2 prompts .md, context-agent.yaml"
+
+      - nombre: "Documentación auditoría"
+        descripcion: "Agregados 3 documentos: AUDITORIA-DOCUMENTACION.md, MENSAJE-PARA-INSTANCIA.md, traduccion-FASE3-CORRECCIONES.md para documentar el error y las correcciones necesarias"
+
+    problemas_resueltos:
+      - problema: "Error crítico FASE 3: Keys YAML traducidos correctamente PERO valores descriptivos quedaron en catalán (101 instancias)"
+        solucion: "Causa: FASE 3 usó replace de keys estructurales (descripcio:→descripcion:) pero NO revisó contenido textual dentro de valores. Solución: Revisión exhaustiva con sed de ~40 palabras catalanas distintivas en TODO el contenido YAML (no solo keys). Verificación con grep = 0 resultados."
+
+    decisiones_tomadas:
+      - decision: "Usar sed con word boundaries para correcciones masivas"
+        justificacion: "~101 instancias en 8 archivos grandes (adr.yaml 543 líneas, sessions.yaml 900 líneas). Edit tool sería muy lento. Sed con \\b permite reemplazos precisos sin romper sintaxis YAML."
+
+    tecnologias_agregadas: []
+
+    proximos_pasos:
+      - "Sistema completamente traducido - siguiente milestone: testing deployment UOC"
+
+    notas_adicionales: |
+      Auditoría detectó que instancia anterior (FASE 3) tradujo correctamente:
+      ✅ Keys YAML: descripcio → descripcion, objectiu → objetivo, etc.
+      ✅ Código JS/CSS: viewer.js, style.css 100% español
+
+      Pero NO tradujo:
+      ❌ Valores descriptivos dentro de YAML: "Rotació automàtica" → debía ser "Rotación automática"
+
+      Esta sesión corrigió ese error completamente.
+      Verificación exhaustiva: 0 catalán residual ✅
+
+      Commits:
+      - f60c8e0: Correcciones principales (101 instancias)
+      - 56c4901: Correcciones finales + docs auditoría
+
+    gotchas_documentados:
+      - tipo: "error"
+        problema: "Traducir 'keys YAML' NO es lo mismo que traducir 'valores descriptivos YAML' - son dos tareas diferentes y ambas necesarias"
+        solucion: "Después de traducir keys estructurales (descripcio:), hacer verificación exhaustiva con grep de palabras catalanas distintivas (automàtica, rotació, intel·ligent, etc.) en TODO el contenido, no solo en keys. Usar sed con word boundaries (\\b) para correcciones masivas seguras."
+        criticidad: "alta"
+
   - id: "2025-11-02-fase2-traduccion-completion"
     titulo: "FASE 2 Traducción Completa + Corrección Errores Críticos"
     data: "2025-11-02"
