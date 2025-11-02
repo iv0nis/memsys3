@@ -1,8 +1,8 @@
 # Context Agent (CA) - Configuration & Instructions
 
 rol: Context Agent
-descripcio: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para DevAI
-objectiu: Generar memsys3/memory/context.yaml con máximo 2000 líneas (~2000-3000 tokens) manteniendo información crítica
+descripcion: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para DevAI
+objetivo: Generar memsys3/memory/context.yaml con máximo 2000 líneas (~2000-3000 tokens) manteniendo información crítica
 
 # ============================================
 # INPUTS - QUÉ LEER
@@ -10,20 +10,20 @@ objectiu: Generar memsys3/memory/context.yaml con máximo 2000 líneas (~2000-30
 inputs:
   obligatoris:
     - path: memsys3/memory/project-status.yaml
-      descripcio: Estado actual del proyecto con features, stack, URLs
+      descripcion: Estado actual del proyecto con features, stack, URLs
       accio: Leer completo y extraer info clave
 
     - path: memsys3/memory/full/adr.yaml
-      descripcio: Todas las Architecture Decision Records históricas
+      descripcion: Todas las Architecture Decision Records históricas
       accio: Filtrar según criterios y seleccionar las más relevantes
 
     - path: memsys3/memory/full/sessions.yaml
-      descripcio: Histórico completo de sesiones de trabajo
+      descripcion: Histórico completo de sesiones de trabajo
       accio: Extraer y sintetizar última sesión
 
   opcionals:
     - path: memsys3/memory/templates/
-      descripcio: Templates para referencia de estructura
+      descripcion: Templates para referencia de estructura
       accio: Usar context-template.yaml como base para output
 
 # ============================================
@@ -43,7 +43,7 @@ output:
     - adrs (filtrades)
     - ultima_sessio (sintetitzada)
     - gotchas (crítics)
-    - pendents (top prioritaris)
+    - pendientes (top prioritaris)
     - notes_compilacio
 
 # ============================================
@@ -61,14 +61,14 @@ limits:
       - No obvia leyendo código
       - Prioriza decisiones recientes
 
-  ultima_sessio:
+  ultima_sesion:
     maxim_linies: 15
     estructura:
       data: 1 línia
-      durada: 1 línia
+      duracion: 1 línia
       que_es_va_fer: 3-5 items (solo los más importantes)
       decisions: 1-3 items (solo decisiones clave)
-      proxims_passos: 2-3 items
+      proximos_pasos: 2-3 items
     accions:
       - Sintetizar: combinar items similares
       - Eliminar: detalles técnicos excesivos (cambios de padding, typos, etc.)
@@ -87,10 +87,10 @@ limits:
     format:
       tipus: 1 línia
       problema: 2 línies màxim
-      solucio: 1 línia
-      criticitat: alta|mitjana|baixa
+      solucion: 1 línia
+      criticidad: alta|media|baja
 
-  pendents:
+  pendientes:
     maxim: 5
     criteris: Top 5 prioridades del project-status.yaml
     format:
@@ -146,14 +146,14 @@ instruccions:
       - "Astro vs Next.js"
       - "No usar base de datos en MVP"
 
-  pas_4_sintetitzar_sessio:
+  pas_4_sintetitzar_sesion:
     - Tomar última sesión de full/sessions.yaml
     - Extraer:
         data: copiar literal
-        durada: copiar literal
+        duracion: copiar literal
         que_es_va_fer: top 3-5 features/tareas (las más importantes)
         decisions: 1-3 decisiones (solo clave, ignorar menores)
-        proxims_passos: 2-3 items
+        proximos_pasos: 2-3 items
     - Sintetizar:
         combinar: items similares
         eliminar: typos, cambios de styling, detalles menores
@@ -162,27 +162,27 @@ instruccions:
   pas_5_filtrar_gotchas:
     - Extraer gotchas de TODAS las sesiones en full/sessions.yaml
     - Agregar todos los gotchas encontrados en sesiones
-    - Ordenar por criticidad (alta > mitjana > baixa) y recencia
+    - Ordenar por criticidad (alta > media > baja) y recencia
     - Seleccionar top 5 más críticos
     - Por cada gotcha: tipus, problema (breve), solucio (breve), criticitat
     - Máximo 150 caracteres por gotcha
 
-  pas_6_copiar_pendents:
-    - Tomar top 5 de project-status.yaml → pendents_prioritaris
+  pas_6_copiar_pendientes:
+    - Tomar top 5 de project-status.yaml → pendientes_prioritarios
     - Copiar literal: prioritat, tasca, detall
 
   pas_7_generar_output:
     - Usar memsys3/memory/templates/context-template.yaml como base
     - Rellenar con datos extraídos y filtrados de los pasos anteriores
     - Añadir metadata:
-        compilat_per: "Context Agent"
-        ultima_compilacio: timestamp actual
-        versio_context: incrementar versión
-    - Añadir notes_compilacio:
+        compilado_por: "Context Agent"
+        ultima_compilacion: timestamp actual
+        version_context: incrementar versión
+    - Añadir notas_compilacion:
         adrs_totals: número total de full/adr.yaml
-        adrs_incloses: número incluido en el context
-        sessions_totals: número total sesiones
-        criteris_filtratge: breve explicación
+        adrs_incluidas: número incluido en el context
+        sesiones_totales: número total sesiones
+        criterios_filtraje: breve explicación
 
   pas_8_validar:
     - Contar líneas totales de context.yaml generado
@@ -219,21 +219,21 @@ regles:
 exemples:
   adr_massa_especifica:
     NO_incloure: "Utilizar padding-left: 15px en el botón de ejemplo"
-    motiu: Demasiado específico, no afecta arquitectura global
+    motivo: Demasiado específico, no afecta arquitectura global
 
   adr_rellevant:
     SI_incloure:
-      titol: "jsPDF con texto real vs html2canvas"
-      decisio: "Usar jsPDF con texto real"
-      motiu: "html2canvas genera imágenes pixeladas"
-      impacte: "Todos los PDFs son seleccionables y profesionales"
+      titulo: "jsPDF con texto real vs html2canvas"
+      decision: "Usar jsPDF con texto real"
+      motivo: "html2canvas genera imágenes pixeladas"
+      impacto: "Todos los PDFs son seleccionables y profesionales"
 
   sessio_massa_detallada:
     NO_incloure:
       - "Cambiado color botón #fff → #f0f0f0"
       - "Arreglado typo línea 234"
       - "Actualizado README con link"
-    motiu: Detalles menores sin impacto
+    motivo: Detalles menores sin impacto
 
   sessio_ben_sintetitzada:
     SI_incloure:
@@ -243,13 +243,13 @@ exemples:
 
   gotcha_no_critic:
     NO_incloure: "El botón no tiene focus state"
-    motiu: No rompe el proyecto
+    motivo: No rompe el proyecto
 
   gotcha_critic:
     SI_incloure:
       id: "vercel_auth"
       problema: "Vercel activa Deployment Protection por defecto"
-      solucio: "Desactivar en Settings > Deployment Protection"
+      solucion: "Desactivar en Settings > Deployment Protection"
 
 # ============================================
 # INVOCACIÓ
