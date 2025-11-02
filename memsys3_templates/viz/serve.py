@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Minimal HTTP server per visualitzar la memòria dels agents.
-Ús: python serve.py
+Servidor HTTP mínimo para visualizar la memoria de los agentes.
+Uso: python serve.py
 """
 
 import http.server
@@ -19,7 +19,7 @@ class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
         return super().end_headers()
 
 if __name__ == '__main__':
-    # Servir des del directori memory/ per accedir a tots els YAMLs
+    # Servir desde el directorio memory/ para acceder a todos los YAMLs
     script_dir = os.path.dirname(os.path.abspath(__file__))
     memory_dir = os.path.dirname(script_dir)
     os.chdir(memory_dir)
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         print(f"🚀 Memory Visualizer running at {url}")
         print(f"📊 Press Ctrl+C to stop")
 
-        # Auto-obre navegador
+        # Auto-abre navegador
         webbrowser.open(url)
 
         try:

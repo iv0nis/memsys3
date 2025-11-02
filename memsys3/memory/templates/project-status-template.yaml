@@ -1,31 +1,31 @@
 # Project Status Template
-# Template agnòstic per documentar l'estat de qualsevol projecte
-# Copia aquest fitxer i omple els camps marcats amb [OMPLIR]
+# Template agnóstico para documentar el estado de cualquier proyecto
+# Copia este archivo y rellena los campos marcados con [RELLENAR]
 
 metadata:
-  ultima_actualitzacio: "[DATA]"  # Exemple: 2025-10-23
-  actualitzat_per: "[NOM]"  # Qui ha fet l'última actualització
-  fase: "[FASE]"  # Exemples: Planificació, MVP, Beta, Producció, Manteniment
+  ultima_actualitzacio: "[DATA]"  # Ejemplo: 2025-10-23
+  actualitzat_per: "[NOM]"  # Quién ha hecho la última actualización
+  fase: "[FASE]"  # Ejemplos: Planificación, MVP, Beta, Producción, Mantenimiento
 
 visio_general:
-  que_es: "[DESCRIPCIÓ 1 LÍNIA]"  # Què fa el projecte en una frase
-  objectiu: "[OBJECTIU PRINCIPAL]"  # Què vol aconseguir
+  que_es: "[DESCRIPCIÓ 1 LÍNIA]"  # Qué hace el proyecto en una frase
+  objectiu: "[OBJECTIU PRINCIPAL]"  # Qué quiere conseguir
   client: "[CLIENT/STAKEHOLDER]"  # Opcional, si aplica
 
 estat_actual:
-  fase: "[FASE ACTUAL]"  # On està el projecte ara
-  ultima_feature: "[ÚLTIMA FEATURE IMPLEMENTADA]"  # Què s'ha fet recentment
-  seguent_milestone: "[PRÒXIM OBJECTIU]"  # Cap on anem
+  fase: "[FASE ACTUAL]"  # Dónde está el proyecto ahora
+  ultima_feature: "[ÚLTIMA FEATURE IMPLEMENTADA]"  # Qué se ha hecho recientemente
+  seguent_milestone: "[PRÒXIM OBJECTIU]"  # Hacia dónde vamos
 
-# Defineix aquí cada feature/mòdul del projecte
-# Pots afegir tantes features com necessitis seguint aquest esquema:
+# Define aquí cada feature/módulo del proyecto
+# Puedes añadir tantas features como necesites siguiendo este esquema:
 features:
-  feature_exemple_1:  # ID únic de la feature (kebab-case)
-    nom: "[NOM FEATURE]"  # Nom visual de la feature
-    url: "[URL]"  # URL de producció o staging, si aplica
+  feature_exemple_1:  # ID único de la feature (kebab-case)
+    nom: "[NOM FEATURE]"  # Nombre visual de la feature
+    url: "[URL]"  # URL de producción o staging, si aplica
     estat: "[operatiu|desenvolupament|pendent|deprecated]"
-    descripcio: "[DESCRIPCIÓ BREU]"  # Què fa aquesta feature
-    funcionalitats:  # Llista de capacitats principals
+    descripcio: "[DESCRIPCIÓ BREU]"  # Qué hace esta feature
+    funcionalitats:  # Lista de capacidades principales
       - "[FUNCIONALITAT 1]"
       - "[FUNCIONALITAT 2]"
     notes: "[NOTES ADDICIONALS]"  # Opcional
@@ -38,39 +38,39 @@ features:
     funcionalitats:
       - "[FUNCIONALITAT 1]"
 
-  # Afegeix més features aquí seguint el mateix patró
+  # Añade más features aquí siguiendo el mismo patrón
 
 stack_tecnologic:
   frontend:
-    framework: "[FRAMEWORK + VERSIÓ]"  # Exemples: React 18, Vue 3, Astro 5, Next.js 14
-    tipus: "[TIPUS]"  # Exemples: SPA, SSG, SSR, MPA
-    styling: "[SISTEMA CSS]"  # Exemples: Tailwind, Styled Components, CSS Modules
-    patrons: "[PATRONS PRINCIPALS]"  # Opcional: patrons d'arquitectura utilitzats
+    framework: "[FRAMEWORK + VERSIÓ]"  # Ejemplos: React 18, Vue 3, Astro 5, Next.js 14
+    tipus: "[TIPUS]"  # Ejemplos: SPA, SSG, SSR, MPA
+    styling: "[SISTEMA CSS]"  # Ejemplos: Tailwind, Styled Components, CSS Modules
+    patrons: "[PATRONS PRINCIPALS]"  # Opcional: patrones de arquitectura utilizados
 
-  backend:  # Opcional si no hi ha backend
-    runtime: "[RUNTIME]"  # Exemples: Node.js, Python, Go, .NET
-    framework: "[FRAMEWORK]"  # Exemples: Express, FastAPI, Gin, ASP.NET
+  backend:  # Opcional si no hay backend
+    runtime: "[RUNTIME]"  # Ejemplos: Node.js, Python, Go, .NET
+    framework: "[FRAMEWORK]"  # Ejemplos: Express, FastAPI, Gin, ASP.NET
     database: "[DATABASE]"  # Opcional: PostgreSQL, MongoDB, etc.
     auth: "[SISTEMA AUTH]"  # Opcional: JWT, OAuth, etc.
 
-  llibreries_clau:  # Opcional: llibreries importants a destacar
+  llibreries_clau:  # Opcional: librerías importantes a destacar
     - nom: "[NOM LLIBRERIA]"
       us: "[PER QUÈ S'USA]"
 
   deploy:
-    platform: "[PLATFORM]"  # Exemples: Vercel, Netlify, AWS, Railway
-    ci_cd: "[PIPELINE]"  # Com es desplega
-    env_vars:  # Variables d'entorn crítiques (sense valors!)
+    platform: "[PLATFORM]"  # Ejemplos: Vercel, Netlify, AWS, Railway
+    ci_cd: "[PIPELINE]"  # Cómo se despliega
+    env_vars:  # Variables de entorno críticas (¡sin valores!)
       - "[VAR_NAME_1]"
       - "[VAR_NAME_2]"
 
-# URLs principals del projecte
+# URLs principales del proyecto
 urls:
   produccio: "[URL_PRODUCCIÓ]"  # URL principal
   staging: "[URL_STAGING]"  # Opcional
-  # Afegeix més URLs segons necessitat
+  # Añade más URLs según necesidad
 
-# Tasques pendents ordenades per prioritat
+# Tareas pendientes ordenadas por prioridad
 pendents_prioritaris:
   - prioritat: 1
     tasca: "[TASCA MÉS IMPORTANT]"
@@ -80,15 +80,15 @@ pendents_prioritaris:
     tasca: "[SEGONA TASCA]"
     detall: "[DETALLS]"
 
-  # Afegeix més tasques segons necessitat
-  # Mantén sempre les top 5-7 més importants
+  # Añade más tareas según necesidad
+  # Mantén siempre las top 5-7 más importantes
 
-# Decisions tècniques importants que cal recordar
-# Documenta el "per què" de decisions no òbvies
+# Decisiones técnicas importantes que hay que recordar
+# Documenta el "por qué" de decisiones no obvias
 decisions_clau:
-  decisio_exemple_1:  # ID de la decisió
-    decisio: "[QUÈ ES VA DECIDIR]"  # La decisió presa
-    motiu: "[PER QUÈ]"  # Raonament darrere la decisió
+  decisio_exemple_1:  # ID de la decisión
+    decisio: "[QUÈ ES VA DECIDIR]"  # La decisión tomada
+    motiu: "[PER QUÈ]"  # Razonamiento detrás de la decisión
     alternatives_considerades: "[ALTERNATIVES]"  # Opcional
     impacte: "[IMPACTE EN EL PROJECTE]"  # Opcional
 
@@ -96,44 +96,44 @@ decisions_clau:
     decisio: "[DECISIÓ]"
     motiu: "[MOTIU]"
 
-  # Afegeix més decisions importants aquí
+  # Añade más decisiones importantes aquí
 
-# NOTA: gotchas i warnings NO van aquí
-# Els gotchas es documenten a memory/full/sessions.yaml (camp 'gotchas:')
-# Context Agent els extraurà de totes les sessions i seleccionarà els top 5 més crítics
-# Veure memory/templates/sessions-template.yaml per detalls
+# NOTA: gotchas y warnings NO van aquí
+# Los gotchas se documentan en memory/full/sessions.yaml (campo 'gotchas:')
+# Context Agent los extraerá de todas las sesiones y seleccionará los top 5 más críticos
+# Ver memory/templates/sessions-template.yaml para detalles
 
-# Convencions de codi del projecte
+# Convenciones de código del proyecto
 convencions_codi:
   idioma:
-    interficie: "[IDIOMA UI]"  # Català, Espanyol, Anglès, etc.
-    variables: "[IDIOMA VARIABLES]"  # Mateix o diferent
+    interficie: "[IDIOMA UI]"  # Catalán, Español, Inglés, etc.
+    variables: "[IDIOMA VARIABLES]"  # Mismo o diferente
     comentaris: "[IDIOMA COMENTARIS]"
 
   naming:
-    "[llenguatge_1]": "[CONVENCIÓ]"  # Exemple: javascript: camelCase
-    "[llenguatge_2]": "[CONVENCIÓ]"  # Exemple: python: snake_case
+    "[llenguatge_1]": "[CONVENCIÓ]"  # Ejemplo: javascript: camelCase
+    "[llenguatge_2]": "[CONVENCIÓ]"  # Ejemplo: python: snake_case
 
-  estructura:  # Regles d'organització de codi
+  estructura:  # Reglas de organización de código
     - "[REGLA 1]"
     - "[REGLA 2]"
 
-# Comandos útils per treballar amb el projecte
+# Comandos útiles para trabajar con el proyecto
 comandos_utils:
-  install: "[COMANDA INSTALL]"  # Exemple: npm install, pip install -r requirements.txt
-  dev: "[COMANDA DEV]"  # Exemple: npm run dev, python manage.py runserver
-  build: "[COMANDA BUILD]"  # Exemple: npm run build
-  deploy: "[COMANDA DEPLOY]"  # Exemple: npx vercel --prod
-  test: "[COMANDA TEST]"  # Exemple: npm test, pytest
-  lint: "[COMANDA LINT]"  # Exemple: npm run lint
-  # Afegeix més comandos segons necessitat
+  install: "[COMANDA INSTALL]"  # Ejemplo: npm install, pip install -r requirements.txt
+  dev: "[COMANDA DEV]"  # Ejemplo: npm run dev, python manage.py runserver
+  build: "[COMANDA BUILD]"  # Ejemplo: npm run build
+  deploy: "[COMANDA DEPLOY]"  # Ejemplo: npx vercel --prod
+  test: "[COMANDA TEST]"  # Ejemplo: npm test, pytest
+  lint: "[COMANDA LINT]"  # Ejemplo: npm run lint
+  # Añade más comandos según necesidad
 
-# Històric de sessions/sprints importants
-# Afegeix una entrada per cada sessió de treball significativa
+# Histórico de sesiones/sprints importantes
+# Añade una entrada para cada sesión de trabajo significativa
 historic_sessions:
   - data: "[YYYY-MM-DD]"
-    durada: "[DURADA]"  # Opcional: 2h, 1 dia, etc.
-    objectiu: "[OBJECTIU SESSIÓ]"  # Què es volia aconseguir
+    durada: "[DURADA]"  # Opcional: 2h, 1 día, etc.
+    objectiu: "[OBJECTIU SESSIÓ]"  # Qué se quería conseguir
     features_implementades:
       - "[FEATURE 1]"
       - "[FEATURE 2]"
@@ -145,4 +145,4 @@ historic_sessions:
       - "[DECISIÓ 2]"
     notes: "[NOTES ADDICIONALS]"  # Opcional
 
-  # Afegeix més sessions aquí mantenint les més recents al principi
+  # Añade más sesiones aquí manteniendo las más recientes al principio
