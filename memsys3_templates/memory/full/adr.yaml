@@ -183,25 +183,25 @@ adrs:
       impacto: "Cómo se gestiona el workflow de compilación de contexto"
 
   - id: "001"
-    titulo: "Criteri inteligente del Context Agent vs límits arbitraris"
+    titulo: "Criteri inteligente del Context Agent vs límites arbitraris"
     data: "2025-10-28"
     estado: aceptado
     area: arquitectura
 
     context: |
-      Els sistemes anteriors usaven límits rígids (màx 7 ADRs, màx 15 líneas per sessió)
+      Els sistemes anteriors usaven límites rígids (màx 7 ADRs, màx 15 líneas per sessió)
       que no s'adaptaven a la realitat del projecte. Projectes petits perdien context,
       proyectos grandes no podien expressar-se adequadament.
 
     decision: |
       El Context Agent usa criterio inteligente basándose en la pregunta:
-      "Què ha de saber QUALSEVOL agent descontextualitzat per treballar aquí?"
+      "Què ha de saber QUALSEVOL agent descontextualizado per treballar aquí?"
 
       Límit ÚNIC: máximo 2000 líneas al context.yaml final.
-      NO hi ha límits arbitraris per ADRs, sessions, gotchas, etc.
+      NO hi ha límites arbitraris per ADRs, sessions, gotchas, etc.
 
     alternatives:
-      - nom: "Mantenir límits arbitraris"
+      - nom: "Mantenir límites arbitraris"
         pros:
           - Predictible
           - Fàcil d'implementar
@@ -215,13 +215,13 @@ adrs:
           - Tot el context disponible
         contras:
           - Consumeix demasiados tokens
-          - Supera límits de Read tool (2000 líneas)
+          - Supera límites de Read tool (2000 líneas)
         per_que_descartada: "No sostenible, problemes tècnics con Read"
 
     consequencies:
       positives:
         - "Context adaptatiu segons necessitats del projecte"
-        - "CA decideix con visió panoràmica completa"
+        - "CA decide con visión panoràmica completa"
         - "Projectes petits mantenen tot, proyectos grandes filtren inteligentement"
         - "Més flexible i escalable"
       negatives:
@@ -236,7 +236,7 @@ adrs:
     area: escalabilitat
 
     context: |
-      Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml creixen
+      Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml crecen
       demasiados, els agents no pueden llegir-los.
 
     decision: |
@@ -246,7 +246,7 @@ adrs:
       - sessions.yaml → sessions_N.yaml
       - adr.yaml → adr_N.yaml
 
-      Context Agent llegeix TOTS els archivos rotats fins detectar >150K tokens.
+      Context Agent lee TOTS els archivos rotats fins detectar >150K tokens.
 
     alternatives:
       - nom: "Limit fix de sessions/ADRs"
@@ -258,7 +258,7 @@ adrs:
 
       - nom: "Base de datos"
         pros:
-          - Sense límits
+          - Sense límites
         contras:
           - Complexitat addicional
           - Dependència externa
@@ -283,13 +283,13 @@ adrs:
 
     context: |
       Incluso con rotación, proyectos muy grandes pueden acumular demasiados datos.
-      Si full/ (con tots els archivos rotats) supera 150K tokens, el CA no pot
+      Si full/ (con todos los archivos rotats) supera 150K tokens, el CA no puede
       processar-ho eficientment.
 
     decision: |
       Quan total de full/ supera 150K tokens:
       1. CA identifica ADRs/sessions irrelevantes con criterio inteligente
-      2. Les mou a memory/history/ (que NO es llegeix)
+      2. Les mueve a memory/history/ (que NO es lee)
       3. Redueix a ~120K tokens
       4. Continua compilació normal
 
@@ -307,12 +307,12 @@ adrs:
         pros:
           - Redueix mida
         contras:
-          - CA no pot llegir comprimit
+          - CA no puede llegir comprimit
         per_que_descartada: "No resol problema de tokens"
 
     consequencies:
       positives:
-        - "Estalvi real de tokens (history/ NO es llegeix)"
+        - "Ahorro real de tokens (history/ NO es lee)"
         - "Dades preservades, no perdudes"
         - "Sistema escala il·limitadament"
         - "Reversible (pots recuperar de history/)"
@@ -329,7 +329,7 @@ adrs:
 
     context: |
       Sessions originalment eren .md (Markdown). Templates i ADRs ja eren YAML.
-      Inconsistència de formats dificultava parsing i estalvi de tokens.
+      Inconsistència de formats dificultava parsing i ahorro de tokens.
 
     decision: |
       Tot el sistema usa YAML:
@@ -360,7 +360,7 @@ adrs:
     consequencies:
       positives:
         - "Consistència total del sistema"
-        - "~30% estalvi tokens vs Markdown"
+        - "~30% ahorro tokens vs Markdown"
         - "Millor per LLMs (estructura clara)"
         - "Fàcil parsejar con js-yaml"
       negatives:
@@ -394,7 +394,7 @@ adrs:
           - Ràpid
         contras:
           - Menys flexible
-          - No pot fer briefing con user
+          - No puede fer briefing con user
           - Requeriria CLI interactiu complex
         per_que_descartada: "Prompt con agent és más inteligente i flexible"
 
@@ -410,7 +410,7 @@ adrs:
       positives:
         - "Deployment guiado e inteligente"
         - "Personalització segons necessitats"
-        - "Agent pot adaptar-se a respostes"
+        - "Agent puede adaptar-se a respostes"
         - "Consistent con filosofia de prompts"
       negatives:
         - "Requereix AI agent per executar"
