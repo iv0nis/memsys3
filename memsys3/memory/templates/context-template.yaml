@@ -4,29 +4,29 @@
 # Límite ÚNICO: máximo 2000 líneas total
 
 metadata:
-  compilat_per: "Context Agent"
-  ultima_compilacio: "[TIMESTAMP]"
-  versio_context: "[NUMERO_VERSIO]"
+  compilado_por: "Context Agent"
+  ultima_compilacion: "[TIMESTAMP]"
+  version_context: "[NUMERO_VERSIO]"
 
 # ============================================
 # PROJECT INFO
 # ============================================
 project:
-  nom: "[NOM_PROJECTE]"
-  descripcio: "[DESCRIPCIÓ_1_LÍNIA]"
+  nombre: "[NOM_PROJECTE]"
+  descripcion: "[DESCRIPCIÓ_1_LÍNIA]"
   fase: "[FASE_ACTUAL]"
   ultima_feature: "[ÚLTIMA_FEATURE]"
-  seguent_milestone: "[PRÒXIM_MILESTONE]"
+  siguiente_milestone: "[PRÒXIM_MILESTONE]"
 
 # ============================================
 # FEATURES OPERATIVES
 # ============================================
 features:
   feature_1:
-    nom: "[NOM]"
+    nombre: "[NOM]"
     url: "[URL]"
-    estat: "[operatiu|desenvolupament|pendent]"
-    descripcio: "[DESCRIPCIÓ_BREU]"
+    estado: "[operativo|desarrollo|pendiente]"
+    descripcion: "[DESCRIPCIÓ_BREU]"
 
   # CA añade tantas features como sea necesario
 
@@ -55,10 +55,10 @@ urls:
 # ============================================
 adrs:
   - id: "001"
-    titol: "[TÍTOL_ADR]"
-    decisio: "[QUÈ ES VA DECIDIR]"
-    motiu: "[PER QUÈ]"
-    impacte: "[IMPACTE_GLOBAL]"
+    titulo: "[TÍTOL_ADR]"
+    decision: "[QUÈ ES VA DECIDIR]"
+    motivo: "[PER QUÈ]"
+    impacto: "[IMPACTE_GLOBAL]"
 
   # CA añade más ADRs según relevancia
   # Decisiones con impacto global, no obvias, arquitectónicas
@@ -67,9 +67,9 @@ adrs:
 # ÚLTIMA SESIÓN (o sesiones recientes)
 # CA sintetiza sesiones más impactantes
 # ============================================
-ultima_sessio:
+ultima_sesion:
   data: "[YYYY-MM-DD]"
-  durada: "[~Xh]"
+  duracion: "[~Xh]"
   que_es_va_fer:
     - "[FEATURE_PRINCIPAL_IMPLEMENTADA]"
     - "[PROBLEMA_SIGNIFICATIU_RESOLT]"
@@ -77,7 +77,7 @@ ultima_sessio:
   decisions:
     - "[DECISIÓ_TÈCNICA_PRESA]"
     - "[TRADE-OFF_ACCEPTAT]"
-  proxims_passos:
+  proximos_pasos:
     - "[TASCA_PENDENT_IMPORTANT]"
     - "[BLOCKER_CONEGUT]"
 
@@ -101,7 +101,7 @@ gotchas:
 # Tareas más importantes del proyecto ahora
 # CA prioriza según project-status y contexto reciente
 # ============================================
-pendents:
+pendientes:
   - prioritat: 1
     tasca: "[TASCA_MÉS_CRÍTICA]"
     detall: "[PER_QUÈ_ÉS_IMPORTANT]"
@@ -116,16 +116,16 @@ pendents:
 # NOTAS DE COMPILACIÓN DEL CA
 # Transparencia del proceso de compilación
 # ============================================
-notes_compilacio:
+notas_compilacion:
   adrs_totals: "[N total a memory/full/adr.yaml]"
-  adrs_incloses: "[M seleccionades per context]"
-  sessions_totals: "[X total a memory/full/sessions.yaml]"
-  sessions_incloses: "[Y sintetitzades en context]"
-  tokens_inicials: "[Tokens llegits de full/]"
-  tokens_finals: "[Tokens del context.yaml generat]"
-  arxivament: "[Si s'ha activat Pla Contingència: sessions/ADRs arxivades a history/]"
-  criteris_filtratge: "[Criteris intel·ligents usats: impacte global, rellevància actual, etc.]"
-  linies_totals: "[~X línies de 2000 màxim]"
+  adrs_incluidas: "[M seleccionades per context]"
+  sesiones_totales: "[X total a memory/full/sessions.yaml]"
+  sesiones_incluidas: "[Y sintetitzades en context]"
+  tokens_iniciales: "[Tokens llegits de full/]"
+  tokens_finales: "[Tokens del context.yaml generat]"
+  archivamiento: "[Si s'ha activat Pla Contingència: sessions/ADRs arxivades a history/]"
+  criterios_filtraje: "[Criteris intel·ligents usats: impacte global, rellevància actual, etc.]"
+  lineas_totales: "[~X línies de 2000 màxim]"
 
 # ============================================
 # NOTAS DE USO
