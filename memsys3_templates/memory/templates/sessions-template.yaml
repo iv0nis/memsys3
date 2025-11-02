@@ -4,39 +4,39 @@
 
 sessions:
   - id: "YYYY-MM-DD"
-    titol: "[Títol Descriptiu de la Sessió]"
+    titulo: "[Títol Descriptiu de la Sessió]"
     data: "YYYY-MM-DD"
-    durada: "[Xh o X dies]"
-    participants: ["Nom/Agent"]
-    objectiu: "[Què es volia aconseguir en aquesta sessió]"
+    duracion: "[Xh o X dies]"
+    participantes: ["Nom/Agent"]
+    objetivo: "[Què es volia aconseguir en aquesta sessió]"
 
-    features_implementades:
-      - nom: "[Feature 1]"
-        descripcio: "Descripción breve de lo que se ha hecho"
-      - nom: "[Feature 2]"
-        descripcio: "Descripción breve"
-      - nom: "[Tasca 3]"
-        descripcio: "Descripción breve"
+    features_implementadas:
+      - nombre: "[Feature 1]"
+        descripcion: "Descripción breve de lo que se ha hecho"
+      - nombre: "[Feature 2]"
+        descripcion: "Descripción breve"
+      - nombre: "[Tasca 3]"
+        descripcion: "Descripción breve"
 
-    problemes_resolts:
+    problemas_resueltos:
       - problema: "[Problema 1]"
-        solucio: "[Cómo se resolvió]"
+        solucion: "[Cómo se resolvió]"
       - problema: "[Problema 2]"
-        solucio: "[Cómo se resolvió]"
+        solucion: "[Cómo se resolvió]"
 
-    decisions_preses:
-      - decisio: "[Decisió 1]"
-        justificacio: "Breve justificación"
+    decisiones_tomadas:
+      - decision: "[Decisió 1]"
+        justificacion: "Breve justificación"
         adr_relacionada: null  # Si es decisión arquitectónica importante, ID del ADR
-      - decisio: "[Decisió 2]"
-        justificacio: "Breve justificación"
+      - decision: "[Decisió 2]"
+        justificacion: "Breve justificación"
         adr_relacionada: null
 
-    tecnologies_afegides:
-      - nom: "[Llibreria 1]"
-        motiu: "Por qué se ha añadido"
-      - nom: "[Tool 2]"
-        motiu: "Propósito"
+    tecnologias_agregadas:
+      - nombre: "[Llibreria 1]"
+        motivo: "Por qué se ha añadido"
+      - nombre: "[Tool 2]"
+        motivo: "Propósito"
 
     deployments:
       - servei: "[Servei 1]"
@@ -45,21 +45,21 @@ sessions:
         url: "https://..."
 
     gotchas:
-      - tipus: "[warning|error|gotcha]"
+      - tipo: "[warning|error|gotcha]"
         problema: "[Descripción del problema o trampa encontrada]"
-        solucio: "[Cómo resolverlo o evitarlo]"
-        criticitat: "[alta|mitjana|baixa]"
-      - tipus: "[TIPUS]"
+        solucion: "[Cómo resolverlo o evitarlo]"
+        criticidad: "[alta|media|baja]"
+      - tipo: "[TIPUS]"
         problema: "[PROBLEMA]"
-        solucio: "[SOLUCIÓ]"
-        criticitat: "[CRITICITAT]"
+        solucion: "[SOLUCIÓ]"
+        criticidad: "[CRITICITAT]"
 
-    proxims_passos:
-      - "[Tasca pendent 1]"
-      - "[Tasca pendent 2]"
-      - "[Tasca pendent 3]"
+    proximos_pasos:
+      - "[Tarea pendiente 1]"
+      - "[Tarea pendiente 2]"
+      - "[Tarea pendiente 3]"
 
-    notes_addicionals: |
+    notas_adicionales: |
       Cualquier contexto extra, blockers encontrados, aprendizajes, etc.
       Soporta texto multilínea.
 
@@ -79,46 +79,46 @@ instruccions:
 
 exemples:
   bo: |
-    features_implementades:
-      - nom: "Exportació PDF professional"
-        descripcio: |
+    features_implementadas:
+      - nombre: "Exportació PDF professional"
+        descripcion: |
           Cambiado de html2canvas a jsPDF para mejor calidad
           Formato A4 con márgenes 20mm
           10 cláusulas legales LAU incluidas
 
   massa_detallat: |
     # EVITAR esto:
-    features_implementades:
-      - nom: "Cambiado padding del botón"
-        descripcio: "De 10px a 12px"
-      - nom: "Actualizado color"
-        descripcio: "De #fff a #f0f0f0"
-      - nom: "Arreglado typo"
-        descripcio: "descipcion → descripcion en línea 234"
+    features_implementadas:
+      - nombre: "Cambiado padding del botón"
+        descripcion: "De 10px a 12px"
+      - nombre: "Actualizado color"
+        descripcion: "De #fff a #f0f0f0"
+      - nombre: "Arreglado typo"
+        descripcion: "descipcion → descripcion en línea 234"
 
   massa_vague: |
     # EVITAR esto:
-    features_implementades:
-      - nom: "Mejorado sistema de procesamiento"
-        descripcio: "Arreglados bugs"
+    features_implementadas:
+      - nombre: "Mejorado sistema de procesamiento"
+        descripcion: "Arreglados bugs"
 
   gotchas_bons: |
     # ASÍ SÍ - Gotchas críticos y útiles:
     gotchas:
-      - tipus: "error"
+      - tipo: "error"
         problema: "useAuth() hook solo funciona dentro de AuthProvider"
-        solucio: "Wrap componente principal con <AuthProvider>"
-        criticitat: "alta"
+        solucion: "Wrap componente principal con <AuthProvider>"
+        criticidad: "alta"
 
-      - tipus: "warning"
+      - tipo: "warning"
         problema: "Vercel activa Deployment Protection por defecto"
-        solucio: "Desactivar en Settings > Deployment Protection"
-        criticitat: "mitjana"
+        solucion: "Desactivar en Settings > Deployment Protection"
+        criticidad: "media"
 
   gotchas_dolents: |
     # EVITAR esto - No son gotchas críticos:
     gotchas:
-      - tipus: "gotcha"
+      - tipo: "gotcha"
         problema: "El botón no tiene focus state"
-        solucio: "Añadir outline al CSS"
-        criticitat: "baixa"  # Demasiado trivial
+        solucion: "Añadir outline al CSS"
+        criticidad: "baja"  # Demasiado trivial
