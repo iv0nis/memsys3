@@ -25,7 +25,7 @@ features:
     url: "[URL]"  # URL de producción o staging, si aplica
     estado: "[operativo|desarrollo|pendiente|obsoleto]"
     descripcion: "[DESCRIPCIÓ BREU]"  # Qué hace esta feature
-    funcionalitats:  # Lista de capacidades principales
+    funcionalitats:  # Lista de capacidatos principales
       - "[FUNCIONALITAT 1]"
       - "[FUNCIONALITAT 2]"
     notes: "[NOTES ADDICIONALS]"  # Opcional
@@ -98,7 +98,7 @@ decisions_clau:
 
   # Añade más decisiones importantes aquí
 
-# NOTA: gotchas y warnings NO van aquí
+# NOTA: gotchas y warnings NO fueron aquí
 # Los gotchas se documentan en memory/full/sessions.yaml (campo 'gotchas:')
 # Context Agent los extraerá de todas las sesiones y seleccionará los top 5 más críticos
 # Ver memory/templates/sessions-template.yaml para detalles

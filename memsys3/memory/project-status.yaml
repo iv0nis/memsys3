@@ -19,7 +19,7 @@ features:
   context_agent:
     nombre: "Context Agent"
     estado: "operativo"
-    descripcion: "Agente que compila contexto completo con criterio inteligente (máx 2000 líneas)"
+    descripcion: "Agente que compila contexto completo con criterioo inteligente (máx 2000 líneas)"
 
   rotacio_automatica:
     nombre: "Rotació Automàtica"
@@ -79,7 +79,7 @@ pendientes_prioritarios:
 
 decisions_clau:
   filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
-  escalabilitat: "Rotación + archivado automático"
+  escalabilidad: "Rotación + archivado automático"
   preservacio: "Datos SIEMPRE preservados (history/, sessions_N.yaml, adr_N.yaml)"
   rutas: "Sistema unificado memsys3/ para portabilidad y claridad"
   documentacion: "Meta-niveles separados según audiencia"
@@ -133,4 +133,4 @@ historic_sessions:
   - data: "2025-10-28"
     duracion: "~8h"
     objetivo: "Creación inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
-    highlights: "Context Agent criterio inteligente, rotación automática, Pla Contingencia, publicado a GitHub"
+    highlights: "Context Agent criterioo inteligente, rotación automática, Pla Contingencia, publicado a GitHub"

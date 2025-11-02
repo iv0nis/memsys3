@@ -25,7 +25,7 @@ features:
   context_agent:
     nombre: "Context Agent"
     estado: "operativo"
-    descripcion: "Agente que compila contexto completo con criterio inteligente (máx 2000 líneas)"
+    descripcion: "Agente que compila contexto completo con criterioo inteligente (máx 2000 líneas)"
 
   rotacion_automatica:
     nombre: "Rotación Automática"
@@ -88,7 +88,7 @@ adrs:
       **3. Gotchas documentados en sessions.yaml:**
       - Main-Agent documenta gotchas en cada sesión donde aparecen con criticidad
       - Context-Agent extrae gotchas de TODAS las sesiones
-      - CA usa criterio inteligente para seleccionar top 5 más críticos
+      - CA usa criterioo inteligente para seleccionar top 5 más críticos
       - project-status.yaml NO contiene gotchas (solo info general del proyecto)
 
       **4. Workflow de deployment actualizado:**
@@ -122,9 +122,9 @@ adrs:
   - id: "001"
     titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
     decision: |
-      El Context Agent usa criterio inteligente: "¿Qué debe saber CUALQUIER agente descontextualizado?"
+      El Context Agent usa criterioo inteligente: "¿Qué debe saber CUALQUIER agente descontextualizado?"
       Límite ÚNICO: máximo 2000 líneas en el context.yaml final.
-    impacto: "Contexto adaptativo según necesidades del proyecto."
+    impacto: "Contexto adaptativo según necesidatos del proyecto."
 
   - id: "002"
     titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
@@ -153,7 +153,7 @@ adrs:
     decision: |
       deploy.md que Main-Agent ejecuta con briefing personalizado.
       Más flexible que script automático.
-    impacto: "Deployment guiado e inteligente. Personalización según necesidades."
+    impacto: "Deployment guiado e inteligente. Personalización según necesidatos."
 
 # ============================================
 # SESIONES RECIENTES
@@ -235,13 +235,13 @@ sesiones_recientes:
     duracion: "~8h"
     highlights_sintetizados:
       - "Creación inicial memsys3 v1.0"
-      - "Context Agent con criterio inteligente, Plan Contingencia, Rotación automática"
+      - "Context Agent con criterioo inteligente, Plan Contingencia, Rotación automática"
       - "Visualizador Web Memory: 4 pestañas, js-yaml, Python server"
       - "Publicado a GitHub (21 archivos, 3056 líneas)"
 
 # ============================================
 # GOTCHAS CRÍTICS
-# Extrets de sessions.yaml segons criteri del CA
+# Extrets de sessions.yaml segons criterio del CA
 # Ordenats per criticitat + recència
 # ============================================
 gotchas:
@@ -310,8 +310,8 @@ pendientes:
 # ============================================
 decisions_clau:
   filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
-  escalabilitat: "Rotación + archivado automático"
-  preservacio: "Dades SEMPRE preservades (history/, sessions_N.yaml, adr_N.yaml)"
+  escalabilidad: "Rotación + archivado automático"
+  preservacio: "Datos SEMPRE preservades (history/, sessions_N.yaml, adr_N.yaml)"
   rutas: "Sistema unificado @memsys3/ para portabilidad y claridad (notación Claude Code)"
   documentacion: "Meta-niveles separados según audiencia"
   workflow: "Main-Agent NO compila, solo sugiere endSession"
@@ -353,7 +353,7 @@ notas_compilacion:
 
   archivamiento: "NO requerido - volumen manejable"
 
-  criterios_filtraje: |
+  criterioos_filtraje: |
     - Todas las 9 ADRs incluidas (sin cambios)
     - Sessions: Priorizar 2 más recientes con máximo detalle, sintetizar resto
     - Gotchas: Ahora extraídos con estructura correcta de sessions (CRÍTICO: 3 nuevos gotchas documentados en últimas sessions)

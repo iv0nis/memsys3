@@ -41,9 +41,9 @@ adrs:
           - Simples
         contras:
           - Ambigüedad sobre qué carpeta
-          - Conflictos en proyectos con carpeta 'memory/'
+          - Conflictos en proyectosconcarpeta 'memory/'
           - Difícil saber qué es de memsys3
-        per_que_descartada: "No escalable, genera confusión"
+        por_que_descartada: "No escalable, genera confusión"
 
       - nom: "Rutas absolutas desde raíz"
         pros:
@@ -51,14 +51,14 @@ adrs:
         contras:
           - Dependiente de estructura del proyecto
           - No portable
-        per_que_descartada: "No es portable entre proyectos"
+        por_que_descartada: "No es portable entre proyectos"
 
     consequencies:
       positives:
-        - "Claridad total: siempre se sabe que es de memsys3"
+        - "Claridad todal: siempre se sabe que es de memsys3"
         - "Portabilidad: funciona en cualquier proyecto"
         - "Actualizable: fácil saber qué archivos actualizar"
-        - "Sin conflictos con carpetas del proyecto"
+        - "Sin conflictosconcarpetas del proyecto"
       negatives:
         - "Rutas más largas en prompts"
         - "Requiere disciplina al crear nuevos prompts"
@@ -114,11 +114,11 @@ adrs:
           - Confusión de niveles
           - No está claro quién es la audiencia
           - Mezcla información de template vs deployment
-        per_que_descartada: "Demasiada ambigüedad, difícil de mantener"
+        por_que_descartada: "Demasiada ambigüedad, difícil de mantener"
 
     consequencies:
       positives:
-        - "Claridad total de meta-niveles"
+        - "Claridad todal de meta-niveles"
         - "Cada README tiene audiencia específica"
         - "Agents leen README agnóstico sin confusión"
         - "Developers tienen guía clara de contribución"
@@ -134,7 +134,7 @@ adrs:
     area: workflow
 
     context: |
-      El Main-Agent trabaja durante sesiones acumulando tokens. compile-context.md
+      El Main-Agent trabaya durante sesiones acumulando tokens. compile-context.md
       requiere leer TODOS los archivos de memory/full/ (puede ser >50K tokens).
 
       Si el Main-Agent propone ejecutar compile-context, acumula:
@@ -161,7 +161,7 @@ adrs:
           - Acumula demasiados tokens
           - Ineficiente
           - Puede superar límites
-        per_que_descartada: "Consume demasiados tokens innecesariamente"
+        por_que_descartada: "Consume demasiados tokens innecesariamente"
 
       - nom: "Compilación automática en cada endSession"
         pros:
@@ -169,13 +169,13 @@ adrs:
         contras:
           - Cada endSession sería muy pesado
           - No siempre es necesario recompilar
-        per_que_descartada: "Overhead innecesario"
+        por_que_descartada: "Overhead innecesario"
 
     consequencies:
       positives:
         - "Eficiencia de tokens optimizada"
         - "Main-Agent se enfoca en desarrollo"
-        - "Context Agent trabaja con instancia limpia"
+        - "Context Agent trabayaconinstancia limpia"
         - "User controla cuándo compilar"
       negatives:
         - "Requiere paso manual extra de compilación"
@@ -183,242 +183,242 @@ adrs:
       impacto: "Cómo se gestiona el workflow de compilación de contexto"
 
   - id: "001"
-    titulo: "Criteri inteligente del Context Agent vs límites arbitraris"
+    titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
     data: "2025-10-28"
     estado: aceptado
     area: arquitectura
 
     context: |
-      Els sistemes anteriors usaven límites rígids (màx 7 ADRs, màx 15 líneas per sessió)
-      que no s'adaptaven a la realitat del projecte. Projectes petits perdien context,
-      proyectos grandes no podien expressar-se adequadament.
+      Los sistemas anteriores usaban límites rígidos (máx 7 ADRs, máx 15 líneas por sesión)
+      que no se adaptaban a la realidad del proyecto. Proyectos pequeños perdían contexto,
+      proyectos grandes no podían expresarse adecuadamente.
 
     decision: |
       El Context Agent usa criterio inteligente basándose en la pregunta:
-      "Què ha de saber QUALSEVOL agent descontextualizado per treballar aquí?"
+      "¿Qué debe saber CUALQUIER agent descontextualizado para trabajar aquí?"
 
-      Límit ÚNIC: máximo 2000 líneas al context.yaml final.
-      NO hi ha límites arbitraris per ADRs, sessions, gotchas, etc.
+      Límite ÚNICO: máximo 2000 líneas en context.yaml final.
+      NO hay límites arbitrarios para ADRs, sessions, gotchas, etc.
 
     alternatives:
-      - nom: "Mantenir límites arbitraris"
+      - nom: "Mantener límites arbitrarios"
         pros:
-          - Predictible
-          - Fàcil d'implementar
+          - Predecible
+          - Fácil de implementar
         contras:
-          - No s'adapta a realitat del projecte
-          - Perd informació crítica o inclou informació irrellevant
-        per_que_descartada: "Massa rígid, no escala con complexitat del projecte"
+          - No se adapta a realidad del proyecto
+          - Pierde información crítica o incluye información irrelevante
+        por_que_descartada: "Demasiado rígido, no escala con complejidad del proyecto"
 
-      - nom: "Cap límit (context il·limitat)"
+      - nom: "Sin límite (contexto ilimitado)"
         pros:
-          - Tot el context disponible
+          - Todo el contexto disponible
         contras:
-          - Consumeix demasiados tokens
+          - Consume demasiados tokens
           - Supera límites de Read tool (2000 líneas)
-        per_que_descartada: "No sostenible, problemes tècnics con Read"
+        por_que_descartada: "No sostenible, problemas técnicos con Read"
 
     consequencies:
       positives:
-        - "Context adaptatiu segons necessitats del projecte"
-        - "CA decide con visión panoràmica completa"
-        - "Projectes petits mantenen tot, proyectos grandes filtren inteligentement"
-        - "Més flexible i escalable"
+        - "Contexto adaptativo según necesidades del proyecto"
+        - "CA decideconvisión panorámica completa"
+        - "Proyectos pequeños mantienen todo, proyectos grandes filtran inteligentemente"
+        - "Más flexible y escalable"
       negatives:
-        - "Menys predictible (depèn criterio CA)"
-        - "Pot variar entre compilacions"
-      impacto: "Com es compila tot el context del sistema"
+        - "Menos predecible (depende criterio CA)"
+        - "Puede variar entre compilaciones"
+      impacto: "Cómo se compila todo el contexto del sistema"
 
   - id: "002"
-    titulo: "Rotació automática de sessions/ADRs (>1800 líneas)"
+    titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
     data: "2025-10-28"
     estado: aceptado
-    area: escalabilitat
+    area: escalabilidad
 
     context: |
       Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml crecen
-      demasiados, els agents no pueden llegir-los.
+      demasiado, los agents no pueden leerlos.
 
     decision: |
-      Quan sessions.yaml o adr.yaml superen 1800 líneas:
-      - endSession.md detecta automáticament
+      Cuando sessions.yaml o adr.yaml superen 1800 líneas:
+      - endSession.md detecta automáticamente
       - Hace rotación segura: copia → verifica → crea nuevo
       - sessions.yaml → sessions_N.yaml
       - adr.yaml → adr_N.yaml
 
-      Context Agent lee TOTS els archivos rotats fins detectar >150K tokens.
+      Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
 
     alternatives:
-      - nom: "Limit fix de sessions/ADRs"
+      - nom: "Límite fijo de sessions/ADRs"
         pros:
           - Simple
         contras:
-          - Perd històric
-        per_que_descartada: "No volem perdre datos mai"
+          - Pierde histórico
+        por_que_descartada: "No queremos perder datos nunca"
 
       - nom: "Base de datos"
         pros:
-          - Sense límites
+          - Sin límites
         contras:
-          - Complexitat addicional
-          - Dependència externa
-        per_que_descartada: "YAML files són suficients i simples"
+          - Complejidad adicional
+          - Dependencia externa
+        por_que_descartada: "YAML files son suficientes y simples"
 
     consequencies:
       positives:
-        - "Sistema escala infinitament"
-        - "No es perden datos mai"
-        - "Automàtic, sense intervenció manual"
-        - "Preserva històric complet"
+        - "Sistema escala infinitamente"
+        - "No se pierden datos nunca"
+        - "Automático, sin intervención manual"
+        - "Preserva histórico completo"
       negatives:
         - "Múltiples archivos (sessions_1, sessions_2, etc.)"
-        - "CA ha de llegir múltiples archivos"
-      impacto: "Com es gestiona el creixement de datos històriques"
+        - "CA debe leer múltiples archivos"
+      impacto: "Cómo se gestiona el crecimiento de datos históricos"
 
   - id: "003"
-    titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
+    titulo: "Plan de Contingenciaconarchivado inteligente (>150K tokens)"
     data: "2025-10-28"
     estado: aceptado
-    area: escalabilitat
+    area: escalabilidad
 
     context: |
-      Incluso con rotación, proyectos muy grandes pueden acumular demasiados datos.
-      Si full/ (con todos los archivos rotats) supera 150K tokens, el CA no puede
-      processar-ho eficientment.
+      Inclusoconrotación, proyectos muy grandes pueden acumular demasiados datos.
+      Si full/ (con todos los archivos rotados) supera 150K tokens, el CA no puede
+      procesarlo eficientemente.
 
     decision: |
-      Quan total de full/ supera 150K tokens:
+      Cuando todal de full/ supera 150K tokens:
       1. CA identifica ADRs/sessions irrelevantes con criterio inteligente
-      2. Les mueve a memory/history/ (que NO es lee)
-      3. Redueix a ~120K tokens
-      4. Continua compilació normal
+      2. Los mueve a memory/history/ (que NO se lee)
+      3. Reduce a ~120K tokens
+      4. Continúa compilación normal
 
-      Dades a history/ estan preservades, recuperables si cal.
+      Datos en history/ están preservados, recuperables si es necesario.
 
     alternatives:
-      - nom: "Esborrar datos antigues"
+      - nom: "Borrar datos antiguos"
         pros:
           - Limpieza automática
         contras:
-          - Perd informació irreversiblement
-        per_que_descartada: "NEVER delete data"
+          - Pierde información irreversiblemente
+        por_que_descartada: "NEVER delete data"
 
       - nom: "Comprimir archivos"
         pros:
-          - Redueix mida
+          - Reduce tamaño
         contras:
-          - CA no puede llegir comprimit
-        per_que_descartada: "No resol problema de tokens"
+          - CA no puede leer comprimido
+        por_que_descartada: "No resuelve problema de tokens"
 
     consequencies:
       positives:
-        - "Ahorro real de tokens (history/ NO es lee)"
-        - "Dades preservades, no perdudes"
-        - "Sistema escala il·limitadament"
-        - "Reversible (pots recuperar de history/)"
+        - "Ahorro real de tokens (history/ NO se lee)"
+        - "Datos preservados, no perdidos"
+        - "Sistema escala ilimitadamente"
+        - "Reversible (puedes recuperar de history/)"
       negatives:
-        - "Dades archivadas no visibles per CA"
-        - "Depèn criterio CA per arxivar"
-      impacto: "Com es gestionen proyectos con muy històric"
+        - "Datos archivados no visibles para CA"
+        - "Depende criterio CA para archivar"
+      impacto: "Cómo se gestionan proyectosconmucho histórico"
 
   - id: "004"
-    titulo: "YAML per tot (incloent sessions)"
+    titulo: "YAML para todo (incluyendo sessions)"
     data: "2025-10-28"
     estado: aceptado
     area: format
 
     context: |
-      Sessions originalment eren .md (Markdown). Templates i ADRs ja eren YAML.
-      Inconsistència de formats dificultava parsing i ahorro de tokens.
+      Sessions originalmentee eran .md (Markdown). Templates y ADRs ya eran YAML.
+      Inconsistencia de formatos dificultaba parsing y ahorro de tokens.
 
     decision: |
-      Tot el sistema usa YAML:
-      - sessions.yaml (abans sessions.md)
+      Todo el sistema usa YAML:
+      - sessions.yaml (antes sessions.md)
       - adr.yaml
       - project-status.yaml
       - context.yaml
-      - Tots els templates .yaml
+      - Todos los templates .yaml
 
     alternatives:
-      - nom: "Markdown per sessions"
+      - nom: "Markdown para sessions"
         pros:
-          - Més llegible per humans
+          - Más legible para humans
         contras:
-          - Inconsistent con resta
-          - Més tokens (~30% más)
-          - Difícil parsejar per LLMs
-        per_que_descartada: "Volíem consistència i eficiència"
+          - Inconsistentconresto
+          - Más tokens (~30% más)
+          - Difícil parsear para LLMs
+        por_que_descartada: "Queríamos consistència y eficiencia"
 
       - nom: "JSON"
         pros:
-          - Estàndard web
+          - Estándar web
         contras:
-          - Menys llegible
-          - No suporta multiline strings fàcilment
-        per_que_descartada: "YAML millor per documentació"
+          - Menos legible
+          - No soporta multiline strings fácilmente
+        por_que_descartada: "YAML mejor para documentación"
 
     consequencies:
       positives:
-        - "Consistència total del sistema"
+        - "Consistencia todal del sistema"
         - "~30% ahorro tokens vs Markdown"
-        - "Millor per LLMs (estructura clara)"
-        - "Fàcil parsejar con js-yaml"
+        - "Mejor para LLMs (estructura clara)"
+        - "Fácil parsearconjs-yaml"
       negatives:
-        - "Menys familiar per alguns devs"
-        - "Requereix indentació estricta"
-      impacto: "Format de tota la documentació del sistema"
+        - "Menos familiar para algunos devs"
+        - "Requiere indentació estricta"
+      impacto: "Formato de toda la documentació del sistema"
 
   - id: "005"
-    titulo: "deploy.md com a prompt (no script shell)"
+    titulo: "deploy.md como prompt (no script shell)"
     data: "2025-10-28"
     estado: aceptado
-    area: usabilitat
+    area: usabilidad
 
     context: |
-      Necessitàvem manera de desplegar memsys3 en nous proyectos.
-      Opcions: script shell automàtic vs prompt per Main-Agent.
+      Necesitábamos manera de desplegar memsys3 en nuevos proyectos.
+      Opciones: script shell automático vs prompt para Main-Agent.
 
     decision: |
-      Crear prompts/deploy.md que el Main-Agent executa.
-      L'agent hace briefing con user per personalitzar el deployment:
-      - Pregunta sobre projecte, stack, comportament
+      Crear prompts/deploy.md que el Main-Agent ejecuta.
+      El agent hace briefingconuser para personalizar el deployment:
+      - Pregunta sobre proyecto, stack, comportamiento
       - Copia templates
-      - Crea archivos específics basándose en respostes
+      - Crea archivos específicos basándose en respuestas
 
-      Més flexible que script automàtic.
+      Más flexible que script automático.
 
     alternatives:
       - nom: "Script shell (setup.sh)"
         pros:
-          - Automàtic
-          - Ràpid
+          - Automático
+          - Rápido
         contras:
-          - Menys flexible
-          - No puede fer briefing con user
-          - Requeriria CLI interactiu complex
-        per_que_descartada: "Prompt con agent és más inteligente i flexible"
+          - Menos flexible
+          - No puede hacer briefingconuser
+          - Requeriría CLI interactivo complex
+        por_que_descartada: "Promptconagent es más inteligente y flexible"
 
       - nom: "Manual (README instructions)"
         pros:
           - Simple
         contras:
-          - Propens a errors humans
-          - Lent
-        per_que_descartada: "Volíem automatització"
+          - Propensos a errores humanos
+          - Lento
+        por_que_descartada: "Queríamos automatización"
 
     consequencies:
       positives:
         - "Deployment guiado e inteligente"
-        - "Personalització segons necessitats"
-        - "Agent puede adaptar-se a respostes"
-        - "Consistent con filosofia de prompts"
+        - "Personalización según necesidades"
+        - "Agent puede adaptarse a respuestas"
+        - "Consistentconfilosofía de prompts"
       negatives:
-        - "Requereix AI agent per executar"
+        - "Requiere AI agent paraejecutar"
         - "No funciona sense agent"
-      impacto: "Com els usuaris despleguen memsys3 en els seus proyectos"
+      impacto: "Com los usuarios despliegan memsys3 en los sus proyectos"
 
   - id: "009"
-    titulo: "Templates com a documentació activa permanent + gotchas en sessions"
+    titulo: "Templates como documentació activa permanent + gotchas en sessions"
     data: "2025-10-31"
     estado: aceptado
     area: arquitectura
@@ -470,8 +470,8 @@ adrs:
       - Criterios: criticidad + recencia + impacto
       - project-status.yaml NO contiene gotchas (solo info general del proyecto)
 
-      **4. Templates con comentarios explicativos:**
-      - Campos con [PLACEHOLDER] y comentarios inline
+      **4. Templatesconcomentarios explicativos:**
+      - Camposcon[PLACEHOLDER] y comentarios inline
       - Ejemplos de buenas prácticas
       - deploy.md usa templates como guía para hacer briefing
 
@@ -488,7 +488,7 @@ adrs:
       4. Rellenar campos vacíos en project-status.yaml, main-agent.yaml
       5. rm -rf memsys3_temp/
 
-      # Resultado: memsys3/ con memory/templates/ incluido (permanente)
+      # Resultado: memsys3/conmemory/templates/ incluido (permanente)
       ```
 
     alternatives:
@@ -500,7 +500,7 @@ adrs:
           - Main-Agent pierde referencia de cómo documentar
           - endSession.md no tiene guía de estructura
           - Ejemplos de buenas prácticas se pierden
-        per_que_descartada: "Templates son críticos para Main-Agent durante todo el proyecto"
+        por_que_descartada: "Templates son críticos para Main-Agent durante todo el proyecto"
 
       - nom: "Gotchas en project-status.yaml"
         pros:
@@ -510,16 +510,16 @@ adrs:
           - Descontextualizados (no se sabe cuándo aparecieron)
           - project-status más inflado
           - No tiene sentido conceptual (gotchas surgen durante sesiones)
-        per_que_descartada: "Gotchas son eventos de sesiones, no características estáticas"
+        por_que_descartada: "Gotchas son eventos de sesiones, no características estáticas"
 
-      - nom: "Crear fitxer gotchas.yaml separat"
+      - nom: "Crear archivo gotchas.yaml separat"
         pros:
           - Dedicado solo a gotchas
         contras:
           - Un archivo más
           - Descontextualizados igualmente
           - CA debería leer un archivo extra
-        per_que_descartada: "Sessions ya documentan contexto temporal de los gotchas"
+        por_que_descartada: "Sessions ya documentan contexto temporal de los gotchas"
 
     consequencies:
       positives:
@@ -528,7 +528,7 @@ adrs:
         - "Gotchas contextualizados (cuándo aparecieron, en qué sesión)"
         - "CA tiene flexibilidad para priorizar gotchas según criterio"
         - "project-status.yaml más limpio (solo info general)"
-        - "Templates enriquecidos con comentarios guían briefing de deployment"
+        - "Templates enriquecidosconcomentarios guían briefing de deployment"
         - "~15KB extra en proyecto (4 templates, aceptable)"
       negatives:
         - "memory/templates/ se mantiene pero no se borra (puede parecer residual)"
