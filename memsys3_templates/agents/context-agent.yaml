@@ -86,7 +86,7 @@ limits:
       - Recencia (sesiones más recientes pesan más)
     format:
       tipus: 1 línia
-      problema: 2 línies màxim
+      problema: 2 línies máximo
       solucion: 1 línia
       criticidad: alta|media|baja
 

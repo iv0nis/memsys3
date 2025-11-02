@@ -27,7 +27,7 @@ features:
     descripcion: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
 
   pla_contingencia:
-    nombre: "Pla de Contingència"
+    nombre: "Plan de Contingencia"
     estado: "operativo"
     descripcion: "Archivado inteligente a history/ cuando >150K tokens"
 
@@ -70,11 +70,11 @@ pendientes_prioritarios:
     detall: "Incorporar clonación temporal, uso de templates como guías, briefing estructurado"
 
   - prioritat: 4
-    tasca: "Validar rotació automàtica en projecte real"
+    tasca: "Validar rotación automática en proyecto real"
     detall: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
 
   - prioritat: 5
-    tasca: "Validar Pla Contingència (>150K tokens)"
+    tasca: "Validar Plan Contingencia (>150K tokens)"
     detall: "Simular proyecto grande, verificar archivado a history/"
 
 decisions_clau:
@@ -128,4 +128,4 @@ historic_sessions:
   - data: "2025-10-28"
     duracion: "~8h"
     objetivo: "Creación inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
-    highlights: "Context Agent criterio inteligente, rotación automática, Pla Contingència, publicado a GitHub"
+    highlights: "Context Agent criterio inteligente, rotación automática, Pla Contingencia, publicado a GitHub"
