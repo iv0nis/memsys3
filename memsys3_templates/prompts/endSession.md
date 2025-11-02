@@ -66,7 +66,7 @@ wc -l memsys3/memory/full/adr.yaml
 - Sé completo pero evita detalles demasiado granulares
 - **IMPORTANTE - Gotchas**: Si has encontrado errores críticos, warnings o traps:
   - Documentarlos en el campo `gotchas:` de la sesión
-  - Incluir: `tipus`, `problema`, `solucio`, `criticitat` (alta|mitjana|baixa)
+  - Incluir: `tipus`, `problema`, `solucio`, `criticitat` (alta|media|baja)
   - Solo gotchas relevantes (errores que rompen, contra-intuitivos, recurrentes)
   - Context-Agent extraerá los top 5 más críticos de TODAS las sesiones
 
@@ -95,7 +95,7 @@ Si creas ADR:
 - `estat_actual.ultima_feature`: Si has completado feature
 - `features`: Cambiar `estat: operatiu` si se ha completado
 - `historic_sessions`: Añadir entrada resumida
-- `pendents_prioritaris`: Actualizar según próximos pasos
+- `pendientes_prioritarios`: Actualizar según próximos pasos
 
 ### 5. Informar al Usuario
 
