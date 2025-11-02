@@ -1,40 +1,40 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualitzacio: "2025-10-31"
-  actualitzat_per: "Claude (Session: Preparación Deployment y Corrección 9 Bugs)"
+  ultima_actualitzacio: "2025-11-02"
+  actualitzat_per: "Claude (Session: FASE 2 Traducción Completa)"
   fase: "Development v1.3"
 
 visio_general:
-  que_es: "Sistema de gestió de context per AI Development Agents"
-  objectiu: "Optimitzar consum de tokens proporcionant context compacte i rellevant"
+  que_es: "Sistema de gestión de contexto para AI Development Agents"
+  objectiu: "Optimizar consumo de tokens proporcionando contexto compacto y relevante"
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
   fase: "Development v1.3"
-  ultima_feature: "Sistema preparado para deployment: viz/ en raíz, history/ creado, deploy.md con ADR-009, 9 bugs críticos corregidos"
-  seguent_milestone: "Testing deployment real en proyecto UOC"
+  ultima_feature: "Traducción 100% completa catalán → español: FASE 1 (18 YAML) + Fixes + FASE 2 (14 archivos .md/.py/.html/.js) - Sistema completamente en español"
+  seguent_milestone: "Testing deployment real en proyecto UOC con sistema 100% español"
 
 features:
   context_agent:
     nom: "Context Agent"
     estat: "operatiu"
-    descripcio: "Agent que compila context complet amb criteri intel·ligent (màx 2000 línies)"
+    descripcio: "Agente que compila contexto completo con criterio inteligente (máx 2000 líneas)"
 
   rotacio_automatica:
     nom: "Rotació Automàtica"
     estat: "operatiu"
-    descripcio: "Sistema de rotació sessions/ADRs quan superen 1800 línies"
+    descripcio: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
 
   pla_contingencia:
     nom: "Pla de Contingència"
     estat: "operatiu"
-    descripcio: "Arxivament intel·ligent a history/ quan >150K tokens"
+    descripcio: "Archivado inteligente a history/ cuando >150K tokens"
 
   visualitzador:
     nom: "Memory Visualizer"
     estat: "operatiu"
-    descripcio: "Dashboard web per veure la 'ment' dels agents (4 pestanyes)"
+    descripcio: "Dashboard web para ver la 'mente' de los agentes (4 pestañas)"
 
   prompts:
     nom: "Prompts Reutilitzables"
@@ -47,10 +47,10 @@ features:
     descripcio: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
 
 stack_tecnologic:
-  frontend: "HTML/CSS/JS (visualitzador)"
-  backend: "Python 3.x (servidor visualitzador)"
-  database: "Cap (YAML files)"
-  deploy: "GitHub + clonat local"
+  frontend: "HTML/CSS/JS (visualizador)"
+  backend: "Python 3.x (servidor visualizador)"
+  database: "Ninguno (YAML files)"
+  deploy: "GitHub + clonado local"
   llenguatge_docs: "YAML + Markdown"
 
 urls:
@@ -71,16 +71,16 @@ pendents_prioritaris:
 
   - prioritat: 4
     tasca: "Validar rotació automàtica en projecte real"
-    detall: "Comprovar que funciona quan sessions.yaml supera 1800 línies"
+    detall: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
 
   - prioritat: 5
     tasca: "Validar Pla Contingència (>150K tokens)"
     detall: "Simular proyecto grande, verificar archivado a history/"
 
 decisions_clau:
-  filosofia: "Criteri intel·ligent del CA, NO límits arbitraris"
-  escalabilitat: "Rotació + arxivament automàtic"
-  preservacio: "Dades SEMPRE preservades (history/, sessions_N.yaml, adr_N.yaml)"
+  filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
+  escalabilitat: "Rotación + archivado automático"
+  preservacio: "Datos SIEMPRE preservados (history/, sessions_N.yaml, adr_N.yaml)"
   rutas: "Sistema unificado memsys3/ para portabilidad y claridad"
   documentacion: "Meta-niveles separados según audiencia"
   workflow: "Main-Agent NO compila, solo sugiere endSession"
@@ -90,6 +90,16 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-02"
+    durada: "~2h"
+    objectiu: "FASE 2 Traducción Completa + Corrección Errores Críticos"
+    highlights: "FASE 2 completada: 5 archivos traducidos (deploy.md, endSession.md, serve.py, index.html, viewer.js), Corrección 2 errores críticos (archivos no copiados a templates, 20+ labels HTML sin traducir), 6 prompts copiados, 40 archivos modificados total, 0 catalán residual en templates ✅"
+
+  - data: "2025-11-02"
+    durada: "~4h"
+    objectiu: "Traducción completa catalán → español"
+    highlights: "FASE 1: 18 archivos YAML traducidos, Fixes: ADR-009 contenido multiline, FASE 2 parcial: 3 README.md traducidos, 21 archivos modificados, docs referencia YAML_FIELDS_NO_TRADUCIR.md creado"
+
   - data: "2025-10-31"
     durada: "~3h"
     objectiu: "Preparación deployment y corrección 9 bugs críticos"
@@ -117,5 +127,5 @@ historic_sessions:
 
   - data: "2025-10-28"
     durada: "~8h"
-    objectiu: "Creació inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
-    highlights: "Context Agent criteri intel·ligent, rotació automàtica, Pla Contingència, publicat a GitHub"
+    objectiu: "Creación inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
+    highlights: "Context Agent criterio inteligente, rotación automática, Pla Contingència, publicado a GitHub"

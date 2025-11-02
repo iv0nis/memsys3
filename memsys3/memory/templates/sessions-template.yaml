@@ -1,6 +1,6 @@
 # Sessions Log Template (YAML)
-# Històric de totes les sessions de treball significatives
-# Format cronològic invers (més recent primer)
+# Histórico de todas las sesiones de trabajo significativas
+# Formato cronológico inverso (más reciente primero)
 
 sessions:
   - id: "YYYY-MM-DD"
@@ -12,31 +12,31 @@ sessions:
 
     features_implementades:
       - nom: "[Feature 1]"
-        descripcio: "Descripció breu del que s'ha fet"
+        descripcio: "Descripción breve de lo que se ha hecho"
       - nom: "[Feature 2]"
-        descripcio: "Descripció breu"
+        descripcio: "Descripción breve"
       - nom: "[Tasca 3]"
-        descripcio: "Descripció breu"
+        descripcio: "Descripción breve"
 
     problemes_resolts:
       - problema: "[Problema 1]"
-        solucio: "[Com es va resoldre]"
+        solucio: "[Cómo se resolvió]"
       - problema: "[Problema 2]"
-        solucio: "[Com es va resoldre]"
+        solucio: "[Cómo se resolvió]"
 
     decisions_preses:
       - decisio: "[Decisió 1]"
-        justificacio: "Breu justificació"
-        adr_relacionada: null  # Si és decisió arquitectònica important, ID de l'ADR
+        justificacio: "Breve justificación"
+        adr_relacionada: null  # Si es decisión arquitectónica importante, ID del ADR
       - decisio: "[Decisió 2]"
-        justificacio: "Breu justificació"
+        justificacio: "Breve justificación"
         adr_relacionada: null
 
     tecnologies_afegides:
       - nom: "[Llibreria 1]"
-        motiu: "Per què s'ha afegit"
+        motiu: "Por qué se ha añadido"
       - nom: "[Tool 2]"
-        motiu: "Propòsit"
+        motiu: "Propósito"
 
     deployments:
       - servei: "[Servei 1]"
@@ -46,8 +46,8 @@ sessions:
 
     gotchas:
       - tipus: "[warning|error|gotcha]"
-        problema: "[Descripció del problema o trap trobat]"
-        solucio: "[Com resoldre-ho o evitar-ho]"
+        problema: "[Descripción del problema o trampa encontrada]"
+        solucio: "[Cómo resolverlo o evitarlo]"
         criticitat: "[alta|mitjana|baixa]"
       - tipus: "[TIPUS]"
         problema: "[PROBLEMA]"
@@ -60,21 +60,21 @@ sessions:
       - "[Tasca pendent 3]"
 
     notes_addicionals: |
-      Qualsevol context extra, blockers trobats, aprenentatges, etc.
-      Suporta text multilínia.
+      Cualquier contexto extra, blockers encontrados, aprendizajes, etc.
+      Soporta texto multilínea.
 
 # ============================================
-# INSTRUCCIONS D'ÚS
+# INSTRUCCIONES DE USO
 # ============================================
 
 instruccions:
-  ordre: "Afegeix noves sessions al PRINCIPI de l'array (ordre invers cronològic)"
-  concisio: "Sigues concís però complet - detalls suficients per entendre context"
-  adr_links: "Linkeja ADRs (camp adr_relacionada) si es prenen decisions arquitectòniques"
-  consistencia: "Usa sempre el mateix format per facilitar parsing del Context Agent"
+  ordre: "Añade nuevas sesiones al PRINCIPIO del array (orden inverso cronológico)"
+  concisio: "Sé conciso pero completo - detalles suficientes para entender contexto"
+  adr_links: "Linkea ADRs (campo adr_relacionada) si se toman decisiones arquitectónicas"
+  consistencia: "Usa siempre el mismo formato para facilitar parsing del Context Agent"
 
 # ============================================
-# EXEMPLES DE BONA DOCUMENTACIÓ
+# EJEMPLOS DE BUENA DOCUMENTACIÓN
 # ============================================
 
 exemples:
@@ -82,43 +82,43 @@ exemples:
     features_implementades:
       - nom: "Exportació PDF professional"
         descripcio: |
-          Canviat de html2canvas a jsPDF per millor qualitat
-          Format A4 amb marges 20mm
-          10 clàusules legals LAU incloses
+          Cambiado de html2canvas a jsPDF para mejor calidad
+          Formato A4 con márgenes 20mm
+          10 cláusulas legales LAU incluidas
 
   massa_detallat: |
-    # EVITAR això:
+    # EVITAR esto:
     features_implementades:
-      - nom: "Canviat padding del botó"
+      - nom: "Cambiado padding del botón"
         descripcio: "De 10px a 12px"
-      - nom: "Actualitzat color"
+      - nom: "Actualizado color"
         descripcio: "De #fff a #f0f0f0"
-      - nom: "Fixat typo"
-        descripcio: "descipcion → descripcion a línia 234"
+      - nom: "Arreglado typo"
+        descripcio: "descipcion → descripcion en línea 234"
 
   massa_vague: |
-    # EVITAR això:
+    # EVITAR esto:
     features_implementades:
-      - nom: "Millorat sistema de processament"
-        descripcio: "Fixats bugs"
+      - nom: "Mejorado sistema de procesamiento"
+        descripcio: "Arreglados bugs"
 
   gotchas_bons: |
-    # AIXÍ SÍ - Gotchas crítics i útils:
+    # ASÍ SÍ - Gotchas críticos y útiles:
     gotchas:
       - tipus: "error"
-        problema: "useAuth() hook només funciona dins de AuthProvider"
-        solucio: "Wrap component principal amb <AuthProvider>"
+        problema: "useAuth() hook solo funciona dentro de AuthProvider"
+        solucio: "Wrap componente principal con <AuthProvider>"
         criticitat: "alta"
 
       - tipus: "warning"
-        problema: "Vercel activa Deployment Protection per defecte"
-        solucio: "Desactivar a Settings > Deployment Protection"
+        problema: "Vercel activa Deployment Protection por defecto"
+        solucio: "Desactivar en Settings > Deployment Protection"
         criticitat: "mitjana"
 
   gotchas_dolents: |
-    # EVITAR això - No són gotchas crítics:
+    # EVITAR esto - No son gotchas críticos:
     gotchas:
       - tipus: "gotcha"
-        problema: "El botó no té focus state"
-        solucio: "Afegir outline al CSS"
-        criticitat: "baixa"  # Massa trivial
+        problema: "El botón no tiene focus state"
+        solucio: "Añadir outline al CSS"
+        criticitat: "baixa"  # Demasiado trivial

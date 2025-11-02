@@ -1,29 +1,29 @@
 # Memory System - Context Management per Agents
 
-> **Sistema replicable per gestionar el context dels AI agents de forma eficient**
+> **Sistema replicable para gestionar el contexto de los AI agents de forma eficiente**
 
-Aquest sistema està dissenyat per optimitzar el consum de tokens dels Development Agents (DevAI) proporcionant-los context compacte i rellevant del projecte.
+Este sistema está diseñado para optimizar el consumo de tokens de los Development Agents (DevAI) proporcionándoles contexto compacto y relevante del proyecto.
 
-## 🎯 Objectiu
+## 🎯 Objetivo
 
-Evitar que els agents llegeixin desenes de fitxers de codi per entendre el projecte. En lloc d'això, carreguen un únic fitxer `context.yaml` (màxim 2000 línies) amb tota la informació crítica.
+Evitar que los agentes lean decenas de archivos de código para entender el proyecto. En lugar de eso, cargan un único archivo `context.yaml` (máximo 2000 líneas) con toda la información crítica.
 
-## ⚡ Quick Start (Replicar en un nou projecte)
+## ⚡ Quick Start (Replicar en un nuevo proyecto)
 
 ```bash
-# 1. Copia l'estructura de memsys3/ al teu projecte
-cp -r memsys3/ /path/to/nou/projecte/
+# 1. Copia la estructura de memsys3/ a tu proyecto
+cp -r memsys3/ /path/to/nuevo/proyecto/
 
-# 2. Omple el project-status.yaml inicial
-# Usa memsys3/memory/templates/project-status-template.yaml com a base
+# 2. Rellena el project-status.yaml inicial
+# Usa memsys3/memory/templates/project-status-template.yaml como base
 
-# 3. Comença a documentar decisions i sessions
-# Escriu a memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml seguint els templates
+# 3. Comienza a documentar decisiones y sesiones
+# Escribe en memsys3/memory/full/adr.yaml y memsys3/memory/full/sessions.yaml siguiendo los templates
 
-# 4. Compila el context quan calgui
-# Executa: @memsys3/prompts/compile-context.md
+# 4. Compila el contexto cuando sea necesario
+# Ejecuta: @memsys3/prompts/compile-context.md
 
-# 5. Visualitza la "ment" dels agents
+# 5. Visualiza la "mente" de los agentes
 cd memsys3/viz
 python serve.py
 ```
@@ -33,59 +33,59 @@ python serve.py
 ```
 memsys3/
 ├── memory/
-│   ├── context.yaml                    # ← DevAI carrega això (compilat)
-│   ├── project-status.yaml             # ← Estat actual del projecte
-│   ├── README.md                       # ← Aquest fitxer
+│   ├── context.yaml                    # ← DevAI carga esto (compilado)
+│   ├── project-status.yaml             # ← Estado actual del proyecto
+│   ├── README.md                       # ← Este archivo
 │   │
-│   ├── viz/                            # ← Visualitzador web
-│   │   ├── serve.py                    # Servidor mínim
+│   ├── viz/                            # ← Visualizador web
+│   │   ├── serve.py                    # Servidor mínimo
 │   │   ├── index.html                  # Dashboard
-│   │   ├── style.css                   # Estils
-│   │   ├── viewer.js                   # Renderitzador
-│   │   └── README.md                   # Instruccions
+│   │   ├── style.css                   # Estilos
+│   │   ├── viewer.js                   # Renderizador
+│   │   └── README.md                   # Instrucciones
 │   │
-│   ├── full/                           # ← Documentació completa (input CA)
-│   │   ├── adr.yaml                    # Totes les ADRs històriques
-│   │   └── sessions.yaml               # Totes les sessions de treball
+│   ├── full/                           # ← Documentación completa (input CA)
+│   │   ├── adr.yaml                    # Todas las ADRs históricas
+│   │   └── sessions.yaml               # Todas las sesiones de trabajo
 │   │
-│   └── templates/                      # ← Templates reutilitzables
+│   └── templates/                      # ← Templates reutilizables
 │       ├── adr-template.yaml
 │       ├── context-template.yaml
 │       ├── project-status-template.yaml
 │       └── sessions-template.yaml
 │
 ├── agents/
-│   └── context-agent.yaml              # Configuració formal del Context Agent
+│   └── context-agent.yaml              # Configuración formal del Context Agent
 │
 └── prompts/
-    ├── compile-context.md              # Prompt per executar Context Agent
-    └── mind.md                         # Slash command /mind per visualitzador
+    ├── compile-context.md              # Prompt para ejecutar Context Agent
+    └── mind.md                         # Slash command /mind para visualizador
 ```
 
 ## 🔄 Workflow
 
 ### 1. Documentar (Humans/DevAI)
 
-Escriu a aquests fitxers durant el desenvolupament:
+Escribe en estos archivos durante el desarrollo:
 
-**`memsys3/memory/full/adr.yaml`** - Decisions arquitectòniques importants
-- Quan: Has pres una decisió no òbvia que afecta el projecte
-- Format: Usa `memsys3/memory/templates/adr-template.yaml`
-- Exemple: "Per què Astro vs React", "Per què jsPDF vs html2canvas"
+**`memsys3/memory/full/adr.yaml`** - Decisiones arquitectónicas importantes
+- Cuándo: Has tomado una decisión no obvia que afecta el proyecto
+- Formato: Usa `memsys3/memory/templates/adr-template.yaml`
+- Ejemplo: "Por qué Astro vs React", "Por qué jsPDF vs html2canvas"
 
-**`memsys3/memory/full/sessions.yaml`** - Sessions de treball
-- Quan: Al final de cada sessió significativa (>1h treball)
-- Format: Usa `memsys3/memory/templates/sessions-template.yaml`
-- Inclou: features implementades, problemes resolts, decisions, pendents
+**`memsys3/memory/full/sessions.yaml`** - Sesiones de trabajo
+- Cuándo: Al final de cada sesión significativa (>1h trabajo)
+- Formato: Usa `memsys3/memory/templates/sessions-template.yaml`
+- Incluye: features implementadas, problemas resueltos, decisiones, pendientes
 
-**`memsys3/memory/project-status.yaml`** - Estat actual
-- Quan: Canvia l'estat global (nova feature operativa, nou milestone)
-- Format: Ja està creat, només actualitza'l
-- No el facis créixer massa, el CA el llegeix sencer
+**`memsys3/memory/project-status.yaml`** - Estado actual
+- Cuándo: Cambia el estado global (nueva feature operativa, nuevo milestone)
+- Formato: Ya está creado, solo actualízalo
+- No lo hagas crecer demasiado, el CA lo lee entero
 
 ### 2. Compilar (Context Agent)
 
-Quan el context creix massa o després de sessions importants:
+Cuando el contexto crece demasiado o después de sesiones importantes:
 
 ```bash
 # Executa el Context Agent
@@ -95,133 +95,133 @@ Quan el context creix massa o després de sessions importants:
 @memsys3/agents/context-agent.yaml
 ```
 
-El CA farà:
-- Llegir **TOT**: `memsys3/memory/full/adr.yaml`, `memsys3/memory/full/sessions.yaml`, `memsys3/memory/project-status.yaml`
-- Si > 150K tokens: arxivar dades irrellevants a `memsys3/memory/history/` (no llegit)
-- Filtrar amb criteri intel·ligent (impacte global, rellevància)
-- Generar `memsys3/memory/context.yaml` (màxim 2000 línies)
+El CA hará:
+- Leer **TODO**: `memsys3/memory/full/adr.yaml`, `memsys3/memory/full/sessions.yaml`, `memsys3/memory/project-status.yaml`
+- Si > 150K tokens: archivar datos irrelevantes en `memsys3/memory/history/` (no leído)
+- Filtrar con criterio inteligente (impacto global, relevancia)
+- Generar `memsys3/memory/context.yaml` (máximo 2000 líneas)
 
-### 3. Desenvolupar (DevAI)
+### 3. Desarrollar (DevAI)
 
-Els Development Agents només han de:
+Los Development Agents solo deben:
 
 ```bash
-# Carregar context
+# Cargar context
 @memsys3/memory/context.yaml
 ```
 
-I ja tenen tot el que necessiten per començar a desenvolupar.
+Y ya tienen todo lo que necesitan para empezar a desarrollar.
 
-## 📊 Filosofia del Context Agent
+## 📊 Filosofía del Context Agent
 
-El CA té la **visió panoràmica completa** del projecte i decideix amb criteri intel·ligent:
+El CA tiene la **visión panorámica completa** del proyecto y decide con criterio inteligente:
 
-**"Què ha de saber QUALSEVOL agent descontextualitzat per treballar aquí?"**
+**"¿Qué debe saber CUALQUIER agente descontextualizado para trabajar aquí?"**
 
-### Límit ÚNIC
-- **Màxim 2000 línies** al `context.yaml` final
-- **NO límits arbitraris** per ADRs, sessions, gotchas, etc.
-- El CA decideix basant-se en **rellevància i impacte global**
+### Límite ÚNICO
+- **Máximo 2000 líneas** en el `context.yaml` final
+- **NO límites arbitrarios** para ADRs, sesiones, gotchas, etc.
+- El CA decide basándose en **relevancia e impacto global**
 
-### Pla de Contingència (>150K tokens)
-Si les dades a `memsys3/memory/full/` superen 150K tokens:
-1. CA identifica ADRs/sessions **irrellevants** amb criteri
-2. Les mou a `memsys3/memory/history/` (que **NO es llegeix**)
-3. Redueix a ~120K tokens
-4. Continua compilació normal
+### Plan de Contingencia (>150K tokens)
+Si los datos en `memsys3/memory/full/` superan 150K tokens:
+1. CA identifica ADRs/sesiones **irrelevantes** con criterio
+2. Las mueve a `memsys3/memory/history/` (que **NO se lee**)
+3. Reduce a ~120K tokens
+4. Continúa compilación normal
 
-**Resultat:** Estalvi real de tokens, dades preservades, sistema escalable.
+**Resultado:** Ahorro real de tokens, datos preservados, sistema escalable.
 
-### Criteri de Selecció
+### Criterio de Selección
 
-**Inclou:**
-- ADRs amb impacte global (afecten tot el projecte)
-- Sessions recents amb canvis significatius
-- Gotchas que trenquen desenvolupament
-- Decisions no òbvies
+**Incluye:**
+- ADRs con impacto global (afectan todo el proyecto)
+- Sesiones recientes con cambios significativos
+- Gotchas que rompen desarrollo
+- Decisiones no obvias
 
-**Exclou (i arxiva si > 150K):**
-- ADRs deprecated o massa específiques
-- Sessions >6 mesos sense rellevància
-- Canvis cosmètics
-- Detalls visibles al codi
+**Excluye (y archiva si > 150K):**
+- ADRs deprecated o demasiado específicas
+- Sesiones >6 meses sin relevancia
+- Cambios cosméticos
+- Detalles visibles en el código
 
-## 🚀 Quan Executar el CA
+## 🚀 Cuándo Ejecutar el CA
 
-**Executa el Context Agent quan:**
-- ✅ Has completat una sessió gran (>2h treball)
-- ✅ Has afegit 3+ ADRs noves
-- ✅ `full/sessions.yaml` té >10 sessions
-- ✅ Nota que `context.yaml` està obsolet
+**Ejecuta el Context Agent cuando:**
+- ✅ Has completado una sesión grande (>2h trabajo)
+- ✅ Has añadido 3+ ADRs nuevas
+- ✅ `full/sessions.yaml` tiene >10 sesiones
+- ✅ Notas que `context.yaml` está obsoleto
 
-**NO cal executar-lo si:**
-- ❌ Només has canviat una línia de codi
-- ❌ Fixes menors o typos
-- ❌ `context.yaml` té menys d'1 setmana
+**NO hace falta ejecutarlo si:**
+- ❌ Solo has cambiado una línea de código
+- ❌ Fixes menores o typos
+- ❌ `context.yaml` tiene menos de 1 semana
 
-## 💡 Millors Pràctiques
+## 💡 Mejores Prácticas
 
-### Per Documentar
+### Para Documentar
 
-**✅ Fer:**
-- Documenta decisions no òbvies
-- Sigues concís però complet
-- Usa el format dels templates
-- Afegeix sessions després de treball significatiu
-- Linkeja ADRs des de sessions si cal
-
-**❌ Evitar:**
-- Documentar cada petit canvi
-- Duplicar informació entre fitxers
-- Descripcions vagas ("millorat sistema")
-- Massa detall tècnic ("canviat padding 10px→12px")
-
-### Per Compilar
-
-**✅ Fer:**
-- Executa CA regularment (setmanalment o després sessions grans)
-- Revisa que `context.yaml` tingui sentit
-- Comprova que no supera 2000 línies
-- Deixa que el CA decideixi què arxivar (si >150K tokens)
+**✅ Hacer:**
+- Documenta decisiones no obvias
+- Sé conciso pero completo
+- Usa el formato de los templates
+- Añade sesiones después de trabajo significativo
+- Linkea ADRs desde sesiones si es necesario
 
 **❌ Evitar:**
-- Editar `context.yaml` manualment (sempre via CA)
-- Executar CA després de cada petit canvi
-- Ignorar notes de compilació del CA
-- Esborrar `history/` (dades arxivades)
+- Documentar cada pequeño cambio
+- Duplicar información entre archivos
+- Descripciones vagas ("mejorado sistema")
+- Demasiado detalle técnico ("cambiado padding 10px→12px")
 
-## 🔧 Manteniment
+### Para Compilar
 
-### Rotació Automàtica (>1800 línies)
+**✅ Hacer:**
+- Ejecuta CA regularmente (semanalmente o después de sesiones grandes)
+- Revisa que `context.yaml` tenga sentido
+- Comprueba que no supera 2000 líneas
+- Deja que el CA decida qué archivar (si >150K tokens)
 
-Quan `sessions.yaml` o `adr.yaml` superen 1800 línies:
-- **endSession.md** detecta automàticament
-- Fa rotació segura: `sessions.yaml` → `sessions_N.yaml`
-- Crea nou fitxer buit per continuar
-- **No es perden dades**, queden a `sessions_1.yaml`, `sessions_2.yaml`, etc.
+**❌ Evitar:**
+- Editar `context.yaml` manualmente (siempre vía CA)
+- Ejecutar CA después de cada pequeño cambio
+- Ignorar notas de compilación del CA
+- Borrar `history/` (datos archivados)
 
-**Context Agent llegeix tots els fitxers** (`sessions.yaml` + `sessions_*.yaml`) fins que total >150K tokens, llavors arxiva irrellevants a `history/`.
+## 🔧 Mantenimiento
 
-### Arxivament Intel·ligent (>150K tokens)
+### Rotación Automática (>1800 líneas)
 
-Si el CA detecta >150K tokens totals:
-- Mou ADRs/sessions irrellevants a `memory/history/`
-- `history/` **NO es llegeix** → estalvi real
-- Dades preservades, recuperables si cal
+Cuando `sessions.yaml` o `adr.yaml` superan 1800 líneas:
+- **endSession.md** detecta automáticamente
+- Hace rotación segura: `sessions.yaml` → `sessions_N.yaml`
+- Crea nuevo archivo vacío para continuar
+- **No se pierden datos**, quedan en `sessions_1.yaml`, `sessions_2.yaml`, etc.
 
-### Periodicitat
+**Context Agent lee todos los archivos** (`sessions.yaml` + `sessions_*.yaml`) hasta que total >150K tokens, entonces archiva irrelevantes en `history/`.
 
-- **Context Agent**: Executa després de sessions importants
-- **Rotació**: Automàtica quan >1800 línies
-- **Arxivament**: Automàtic del CA quan >150K tokens
-- **Revisió manual**: Opcional cada 6-12 mesos per netejar `history/`
+### Archivado Inteligente (>150K tokens)
 
-## 📝 Exemples
+Si el CA detecta >150K tokens totales:
+- Mueve ADRs/sesiones irrelevantes a `memory/history/`
+- `history/` **NO se lee** → ahorro real
+- Datos preservados, recuperables si es necesario
 
-### Exemple 1: Nova Feature Gran
+### Periodicidad
 
-1. Desenvolupes feature durant 3h
-2. Al final, escrius a `memsys3/memory/full/sessions.yaml`:
+- **Context Agent**: Ejecuta después de sesiones importantes
+- **Rotación**: Automática cuando >1800 líneas
+- **Archivado**: Automático del CA cuando >150K tokens
+- **Revisión manual**: Opcional cada 6-12 meses para limpiar `history/`
+
+## 📝 Ejemplos
+
+### Ejemplo 1: Nueva Feature Grande
+
+1. Desarrollas feature durante 3h
+2. Al final, escribes en `memsys3/memory/full/sessions.yaml`:
    ```yaml
    sessions:
      - id: "2025-10-23"
@@ -233,64 +233,64 @@ Si el CA detecta >150K tokens totals:
          - decisio: "jsPDF vs html2canvas"
            justificacio: "Millor qualitat de text"
    ```
-3. Si vas decidir quelcom arquitectònic, afegeix ADR a `memsys3/memory/full/adr.yaml`
-4. Executes `@memsys3/prompts/compile-context.md`
-5. `memsys3/memory/context.yaml` s'actualitza amb info nova
+3. Si decidiste algo arquitectónico, añade ADR en `memsys3/memory/full/adr.yaml`
+4. Ejecutas `@memsys3/prompts/compile-context.md`
+5. `memsys3/memory/context.yaml` se actualiza con info nueva
 
-### Exemple 2: DevAI Nou
+### Ejemplo 2: DevAI Nuevo
 
-1. Nou agent carrega `@memsys3/memory/context.yaml`
-2. En ~1500 tokens entén:
-   - Què és el projecte
-   - Què funciona i què no
-   - Decisions clau preses
-   - Última sessió (què es va tocar)
+1. Nuevo agente carga `@memsys3/memory/context.yaml`
+2. En ~1500 tokens entiende:
+   - Qué es el proyecto
+   - Qué funciona y qué no
+   - Decisiones clave tomadas
+   - Última sesión (qué se tocó)
    - Gotchas a vigilar
-3. Pot començar a desenvolupar immediatament
+3. Puede empezar a desarrollar inmediatamente
 
 ## 🆘 Troubleshooting
 
-**P: context.yaml està obsolet**
-R: Executa `@memsys3/prompts/compile-context.md`
+**P: context.yaml está obsoleto**
+R: Ejecuta `@memsys3/prompts/compile-context.md`
 
-**P: CA inclou massa/poques ADRs**
-R: Ajusta límits i criteris a `memsys3/prompts/compile-context.md`
+**P: CA incluye demasiadas/pocas ADRs**
+R: Ajusta límites y criterios en `memsys3/prompts/compile-context.md`
 
-**P: DevAI diu que li falta context**
-R: Potser necessita codi específic. El CA només dona visió general, no substitueix llegir codi quan cal.
+**P: DevAI dice que le falta contexto**
+R: Quizás necesita código específico. El CA solo da visión general, no sustituye leer código cuando es necesario.
 
-**P: memsys3/memory/full/sessions.yaml és immens**
-R: Normal després de mesos. El CA només agafa l'última sessió per `memsys3/memory/context.yaml`. Si molesta, pots arxivar sessions antigues.
+**P: memsys3/memory/full/sessions.yaml es inmenso**
+R: Normal después de meses. El CA solo toma la última sesión para `memsys3/memory/context.yaml`. Si molesta, puedes archivar sesiones antiguas.
 
-## 🎨 Visualitzador Web
+## 🎨 Visualizador Web
 
-Interfície visual per veure la "ment" dels agents.
+Interfaz visual para ver la "mente" de los agentes.
 
-**Executar:**
+**Ejecutar:**
 ```bash
-# Opció 1: Slash command
+# Opción 1: Slash command
 /mind
 
-# Opció 2: Prompt directe
+# Opción 2: Prompt directo
 @memsys3/prompts/mind.md
 
-# Opció 3: Manual
+# Opción 3: Manual
 cd memsys3/viz
 python serve.py
 ```
 
-**Pestanyes disponibles:**
-- 🤖 **Agent View**: El que veu DevAI (context compilat)
-- 📚 **Full History**: Tot l'històric d'ADRs i sessions
-- 📊 **Project Status**: Estat complet del projecte
-- 📈 **Stats**: Mètriques de compilació
+**Pestañas disponibles:**
+- 🤖 **Agent View**: Lo que ve DevAI (contexto compilado)
+- 📚 **Full History**: Todo el histórico de ADRs y sesiones
+- 📊 **Project Status**: Estado completo del proyecto
+- 📈 **Stats**: Métricas de compilación
 
-**Ús:** Ideal per fer revisions visuals del context, detectar gaps, o presentar l'estat del projecte.
+**Uso:** Ideal para hacer revisiones visuales del contexto, detectar gaps, o presentar el estado del proyecto.
 
-**Documentació completa:** Veure `memsys3/viz/README.md`
+**Documentación completa:** Ver `memsys3/viz/README.md`
 
 ---
 
-**Creat**: 2025-10-23
-**Versió**: 1.0
-**Mantenidors**: Sistema automatitzat + humans
+**Creado**: 2025-10-23
+**Versión**: 1.0
+**Mantenedores**: Sistema automatizado + humanos

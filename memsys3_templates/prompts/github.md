@@ -2,7 +2,7 @@
 
 ## Instrucciones
 
-- Sube el repo a GitHub en {idioma_del_proyecto}, sin emojis ni firmas
+- Sube el repo a GitHub en español, sin emojis ni firmas
 - Commits atómicos y descriptivos
 - Añade el tag correspondiente si procede
 - No subas la versión más allá de la 0.x.x hasta que sea estable
