@@ -183,21 +183,21 @@ adrs:
       impacto: "Cómo se gestiona el workflow de compilación de contexto"
 
   - id: "001"
-    titulo: "Criteri intel·ligent del Context Agent vs límits arbitraris"
+    titulo: "Criteri inteligente del Context Agent vs límits arbitraris"
     data: "2025-10-28"
     estado: aceptado
     area: arquitectura
 
     context: |
-      Els sistemes anteriors usaven límits rígids (màx 7 ADRs, màx 15 línies per sessió)
+      Els sistemes anteriors usaven límits rígids (màx 7 ADRs, màx 15 líneas per sessió)
       que no s'adaptaven a la realitat del projecte. Projectes petits perdien context,
-      projectes grans no podien expressar-se adequadament.
+      proyectos grandes no podien expressar-se adequadament.
 
     decision: |
-      El Context Agent usa criteri intel·ligent basant-se en la pregunta:
+      El Context Agent usa criterio inteligente basándose en la pregunta:
       "Què ha de saber QUALSEVOL agent descontextualitzat per treballar aquí?"
 
-      Límit ÚNIC: màxim 2000 línies al context.yaml final.
+      Límit ÚNIC: máximo 2000 líneas al context.yaml final.
       NO hi ha límits arbitraris per ADRs, sessions, gotchas, etc.
 
     alternatives:
@@ -208,45 +208,45 @@ adrs:
         contras:
           - No s'adapta a realitat del projecte
           - Perd informació crítica o inclou informació irrellevant
-        per_que_descartada: "Massa rígid, no escala amb complexitat del projecte"
+        per_que_descartada: "Massa rígid, no escala con complexitat del projecte"
 
       - nom: "Cap límit (context il·limitat)"
         pros:
           - Tot el context disponible
         contras:
-          - Consumeix massa tokens
-          - Supera límits de Read tool (2000 línies)
-        per_que_descartada: "No sostenible, problemes tècnics amb Read"
+          - Consumeix demasiados tokens
+          - Supera límits de Read tool (2000 líneas)
+        per_que_descartada: "No sostenible, problemes tècnics con Read"
 
     consequencies:
       positives:
         - "Context adaptatiu segons necessitats del projecte"
-        - "CA decideix amb visió panoràmica completa"
-        - "Projectes petits mantenen tot, projectes grans filtren intel·ligentment"
+        - "CA decideix con visió panoràmica completa"
+        - "Projectes petits mantenen tot, proyectos grandes filtren inteligentement"
         - "Més flexible i escalable"
       negatives:
-        - "Menys predictible (depèn criteri CA)"
+        - "Menys predictible (depèn criterio CA)"
         - "Pot variar entre compilacions"
       impacto: "Com es compila tot el context del sistema"
 
   - id: "002"
-    titulo: "Rotació automàtica de sessions/ADRs (>1800 línies)"
+    titulo: "Rotació automática de sessions/ADRs (>1800 líneas)"
     data: "2025-10-28"
     estado: aceptado
     area: escalabilitat
 
     context: |
-      Read tool té límit de 2000 línies. Si sessions.yaml o adr.yaml creixen
-      massa, els agents no poden llegir-los.
+      Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml creixen
+      demasiados, els agents no pueden llegir-los.
 
     decision: |
-      Quan sessions.yaml o adr.yaml superen 1800 línies:
-      - endSession.md detecta automàticament
-      - Fa rotació segura: copia → verifica → crea nou
+      Quan sessions.yaml o adr.yaml superen 1800 líneas:
+      - endSession.md detecta automáticament
+      - Hace rotación segura: copia → verifica → crea nuevo
       - sessions.yaml → sessions_N.yaml
       - adr.yaml → adr_N.yaml
 
-      Context Agent llegeix TOTS els fitxers rotats fins detectar >150K tokens.
+      Context Agent llegeix TOTS els archivos rotats fins detectar >150K tokens.
 
     alternatives:
       - nom: "Limit fix de sessions/ADRs"
@@ -254,9 +254,9 @@ adrs:
           - Simple
         contras:
           - Perd històric
-        per_que_descartada: "No volem perdre dades mai"
+        per_que_descartada: "No volem perdre datos mai"
 
-      - nom: "Base de dades"
+      - nom: "Base de datos"
         pros:
           - Sense límits
         contras:
@@ -267,28 +267,28 @@ adrs:
     consequencies:
       positives:
         - "Sistema escala infinitament"
-        - "No es perden dades mai"
+        - "No es perden datos mai"
         - "Automàtic, sense intervenció manual"
         - "Preserva històric complet"
       negatives:
-        - "Múltiples fitxers (sessions_1, sessions_2, etc.)"
-        - "CA ha de llegir múltiples fitxers"
-      impacto: "Com es gestiona el creixement de dades històriques"
+        - "Múltiples archivos (sessions_1, sessions_2, etc.)"
+        - "CA ha de llegir múltiples archivos"
+      impacto: "Com es gestiona el creixement de datos històriques"
 
   - id: "003"
-    titulo: "Pla de Contingència amb arxivament intel·ligent (>150K tokens)"
+    titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
     data: "2025-10-28"
     estado: aceptado
     area: escalabilitat
 
     context: |
-      Fins i tot amb rotació, projectes molt grans poden acumular massa dades.
-      Si full/ (amb tots els fitxers rotats) supera 150K tokens, el CA no pot
+      Incluso con rotación, proyectos muy grandes pueden acumular demasiados datos.
+      Si full/ (con tots els archivos rotats) supera 150K tokens, el CA no pot
       processar-ho eficientment.
 
     decision: |
       Quan total de full/ supera 150K tokens:
-      1. CA identifica ADRs/sessions irrellevants amb criteri intel·ligent
+      1. CA identifica ADRs/sessions irrelevantes con criterio inteligente
       2. Les mou a memory/history/ (que NO es llegeix)
       3. Redueix a ~120K tokens
       4. Continua compilació normal
@@ -296,14 +296,14 @@ adrs:
       Dades a history/ estan preservades, recuperables si cal.
 
     alternatives:
-      - nom: "Esborrar dades antigues"
+      - nom: "Esborrar datos antigues"
         pros:
-          - Neteja automàtica
+          - Limpieza automática
         contras:
           - Perd informació irreversiblement
         per_que_descartada: "NEVER delete data"
 
-      - nom: "Comprimir fitxers"
+      - nom: "Comprimir archivos"
         pros:
           - Redueix mida
         contras:
@@ -317,9 +317,9 @@ adrs:
         - "Sistema escala il·limitadament"
         - "Reversible (pots recuperar de history/)"
       negatives:
-        - "Dades arxivades no visibles per CA"
-        - "Depèn criteri CA per arxivar"
-      impacto: "Com es gestionen projectes amb molt històric"
+        - "Dades archivadas no visibles per CA"
+        - "Depèn criterio CA per arxivar"
+      impacto: "Com es gestionen proyectos con muy històric"
 
   - id: "004"
     titulo: "YAML per tot (incloent sessions)"
@@ -344,8 +344,8 @@ adrs:
         pros:
           - Més llegible per humans
         contras:
-          - Inconsistent amb resta
-          - Més tokens (~30% més)
+          - Inconsistent con resta
+          - Més tokens (~30% más)
           - Difícil parsejar per LLMs
         per_que_descartada: "Volíem consistència i eficiència"
 
@@ -362,7 +362,7 @@ adrs:
         - "Consistència total del sistema"
         - "~30% estalvi tokens vs Markdown"
         - "Millor per LLMs (estructura clara)"
-        - "Fàcil parsejar amb js-yaml"
+        - "Fàcil parsejar con js-yaml"
       negatives:
         - "Menys familiar per alguns devs"
         - "Requereix indentació estricta"
@@ -375,15 +375,15 @@ adrs:
     area: usabilitat
 
     context: |
-      Necessitàvem manera de desplegar memsys3 en nous projectes.
+      Necessitàvem manera de desplegar memsys3 en nous proyectos.
       Opcions: script shell automàtic vs prompt per Main-Agent.
 
     decision: |
       Crear prompts/deploy.md que el Main-Agent executa.
-      L'agent fa briefing amb user per personalitzar el deployment:
+      L'agent hace briefing con user per personalitzar el deployment:
       - Pregunta sobre projecte, stack, comportament
       - Copia templates
-      - Crea fitxers específics basant-se en respostes
+      - Crea archivos específics basándose en respostes
 
       Més flexible que script automàtic.
 
@@ -394,9 +394,9 @@ adrs:
           - Ràpid
         contras:
           - Menys flexible
-          - No pot fer briefing amb user
+          - No pot fer briefing con user
           - Requeriria CLI interactiu complex
-        per_que_descartada: "Prompt amb agent és més intel·ligent i flexible"
+        per_que_descartada: "Prompt con agent és más inteligente i flexible"
 
       - nom: "Manual (README instructions)"
         pros:
@@ -408,14 +408,14 @@ adrs:
 
     consequencies:
       positives:
-        - "Deployment guiat i intel·ligent"
+        - "Deployment guiado e inteligente"
         - "Personalització segons necessitats"
         - "Agent pot adaptar-se a respostes"
-        - "Consistent amb filosofia de prompts"
+        - "Consistent con filosofia de prompts"
       negatives:
         - "Requereix AI agent per executar"
         - "No funciona sense agent"
-      impacto: "Com els usuaris despleguen memsys3 en els seus projectes"
+      impacto: "Com els usuaris despleguen memsys3 en els seus proyectos"
 
   - id: "009"
     titulo: "Templates com a documentació activa permanent + gotchas en sessions"
