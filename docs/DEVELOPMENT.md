@@ -7,9 +7,11 @@
 ```
 memsys3/                          # Repositorio GitHub
 ├── README.md                    # README principal (público)
-├── docs/                        # Documentación del desarrollo
+├── docs/                        # 📚 DESARROLLO DE MEMSYS3 (NO se distribuye)
 │   ├── DEVELOPMENT.md          # Este archivo
-│   └── UPDATE.md               # Guía de actualización
+│   ├── UPDATE.md               # Guía de actualización
+│   ├── backlog/                # Issues, features, specs del proyecto memsys3
+│   └── archivo/                # Histórico de documentos completados
 ├── memsys3_templates/           # ⭐ PRODUCTO FINAL (lo que se distribuye)
 │   ├── README.md               # Docs del sistema
 │   ├── agents/                 # Templates de agents
@@ -17,6 +19,52 @@ memsys3/                          # Repositorio GitHub
 │   └── prompts/                # Templates de prompts
 └── memsys3/                     # 🔧 Dog-fooding (desarrollo interno)
     └── (Instancia específica para desarrollar memsys3)
+```
+
+## 📚 Sobre la Carpeta docs/
+
+### ¿Qué es docs/?
+
+**`docs/` es la carpeta estándar de desarrollo de software** usada en la industria para documentar el proceso de desarrollo, arquitectura, decisiones técnicas, issues, y trabajo futuro del proyecto.
+
+memsys3 es un proyecto de software, por lo tanto **usamos docs/ como cualquier otro proyecto** de la industria, pero adaptado a nuestra manera.
+
+### ¿Qué contiene docs/?
+
+```
+docs/
+├── DEVELOPMENT.md     # Guía para contributors
+├── UPDATE.md          # Guía de actualización
+├── backlog/           # Trabajo futuro (issues, features, specs)
+│   ├── README.md
+│   └── ISSUE-XXX-*.md, FEATURE-XXX-*.md, etc.
+└── archivo/           # Histórico (documentos completados)
+    └── (auditorías, reportes, referencias)
+```
+
+### ⚠️ IMPORTANTE: docs/ NO se Distribuye
+
+**docs/ es específico del desarrollo de memsys3 como producto.**
+
+- ✅ **Está en el repositorio GitHub** (público, parte del código fuente)
+- ❌ **NO está en memsys3_templates/** (no se copia a proyectos)
+- ❌ **NO se distribuye** durante deployment
+
+**Razón:** Los proyectos que usan memsys3 tienen sus propios sistemas de tracking (GitHub Issues, Jira, etc.). No necesitan ver los issues internos de cómo desarrollamos memsys3.
+
+### Contenido de docs/backlog/
+
+Sistema de códigos para trabajo futuro:
+
+- **ISSUE-XXX**: Problemas técnicos, bugs, tech debt
+- **FEATURE-XXX**: Nueva funcionalidad a implementar
+- **SPEC-XXX**: Especificaciones técnicas detalladas
+- **BLUEPRINT-XXX**: Diseño arquitectónico de alto nivel
+- **IMPROVEMENT-XXX**: Mejoras de funcionalidad existente
+- **EXPLORATION-XXX**: Investigación sin solución clara
+
+Ver `docs/backlog/README.md` para detalles del sistema.
+
 ```
 
 ## 🎯 Filosofía: Estructura y Deployment
