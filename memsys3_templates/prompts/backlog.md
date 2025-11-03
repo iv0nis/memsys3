@@ -1,24 +1,21 @@
-# Consultar Backlog de memsys3
+# Crear Item en Backlog
 
-Eres un Development Agent trabajando en el desarrollo de **memsys3** (el sistema, no un proyecto que lo usa).
-
-El usuario quiere consultar o trabajar con items del backlog ubicado en `docs/backlog/`.
+**Contexto:** El backlog (`docs/backlog/`) organiza trabajo futuro del desarrollo de memsys3 (issues, features, specs, blueprints, mejoras, exploraciones).
 
 **Tu tarea:**
-1. Lee `@docs/backlog/README.md` para entender el sistema de c骴igos
-2. Lista los items actuales en `docs/backlog/` (excluye README.md)
-3. Muestra al usuario: prefijo, t韙ulo, estado, prioridad de cada item
-4. Si el usuario quiere agregar un nuevo item, usa el prefijo apropiado y sigue la estructura documentada
+1. Pregunta al usuario qu茅 tipo de item quiere crear (usa la leyenda abajo)
+2. Lee `@docs/backlog/README.md` para entender estructura de documentos
+3. Crea el archivo `docs/backlog/[PREFIJO]-[NUMERO]-[nombre].md` con la estructura correcta
+4. Usa numeraci贸n secuencial por prefijo (ISSUE-001, ISSUE-002, etc. - verifica 煤ltimo n煤mero)
+5. Incluye: Estado, Prioridad, Tipo, Plazo, Fecha, Problema/Propuesta, Referencias
 
 ---
 
-## Leyenda de C骴igos
+## Leyenda de C贸digos
 
-- **ISSUE-XXX**: Problemas t閏nicos, bugs, tech debt
+- **ISSUE-XXX**: Problemas t茅cnicos, bugs, tech debt
 - **FEATURE-XXX**: Nueva funcionalidad a implementar
-- **SPEC-XXX**: Especificaciones t閏nicas detalladas
-- **BLUEPRINT-XXX**: Dise駉 arquitect髇ico de alto nivel
+- **SPEC-XXX**: Especificaciones t茅cnicas detalladas
+- **BLUEPRINT-XXX**: Dise帽o arquitect贸nico de alto nivel
 - **IMPROVEMENT-XXX**: Mejoras de funcionalidad existente
-- **EXPLORATION-XXX**: Investigaci髇 sin soluci髇 clara
-
-Ver `@docs/backlog/README.md` para workflow completo y estructura de documentos.
+- **EXPLORATION-XXX**: Investigaci贸n sin soluci贸n clara
