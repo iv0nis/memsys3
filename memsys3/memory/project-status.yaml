@@ -1,8 +1,8 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-11-02"
-  actualizado_por: "Claude (Session: FASE 3 Correcciones - Valores Descriptivos YAML)"
+  ultima_actualizacion: "2025-11-03"
+  actualizado_por: "Claude (Session: Verificación FASE 3 y Escalabilidad)"
   fase: "Development v1.3"
 
 visio_general:
@@ -12,8 +12,8 @@ visio_general:
 
 estat_actual:
   fase: "Development v1.3"
-  ultima_feature: "Traducción 100% REAL completa catalán → español: FASE 1 (18 YAML valores) + FASE 2 (14 código) + FASE 3 (10 YAML keys + código) + CORRECCIONES (101 valores descriptivos) - Sistema REALMENTE 100% español verificado (0 catalán residual)"
-  siguiente_milestone: "Testing deployment real en proyecto UOC con sistema 100% español"
+  ultima_feature: "Sistema backlog creado (docs/backlog/) con 6 prefijos para organizar trabajo futuro: ISSUE-001 (escalabilidad mantenimiento) + IMPROVEMENT-001 (contexto docs críticos) + prompt backlog.md para crear items + aclaración docs/ en DEVELOPMENT.md"
+  siguiente_milestone: "Decidir implementación IMPROVEMENT-001 (contexto accesible) o ISSUE-001 Fase 1 (documentar puntos calientes)"
 
 features:
   context_agent:
@@ -58,24 +58,24 @@ urls:
 
 pendientes_prioritarios:
   - prioritat: 1
+    tasca: "Evaluar implementación IMPROVEMENT-001 (contexto docs críticos)"
+    detall: "Decidir opción A (leer README), B (sección sistema:), híbrido, o aplazar. Alta prioridad para nuevas instancias tengan contexto fundamental."
+
+  - prioritat: 2
     tasca: "Probar deployment completo en proyecto UOC"
     detall: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar)"
 
-  - prioritat: 2
+  - prioritat: 3
+    tasca: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
+    detall: "Quick win: agregar checklist en DEVELOPMENT.md de qué sincronizar en cada tipo de cambio (versión, estructura, etc.)"
+
+  - prioritat: 4
     tasca: "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
     detall: "Separar desarrollo interno de distribución pública según decisión ADR-009"
 
-  - prioritat: 3
-    tasca: "Actualizar deploy.md con nuevo workflow"
-    detall: "Incorporar clonación temporal, uso de templates como guías, briefing estructurado"
-
-  - prioritat: 4
+  - prioritat: 5
     tasca: "Validar rotación automática en proyecto real"
     detall: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
-
-  - prioritat: 5
-    tasca: "Validar Plan Contingencia (>150K tokens)"
-    detall: "Simular proyecto grande, verificar archivado a history/"
 
 decisions_clau:
   filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
@@ -87,9 +87,12 @@ decisions_clau:
   templates: "memory/templates/ son guías permanentes, NO se borran post-deployment"
   gotchas: "Se documentan en sessions.yaml (contextualizados), NO en project-status"
   deployment: "Clone temporal memsys3_temp, copiar, briefing con templates, borrar temp"
+  backlog: "docs/backlog/ organiza trabajo futuro con 6 prefijos, NO se distribuye (específico dev memsys3)"
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-03"
+    resum: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
   - data: "2025-11-02"
     duracion: "~2.5h"
     objetivo: "FASE 3 Correcciones - Valores Descriptivos YAML"
