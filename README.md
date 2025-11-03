@@ -100,17 +100,17 @@ memsys3/                          # Repositorio GitHub
 │   │   ├── full/              # Templates de documentación
 │   │   │   ├── adr.yaml      # Template de ADRs (vacío)
 │   │   │   └── sessions.yaml # Template de sessions (vacío)
-│   │   ├── templates/         # Templates YAML base
-│   │   │   ├── adr-template.yaml
-│   │   │   ├── context-template.yaml
-│   │   │   ├── project-status-template.yaml
-│   │   │   └── sessions-template.yaml
-│   │   └── viz/              # Visualizador web
-│   │       ├── serve.py
-│   │       ├── index.html
-│   │       ├── style.css
-│   │       ├── viewer.js
-│   │       └── README.md
+│   │   └── templates/         # Templates YAML base
+│   │       ├── adr-template.yaml
+│   │       ├── context-template.yaml
+│   │       ├── project-status-template.yaml
+│   │       └── sessions-template.yaml
+│   ├── viz/                  # Visualizador web
+│   │   ├── serve.py
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   ├── viewer.js
+│   │   └── README.md
 │   └── prompts/
 │       ├── newSession.md      # Template de prompt para iniciar sesión
 │       ├── endSession.md      # Template de prompt para documentar
@@ -222,6 +222,6 @@ MIT License - Libre para usar en cualquier proyecto
 
 ---
 
-**Versión**: 1.0
+**Versión**: 1.3
 **Repositorio**: https://github.com/iv0nis/memsys3
 **Documentación**: [memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)

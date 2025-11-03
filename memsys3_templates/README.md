@@ -54,6 +54,7 @@ Al finalizar, documenta lo realizado:
 
 Esto:
 - Documenta la sesión en `memory/full/sessions.yaml`
+- Documenta gotchas encontrados (con criticidad) en la misma sesión
 - Crea ADRs si hubo decisiones arquitectónicas
 - Actualiza el `memory/project-status.yaml`
 - Aplica rotación automática si es necesario
