@@ -1,13 +1,10 @@
-# Crear Item en Backlog
-
-**Contexto:** El backlog (`docs/backlog/`) organiza trabajo futuro del desarrollo de memsys3 (issues, features, specs, blueprints, mejoras, exploraciones).
+El usuario quiere consultar o trabajar con ítems del backlog ubicado en `docs/backlog/`.
 
 **Tu tarea:**
-1. Pregunta al usuario qué tipo de item quiere crear (usa la leyenda abajo)
-2. Lee `@docs/backlog/README.md` para entender estructura de documentos
-3. Crea el archivo `docs/backlog/[PREFIJO]-[NUMERO]-[nombre].md` con la estructura correcta
-4. Usa numeración secuencial por prefijo (ISSUE-001, ISSUE-002, etc. - verifica último número)
-5. Incluye: Estado, Prioridad, Tipo, Plazo, Fecha, Problema/Propuesta, Referencias
+1. Lee `@docs/backlog/README.md` para entender el sistema de códigos
+2. Lista los ítems actuales en `docs/backlog/` (excluye README.md)
+3. Muestra al usuario: prefijo, título, estado, prioridad de cada ítem
+4. Si el usuario quiere agregar un nuevo ítem, usa el prefijo apropiado y sigue la estructura documentada
 
 ---
 
@@ -19,3 +16,5 @@
 - **BLUEPRINT-XXX**: Diseño arquitectónico de alto nivel
 - **IMPROVEMENT-XXX**: Mejoras de funcionalidad existente
 - **EXPLORATION-XXX**: Investigación sin solución clara
+
+Ver `@docs/backlog/README.md` para workflow completo y estructura de documentos.
