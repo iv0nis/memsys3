@@ -5,7 +5,7 @@ sessions:
   - id: "2025-11-03-verificacion-escalabilidad"
     titulo: "Verificación FASE 3, Correcciones Reales y Problema de Escalabilidad"
     data: "2025-11-03"
-    duracion: "~3h"
+    duracion: "~4h"
     participantes: ["Claude (Context Agent + Development Agent)", "User (ivonis)"]
     objetivo: "Verificar exhaustivamente FASE 3, corregir errores residuales (200+ líneas catalán), aplicar correcciones de auditoría, identificar problema crítico de escalabilidad del mantenimiento"
 
@@ -24,6 +24,18 @@ sessions:
 
       - nombre: "Sistema Backlog con Códigos"
         descripcion: "Creado docs/backlog/ con README.md documentando sistema de 6 prefijos: ISSUE-XXX (problemas), FEATURE-XXX (funcionalidad), SPEC-XXX (especificaciones), BLUEPRINT-XXX (arquitectura), IMPROVEMENT-XXX (mejoras), EXPLORATION-XXX (investigación). Workflow, estados, relación con ADRs/Sessions. Movido ISSUE-001-escalabilidad-mantenimiento.md a backlog/."
+
+      - nombre: "ISSUE-001 Escalabilidad Mantenimiento"
+        descripcion: "Documentado problema de escalabilidad: falta verificación automatizada, sincronización manual propensa errores, sin single source of truth. Fallo FASE 3 expone problema. Exploradas 5 opciones (tests automatizados, source of truth, pre-commit, documentación, reducir duplicación). Propuesta incremental 3 fases. Prioridad media, medio plazo."
+
+      - nombre: "IMPROVEMENT-001 Contexto con Docs Críticos"
+        descripcion: "Documentado problema dual: (1) Docs críticos (README.md, DEVELOPMENT.md, UPDATE.md) NO accesibles en context.yaml, nuevas instancias no conocen filosofía sistema, (2) Ambigüedad dev vs sistema distribuido. Propuesta solución híbrida: Context Agent lee README.md + nueva sección sistema: en context.yaml con filosofía, archivos críticos, prompts, escalabilidad. 4 opciones exploradas. Prioridad alta."
+
+      - nombre: "Aclaración docs/ en DEVELOPMENT.md"
+        descripcion: "Agregada sección 'Sobre la Carpeta docs/' en DEVELOPMENT.md: docs/ es estándar industria para desarrollo de software, memsys3 la usa a su manera, está en GitHub pero NO se distribuye en memsys3_templates/, proyectos que usan memsys3 tienen sus propios sistemas tracking. Evita confusión sobre propósito de docs/."
+
+      - nombre: "Prompt backlog.md"
+        descripcion: "Creado memsys3/prompts/backlog.md ejecutable con @memsys3/prompts/backlog.md. Propósito: crear items en backlog siguiendo estructura. Contexto explica qué es backlog (trabajo futuro memsys3). 5 pasos: preguntar tipo, leer README, crear archivo con prefijo, numeración secuencial, incluir campos. Leyenda 6 códigos. Sincronizado a templates."
 
     problemas_resueltos:
       - problema: "FASE 3 reportada como '100% completada' pero tenía 200+ líneas de catalán residual"
@@ -53,9 +65,10 @@ sessions:
     deployments: []
 
     proximos_pasos:
-      - "Decidir prioridad de ISSUE-001: ¿implementar Fase 1 (documentación) o Fase 2 (tests automatizados)?"
-      - "Evaluar si proyecto crecerá (contributors, tamaño) para justificar automatización"
-      - "Considerar documentar 'puntos calientes' en DEVELOPMENT.md como quick win"
+      - "Decidir prioridad de ISSUE-001 (escalabilidad mantenimiento): ¿Fase 1, 2 o 3?"
+      - "Evaluar implementación de IMPROVEMENT-001 (contexto con docs críticos): ¿Opción A, B o híbrido?"
+      - "Probar prompt backlog.md creando nuevo item como test"
+      - "Considerar implementar Fase 1 de ISSUE-001 (documentar puntos calientes) como quick win"
       - "Continuar con desarrollo normal de memsys3"
 
     notas_adicionales: |
@@ -68,12 +81,16 @@ sessions:
       Sistema de backlog/ es primera iteración - puede evolucionar según necesidades.
       Numeración secuencial por tipo (ISSUE-001, ISSUE-002) vs numeración global.
 
-      Commits de esta sesión:
+      Commits de esta sesión (10 total):
       - 6d7b631: fix FASE 3 Correcciones REALES (750+/452-)
       - 0e9637d: docs archivar traducción
       - 5cf651c: docs correcciones auditoría
       - 1f24d17: docs archivar auditoría
       - 390cbc1: docs crear backlog con códigos
+      - 1069d97: docs(endSession) documentar sesión
+      - 63116e8: docs aclarar docs/ específico dev
+      - 6524ce4: backlog IMPROVEMENT-001
+      - 6456efa, bfc7cd5, 94e0c9d: prompts backlog.md (crear + iteraciones)
 
   - id: "2025-11-02-fase3-correcciones"
     titulo: "Corrección FASE 3 - Traducir Valores Descriptivos YAML (101 instancias)"
