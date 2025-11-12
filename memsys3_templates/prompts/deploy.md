@@ -101,7 +101,18 @@ Pregunta al usuario:
    - Idioma UI?
    - Idioma variables/comentarios?
 
-### Paso 4: Crear project-status.yaml
+### Paso 4: Registrar Versión de memsys3
+
+Obtén la versión y commit del repositorio clonado:
+
+```bash
+cd memsys3_temp
+MEMSYS3_VERSION=$(git describe --tags --always)
+MEMSYS3_COMMIT=$(git log -1 --format=%h)
+cd ..
+```
+
+### Paso 5: Crear project-status.yaml
 
 Con la info recopilada, crea `memsys3/memory/project-status.yaml`:
 
@@ -112,6 +123,8 @@ metadata:
   ultima_actualitzacio: "[DATA_AVUI]"
   actualitzat_per: "Claude (Initial Deployment)"
   fase: "[FASE]"
+  memsys3_version: "[MEMSYS3_VERSION obtenida en Paso 4]"
+  memsys3_deployed: "[DATA_AVUI]"
 
 visio_general:
   que_es: "[DESCRIPCIO_1_LINIA]"
@@ -149,7 +162,7 @@ convencions_codi: {}
 historic_sessions: []
 ```
 
-### Paso 5: Personalizar prompts/newSession.md
+### Paso 6: Personalizar prompts/newSession.md
 
 Edita `memsys3/prompts/newSession.md` con la información del proyecto:
 
@@ -160,7 +173,7 @@ Edita `memsys3/prompts/newSession.md` con la información del proyecto:
 - Lee @memsys3/memory/project-status.yaml y @memsys3/memory/context.yaml
 ```
 
-### Paso 6: Personalizar agents/main-agent.yaml (opcional)
+### Paso 7: Personalizar agents/main-agent.yaml (opcional)
 
 Si el usuario ha especificado algo particular sobre el comportamiento del agente, añádelo:
 
@@ -169,13 +182,13 @@ comportamiento_especific:
   [SI_USER_HA_PEDIDO]: "[INSTRUCCION]"
 ```
 
-### Paso 7: Eliminar Clone Temporal
+### Paso 8: Eliminar Clone Temporal
 
 ```bash
 rm -rf memsys3_temp
 ```
 
-### Paso 8: Informar al Usuario
+### Paso 9: Informar al Usuario
 
 Confirma que el deployment se ha completado correctamente:
 

@@ -9,6 +9,10 @@ objetivo: Generar memsys3/memory/context.yaml con máximo 2000 líneas (~2000-30
 # ============================================
 inputs:
   obligatoris:
+    - path: README.md
+      descripcion: README principal del proyecto (en raíz del proyecto)
+      accio: Leer completo, extraer visión general, propósito, setup básico (máx 300 líneas en context)
+
     - path: memsys3/memory/project-status.yaml
       descripcion: Estado actual del proyecto con features, stack, URLs
       accio: Leer completo y extraer info clave
@@ -36,6 +40,7 @@ output:
   base_template: memsys3/memory/templates/context-template.yaml
   estructura:
     - metadata
+    - readme_proyecto (sintetizado, máx 300 líneas)
     - project
     - features
     - stack
@@ -50,6 +55,24 @@ output:
 # LÍMITS DE CONTEXT - ESTRICTES
 # ============================================
 limits:
+  readme_proyecto:
+    maxim_linies: 300
+    que_incluir:
+      - Título y descripción del proyecto
+      - Propósito y objetivos principales
+      - Instalación/Setup básico (comandos principales)
+      - Estructura de carpetas si es relevante
+      - Links importantes (docs, demo, etc.)
+    que_excluir:
+      - Badges/shields innecesarios
+      - Secciones de contribución genéricas
+      - Licencias (ya están en el repo)
+      - Detalles excesivos de configuración
+    criteris:
+      - Sintetizar manteniendo esencia
+      - Priorizar información que explique QUÉ es y PARA QUÉ sirve
+      - Omitir detalles que están en documentación específica
+
   adrs:
     maxim: 7
     linies_per_adr: 4
@@ -103,12 +126,21 @@ limits:
 # ============================================
 instruccions:
   pas_1_llegir:
+    - Carga README.md (raíz del proyecto) completo
     - Carga memsys3/memory/project-status.yaml completo
     - Carga memsys3/memory/full/adr.yaml completo
     - Carga memsys3/memory/full/sessions.yaml completo
     - Carga memsys3/memory/templates/context-template.yaml para estructura
 
   pas_2_extreure:
+    readme_proyecto:
+      - Fuente: README.md (raíz del proyecto)
+      - Extraer: título, descripción principal, propósito, setup básico
+      - Sintetizar en máximo 300 líneas
+      - Mantener: comandos principales (install, dev, build)
+      - Omitir: badges, detalles menores, licencias
+      - Formato: Markdown sintético conservando estructura básica
+
     project:
       - Copia: nom, descripcio, fase, ultima_feature, seguent_milestone
       - Fuente: project-status.yaml → visio_general y estat_actual
