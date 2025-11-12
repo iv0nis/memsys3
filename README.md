@@ -22,6 +22,8 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Prompts reutilizables para comenzar/terminar sesiones
 - ✅ Sistema de rotación automática cuando supera límites (>1800 líneas)
 - ✅ Plan de contingencia con archivado inteligente (>150K tokens)
+- ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes
+- ✅ README opcional: Context Agent acepta proyectos sin README o puede crear automáticamente
 
 ## ⚡ Quick Start
 
@@ -161,6 +163,7 @@ python3 serve.py
 - Límite único: máx 2000 líneas en context.yaml
 - NO límites arbitrarios por ADRs/sessions
 - Lee TODO primero, después filtra con criterio
+- **README opcional**: acepta proyectos sin README o puede crear automáticamente desde project-status
 
 ### Rotación Automática (>1800 líneas)
 - Detecta automáticamente cuando sessions.yaml o adr.yaml superan 1800 líneas
@@ -180,6 +183,12 @@ python3 serve.py
 - Consistencia total del sistema
 - ~30% ahorro tokens vs Markdown
 - Mejor para LLMs (estructura clara)
+
+### Sistema de Actualización
+- **Prompt actualizar.md**: actualización segura de memsys3 en proyectos existentes
+- PASO 0: detección inteligente de estructura antigua incompatible (3 escenarios)
+- Backups automáticos antes de tocar datos
+- Preserva histórico completo durante migración
 
 ## 📖 Documentación Completa
 
@@ -222,6 +231,6 @@ MIT License - Libre para usar en cualquier proyecto
 
 ---
 
-**Versión**: 1.3
+**Versión**: 1.5
 **Repositorio**: https://github.com/iv0nis/memsys3
 **Documentación**: [memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)
