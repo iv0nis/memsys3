@@ -14,9 +14,97 @@ Tú tienes la **visión panorámica completa** del proyecto. Lee todo el histór
 
 ## Inputs que debes procesar
 
+### 🔍 Paso Previo: Verificar README.md
+
+**ANTES de leer todos los archivos**, verifica si existe README.md en la raíz del proyecto:
+
+```bash
+ls README.md 2>/dev/null && echo "✅ README.md existe" || echo "❌ README.md NO existe"
+```
+
+**Si README.md NO existe:**
+
+Pregunta al usuario:
+
+---
+
+**📝 README.md no encontrado**
+
+El proyecto NO tiene un README.md en la raíz.
+
+El README es fundamental para que el Context Agent incluya información básica del proyecto (qué es, para qué sirve, cómo instalarlo) en el contexto compilado.
+
+**¿Quieres que cree un README.md básico para este proyecto?**
+
+**Opción A: Sí, crear README básico ahora**
+- El CA creará un README.md con información extraída de `project-status.yaml`
+- Incluirá: título, descripción, features principales, stack, comandos básicos
+- Puedes editarlo después para agregar más detalles
+
+**Opción B: No, continuar sin README**
+- El CA compilará el contexto SIN sección `readme_proyecto`
+- **ADVERTENCIA:** Nuevas instancias tendrán menos contexto sobre el proyecto
+- Puedes crear el README manualmente después y re-ejecutar compile-context
+
+---
+
+**Si el usuario elige OPCIÓN A:**
+
+1. Lee `@memsys3/memory/project-status.yaml` completo
+2. Extrae información clave:
+   - Título del proyecto (campo `que_es` o nombre del directorio)
+   - Descripción (campo `objectiu`)
+   - Features principales (sección `features`)
+   - Stack tecnológico (sección `stack_tecnologic`)
+   - Comandos útiles (si hay `comandos_utils`)
+3. Crea `README.md` en raíz del proyecto siguiendo esta estructura:
+
+```markdown
+# [NOMBRE_PROYECTO]
+
+## Descripción
+[que_es del project-status]
+
+## Objetivo
+[objectiu del project-status]
+
+## Features Principales
+[Listar 3-5 features más importantes del project-status con enlaces si hay URLs]
+
+## Stack Tecnológico
+[Resumen del stack_tecnologic]
+
+## Instalación y Uso
+
+\`\`\`bash
+# [comandos básicos: install, dev, build, deploy]
+\`\`\`
+
+## Enlaces
+[URLs principales del project-status]
+```
+
+4. Después de crear README.md, continúa con la compilación normal
+
+**Si el usuario elige OPCIÓN B:**
+
+1. Continúa con la compilación SIN leer README.md
+2. El `context.yaml` NO tendrá sección `readme_proyecto`
+3. Añade nota en `notes_compilacion`:
+   ```yaml
+   observaciones: |
+     README.md no encontrado en raíz del proyecto.
+     Contexto compilado SIN sección readme_proyecto.
+     Recomendación: Crear README.md y re-ejecutar compile-context.
+   ```
+
+---
+
+### Archivos a leer
+
 Lee **TODOS** estos archivos completos:
 
-1. `README.md` (raíz del proyecto) - **Descripción general del proyecto**
+1. `README.md` (raíz del proyecto) - **Descripción general del proyecto** *(solo si existe o fue creado)*
 2. `@memsys3/memory/full/adr.yaml` - **Todas** las Architecture Decision Records
 3. `@memsys3/memory/full/sessions.yaml` - **Todo** el histórico de sesiones
 4. `@memsys3/memory/project-status.yaml` - Status actual del proyecto
