@@ -2,8 +2,8 @@
 
 metadata:
   ultima_actualizacion: "2025-11-12"
-  actualizado_por: "Claude (Session: Deployment Soluzzia + README Context)"
-  fase: "Development v1.4"
+  actualizado_por: "Claude (Session: FEATURE-002 actualizar.md + README opcional)"
+  fase: "Development v1.5"
   memsys3_version: "v0.4.0+20 (commit: 2f633fd)"
   memsys3_deployed: "2025-10-28"
 
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v1.4"
-  ultima_feature: "Context Agent lee README.md del proyecto + Sistema tracking versiones memsys3 + Deployment exitoso en Soluzzia + Verificación post-compilación README + FEATURE-002 (prompt actualizar.md)"
-  siguiente_milestone: "Testear deployment en segundo proyecto real + Implementar FEATURE-002 o IMPROVEMENT-001"
+  fase: "Development v1.5"
+  ultima_feature: "FEATURE-002 implementado: actualizar.md (551 líneas) + README opcional en Context Agent + Testing real en deCastro (v1.0 → v0.5.0 con migración)"
+  siguiente_milestone: "Testear actualizar.md en segundo proyecto + Validar compile-context con README automático"
 
 features:
   context_agent:
@@ -60,16 +60,16 @@ urls:
 
 pendientes_prioritarios:
   - prioritat: 1
-    tasca: "Testear deployment en segundo proyecto real"
-    detall: "Validar workflow completo con README incluido, tracking versiones, verificación post-compilación"
+    tasca: "Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
+    detall: "Validar actualización en proyecto que solo tenga /memsys3 (no estructura antigua). Probar en Soluzzia."
 
   - prioritat: 2
-    tasca: "Implementar FEATURE-002 (prompt actualizar.md)"
-    detall: "Crear proceso documentado para actualizar memsys3 en proyectos existentes (versión tracking ya implementado)"
+    tasca: "Validar compile-context.md con creación automática de README"
+    detall: "Ejecutar compile-context en deCastro (sin README), probar Opción A (crear automáticamente desde project-status.yaml)"
 
   - prioritat: 3
     tasca: "IMPROVEMENT-001 PARCIALMENTE RESUELTO - Evaluar siguiente fase"
-    detall: "README ya incluido en contexto. Evaluar si agregar DEVELOPMENT.md, UPDATE.md según necesidad"
+    detall: "README ya incluido en contexto (opcional). Evaluar si agregar DEVELOPMENT.md, UPDATE.md según necesidad"
 
   - prioritat: 3
     tasca: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
@@ -97,6 +97,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-12"
+    resum: "FEATURE-002 implementado completamente: actualizar.md (551 líneas) con detección estructura antigua (PASO 0). README opcional en Context Agent. Testing real en deCastro (v1.0 → v0.5.0, migración 134+320+222 líneas). compile-context pregunta crear README automático. 3 gotchas críticos documentados. 7 archivos modificados, 335+551 líneas agregadas."
   - data: "2025-11-12"
     resum: "Deployment exitoso en Soluzzia (primer proyecto real). Context Agent lee README.md (input obligatorio, máx 300 líneas). Sistema tracking versiones memsys3 (memsys3_version, memsys3_deployed). Verificación post-compilación de README. FEATURE-002 backlog (prompt actualizar.md). 9 archivos modificados, 254 líneas agregadas. IMPROVEMENT-001 parcialmente resuelto."
   - data: "2025-11-03"

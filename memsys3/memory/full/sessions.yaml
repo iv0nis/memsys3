@@ -2,6 +2,124 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-11-12-feature-002-actualizar-readme-opcional"
+    data: "2025-11-12"
+    duracion: "~4h"
+    titulo: "FEATURE-002: actualizar.md + README opcional en Context Agent"
+
+    features_implementadas:
+      - "Prompt actualizar.md creado (551 líneas) para actualización segura de memsys3"
+      - "PASO 0 crítico: Detección de estructura antigua incompatible (3 escenarios)"
+      - "Testing real en deCastro_inmobiliaria: v1.0 → v0.5.0 con migración de datos"
+      - "README.md ahora opcional en Context Agent con condicional inteligente"
+      - "compile-context.md pregunta si crear README desde project-status.yaml"
+      - "Migración exitosa de /memory antigua a /memsys3/memory/ en deCastro"
+
+    problemas_resueltos:
+      - problema: "actualizar.md no contemplaba estructura antigua incompatible (pre-ADR-006)"
+        solucion: "PASO 0 agregado que detecta 3 escenarios: A) solo /memory, B) /memory + /memsys3 coexistiendo, C) solo /memsys3"
+        impacto: "Previene pérdida de datos en proyectos con deployment inicial incorrecto"
+
+      - problema: "deCastro tenía DOS estructuras: /memory (datos reales) + /memsys3 (datos template)"
+        solucion: "Migración manual de sessions.yaml (134 líneas), adr.yaml (320 líneas), project-status.yaml (222 líneas)"
+        impacto: "Datos históricos preservados, contexto correcto restaurado"
+
+      - problema: "README.md obligatorio rompería proyectos existentes sin README"
+        solucion: "README movido a inputs opcionales en context-agent.yaml + condicional en compile-context.md"
+        impacto: "Context Agent puede compilar sin README (con warning) o crear uno automáticamente"
+
+    decisions_tomadas:
+      - decision: "actualizar.md debe ser defensivo: detectar edge-cases antes de proceder"
+        justificacion: "Testing reveló escenario crítico (estructura antigua coexistiendo) no contemplado inicialmente"
+        alternativas: "Asumir estructura correcta y fallar en runtime"
+        impacto: "Mayor robustez, prevención de pérdida de datos"
+
+      - decision: "README.md opcional con pregunta al usuario (crear automáticamente o continuar sin él)"
+        justificacion: "Proyectos existentes pueden no tener README, pero es valioso para nuevas instancias"
+        alternativas: "README obligatorio (rompe compatibilidad) o siempre opcional (pierde valor)"
+        impacto: "Balance entre retrocompatibilidad y valor del contexto"
+
+      - decision: "Prioridad FEATURE-002 escalada de Media → Alta durante implementación"
+        justificacion: "Testing descubrió escenario crítico que afecta integridad de datos en actualizaciones"
+        impacto: "Documentación exhaustiva en backlog para futuras referencias"
+
+    tecnologies_afegides:
+      - nombre: "actualizar.md"
+        tipo: "Prompt de actualización"
+        version: "v1.0"
+        uso: "Actualización segura de memsys3 en proyectos existentes"
+
+    gotchas_documentados:
+      - tipo: "critical"
+        problema: "Estructura pre-ADR-006 puede coexistir con estructura nueva sin migrar datos"
+        solucion: "Detectar con: ls -la memory/ && ls -la memsys3/ → si ambos existen, verificar cuál tiene datos reales"
+        criticidad: "alta"
+        contexto: "deCastro tenía /memory con datos reales + /memsys3 con datos template. Context Agent leería datos incorrectos."
+
+      - tipo: "warning"
+        problema: "project-status.yaml puede tener datos del template memsys3 en lugar del proyecto real"
+        solucion: "Verificar que campos como 'que_es' describen el PROYECTO, no 'Sistema de gestió de context'"
+        criticidad: "alta"
+        contexto: "Deployment inicial incorrecto puede copiar template sin personalizar"
+
+      - tipo: "warning"
+        problema: "Proyectos sin README.md fallarían compilación con README obligatorio"
+        solucion: "README movido a opcional + compile-context.md pregunta si crear automáticamente"
+        criticidad: "media"
+        contexto: "deCastro no tenía README, rompería compile-context si fuera obligatorio"
+
+    archivos_modificados:
+      - "memsys3_templates/prompts/actualizar.md (nuevo, 551 líneas)"
+      - "memsys3_templates/prompts/compile-context.md (+90 líneas - condicional README)"
+      - "memsys3_templates/agents/context-agent.yaml (README movido a opcional)"
+      - "docs/backlog/FEATURE-002-prompt-actualizar-memsys3.md (+150 líneas - implementación completa)"
+      - "memsys3/prompts/actualizar.md (copia dog-fooding)"
+      - "memsys3/prompts/compile-context.md (copia dog-fooding)"
+      - "memsys3/agents/context-agent.yaml (copia dog-fooding)"
+
+    testing_real:
+      proyecto: "deCastro_inmobiliaria"
+      descripcion: "Suite de herramientas IA para inmobiliaria (Astro + Claude API)"
+      version_inicial: "v1.0 (2025-10-28, estructura /memory antigua)"
+      version_actualizada: "v0.5.0 (2025-11-12, estructura /memsys3 nueva)"
+      archivos_actualizados: 18
+      datos_migrados:
+        - "sessions.yaml: 134 líneas (datos reales proyecto)"
+        - "adr.yaml: 320 líneas (datos reales proyecto)"
+        - "project-status.yaml: 222 líneas (datos reales proyecto)"
+      backups_creados:
+        - "memsys3_backup_20251112_145653"
+        - "memory_backup_old_structure_20251112"
+      resultado: "Actualización exitosa con migración completa de datos históricos"
+
+    proximos_pasos:
+      - "Testear actualización en proyecto con estructura correcta (Escenario C: solo /memsys3)"
+      - "Validar compile-context.md en deCastro con creación automática de README"
+      - "Actualizar Soluzzia a versión con actualizar.md + README opcional"
+
+    notes_addicionals: |
+      Esta sesión fue CRÍTICA: reveló escenario de deployment incorrecto no contemplado.
+
+      Descubrimiento principal: Proyectos pre-ADR-006 pueden tener estructura /memory antigua
+      coexistiendo con /memsys3 nueva, pero sin migración de datos. Esto causa que:
+      - Context Agent lea datos INCORRECTOS (template memsys3 en lugar del proyecto real)
+      - Pérdida efectiva de histórico (sessions/ADRs reales quedan en /memory no leída)
+
+      FEATURE-002 pasó de Media → Alta prioridad durante implementación.
+
+      Lecciones:
+      1. Versiones pre-ADR-006 (pre-v0.2.0) son INCOMPATIBLES con estructura actual
+      2. actualizar.md debe ser defensivo: detectar edge-cases antes de proceder
+      3. Backups automáticos son CRÍTICOS antes de tocar datos
+      4. README opcional permite retrocompatibilidad sin perder valor
+
+      Estadísticas:
+      - 7 archivos modificados/creados
+      - 335 líneas agregadas en cambios
+      - 551 líneas en actualizar.md (nuevo prompt)
+      - 150 líneas agregadas en backlog FEATURE-002 (documentación implementación)
+      - Testing real validado en deCastro (actualización + migración exitosa)
+
   - id: "2025-11-12-deployment-soluzzia-readme-contexto"
     data: "2025-11-12"
     duracion: "~3h"
