@@ -6,6 +6,8 @@ metadata:
   ultima_actualizacion: "[DATA]"  # Ejemplo: 2025-10-23
   actualizado_por: "[NOM]"  # Quién ha hecho la última actualización
   fase: "[FASE]"  # Ejemplos: Planificación, MVP, Beta, Producción, Mantenimiento
+  memsys3_version: "[VERSION]"  # Versión de memsys3 desplegada (se rellena durante deployment)
+  memsys3_deployed: "[DATA]"  # Fecha de deployment de memsys3 (se rellena durante deployment)
 
 visio_general:
   que_es: "[DESCRIPCIÓ 1 LÍNIA]"  # Qué hace el proyecto en una frase

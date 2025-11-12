@@ -9,6 +9,22 @@ metadata:
   version_context: "[NUMERO_VERSIO]"
 
 # ============================================
+# README DEL PROYECTO
+# Sintetizado del README.md principal (máx 300 líneas)
+# ============================================
+readme_proyecto: |
+  [CONTENIDO SINTETIZADO DEL README.md]
+
+  CA debe incluir:
+  - Título y descripción del proyecto
+  - Propósito y objetivos
+  - Setup básico (comandos install, dev, build)
+  - Estructura relevante
+  - Links importantes
+
+  Omitir badges, licencias, detalles menores
+
+# ============================================
 # PROJECT INFO
 # ============================================
 project:

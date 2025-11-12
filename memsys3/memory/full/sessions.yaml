@@ -2,6 +2,113 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-11-12-deployment-soluzzia-readme-contexto"
+    data: "2025-11-12"
+    duracion: "~3h"
+    titulo: "Deployment Soluzzia + README en Context Agent + Tracking Versiones"
+    objetivo: "Deployar memsys3 en proyecto Soluzzia, implementar lectura de README.md en Context Agent, y crear sistema de tracking de versiones"
+
+    features_implementadas:
+      - "Deployment completo de memsys3 v0.4.0+20 en proyecto Soluzzia"
+      - "Context Agent ahora lee README.md del proyecto (input obligatorio)"
+      - "Sección readme_proyecto agregada a context.yaml (máx 300 líneas)"
+      - "Sistema de tracking de versión memsys3 en project-status.yaml (memsys3_version, memsys3_deployed)"
+      - "Verificación post-compilación: pregunta si README está actualizado"
+      - "deploy.md actualizado con Paso 4 para registrar versión desde git"
+      - "README.md creado en Soluzzia con descripción del proyecto"
+      - "FEATURE-002 creado en backlog: prompt actualizar.md para updates de memsys3"
+
+    problemas_resueltos:
+      - "Versión memsys3 no estaba registrada en deployments - ahora en metadata de project-status.yaml"
+      - "README.md no era leído por nuevas instancias - ahora incluido en contexto compilado"
+      - "Duplicación innecesaria: versión solo en project-status (no en context.yaml)"
+      - "README podía quedar desactualizado sin detección - verificación post-compilación implementada"
+
+    decisiones_tomadas:
+      - decision: "Versión memsys3 SOLO en project-status.yaml"
+        motivo: "Un solo lugar = más fácil de mantener. Context Agent lo lee de ahí"
+        alternativas: "Duplicar en context.yaml (descartado por mantenimiento)"
+
+      - decision: "README.md como input obligatorio del Context Agent"
+        motivo: "Resuelve IMPROVEMENT-001 parcialmente. README es fuente fundamental de contexto"
+        impacto: "Nuevas instancias tienen contexto del proyecto desde README sin leerlo manualmente"
+
+      - decision: "Verificación activa de README después de compile-context"
+        motivo: "README puede quedar obsoleto conforme proyecto evoluciona"
+        implementacion: "CA pregunta si README está actualizado, compara con project-status, propone updates"
+
+    tecnologias_agregadas:
+      - nombre: "Campos metadata en project-status-template.yaml"
+        proposito: "memsys3_version y memsys3_deployed para tracking"
+
+      - nombre: "Sección readme_proyecto en context-template.yaml"
+        proposito: "Almacenar README sintetizado (máx 300 líneas) en contexto"
+
+    archivos_modificados:
+      templates:
+        - "memsys3_templates/memory/templates/project-status-template.yaml (+2 líneas metadata)"
+        - "memsys3_templates/memory/templates/context-template.yaml (+16 líneas sección readme)"
+        - "memsys3_templates/agents/context-agent.yaml (+32 líneas: README input + límites)"
+        - "memsys3_templates/prompts/compile-context.md (+71 líneas: README criterios + verificación)"
+        - "memsys3_templates/prompts/deploy.md (+23 líneas: Paso 4 versión, renumeración pasos)"
+
+      dog_fooding:
+        - "memsys3/memory/project-status.yaml (+2 líneas: versión actual)"
+        - "memsys3/agents/context-agent.yaml (copiado de templates)"
+        - "memsys3/memory/templates/context-template.yaml (copiado de templates)"
+        - "memsys3/prompts/compile-context.md (copiado de templates)"
+
+      backlog:
+        - "docs/backlog/FEATURE-002-prompt-actualizar-memsys3.md (nuevo, 121 líneas)"
+
+      soluzzia:
+        - "/mnt/c/PROYECTOS/soluzzia/README.md (creado, 30 líneas)"
+        - "/mnt/c/PROYECTOS/soluzzia/memsys3/* (deployment completo: 23 archivos, 8 dirs)"
+        - "/mnt/c/PROYECTOS/soluzzia/memsys3/memory/project-status.yaml (personalizado con versión)"
+        - "/mnt/c/PROYECTOS/soluzzia/memsys3/memory/context.yaml (compilado con README incluido)"
+
+    estadisticas:
+      archivos_modificados_totales: 9
+      lineas_agregadas: 254
+      lineas_eliminadas: 11
+      commits_pendientes: 1
+
+    proximos_pasos:
+      - "Testear deployment completo desde cero en otro proyecto real"
+      - "Evaluar implementación IMPROVEMENT-001 (contexto docs críticos)"
+      - "Considerar implementación FEATURE-002 (prompt actualizar.md)"
+      - "Validar que README en contexto mejora experiencia de nuevas instancias"
+
+    gotchas_documentados:
+      - tipo: "warning"
+        problema: "README puede quedar desactualizado conforme proyecto evoluciona sin que el CA lo detecte"
+        solucion: "Verificación post-compilación implementada: CA pregunta y compara con project-status"
+        criticidad: "media"
+
+      - tipo: "info"
+        problema: "Deployment inicial copiaba context.yaml con versión hardcodeada del template"
+        solucion: "context.yaml se genera después con compile-context que lee project-status actualizado"
+        criticidad: "baja"
+
+    notas_adicionales: |
+      Sesión productiva con 5 features mayores implementadas.
+
+      Highlights:
+      - Deployment Soluzzia exitoso (primer proyecto real usando memsys3)
+      - README.md ahora parte integral del contexto (resuelve parte de IMPROVEMENT-001)
+      - Sistema de tracking de versiones permite futuros updates controlados (base para FEATURE-002)
+
+      Workflow de deployment validado:
+      1. Clone temporal memsys3_temp
+      2. Copiar estructura a memsys3/
+      3. Briefing personalizado
+      4. Registrar versión desde git
+      5. Personalizar project-status y newSession
+      6. Eliminar temp
+      7. Compilar context con README incluido
+
+      Sistema ahora más robusto para deployments y actualizaciones futuras.
+
   - id: "2025-11-03-verificacion-escalabilidad"
     titulo: "Verificación FASE 3, Correcciones Reales y Problema de Escalabilidad"
     data: "2025-11-03"

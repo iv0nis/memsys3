@@ -1,9 +1,11 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-11-03"
-  actualizado_por: "Claude (Session: Verificación FASE 3 y Escalabilidad)"
-  fase: "Development v1.3"
+  ultima_actualizacion: "2025-11-12"
+  actualizado_por: "Claude (Session: Deployment Soluzzia + README Context)"
+  fase: "Development v1.4"
+  memsys3_version: "v0.4.0+20 (commit: 2f633fd)"
+  memsys3_deployed: "2025-10-28"
 
 visio_general:
   que_es: "Sistema de gestión de contexto para AI Development Agents"
@@ -11,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v1.3"
-  ultima_feature: "Sistema backlog creado (docs/backlog/) con 6 prefijos para organizar trabajo futuro: ISSUE-001 (escalabilidad mantenimiento) + IMPROVEMENT-001 (contexto docs críticos) + prompt backlog.md para crear items + aclaración docs/ en DEVELOPMENT.md"
-  siguiente_milestone: "Decidir implementación IMPROVEMENT-001 (contexto accesible) o ISSUE-001 Fase 1 (documentar puntos calientes)"
+  fase: "Development v1.4"
+  ultima_feature: "Context Agent lee README.md del proyecto + Sistema tracking versiones memsys3 + Deployment exitoso en Soluzzia + Verificación post-compilación README + FEATURE-002 (prompt actualizar.md)"
+  siguiente_milestone: "Testear deployment en segundo proyecto real + Implementar FEATURE-002 o IMPROVEMENT-001"
 
 features:
   context_agent:
@@ -58,12 +60,16 @@ urls:
 
 pendientes_prioritarios:
   - prioritat: 1
-    tasca: "Evaluar implementación IMPROVEMENT-001 (contexto docs críticos)"
-    detall: "Decidir opción A (leer README), B (sección sistema:), híbrido, o aplazar. Alta prioridad para nuevas instancias tengan contexto fundamental."
+    tasca: "Testear deployment en segundo proyecto real"
+    detall: "Validar workflow completo con README incluido, tracking versiones, verificación post-compilación"
 
   - prioritat: 2
-    tasca: "Probar deployment completo en proyecto UOC"
-    detall: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar)"
+    tasca: "Implementar FEATURE-002 (prompt actualizar.md)"
+    detall: "Crear proceso documentado para actualizar memsys3 en proyectos existentes (versión tracking ya implementado)"
+
+  - prioritat: 3
+    tasca: "IMPROVEMENT-001 PARCIALMENTE RESUELTO - Evaluar siguiente fase"
+    detall: "README ya incluido en contexto. Evaluar si agregar DEVELOPMENT.md, UPDATE.md según necesidad"
 
   - prioritat: 3
     tasca: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
@@ -91,6 +97,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-12"
+    resum: "Deployment exitoso en Soluzzia (primer proyecto real). Context Agent lee README.md (input obligatorio, máx 300 líneas). Sistema tracking versiones memsys3 (memsys3_version, memsys3_deployed). Verificación post-compilación de README. FEATURE-002 backlog (prompt actualizar.md). 9 archivos modificados, 254 líneas agregadas. IMPROVEMENT-001 parcialmente resuelto."
   - data: "2025-11-03"
     resum: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
   - data: "2025-11-02"
