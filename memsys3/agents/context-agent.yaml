@@ -9,10 +9,6 @@ objetivo: Generar memsys3/memory/context.yaml con máximo 2000 líneas (~2000-30
 # ============================================
 inputs:
   obligatoris:
-    - path: README.md
-      descripcion: README principal del proyecto (en raíz del proyecto)
-      accio: Leer completo, extraer visión general, propósito, setup básico (máx 300 líneas en context)
-
     - path: memsys3/memory/project-status.yaml
       descripcion: Estado actual del proyecto con features, stack, URLs
       accio: Leer completo y extraer info clave
@@ -26,6 +22,11 @@ inputs:
       accio: Extraer y sintetizar última sesión
 
   opcionals:
+    - path: README.md
+      descripcion: README principal del proyecto (en raíz del proyecto)
+      accio: Si existe - Leer completo, extraer visión general, propósito, setup básico (máx 300 líneas en context)
+      nota: Si NO existe, compile-context.md preguntará si crear uno desde project-status.yaml
+
     - path: memsys3/memory/templates/
       descripcion: Templates para referencia de estructura
       accio: Usar context-template.yaml como base para output
