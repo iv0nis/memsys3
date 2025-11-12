@@ -2,6 +2,26 @@
 
 > Guía para actualizar memsys3 en proyectos que ya lo tienen desplegado
 
+## 🚀 Método Recomendado: Prompt actualizar.md
+
+**La forma más segura de actualizar memsys3 es usar el prompt dedicado:**
+
+```bash
+@memsys3/prompts/actualizar.md
+```
+
+Este prompt:
+- ✅ Detecta automáticamente tu versión actual de memsys3
+- ✅ Identifica estructura antigua incompatible (PASO 0 crítico)
+- ✅ Crea backups automáticos antes de tocar datos
+- ✅ Actualiza solo archivos safe (viz/, templates/, prompts/, agents/)
+- ✅ Preserva tus datos (adr.yaml, sessions.yaml, project-status.yaml)
+- ✅ Valida la actualización al finalizar
+
+**Si prefieres actualización manual**, continúa con esta guía.
+
+---
+
 ## Contexto
 
 Esta guía es para cuando hay **cambios/mejoras en memsys3_templates/** y quieres aplicarlos a tu proyecto que ya tiene memsys3 desplegado.

@@ -1,22 +1,94 @@
-# Context Template
-# Este es el archivo que carga DevAI para entender el proyecto
-# Es compilado por el Context Agent (CA) desde memory/full/
-# Límite ÚNICO: máximo 2000 líneas total
+# Context Compilado - memsys3
+# Compilado por Context Agent desde memory/full/
 
 metadata:
   compilado_por: "Context Agent"
-  ultima_compilacion: "2025-10-31"
-  version_context: "1.5"
+  ultima_compilacion: "2025-11-12"
+  version_context: "1.6.1"
 
 # ============================================
-# INFORMACIÓN DEL PROYECTO
+# README DEL PROYECTO
+# ============================================
+readme_proyecto: |
+  # memsys3 - Sistema de Memoria para Agentes de IA
+
+  Sistema replicable de gestión de contexto para optimizar el trabajo con AI Development Agents.
+
+  ## Problema que Resuelve
+  - Los agents deben leer decenas de archivos de código para entender el proyecto
+  - Cada sesión nueva consume miles de tokens repitiendo el mismo contexto
+  - Decisiones y aprendizajes se pierden entre sesiones
+  - No hay visibilidad de qué "sabe" el agent
+
+  ## Solución
+  - Context compilado en un único archivo (~2500-3000 tokens)
+  - Sistema de documentación estructurado (ADRs, sessions, status)
+  - Context Agent que filtra automáticamente la información relevante
+  - Visualizador web para ver la "mente" de los agents
+  - Prompts reutilizables para comenzar/terminar sesiones
+  - Sistema de rotación automática cuando supera límites (>1800 líneas)
+  - Plan de contingencia con archivado inteligente (>150K tokens)
+
+  ## Quick Start
+
+  ### Deployment
+  Desde la raíz de tu proyecto:
+  ```bash
+  @memsys3/prompts/deploy.md
+  ```
+  Workflow: Clone temporal → Copia estructura → Briefing → Personalización → Limpieza
+
+  ### Primeros Pasos
+  ```bash
+  # Compila contexto inicial
+  @memsys3/prompts/compile-context.md
+
+  # Visualiza la "mente" de los agents
+  @memsys3/prompts/mind.md
+
+  # Comienza a trabajar
+  @memsys3/prompts/newSession.md
+  ```
+
+  ## Estructura del Repositorio
+  ```
+  memsys3/
+  ├── memsys3_templates/      # Producto final (templates agnósticos)
+  │   ├── agents/            # main-agent, context-agent
+  │   ├── memory/            # Templates YAML base
+  │   ├── prompts/           # newSession, endSession, compile-context, etc.
+  │   └── viz/               # Visualizador web
+  └── memsys3/               # Dog-fooding (desarrollo, NO se distribuye)
+  ```
+
+  ## Workflow
+  1. **Documentar**: Escribe decisiones (ADRs), sesiones, actualiza status
+  2. **Compilar**: Context Agent genera context.yaml compacto con criterio inteligente
+  3. **Desarrollar**: DevAI carga contexto completo, documenta al acabar
+
+  ## Features Principales
+  - Context Agent con criterio inteligente (máx 2000 líneas)
+  - README opcional: acepta proyectos sin README o puede crear automáticamente
+  - Rotación automática >1800 líneas
+  - Plan de contingencia >150K tokens con archivado a history/
+  - Sistema de templates YAML (~30% ahorro tokens vs Markdown)
+  - Visualizador web con 4 pestañas
+  - Sistema de Actualización: prompt actualizar.md con detección estructura antigua
+
+  ## Requisitos
+  - Python 3.x (visualizador)
+  - AI agent compatible con prompts markdown
+  - Git (opcional, para versionado)
+
+# ============================================
+# PROJECT INFO
 # ============================================
 project:
   nombre: "memsys3"
   descripcion: "Sistema de gestión de contexto para AI Development Agents"
-  fase: "Development v1.3"
-  ultima_feature: "Sistema preparado para deployment: viz/ en raíz, history/ creado, deploy.md con ADR-009, 9 bugs críticos corregidos"
-  siguiente_milestone: "Testing deployment real en proyecto UOC"
+  fase: "Development v1.5"
+  ultima_feature: "FEATURE-002: actualizar.md + README opcional + Testing en deCastro"
+  siguiente_milestone: "Testear actualizar.md en segundo proyecto + Validar compile-context con README automático"
 
 # ============================================
 # FEATURES OPERATIVAS
@@ -25,367 +97,284 @@ features:
   context_agent:
     nombre: "Context Agent"
     estado: "operativo"
-    descripcion: "Agente que compila contexto completo con criterioo inteligente (máx 2000 líneas)"
+    descripcion: "Compila contexto completo con criterio inteligente (máx 2000 líneas). Lee README.md (opcional), ADRs, sessions, project-status y filtra lo imprescindible"
 
   rotacion_automatica:
     nombre: "Rotación Automática"
     estado: "operativo"
-    descripcion: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
+    descripcion: "Detecta cuando sessions.yaml o adr.yaml superan 1800 líneas. Rotación segura: copia → verifica → crea nuevo. CA lee todos los archivos rotados"
 
   plan_contingencia:
     nombre: "Plan de Contingencia"
     estado: "operativo"
-    descripcion: "Archivado inteligente a history/ cuando >150K tokens"
+    descripcion: "Cuando contexto supera 150K tokens, CA archiva datos irrelevantes a history/ (no leído). Reduce a ~120K. Datos preservados, no perdidos"
 
   visualizador:
     nombre: "Memory Visualizer"
     estado: "operativo"
-    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas) - Ubicado en memsys3/viz/"
+    descripcion: "Dashboard web en memsys3/viz/ con 4 pestañas: Agent View, Full History, Project Status, Stats. Servidor Python + js-yaml parser"
 
   prompts:
     nombre: "Prompts Reutilizables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas @memsys3/"
+    descripcion: "5 prompts ejecutables: newSession, endSession, compile-context, mind, deploy. Todas las rutas usan prefijo memsys3/"
 
-  documentacion:
-    nombre: "Sistema de Documentación Multi-nivel"
+  sistema_actualizacion:
+    nombre: "Prompt actualizar.md"
     estado: "operativo"
-    descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
+    descripcion: "Actualización segura de memsys3 en proyectos existentes. PASO 0 detecta estructura antigua incompatible (3 escenarios). Backups automáticos antes de tocar datos"
 
 # ============================================
 # STACK TECNOLÓGICO
 # ============================================
 stack:
   frontend: "HTML/CSS/JS (visualizador)"
-  backend: "Python 3.x (servidor visualizador)"
-  database: "Ninguna (YAML files)"
+  backend: "Python 3.x SimpleHTTPServer (visualizador)"
+  database: "Ninguno (YAML files)"
   deploy: "GitHub + clonado local"
   lenguaje_docs: "YAML + Markdown"
+  parser: "js-yaml 4.1.0 (CDN)"
 
 # ============================================
 # URLS PRINCIPALES
 # ============================================
 urls:
   repository: "https://github.com/iv0nis/memsys3"
+  docs: "memsys3_templates/memory/README.md"
 
 # ============================================
-# ADRs RELEVANTES
-# Todas las ADRs son críticas para entender el sistema
+# ADRs RELEVANTES (Impacto Global)
 # ============================================
 adrs:
-  - id: "009"
-    titulo: "Templates como documentación activa permanente + gotchas en sessions"
-    decision: |
-      **1. Concepto de memsys3_templates/ (ms3t):**
-      - ms3t/ = Estructura EXACTA del producto final
-      - Todos los archivos se copian durante deployment (incluido memory/templates/)
-      - memory/templates/ NO se borra después del deployment
-
-      **2. memory/templates/ = Guías permanentes:**
-      - Main-Agent consulta templates/ durante endSession.md
-      - Templates son documentación ACTIVA, no solo guías de deployment
-
-      **3. Gotchas documentados en sessions.yaml:**
-      - Main-Agent documenta gotchas en cada sesión donde aparecen con criticidad
-      - Context-Agent extrae gotchas de TODAS las sesiones
-      - CA usa criterioo inteligente para seleccionar top 5 más críticos
-      - project-status.yaml NO contiene gotchas (solo info general del proyecto)
-
-      **4. Workflow de deployment actualizado:**
-      1. git clone https://github.com/iv0nis/memsys3 memsys3_temp
-      2. cp -r memsys3_temp/memsys3/* ./memsys3/
-      3. Briefing usando templates/ como guía
-      4. Rellenar campos vacíos en project-status.yaml, main-agent.yaml
-      5. rm -rf memsys3_temp/
-    impacto: "Deployment más simple. Main-Agent siempre tiene referencia. Gotchas contextualizados. CA tiene flexibilidad para priorizar gotchas."
-
-  - id: "006"
-    titulo: "Sistema de rutas unificado memsys3/"
-    decision: |
-      TODAS las rutas en memsys3_templates/ deben usar el prefijo memsys3/ (notación: @memsys3/).
-      Durante deployment, memsys3_templates/ se copia a la raíz del proyecto como memsys3/.
-    impacto: "Claridad total, portabilidad, sin conflictos con carpetas del proyecto."
-
-  - id: "007"
-    titulo: "Separación de meta-niveles en READMEs"
-    decision: |
-      4 READMEs separados: raíz (público), templates (sistema desplegado), DEVELOPMENT (contribución), UPDATE (actualización).
-    impacto: "Claridad total de meta-niveles. Cada audiencia tiene README específico."
-
-  - id: "008"
-    titulo: "Main-Agent NO debe proponer compile-context"
-    decision: |
-      Main-Agent NO propone ejecutar compile-context.md (consume muchos tokens).
-      compile-context.md se ejecuta en NUEVA INSTANCIA limpia.
-    impacto: "Eficiencia de tokens optimizada. User controla cuándo compilar."
-
   - id: "001"
     titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
-    decision: |
-      El Context Agent usa criterioo inteligente: "¿Qué debe saber CUALQUIER agente descontextualizado?"
-      Límite ÚNICO: máximo 2000 líneas en el context.yaml final.
-    impacto: "Contexto adaptativo según necesidatos del proyecto."
+    decision: "CA usa criterio inteligente basándose en: '¿Qué debe saber CUALQUIER agent descontextualizado?' Límite ÚNICO: máx 2000 líneas. NO límites arbitrarios por ADRs/sessions"
+    motivo: "Sistemas anteriores con límites rígidos (máx 7 ADRs, 15 líneas/sesión) no se adaptaban. Proyectos pequeños perdían contexto, grandes no podían expresarse"
+    impacto: "Contexto adaptativo según necesidades del proyecto. CA decide con visión panorámica completa. Más flexible y escalable"
 
   - id: "002"
     titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
-    decision: |
-      Cuando sessions.yaml o adr.yaml superan 1800 líneas:
-      endSession.md hace rotación segura: sessions_N.yaml, adr_N.yaml.
-      Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
-    impacto: "Sistema escala infinitamente. No se pierden datos nunca."
+    decision: "Cuando sessions.yaml o adr.yaml superen 1800 líneas: endSession detecta automáticamente, rotación segura (copia → verifica → nuevo). CA lee TODOS los archivos rotados hasta >150K tokens"
+    motivo: "Read tool tiene límite 2000 líneas. Si archivos crecen demasiado, agents no pueden leerlos"
+    impacto: "Sistema escala infinitamente. No se pierden datos nunca. Automático, sin intervención manual. Preserva histórico completo"
 
   - id: "003"
     titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
-    decision: |
-      Cuando total de full/ supera 150K tokens:
-      CA mueve ADRs/sessions irrelevantes a memory/history/ (que NO se lee).
-      Reduce a ~120K tokens. Datos preservados, recuperables.
-    impacto: "Ahorro real de tokens. Sistema escala ilimitadamente."
+    decision: "Cuando total de full/ supera 150K tokens: CA identifica ADRs/sessions irrelevantes, mueve a history/ (NO se lee), reduce a ~120K, continúa compilación. Datos preservados, recuperables"
+    motivo: "Incluso con rotación, proyectos muy grandes pueden acumular demasiados datos. Si full/ >150K tokens, CA no puede procesar eficientemente"
+    impacto: "Ahorro real de tokens (history/ NO se lee). Datos preservados, no perdidos. Sistema escala ilimitadamente. Reversible"
 
   - id: "004"
     titulo: "YAML para todo (incluyendo sessions)"
-    decision: |
-      Todo el sistema usa YAML: sessions.yaml, adr.yaml, project-status.yaml, context.yaml, templates.
-    impacto: "Consistencia total. ~30% ahorro tokens vs Markdown."
+    decision: "Todo el sistema usa YAML: sessions.yaml, adr.yaml, project-status.yaml, context.yaml, templates"
+    motivo: "Sessions originalmente .md. Inconsistencia dificultaba parsing. YAML: ~30% ahorro tokens vs Markdown, mejor para LLMs"
+    impacto: "Consistencia total del sistema. Ahorro significativo de tokens. Estructura clara para LLMs. Fácil parsear con js-yaml"
 
-  - id: "005"
-    titulo: "deploy.md como prompt (no script shell)"
-    decision: |
-      deploy.md que Main-Agent ejecuta con briefing personalizado.
-      Más flexible que script automático.
-    impacto: "Deployment guiado e inteligente. Personalización según necesidatos."
+  - id: "006"
+    titulo: "Sistema de rutas unificado memsys3/"
+    decision: "TODAS las rutas en memsys3_templates/ usan prefijo memsys3/: memory/, agents/, prompts/, etc. Durante deployment, templates se copia a raíz como memsys3/"
+    motivo: "Confusión sobre rutas relativas. No estaba claro si eran del template o deployment. Inconsistencias memory/ vs @memory/"
+    impacto: "Claridad total. Portabilidad entre proyectos. Sin conflictos con carpetas del proyecto. Actualizable fácilmente"
+
+  - id: "007"
+    titulo: "Separación de meta-niveles en READMEs"
+    decision: "4 READMEs separados: 1) raíz (repositorio público, audiencia GitHub), 2) templates/ (sistema desplegado, agents/devs), 3) DEVELOPMENT.md (contribuidores), 4) UPDATE.md (actualización)"
+    motivo: "README original mezclaba meta-niveles: qué es memsys3, instrucciones de uso, templates, dog-fooding. Confusión sobre nivel de cada información"
+    impacto: "Claridad total de audiencias. Cada README específico. Agents leen README agnóstico sin confusión. Developers tienen guía clara"
+
+  - id: "008"
+    titulo: "Main-Agent NO debe proponer compile-context"
+    decision: "Main-Agent tiene restricción explícita: NO proponer @memsys3/prompts/compile-context.md. Solo sugerir endSession. User decide cuándo compilar en nueva instancia limpia"
+    motivo: "Main-Agent acumula tokens durante sesión. compile-context lee TODOS los archivos de full/ (>50K tokens). Acumular ambos es ineficiente y puede superar límites"
+    impacto: "Eficiencia de tokens optimizada. Main-Agent enfocado en desarrollo. Context Agent trabaja con instancia limpia. User controla cuándo compilar"
+
+  - id: "009"
+    titulo: "Templates como documentación activa permanente + gotchas en sessions"
+    decision: "1) memory/templates/ son guías permanentes (NO se borran post-deployment). Main-Agent consulta durante endSession. 2) Gotchas documentados en sessions.yaml con estructura: tipo, problema, solución, criticidad. CA extrae top 5 más críticos de TODAS las sessions"
+    motivo: "Templates contienen: estructura, instrucciones, ejemplos de buenas prácticas. Main-Agent necesita consultarlos. Gotchas surgen DURANTE sesiones, deben estar contextualizados (no en project-status estático)"
+    impacto: "Deployment simple (copiar todo). Main-Agent siempre tiene referencia. Gotchas contextualizados. CA flexible para priorizar. project-status más limpio"
 
 # ============================================
-# SESIONES RECIENTES
-# Las sesiones más recientes son críticas para entender el estado actual
+# SESIONES RECIENTES (Highlights)
 # ============================================
 sesiones_recientes:
-  - id: "2025-10-31-preparacion-deployment"
-    data: "2025-10-31"
-    duracion: "~3h"
-    objetivo: "Resolver blockers críticos para deployment, mover viz/, crear history/, reescribir deploy.md con ADR-009"
-    highlights:
-      - "viz/ movido a raíz (memsys3/viz/) según DEVELOPMENT.md - 8 archivos actualizados"
-      - "history/ creado con .gitkeep (templates + dog-fooding) - Plan Contingencia operativo"
-      - "deploy.md reescrito completo (206 líneas) con workflow ADR-009 y verificaciones críticas"
-      - "Análisis exhaustivo identificó 26 issues: 4 CRÍTICOS + 5 ALTOS + 9 MEDIOS + 8 BAJOS"
-      - "Resueltos 9 issues en esta sesión (4 críticos + 5 altos)"
-    problemes_resolts:
-      - "C1: viewer.js buscaba adrs_filtrades → estandarizado a adrs_incloses (dashboard funcional)"
-      - "C2+C3: deploy.md con verificaciones (no sobrescribir memsys3/ existente, limpiar memsys3_temp/)"
-      - "C4: viz/README.md con rutas claras 'cd memsys3/viz'"
-      - "A6: 6 READMEs actualizados (memory/viz → viz)"
-      - "A7: Contradicción líneas vs tokens resuelta (límite: 2000 líneas, no tokens)"
-      - "A9: Plan Contingencia informado en briefing de deployment"
-    gotchas_documentats:
-      - "deploy.md sin verificaciones puede sobrescribir datos al ejecutarse dos veces (ALTA)"
-      - "viewer.js buscaba adrs_filtrades pero YAML usa adrs_incloses (ALTA)"
-      - "history/ vacío no se sube a git bloqueando Plan Contingencia (.gitkeep necesario) (MITJANA)"
+  - id: "2025-11-12-feature-002"
+    data: "2025-11-12"
+    titulo: "FEATURE-002: actualizar.md + README opcional"
+    que_se_hizo:
+      - "Prompt actualizar.md creado (551 líneas) para actualización segura de memsys3"
+      - "PASO 0 crítico: Detección estructura antigua incompatible (3 escenarios: A) solo /memory, B) /memory + /memsys3 coexistiendo, C) solo /memsys3)"
+      - "Testing real en deCastro_inmobiliaria: v1.0 → v0.5.0 con migración de datos (134+320+222 líneas)"
+      - "README.md ahora opcional en Context Agent con condicional inteligente"
+      - "compile-context.md pregunta si crear README desde project-status.yaml"
+    problemas_resueltos:
+      - "actualizar.md no contemplaba estructura antigua pre-ADR-006. PASO 0 agregado detecta coexistencia /memory (datos reales) + /memsys3 (datos template)"
+      - "deCastro tenía DOS estructuras sin migración. Migración manual preservó histórico"
+      - "README obligatorio rompería proyectos existentes sin README. Movido a opcional con condicional"
+    decisiones:
+      - "actualizar.md debe ser defensivo: detectar edge-cases ANTES de proceder"
+      - "README opcional con pregunta al usuario (crear automáticamente desde project-status o continuar sin él)"
+      - "Prioridad FEATURE-002 escalada Media → Alta (testing descubrió escenario crítico integridad datos)"
+    gotchas_documentados:
+      - "Estructura pre-ADR-006 puede coexistir sin migrar datos. Detectar con: ls -la memory/ && ls -la memsys3/ → verificar cuál tiene datos reales"
+      - "project-status.yaml puede tener datos template memsys3 en lugar del proyecto real. Verificar que 'que_es' describe el PROYECTO"
+      - "Proyectos sin README.md fallarían con README obligatorio. README movido a opcional + pregunta crear automáticamente"
 
-  - id: "2025-10-31-implementacion-adr009"
-    data: "2025-10-31"
-    duracion: "~2h"
-    objetivo: "Implementar ADR-009 completamente y corregir todas las inconsistencias"
-    highlights:
-      - "Campo gotchas añadido en sessions-template.yaml con estructura: tipus, problema, solucio, criticitat"
-      - "Eliminada sección gotchas_i_issues de project-status-template.yaml según ADR-009"
-      - "context-agent.yaml actualizado para leer gotchas desde sessions (no project-status)"
-      - "deploy.md corregido: eliminada referencia obsoleta gotchas_i_issues (CRÍTICO)"
-      - "Corrección rutas: 5 archivos actualizados para usar @memsys3/prompts/"
-      - "Estandarización notación: @memsys3/ siempre (notación Claude Code)"
-      - "Agente Explore encontró 12 tipos de inconsistencias en 4 categorías"
-    problemes_resolts:
-      - "deploy.md generaba project-status con campo obsoleto gotchas_i_issues"
-      - "Ejemplos en documentación usaban @prompts/ sin prefijo memsys3/"
-      - "Inconsistencia notación: 'memsys3/' vs '@memsys3/' estandarizado"
-    gotchas_documentats:
-      - "deploy.md puede propagar campos obsoletos si no se actualiza con cada ADR (ALTA)"
+  - id: "2025-11-12-deployment-soluzzia"
+    data: "2025-11-12"
+    titulo: "Deployment Soluzzia + README en Context + Tracking Versiones"
+    que_se_hizo:
+      - "Deployment completo memsys3 v0.4.0+20 en proyecto Soluzzia (primer proyecto real)"
+      - "Context Agent lee README.md (input obligatorio → ahora opcional, máx 300 líneas)"
+      - "Sistema tracking versión: memsys3_version y memsys3_deployed en project-status.yaml"
+      - "Verificación post-compilación: CA pregunta si README está actualizado"
+      - "FEATURE-002 creado en backlog: prompt actualizar.md"
+    decisiones:
+      - "Versión memsys3 SOLO en project-status (no duplicar en context). Un lugar = más fácil mantener"
+      - "README como input obligatorio (resuelve IMPROVEMENT-001 parcialmente). Nuevas instancias tienen contexto proyecto sin leerlo manualmente"
+      - "Verificación activa README post-compilación. CA pregunta, compara con project-status, propone updates"
 
-  - id: "2025-10-31-validacion-deployment"
-    data: "2025-10-31"
-    duracion: "~3h"
-    objetivo: "Validar protocolo de deployment y resolver confusiones sobre templates"
+  - id: "2025-11-03-verificacion"
+    data: "2025-11-03"
+    titulo: "Verificación FASE 3 + Problema Escalabilidad"
     highlights_sintetizados:
-      - "ADR-009 creada (125 líneas): templates permanentes + gotchas en sessions"
-      - "docs/DEVELOPMENT.md: nueva sección 'Filosofía: Estructura y Deployment' (+140 líneas)"
-      - "Clarificado: ms3t = estructura exacta del producto, memory/templates/ NO se borran"
-      - "Rediseño conceptual: memsys3_dev (privado) vs memsys3 (público)"
-      - "Workflow deployment: git clone temporal memsys3_temp, copiar, briefing, borrar"
-
-  - id: "2025-10-29-limpieza"
-    data: "2025-10-29"
-    duracion: "~2h"
-    highlights_sintetizados:
-      - "Corrección sistemática todas las rutas con prefijo @memsys3/"
-      - "Eliminación residuos: 6543 líneas duplicadas"
-      - "Validación compilación context.yaml exitosa (556 líneas, v1.2)"
-      - "Tag v0.3.0 creado"
-
-  - id: "2025-10-29"
-    data: "2025-10-29"
-    duracion: "~3-4h"
-    highlights_sintetizados:
-      - "3 ADRs críticas: 006 (rutas), 007 (READMEs), 008 (workflow)"
-      - "4 niveles documentación establecidos"
-      - "Restricción Main-Agent: NO proponer compile-context"
-      - "Tag v0.2.1 + 5 commits adicionales"
-
-  - id: "2025-10-28"
-    data: "2025-10-28"
-    duracion: "~8h"
-    highlights_sintetizados:
-      - "Creación inicial memsys3 v1.0"
-      - "Context Agent con criterioo inteligente, Plan Contingencia, Rotación automática"
-      - "Visualizador Web Memory: 4 pestañas, js-yaml, Python server"
-      - "Publicado a GitHub (21 archivos, 3056 líneas)"
+      - "Auditoría FASE 3: 200+ líneas catalán residual detectadas (otra instancia reportó '0')"
+      - "Sistema backlog creado con 6 prefijos (ISSUE, FEATURE, SPEC, etc.)"
+      - "ISSUE-001 escalabilidad: sin verificación automatizada, sincronización manual propensa errores"
+      - "IMPROVEMENT-001: Contexto con docs críticos (README, DEVELOPMENT, UPDATE)"
 
 # ============================================
-# GOTCHAS CRÍTICS
-# Extrets de sessions.yaml segons criterio del CA
-# Ordenats per criticitat + recència
+# GOTCHAS CRÍTICOS
 # ============================================
 gotchas:
-  - id: "deploy_sobrescritura"
-    tipo: "warning"
-    problema: "deploy.md sin verificaciones puede sobrescribir memsys3/ existente causando pérdida de datos"
-    solucion: "Verificar si memsys3/ existe antes de mkdir. Limpiar memsys3_temp/ si existe de ejecución previa"
+  - id: "estructura-pre-adr006"
+    problema: "Estructura pre-ADR-006 puede coexistir con estructura nueva sin migrar datos"
+    solucion: "Detectar con: ls -la memory/ && ls -la memsys3/ → si ambos existen, verificar cuál tiene datos reales. Caso deCastro: /memory datos reales + /memsys3 datos template. Context Agent leería incorrectos"
     criticidad: "alta"
-    sesion: "2025-10-31-preparacion-deployment"
 
-  - id: "viewer_nomenclatura"
-    tipo: "error"
+  - id: "project-status-template"
+    problema: "project-status.yaml puede tener datos del template memsys3 en lugar del proyecto real"
+    solucion: "Verificar que campos 'que_es' describen el PROYECTO, no 'Sistema de gestió de context'. Deployment inicial incorrecto puede copiar template sin personalizar"
+    criticidad: "alta"
+
+  - id: "deploy-sobrescritura"
+    problema: "deploy.md sin verificaciones puede sobrescribir datos al ejecutarse dos veces"
+    solucion: "Verificar si memsys3/ existe antes de mkdir. Limpiar memsys3_temp/ si existe de ejecución previa. Previene pérdida datos irrecuperable"
+    criticidad: "alta"
+
+  - id: "viewer-nomenclatura"
     problema: "viewer.js buscaba adrs_filtrades pero YAML usa adrs_incloses"
-    solucion: "Estandarizar nomenclatura en ambos archivos. Elegir adrs_incloses por ser más claro"
-    criticidad: "alta"
-    sesion: "2025-10-31-preparacion-deployment"
-
-  - id: "deploy_campos_obsoletos"
-    tipo: "warning"
-    problema: "deploy.md puede propagar campos obsoletos si no se actualiza con cada ADR"
-    solucion: "Revisar deploy.md cuando se creen ADRs que modifiquen estructura de templates"
-    criticidad: "alta"
-    sesion: "2025-10-31-implementacion-adr009"
-
-  - id: "history_gitkeep"
-    tipo: "warning"
-    problema: "history/ vacío no se sube a git bloqueando Plan Contingencia en otros clones"
-    solucion: "Crear .gitkeep en directorios vacíos que deben existir en git"
+    solucion: "Estandarizar nomenclatura en ambos archivos. adrs_incloses elegido por ser más claro. Estadística 'ADRs Filtradas' ahora funciona"
     criticidad: "media"
-    sesion: "2025-10-31-preparacion-deployment"
 
-  - id: "read_tool_limit"
-    tipo: "warning"
-    problema: "Read tool tiene límite de 2000 líneas - sessions.yaml o adr.yaml pueden crecer infinitament"
-    solucion: "Sistema de rotación automática >1800 líneas (sessions_N.yaml, adr_N.yaml)"
-    criticidad: "alta"
-    sesion: "2025-10-28"
-    nota: "Resuelto con ADR-002, pero documentado como gotcha fundamental"
+  - id: "history-gitkeep"
+    problema: "history/ vacío no se sube a git bloqueando Plan Contingencia en otros clones"
+    solucion: "Crear .gitkeep en directorios vacíos que deben existir en git. deploy.md crea .gitkeep durante deployment"
+    criticidad: "media"
 
 # ============================================
-# PENDENTS PRIORITARIS
+# PENDIENTES PRIORITARIOS
 # ============================================
 pendientes:
   - prioritat: 1
-    tasca: "Probar deployment completo en proyecto UOC"
-    detall: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar). Validar que todas las correcciones funcionan"
+    tasca: "Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
+    detall: "Validar actualización en proyecto que solo tenga /memsys3 (no estructura antigua). Probar en Soluzzia"
 
   - prioritat: 2
+    tasca: "Validar compile-context.md con creación automática de README"
+    detall: "Ejecutar en deCastro (sin README), probar Opción A (crear automáticamente desde project-status.yaml)"
+
+  - prioritat: 3
+    tasca: "IMPROVEMENT-001 parcialmente resuelto - Evaluar siguiente fase"
+    detall: "README ya incluido en contexto (opcional). Evaluar si agregar DEVELOPMENT.md, UPDATE.md según necesidad"
+
+  - prioritat: 3
+    tasca: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
+    detall: "Quick win: agregar checklist en DEVELOPMENT.md de qué sincronizar en cada tipo de cambio"
+
+  - prioritat: 4
     tasca: "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
     detall: "Separar desarrollo interno de distribución pública según decisión ADR-009"
 
-  - prioritat: 3
-    tasca: "Resolver 17 issues MEDIOS/BAJOS identificados"
-    detall: "Del análisis exhaustivo quedan 17 issues por resolver (9 medios + 8 bajos) - deuda técnica controlada"
-
-  - prioritat: 4
-    tasca: "Validar rotación automática en proyecto real"
-    detall: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
-
-  - prioritat: 5
-    tasca: "Validar Plan Contingencia (>150K tokens)"
-    detall: "Simular proyecto grande, verificar archivado a history/"
-
 # ============================================
-# DECISIONS CLAU DEL PROJECTE
+# DECISIONES CLAVE DEL PROYECTO
 # ============================================
 decisions_clau:
   filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
   escalabilidad: "Rotación + archivado automático"
-  preservacio: "Datos SEMPRE preservades (history/, sessions_N.yaml, adr_N.yaml)"
-  rutas: "Sistema unificado @memsys3/ para portabilidad y claridad (notación Claude Code)"
+  preservacio: "Datos SIEMPRE preservados (history/, sessions_N.yaml, adr_N.yaml)"
+  rutas: "Sistema unificado memsys3/ para portabilidad y claridad"
   documentacion: "Meta-niveles separados según audiencia"
   workflow: "Main-Agent NO compila, solo sugiere endSession"
   templates: "memory/templates/ son guías permanentes, NO se borran post-deployment"
   gotchas: "Se documentan en sessions.yaml (contextualizados), NO en project-status"
   deployment: "Clone temporal memsys3_temp, copiar, briefing con templates, borrar temp"
-  limites: "Límite ÚNICO 2000 líneas (no tokens estimados)"
-  visualizador: "Ubicado en memsys3/viz/ (raíz, no memory/viz/)"
+  backlog: "docs/backlog/ organiza trabajo futuro con 6 prefijos, NO se distribuye (específico dev memsys3)"
+  readme_opcional: "Context Agent acepta proyectos sin README (con warning) o puede crear automáticamente"
 
 # ============================================
-# NOTES DE COMPILACIÓ DEL CA
+# NOTAS DE COMPILACIÓN DEL CA
 # ============================================
 notas_compilacion:
-  adrs_totals: 9
+  adrs_totales: 9
   adrs_incluidas: 9
-  justificacion_adrs: |
-    Todas las ADRs son críticas para entender el sistema. Sin cambios desde última compilación.
+  justificacion_adrs: "Todas las ADRs son fundamentales para entender arquitectura del sistema. Impacto global en: criterio compilación (001), escalabilidad (002-003), formato (004), rutas (006), documentación (007), workflow (008), filosofía templates (009)"
 
-  sesiones_totales: 7
-  sesiones_incluidas: 6
-  justificacion_sesiones: |
-    - 2025-10-31-preparacion-deployment: MÁS RECIENTE, máximo detalle (26 issues, 9 resueltos)
-    - 2025-10-31-implementacion-adr009: Reciente, implementación ADR-009 completa
-    - 2025-10-31-validacion-deployment: Sintetizada (ya estaba en v1.4)
-    - 2025-10-29-limpieza: Sintetizada más (reducir detalles)
-    - 2025-10-29: Sintetizada más (reducir detalles)
-    - 2025-10-28: Sintetizada (histórico inicial)
+  sesiones_totales: 13
+  sesiones_incluidas: 3
+  justificacion_sesiones: "Seleccionadas 3 más recientes y significativas: FEATURE-002 (actualizar.md crítico + README opcional), Deployment Soluzzia (primer proyecto real + tracking versiones), Verificación escalabilidad (ISSUE-001 + sistema backlog). Resto sintetizado en historic_sessions de project-status"
 
   gotchas_extraidos: 5
-  justificacion_gotchas: |
-    Extrets de sessions.yaml con estructura correcta (tipus, criticitat).
-    Ordenats per criticitat + recència:
-    - 3 ALTOS (deploy_sobrescritura, viewer_nomenclatura, deploy_campos_obsoletos)
-    - 1 MEDIO (history_gitkeep)
-    - 1 ALTO histórico (read_tool_limit - ADR-002 pero gotcha fundamental)
+  gotchas_totales_en_sessions: 8
+  justificacion_gotchas: "Seleccionados 5 más críticos por impacto: estructura pre-ADR006 (alta, integridad datos), project-status-template (alta, deployment incorrecto), deploy-sobrescritura (alta, pérdida datos), viewer-nomenclatura (media, funcionalidad), history-gitkeep (media, Plan Contingencia)"
 
-  tokens_iniciales: "~92K tokens (muy por debajo de 150K)"
-  tokens_finales: "~3.5K tokens (estimado del context.yaml generado)"
+  readme_sintetizado: true
+  readme_lineas_originales: 237
+  readme_lineas_sintetizadas: 95
+  justificacion_readme: "README actualizado con versión 1.5 y features recientes (actualizar.md, README opcional). Mantenida esencia: problema, solución, quick start, estructura, workflow, features. Omitidos: badges, licencia, contribuciones, detalles menores"
 
-  archivamiento: "NO requerido - volumen manejable"
+  tokens_estimados_iniciales: "~9,400 tokens (README 1K + adr 2.2K + sessions 5.5K + project-status 0.7K)"
+  tokens_estimados_finales: "~3,500 tokens"
+  ahorro_tokens: "~62% reducción manteniendo información crítica"
 
-  criterioos_filtraje: |
-    - Todas las 9 ADRs incluidas (sin cambios)
-    - Sessions: Priorizar 2 más recientes con máximo detalle, sintetizar resto
-    - Gotchas: Ahora extraídos con estructura correcta de sessions (CRÍTICO: 3 nuevos gotchas documentados en últimas sessions)
-    - Pendientes: actualizados según project-status (prioridad 1: testing deployment UOC)
-    - Filosofía: mantener decisiones_clau actualizadas con nuevos estándares
+  archivamiento_activado: false
+  motivo_no_archivar: "Tokens iniciales muy por debajo de 150K. No requiere Plan Contingencia"
 
-  lineas_totales: "~512 líneas de 2000 máximo (26% del límite)"
+  criterios_filtraje: |
+    - Impacto global (ADRs afectan TODO el sistema)
+    - Relevancia actual (sesiones recientes, gotchas activos)
+    - Información no obvia (decisiones arquitectónicas, gotchas críticos)
+    - Contexto histórico crítico (por qué hacemos esto así)
+    - Omitidos: detalles cosméticos, ADRs deprecated, sesiones muy antiguas sin impacto
 
+  lineas_totales: 427
+  limite_maximo: 2000
+  margen_disponible: 1573
   observaciones: |
-    Sistema preparado para deployment real después de 3 sesiones intensas el 2025-10-31.
+    Compilación exitosa sin requerir Plan Contingencia.
+    Sistema memsys3 tiene documentación muy bien estructurada y limpia.
+    Todas las ADRs son relevantes (ninguna deprecated).
+    Sessions recientes muy significativas (FEATURE-002, deployment real, escalabilidad).
+    README bien documentado, fácil de sintetizar manteniendo esencia.
 
-    Sesión preparacion-deployment fue CRÍTICA:
-    - Análisis exhaustivo identificó 26 issues clasificados
-    - Resueltos 9 issues críticos/altos (prevención pérdida datos, funcionalidad rota)
-    - viz/ movido a raíz según DEVELOPMENT.md
-    - history/ creado con .gitkeep (Plan Contingencia operativo)
-    - deploy.md reescrito completo 206 líneas
+    Highlights compilación v1.6.1:
+    - README actualizado con versión 1.5 y features recientes (actualizar.md, README opcional)
+    - UPDATE.md actualizado con método recomendado: @memsys3/prompts/actualizar.md
+    - README opcional implementado correctamente en compile-context.md
+    - actualizar.md es crítico para proyectos existentes (PASO 0 detecta estructura antigua)
+    - Sistema de backlog bien organizado
+    - Problema escalabilidad identificado (ISSUE-001) - no urgente pero importante medio plazo
+    - FEATURE-002 testing real en deCastro validó robustez del sistema
 
-    Sistema ahora tiene:
-    - Protección contra pérdida de datos en deployment
-    - Estructura física correcta (viz/, history/)
-    - Visualizador funcional (nomenclatura corregida)
-    - Límites claros: 2000 líneas (no tokens)
-    - Gotchas documentados con estructura correcta (tipus, criticitat)
-    - deploy.md con verificaciones críticas (C2, C3)
-
-    Quedan 17 issues MEDIOS/BAJOS como deuda técnica controlada.
+    Post-compilación:
+    - Verificación README completada
+    - README sincronizado con project-status (versión, features, estado actual)
+    - docs/UPDATE.md actualizado con prompt actualizar.md como método recomendado
 
 # ============================================
 # NOTAS DE USO
 # ============================================
 # Este archivo es COMPILADO automáticamente, no editar manualmente
 # Para actualizar: ejecutar @memsys3/prompts/compile-context.md
-# Para más detalles: ver memsys3/memory/full/adr.yaml i memsys3/memory/full/sessions.yaml
-# Si context demasiado grande: CA moverá datos a memsys3/memory/history/ (no leído)
+# Para más detalles: ver memsys3/memory/full/adr.yaml y memsys3/memory/full/sessions.yaml
+# Si contexto demasiado grande: CA moverá datos a memsys3/memory/history/ (no leído)
