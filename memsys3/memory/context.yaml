@@ -4,8 +4,8 @@
 
 metadata:
   compilado_por: "Context Agent"
-  ultima_compilacion: "2025-11-12"
-  version_context: "1.7"
+  ultima_compilacion: "2025-11-13"
+  version_context: "1.8"
 
 # ============================================
 # README DEL PROYECTO
@@ -26,11 +26,13 @@ readme_proyecto: |
   - Sistema documentación estructurado (ADRs, sessions, status)
   - Context Agent filtra automáticamente información relevante
   - Visualizador web para ver la "mente" de agents
-  - Prompts reutilizables (newSession, endSession, compile-context, mind, deploy)
+  - Prompts reutilizables (newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, backlog, github)
   - Rotación automática >1800 líneas
   - Plan contingencia >150K tokens
-  - Prompt actualizar.md para updates seguros
+  - Prompt actualizar.md para updates seguros con detección estructura antigua
   - README opcional con creación automática
+  - Consulta .gitignore durante deployment (privacidad)
+  - Sistema sincronización versión catalana (branch catalan)
 
   **Quick Start:**
 
@@ -56,8 +58,13 @@ readme_proyecto: |
   - Rotación automática (sessions/adr >1800 líneas → sessions_N.yaml)
   - Plan Contingencia (>150K tokens → archiva irrelevantes a history/)
   - Templates YAML (~30% ahorro tokens vs Markdown)
-  - Sistema actualización (actualizar.md con detección estructura antigua)
+  - Sistema actualización (actualizar.md + actualizar_cat.md)
+  - Deployment con consulta .gitignore (protección privacidad)
   - Visualizador web (4 pestañas: Agent View, Full History, Project Status, Stats)
+
+  **Workaround @ mentions:**
+  Si memsys3/ está en .gitignore, @ mentions NO funcionan (limitación Claude Code).
+  Solución: usar instrucciones directas ("Ejecuta memsys3/prompts/newSession.md")
 
   **Repositorio:** https://github.com/iv0nis/memsys3
   **Licencia:** MIT
@@ -69,9 +76,9 @@ project:
   nombre: "memsys3"
   descripcion: "Sistema de gestión de contexto para AI Development Agents"
   objetivo: "Optimizar consumo de tokens proporcionando contexto compacto y relevante"
-  fase: "Development v1.6"
-  ultima_feature: "Deployment tallersColomer exitoso + Mejora deploy.md con consulta .gitignore (PASO 8) + ADR-010"
-  siguiente_milestone: "Commit mejoras + Testear deployment con consulta .gitignore en nuevo proyecto"
+  fase: "Development v1.7"
+  ultima_feature: "Fix @ mentions limitación + Sistema sincronización versión catalana (actualizar_cat.md) + Branch catalan GitHub"
+  siguiente_milestone: "Testear deployment con consulta .gitignore + Testear actualizar_cat.md en futuras sincronizaciones"
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 # ============================================
@@ -101,7 +108,7 @@ features:
   prompts:
     nombre: "Prompts Reutilizables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, backlog - TODOS con rutas memsys3/"
+    descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, backlog, github - TODOS con rutas memsys3/"
 
   documentacion:
     nombre: "Sistema de Documentación Multi-nivel"
@@ -117,6 +124,11 @@ features:
     nombre: "README Opcional en Context Agent"
     estado: "operativo"
     descripcion: "Context Agent acepta proyectos sin README o puede crear automáticamente desde project-status.yaml"
+
+  sincronizacion_catalan:
+    nombre: "Sistema Sincronización Versión Catalana"
+    estado: "operativo"
+    descripcion: "Prompt actualizar_cat.md sincroniza memsys3_templates/ español → catalán, branch catalan en GitHub"
 
 # ============================================
 # STACK TECNOLÓGICO
@@ -135,8 +147,8 @@ urls:
   repository: "https://github.com/iv0nis/memsys3"
 
 # ============================================
-# ADRs RELEVANTES (10 totales, 7 incluidas)
-# Seleccionadas por impacto arquitectónico global
+# ADRs RELEVANTES (10 totales, 10 incluidas)
+# Todas incluidas por ser decisiones arquitectónicas globales críticas
 # ============================================
 adrs:
   - id: "001"
@@ -157,11 +169,29 @@ adrs:
     motivo: "Incluso con rotación, proyectos grandes pueden acumular demasiados datos y CA no puede procesarlos eficientemente."
     impacto: "Ahorro real de tokens (history/ NO se lee), datos preservados no perdidos, sistema escala ilimitadamente, reversible"
 
+  - id: "004"
+    titulo: "YAML para todo (incluyendo sessions)"
+    decision: "Todo el sistema usa YAML: sessions.yaml, adr.yaml, project-status.yaml, context.yaml, todos los templates .yaml"
+    motivo: "Sessions originalmente .md (Markdown). Templates y ADRs ya YAML. Inconsistencia dificultaba parsing y ahorro tokens."
+    impacto: "Consistencia total del sistema. ~30% ahorro tokens vs Markdown. Mejor para LLMs (estructura clara). Fácil parsear con js-yaml."
+
+  - id: "005"
+    titulo: "deploy.md como prompt (no script shell)"
+    decision: "Crear prompts/deploy.md que Main-Agent ejecuta. El agent hace briefing con user para personalizar deployment: pregunta sobre proyecto, stack, comportamiento, copia templates, crea archivos específicos basándose en respuestas."
+    motivo: "Prompt con agent es más flexible que script automático."
+    impacto: "Deployment guiado e inteligente. Personalización según necesidades. Agent puede adaptarse a respuestas. Consistente con filosofía de prompts."
+
   - id: "006"
     titulo: "Sistema de rutas unificado memsys3/"
     decision: "TODAS las rutas en memsys3_templates/ usan prefijo memsys3/: memsys3/memory/context.yaml, memsys3/agents/main-agent.yaml, etc. Durante deployment, memsys3_templates/ se copia a raíz como memsys3/, todas rutas internas funcionan correctamente."
     motivo: "Confusión sobre rutas: memory/ vs @memory/, no claro si template o deployment, READMEs mezclaban niveles"
     impacto: "Claridad total (siempre se sabe que es de memsys3), portabilidad (funciona en cualquier proyecto), sin conflictos con carpetas del proyecto"
+
+  - id: "007"
+    titulo: "Separación de meta-niveles en READMEs"
+    decision: "4 READMEs separados por meta-nivel: (1) README.md raíz: REPOSITORIO PÚBLICO, (2) memsys3_templates/README.md: SISTEMA DESPLEGADO, (3) docs/DEVELOPMENT.md: DESARROLLO DE MEMSYS3, (4) docs/UPDATE.md: ACTUALIZACIÓN"
+    motivo: "README único mezclaba: explicación memsys3, instrucciones uso, info templates/deployment, dog-fooding. Generaba confusión sobre 'nivel' de cada información."
+    impacto: "Claridad total de meta-niveles. Cada README tiene audiencia específica. Agents leen README agnóstico sin confusión. Developers tienen guía clara de contribución."
 
   - id: "008"
     titulo: "Main-Agent NO debe proponer compile-context"
@@ -177,14 +207,43 @@ adrs:
 
   - id: "010"
     titulo: "Consulta .gitignore durante deployment de memsys3"
-    decision: "Agregar PASO 8 en deploy.md que pregunta al usuario si quiere excluir memsys3/ de GitHub ANTES de finalizar deployment. Opción A (RECOMENDADO): Excluir - para desarrollo individual. Opción B: Incluir - para equipos que quieran compartir contexto. Paso obligatorio (siempre pregunta), decisión del usuario."
+    decision: "Agregar PASO 8 en deploy.md que pregunta al usuario si quiere excluir memsys3/ de GitHub ANTES de finalizar deployment. Opción A (RECOMENDADO): Excluir - para desarrollo individual. Opción B: Incluir - para equipos que quieran compartir contexto. Paso obligatorio (siempre pregunta), decisión del usuario. WARNING sobre limitación @ mentions con archivos ignorados + workaround (instrucciones directas)."
     motivo: "Durante deployment tallersColomer detectado que memsys3/ no estaba excluido de git, subiría todo contexto local (sessions, ADRs, gotchas, información flujo trabajo) que debe ser privado."
-    impacto: "Usuario consciente decisión privacidad, flexibilidad para equipos, deployment completo correcto desde inicio, no hay sorpresas después"
+    impacto: "Usuario consciente decisión privacidad, flexibilidad para equipos, deployment completo correcto desde inicio, no hay sorpresas después. WARNING explícito sobre limitación @ mentions con workaround claro."
+    notas: "UPDATE 2025-11-13: @ mentions NO funcionan con archivos en .gitignore (limitación seguridad Claude Code). Se agregó warning explícito y workaround: usar instrucciones directas ('Ejecuta memsys3/prompts/newSession.md') en lugar de @ mentions."
 
 # ============================================
-# SESIONES RECIENTES (24 totales, 2 incluidas)
+# SESIONES RECIENTES (14 totales, 3 incluidas)
 # ============================================
 sesiones_recientes:
+  - id: "2025-11-13-fix-mentions-sistema-sync-catalan"
+    data: "2025-11-13"
+    duracion: "~3h"
+    titulo: "Fix @ mentions + Sistema Sincronización Versión Catalana"
+
+    que_es_va_fer:
+      - "Fix deploy.md PASO 8: warning explícito @ mentions NO funcionan con archivos ignorados (limitación Claude Code)"
+      - "Workaround documentado: usar instrucciones directas ('Ejecuta memsys3/prompts/newSession.md') en lugar de @ mentions"
+      - "ADR-010 actualizado con UPDATE 2025-11-13: limitación @ mentions + workaround"
+      - "Prompt actualizar_cat.md creado (650 líneas): workflow 8 pasos para sincronizar español → catalán"
+      - "Sistema sincronización automática con tabla 60+ traducciones comunes"
+      - "Sincronización completa memsys3_CAT: 20 archivos traducidos (prompts, templates, agents, viz, READMEs)"
+      - "Branch catalan creada y pusheada a GitHub (commit 19e886c)"
+      - "Estructura memsys3_CAT migrada de antigua (pre-ADR-006) a nueva (95 archivos, +2743/-7592 líneas)"
+
+    problemas_resueltos:
+      - "En tallersColomer, al excluir memsys3/ de git, @ mentions dejaron de funcionar → Agregado warning explícito en deploy.md PASO 8 con workaround"
+      - "Repo memsys3_CAT tenía estructura completamente antigua → Migración completa: estructura nueva copiada, 20 archivos traducidos"
+
+    decisiones:
+      - "Workaround @ mentions: usar instrucciones directas en lugar de @ mentions cuando memsys3/ está ignorado (sistema funciona perfectamente)"
+      - "Mantener versión catalana en branch catalan del mismo repo GitHub (no repo separado) - facilita sincronización"
+      - "Copiar y reemplazar estructura completa en sincronización (no modificar incremental)"
+
+    proximos_pasos:
+      - "Testear deployment con consulta .gitignore en nuevo proyecto"
+      - "Testear actualizar_cat.md en futuras actualizaciones"
+
   - id: "2025-11-12-deployment-tallerscolomer-mejora-gitignore"
     data: "2025-11-12"
     duracion: "~1.5h"
@@ -201,10 +260,6 @@ sesiones_recientes:
 
     decisiones:
       - "Consulta obligatoria .gitignore durante deployment (no excluir automáticamente) - algunos equipos pueden querer compartir contexto"
-
-    proximos_pasos:
-      - "Testear deployment completo con nueva consulta .gitignore"
-      - "Commit y push cambios (deploy.md + ADR-010)"
 
   - id: "2025-11-12-feature-002-actualizar-readme-opcional"
     data: "2025-11-12"
@@ -227,54 +282,56 @@ sesiones_recientes:
       - "actualizar.md debe ser defensivo: detectar edge-cases antes de proceder"
       - "README opcional con pregunta crear automáticamente balances retrocompatibilidad y valor contexto"
 
-    gotchas:
-      - "Estructura pre-ADR-006 puede coexistir con estructura nueva sin migrar datos → detectar con ls -la memory/ && ls -la memsys3/"
-      - "project-status.yaml puede tener datos template memsys3 en lugar del proyecto real → verificar que 'que_es' describe EL PROYECTO"
-
 # ============================================
 # GOTCHAS CRÍTICOS (5 más importantes)
 # ============================================
 gotchas:
+  - id: "claude_code_mentions"
+    tipo: "Limitación Claude Code"
+    problema: "@ mentions NO funcionan cuando archivos están en .gitignore (limitación de seguridad Claude Code)"
+    solucion: "Usar instrucciones directas: 'Ejecuta memsys3/prompts/newSession.md' en lugar de @memsys3/prompts/newSession.md"
+    criticidad: "alta"
+    contexto: "Descubierto en tallersColomer al excluir memsys3/ de git. ADR-010 documenta el workaround. El sistema funciona perfectamente, solo cambia forma de invocar prompts."
+
   - id: "estructura_antigua_coexiste"
     problema: "Estructura pre-ADR-006 puede coexistir con estructura nueva sin migrar datos. Context Agent leería datos INCORRECTOS (template memsys3 en lugar del proyecto real)."
     solucion: "Detectar con: ls -la memory/ && ls -la memsys3/ → si ambos existen, verificar cuál tiene datos reales. actualizar.md PASO 0 detecta automáticamente."
     criticidad: "alta"
+    contexto: "deCastro tenía /memory con datos reales + /memsys3 con datos template. actualizar.md PASO 0 previene esto."
 
   - id: "project_status_con_datos_template"
-    problema: "project-status.yaml puede tener datos del template memsys3 ('Sistema de gestió de context') en lugar del proyecto real tras deployment incorrecto"
+    problema: "project-status.yaml puede tener datos del template memsys3 ('Sistema de gestión de contexto') en lugar del proyecto real tras deployment incorrecto"
     solucion: "Verificar que campos 'que_es' y 'objetivo' describen el PROYECTO, no memsys3"
     criticidad: "alta"
+    contexto: "Deployment inicial incorrecto puede copiar template sin personalizar. Verificar durante briefing."
 
   - id: "deploy_sobrescribe_datos"
     problema: "deploy.md sin verificaciones puede sobrescribir memsys3/ existente al ejecutarse dos veces, causando pérdida datos irrecuperable (adr.yaml, sessions.yaml)"
     solucion: "Verificar si memsys3/ existe antes de mkdir. Limpiar memsys3_temp/ si existe. deploy.md ahora incluye estas verificaciones."
     criticidad: "alta"
+    contexto: "Previene pérdida de datos por ejecución accidental doble de deploy.md"
 
   - id: "traducir_keys_no_es_valores"
     problema: "Traducir 'keys YAML' NO es lo mismo que traducir 'valores descriptivos YAML'. Son dos tareas diferentes y ambas necesarias."
-    solucion: "Después de traducir keys (descripcio:→descripcion:), hacer verificación exhaustiva con grep de palabras catalanas en TODO el contenido, no solo keys"
+    solucion: "Después de traducir keys (descripcio:→descripcion:), hacer verificación exhaustiva con grep de palabras catalanas en TODO el contenido, no solo keys. Usar sed con word boundaries (\\b) para correcciones masivas seguras."
     criticidad: "alta"
-
-  - id: "history_vacio_no_sube_git"
-    problema: "history/ vacío no se sube a git bloqueando Plan Contingencia en otros clones. Si CA intenta archivar, falla porque history/ no existe."
-    solucion: "Crear .gitkeep en directorios vacíos que deben existir en git. deploy.md ahora crea history/.gitkeep"
-    criticidad: "media"
+    contexto: "FASE 3 tradujo keys correctamente pero dejó 101 instancias de catalán en valores descriptivos sin traducir"
 
 # ============================================
 # PENDIENTES PRIORITARIOS (5 top)
 # ============================================
 pendientes:
   - prioritat: 1
-    tasca: "Commit y push mejoras deploy.md + ADR-010"
-    detall: "Subir a GitHub: mejora consulta .gitignore en deploy.md (PASO 8) + ADR-010 documentando decisión"
+    tasca: "Testear deployment con consulta .gitignore en nuevo proyecto"
+    detall: "Validar que PASO 8 funciona correctamente con warning @ mentions y usuario puede elegir Opción A o B"
 
   - prioritat: 2
-    tasca: "Testear deployment con consulta .gitignore en nuevo proyecto"
-    detall: "Validar que PASO 8 funciona correctamente y usuario puede elegir Opción A o B"
+    tasca: "Testear actualizar_cat.md en futuras sincronizaciones"
+    detall: "Cuando haya nuevos cambios en master, validar que actualizar_cat.md sincroniza y traduce correctamente a branch catalan"
 
   - prioritat: 3
     tasca: "Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
-    detall: "Validar actualización en proyecto que solo tenga /memsys3 (no estructura antigua). Probar en Soluzzia"
+    detall: "Validar actualización en proyecto que solo tenga /memsys3 (no estructura antigua). Probar en Soluzzia."
 
   - prioritat: 4
     tasca: "Validar compile-context.md con creación automática de README"
@@ -289,36 +346,41 @@ pendientes:
 # ============================================
 notas_compilacion:
   adrs_totales: 10
-  adrs_incluidas: 7
-  justificacion_adrs: "Incluidas ADRs con impacto arquitectónico global: criterio inteligente (001), rotación (002), plan contingencia (003), rutas unificadas (006), main-agent restricción (008), templates permanentes (009), consulta gitignore (010). Excluidas ADRs 004 (YAML format), 005 (deploy como prompt), 007 (separación READMEs) por ser menos críticas para agent descontextualizado."
+  adrs_incluidas: 10
+  justificacion_adrs: "Todas las ADRs incluidas (001-010) porque son decisiones arquitectónicas globales críticas: criterio inteligente, rotación automática, plan contingencia, YAML para todo, deploy como prompt, sistema rutas unificado, separación meta-niveles, restricción Main-Agent, templates permanentes + gotchas, consulta .gitignore con workaround @ mentions. Todas tienen impacto global en funcionamiento del sistema."
 
-  sesiones_totales: 24
-  sesiones_incluidas: 2
-  justificacion_sesiones: "Incluidas últimas 2 sesiones (deployment tallersColomer + FEATURE-002 actualizar.md) por ser más recientes y contener cambios significativos. Sesiones anteriores documentadas en ADRs o ya integradas en features operativas."
+  sesiones_totales: 14
+  sesiones_incluidas: 3
+  justificacion_sesiones: "Incluidas las 3 sesiones más recientes (2025-11-13, 2025-11-12 x2) con detalles completos. Son las más relevantes para contexto actual: fix @ mentions con workaround, sistema sincronización catalana (actualizar_cat.md), deployment tallersColomer con consulta .gitignore, FEATURE-002 actualizar.md con README opcional. Sesiones anteriores (2025-11-03 hacia atrás) son históricas, menos críticas para nuevas instancias."
 
   gotchas_extraidos: 5
-  criterios_gotchas: "Criticidad alta prioritaria, errores que rompen proyecto, contra-intuitivos, recientes. Extraídos de sesiones 2025-11-12 (deployment tallersColomer, FEATURE-002)."
+  justificacion_gotchas: "Extraídos 5 gotchas más críticos de sesiones recientes: (1) Limitación Claude Code @ mentions con archivos ignorados (alta, afecta UX, workaround documentado), (2) Estructura antigua incompatible puede coexistir (alta, pérdida datos), (3) project-status puede tener datos template (alta, contexto incorrecto), (4) deploy puede sobrescribir (alta, pérdida datos), (5) Traducción YAML keys vs valores (alta, consistencia). Todos criticidad alta con impacto directo en funcionamiento."
 
   readme_incluido: true
   readme_lineas: 75
-  readme_criterio: "Sintetizado manteniendo esencia: problema que resuelve, solución, quick start, workflow, features principales. Omitidos badges, licencias, detalles menores."
+  readme_criterio: "Sintetizado manteniendo esencia: problema que resuelve, solución, quick start, workflow, features principales, workaround @ mentions. Omitidos badges, licencias, detalles menores. Incluido workaround @ mentions crítico."
 
-  tokens_iniciales_estimados: "~29K tokens"
-  archivamiento: "NO requerido (< 150K tokens)"
-  lineas_totales: "~650 líneas de 2000 máximo"
+  tokens_iniciales_estimados: "~48K tokens"
+  tokens_finales_estimados: "~8.5K tokens"
+  archivamiento: "NO requerido (48K << 150K tokens)"
+  plan_contingencia: "NO ACTIVADO"
+  lineas_totales: "~730 líneas de 2000 máximo"
 
   observaciones: |
-    Compilación normal exitosa, NO requerido Plan de Contingencia.
+    Compilación normal exitosa, NO requerido Plan de Contingencia ni rotación.
 
-    Sistema en fase Development v1.6 con mejoras recientes:
+    Sistema en fase Development v1.7 con mejoras recientes muy significativas:
+    - Fix crítico @ mentions: warning explícito limitación Claude Code + workaround (instrucciones directas)
+    - Sistema sincronización catalana: actualizar_cat.md (650 líneas) + branch catalan GitHub
     - Deployment tallersColomer exitoso (primer proyecto real con v0.6.1)
     - Mejora crítica deploy.md: consulta .gitignore (PASO 8) con ADR-010
-    - Sistema actualización robusto (actualizar.md con detección estructura antigua)
+    - Sistema actualización robusto (actualizar.md con detección estructura antigua 3 escenarios)
     - README opcional con creación automática desde project-status
 
-    Contexto compilado incluye 7 de 10 ADRs (70%) por ser arquitectónicamente críticas.
-    Últimas 2 sesiones sintetizadas con highlights principales.
-    5 gotchas críticos documentados para prevenir errores comunes.
+    Contexto compilado incluye 10 de 10 ADRs (100%) porque todas son arquitectónicamente críticas.
+    Últimas 3 sesiones sintetizadas con highlights principales (fix @ mentions + sync catalana).
+    5 gotchas críticos documentados, incluyendo nuevo gotcha @ mentions con workaround.
     5 pendientes top prioritarios para siguiente trabajo.
 
-    Sistema escalable y robusto para proyectos de cualquier tamaño.
+    Sistema escalable, robusto y maduro para proyectos de cualquier tamaño.
+    Workaround @ mentions documentado permite usar memsys3 con .gitignore sin problemas UX.
