@@ -1,0 +1,124 @@
+# Sessions Log Template (YAML)
+# Històric de totes les sessions de treball significatives
+# Format cronològic invers (més recent primer)
+
+sessions:
+  - id: "YYYY-MM-DD"
+    titulo: "[Títol Descriptiu de la Sessió]"
+    data: "YYYY-MM-DD"
+    duracion: "[Xh o X dies]"
+    participantes: ["Nom/Agent"]
+    objetivo: "[Què es volia aconseguir en aquesta sessió]"
+
+    features_implementadas:
+      - nombre: "[Feature 1]"
+        descripcion: "Descripció breu del que s'ha fet"
+      - nombre: "[Feature 2]"
+        descripcion: "Descripció breu"
+      - nombre: "[Tasca 3]"
+        descripcion: "Descripció breu"
+
+    problemas_resueltos:
+      - problema: "[Problema 1]"
+        solucion: "[Com es va resoldre]"
+      - problema: "[Problema 2]"
+        solucion: "[Com es va resoldre]"
+
+    decisiones_tomadas:
+      - decision: "[Decisió 1]"
+        justificacion: "Breu justificació"
+        adr_relacionada: null  # Si és decisió arquitectònica important, ID del ADR
+      - decision: "[Decisió 2]"
+        justificacion: "Breu justificació"
+        adr_relacionada: null
+
+    tecnologias_agregadas:
+      - nombre: "[Llibreria 1]"
+        motivo: "Per què s'ha afegit"
+      - nombre: "[Tool 2]"
+        motivo: "Propòsit"
+
+    deployments:
+      - servei: "[Servei 1]"
+        url: "https://..."
+      - servei: "[Servei 2]"
+        url: "https://..."
+
+    gotchas:
+      - tipo: "[warning|error|gotcha]"
+        problema: "[Descripció del problema o trampa trobada]"
+        solucion: "[Com resoldre-ho o evitar-ho]"
+        criticidad: "[alta|mitjana|baixa]"
+      - tipo: "[TIPUS]"
+        problema: "[PROBLEMA]"
+        solucion: "[SOLUCIÓ]"
+        criticidad: "[CRITICITAT]"
+
+    proximos_pasos:
+      - "[Tasca pendent 1]"
+      - "[Tasca pendent 2]"
+      - "[Tasca pendent 3]"
+
+    notas_adicionales: |
+      Qualsevol context extra, blockers trobats, aprenentatges, etc.
+      Suporta text multilínia.
+
+# ============================================
+# INSTRUCCIONS D'ÚS
+# ============================================
+
+instruccions:
+  ordre: "Afegeix noves sessions al PRINCIPI de l'array (ordre invers cronològic)"
+  concisio: "Sigues concís però complet - detalls suficients per entendre context"
+  adr_links: "Enllaça ADRs (camp adr_relacionada) si es prenen decisions arquitectòniques"
+  consistencia: "Usa sempre el mateix format per facilitar parsing del Context Agent"
+
+# ============================================
+# EXEMPLES DE BONA DOCUMENTACIÓ
+# ============================================
+
+exemples:
+  bo: |
+    features_implementadas:
+      - nombre: "Exportació PDF professional"
+        descripcion: |
+          Canviat de html2canvas a jsPDF per millor qualitat
+          Format A4 amb marges 20mm
+          10 clàusules legals LAU incloses
+
+  massa_detallat: |
+    # EVITAR això:
+    features_implementadas:
+      - nombre: "Canviat padding del botó"
+        descripcion: "De 10px a 12px"
+      - nombre: "Actualitzat color"
+        descripcion: "De #fff a #f0f0f0"
+      - nombre: "Arreglat typo"
+        descripcion: "descipcion → descripcion a línia 234"
+
+  massa_vague: |
+    # EVITAR això:
+    features_implementadas:
+      - nombre: "Millorat sistema de processament"
+        descripcion: "Arreglats bugs"
+
+  gotchas_bons: |
+    # AIXÍ SÍ - Gotchas crítics i útils:
+    gotchas:
+      - tipo: "error"
+        problema: "useAuth() hook només funciona dins de AuthProvider"
+        solucion: "Wrap component principal amb <AuthProvider>"
+        criticidad: "alta"
+
+      - tipo: "warning"
+        problema: "Vercel activa Deployment Protection per defecte"
+        solucion: "Desactivar a Settings > Deployment Protection"
+        criticidad: "mitjana"
+
+  gotchas_dolents: |
+    # EVITAR això - No són gotchas crítics:
+    gotchas:
+      - tipo: "gotcha"
+        problema: "El botó no té focus state"
+        solucion: "Afegir outline al CSS"
+        criticidad: "baixa"  # Massa trivial

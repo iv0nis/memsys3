@@ -1,0 +1,360 @@
+# Context - memsys3
+# Este archivo es compilado automáticamente por el Context Agent
+# NO editar manualmente - ejecutar @prompts/compile-context.md para actualizar
+
+metadata:
+  compilado_por: "Context Agent"
+  ultima_compilacion: "2025-10-29"
+  version_context: "1.1"
+
+# ============================================
+# PROJECT INFO
+# ============================================
+project:
+  nombre: "memsys3"
+  descripcion: "Sistema de gestión de contexto para AI Development Agents"
+  fase: "Development v1.0"
+  ultima_feature: "v1.0 released to GitHub (initial release)"
+  siguiente_milestone: "Testing real-world con memsys3_dev/"
+
+# ============================================
+# FEATURES OPERATIVAS
+# ============================================
+features:
+  context_agent:
+    nombre: "Context Agent con criterio inteligente"
+    estado: "operativo"
+    descripcion: |
+      Agent que compila contexto completo aplicando la filosofía:
+      "¿Qué debe saber CUALQUIER agent descontextualizado para trabajar aquí?"
+      - Límite único: máx 2000 líneas en context.yaml
+      - NO límites arbitrarios por ADRs/sessions
+      - Lee TODO primero, después filtra con criterio
+
+  rotacion_automatica:
+    nombre: "Rotación Automática"
+    estado: "operativo"
+    descripcion: |
+      Sistema de rotación cuando sessions.yaml o adr.yaml superan 1800 líneas
+      - Rotación segura: copia → verifica → crea nuevo
+      - sessions.yaml → sessions_N.yaml
+      - adr.yaml → adr_N.yaml
+      - CA lee todos los archivos hasta detectar >150K tokens
+
+  plan_contingencia:
+    nombre: "Plan de Contingencia"
+    estado: "operativo"
+    descripcion: |
+      Cuando contexto supera 150K tokens, CA archiva datos irrelevantes
+      - Mueve a memory/history/ (que NO se lee → ahorro real)
+      - Reduce a ~120K tokens
+      - Datos preservados, no perdidos
+
+  visualizador:
+    nombre: "Memory Visualizer"
+    estado: "operativo"
+    descripcion: |
+      Dashboard web para ver la 'mente' de los agents (4 pestañas)
+      - Agent View (contexto compilado)
+      - Full History (ADRs + sessions)
+      - Project Status
+      - Stats
+      - Servidor Python mínimo (serve.py)
+      - Parser js-yaml para YAML complejo
+
+  prompts_reutilizables:
+    nombre: "Prompts Reutilizables"
+    estado: "operativo"
+    descripcion: |
+      Sistema de prompts para workflows comunes:
+      - newSession.md: carga contexto al iniciar
+      - endSession.md: documenta sesión con evidencias (git, find, history)
+      - compile-context.md: Context Agent con Plan Contingencia
+      - mind.md: abre visualizador
+      - deploy.md: configura memsys3 en nuevo proyecto
+
+  sistema_templates:
+    nombre: "Sistema de Templates YAML"
+    estado: "operativo"
+    descripcion: |
+      Templates agnósticos reutilizables
+      - adr-template, context-template, project-status-template, sessions-template
+      - Todos migrados a YAML (antes sessions era .md)
+
+# ============================================
+# STACK TECNOLÓGICO
+# ============================================
+stack:
+  frontend: "HTML/CSS/JS vanilla (visualizador)"
+  backend: "Python 3.x SimpleHTTPServer"
+  database: "Ninguna (YAML files)"
+  deploy: "GitHub + clonado local"
+  lenguaje_docs: "YAML + Markdown"
+  dependencias:
+    - nombre: "js-yaml 4.1.0 (CDN)"
+      motivo: "Parser YAML robusto para visualizador"
+
+# ============================================
+# URLS PRINCIPALES
+# ============================================
+urls:
+  repository: "https://github.com/iv0nis/memsys3"
+  production: "Local deployment (no hosting remoto)"
+
+# ============================================
+# ADRs RELEVANTES
+# ============================================
+adrs:
+  - id: "001"
+    titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
+    decision: |
+      El Context Agent usa criterio inteligente basándose en:
+      "¿Qué debe saber CUALQUIER agent descontextualizado para trabajar aquí?"
+      Límite ÚNICO: máximo 2000 líneas en context.yaml final.
+      NO hay límites arbitrarios por ADRs, sessions, gotchas, etc.
+    motivo: |
+      Los sistemas anteriores usaban límites rígidos (máx 7 ADRs, máx 15 líneas por sesión)
+      que no se adaptaban a la realidad del proyecto.
+    impacte: |
+      Contexto adaptativo según necesidades del proyecto.
+      CA decide con visión panorámica completa.
+      Proyectos pequeños mantienen todo, proyectos grandes filtran inteligentemente.
+
+  - id: "002"
+    titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
+    decision: |
+      Cuando sessions.yaml o adr.yaml superan 1800 líneas:
+      - endSession.md detecta automáticamente
+      - Hace rotación segura: copia → verifica → crea nuevo
+      - sessions.yaml → sessions_N.yaml
+      - adr.yaml → adr_N.yaml
+      Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
+    motivo: |
+      Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml crecen
+      demasiado, los agents no pueden leerlos.
+    impacte: |
+      Sistema escala infinitamente. No se pierden datos nunca.
+      Automático, sin intervención manual. Preserva histórico completo.
+
+  - id: "003"
+    titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
+    decision: |
+      Cuando total de full/ supera 150K tokens:
+      1. CA identifica ADRs/sessions irrelevantes con criterio inteligente
+      2. Las mueve a memory/history/ (que NO se lee)
+      3. Reduce a ~120K tokens
+      4. Continúa compilación normal
+      Datos en history/ están preservados, recuperables si hace falta.
+    motivo: |
+      Incluso con rotación, proyectos muy grandes pueden acumular demasiados datos.
+      Si full/ (con todos los archivos rotados) supera 150K tokens, el CA no puede
+      procesarlo eficientemente.
+    impacte: |
+      Ahorro real de tokens (history/ NO se lee).
+      Datos preservados, no perdidos.
+      Sistema escala ilimitadamente. Reversible.
+
+  - id: "004"
+    titulo: "YAML para todo (incluyendo sessions)"
+    decision: |
+      Todo el sistema usa YAML:
+      - sessions.yaml (antes sessions.md)
+      - adr.yaml
+      - project-status.yaml
+      - context.yaml
+      - Todos los templates .yaml
+    motivo: |
+      Sessions originalmente eran .md (Markdown). Templates y ADRs ya eran YAML.
+      Inconsistencia de formatos dificultaba parsing y ahorro de tokens.
+    impacte: |
+      Consistencia total del sistema.
+      ~30% ahorro tokens vs Markdown.
+      Mejor para LLMs (estructura clara).
+      Fácil parsear con js-yaml.
+
+  - id: "005"
+    titulo: "deploy.md como prompt (no script shell)"
+    decision: |
+      Crear prompts/deploy.md que el Main-Agent ejecuta.
+      El agent hace briefing con user para personalizar el deployment:
+      - Pregunta sobre proyecto, stack, comportamiento
+      - Copia templates
+      - Crea archivos específicos basándose en respuestas
+      Más flexible que script automático.
+    motivo: |
+      Necesitábamos manera de desplegar memsys3 en nuevos proyectos.
+      Prompt con agent es más inteligente y flexible que script automático.
+    impacte: |
+      Deployment guiado e inteligente.
+      Personalización según necesidades.
+      Agent puede adaptarse a respuestas.
+
+# ============================================
+# ÚLTIMA SESIÓN
+# ============================================
+ultima_sesion:
+  id: "2025-10-28"
+  titulo: "Creación memsys3 v1.0 + Deploy System"
+  data: "2025-10-28"
+  duracion: "~8h"
+
+  que_se_hizo:
+    - nombre: "Context Agent con criterio inteligente"
+      detalle: |
+        Filosofía: "¿Qué debe saber CUALQUIER agent descontextualizado?"
+        Límite único: máx 2000 líneas (NO límites arbitrarios por ADRs/sessions)
+        Lee TODO primero, después filtra con criterio
+
+    - nombre: "Plan de Contingencia (>150K tokens)"
+      detalle: |
+        Cuando contexto supera 150K tokens, CA archiva datos irrelevantes
+        Mueve a memory/history/ (que NO se lee → ahorro real)
+        Reduce a ~120K tokens
+        Datos preservados, no perdidos
+
+    - nombre: "Rotación Automática (>1800 líneas)"
+      detalle: |
+        endSession.md detecta cuando sessions.yaml o adr.yaml > 1800 líneas
+        Rotación segura: copia → verifica → crea nuevo
+        sessions.yaml → sessions_N.yaml, adr.yaml → adr_N.yaml
+        CA lee todos los archivos hasta detectar >150K tokens
+
+    - nombre: "Sistema de Templates YAML"
+      detalle: |
+        Templates agnósticos reutilizables
+        adr-template, context-template, project-status-template, sessions-template
+        Todos migrados a YAML (antes sessions era .md)
+
+    - nombre: "Visualizador Web Memory"
+      detalle: |
+        Dashboard con 4 pestañas
+        Agent View (contexto compilado), Full History (ADRs+sessions)
+        Project Status, Stats
+        Servidor Python mínimo (serve.py)
+        Parser js-yaml para YAML complejo
+
+    - nombre: "Prompts Reutilizables"
+      detalle: |
+        newSession.md (carga contexto)
+        endSession.md (documenta sesión con evidencias: git, find, history)
+        compile-context.md (Context Agent con Plan Contingencia)
+        mind.md (abre visualizador)
+        deploy.md (configura memsys3 en nuevo proyecto)
+
+    - nombre: "memsys3_dev/ (dog-fooding)"
+      detalle: |
+        Primera instancia real de deployment
+        Usar memsys3 para desarrollar el mismo memsys3
+        project-status específico de memsys3
+        Validar que el sistema funciona
+
+  problemas_resueltos:
+    - problema: "Visualizador no cargaba datos (404)"
+      solucion: |
+        Servidor sirviendo desde memory/viz/ no podía acceder a archivos padre
+        Cambiado a servir desde memory/
+        Paths absolutos con / en viewer.js
+        js-yaml via CDN para parser YAML complejo
+
+    - problema: "Parser YAML simple fallaba con estructura compleja"
+      solucion: |
+        ADRs con multiline strings, arrays anidados, etc.
+        Sustituido parser custom por js-yaml via CDN
+        Renderización estructurada con helper recursivo
+
+    - problema: "Límite Read tool (2000 líneas)"
+      solucion: |
+        sessions.yaml y adr.yaml pueden crecer infinitamente
+        Sistema de rotación automática >1800 líneas
+        CA lee múltiples archivos hasta >150K tokens
+        Entonces archiva irrelevantes a history/
+
+    - problema: "Límites arbitrarios (máx 7 ADRs, máx 15 líneas sessions)"
+      solucion: |
+        Eliminados todos los límites arbitrarios
+        Criterio inteligente del CA: relevancia, impacto global
+        Límite único pragmático: 2000 líneas total context.yaml
+
+  decisiones:
+    - "YAML para todo (incluyendo sessions) - Consistencia, ~30% ahorro tokens vs Markdown"
+    - "Criterio inteligente vs límites arbitrarios - CA tiene visión completa"
+    - "Rotación automática (>1800 líneas) - Sistema escala infinitamente sin perder datos"
+    - "Plan Contingencia con archivado (>150K tokens) - Ahorro real moviendo irrelevantes a history/"
+    - "deploy.md como prompt (no script) - Main-Agent hace briefing con user, más flexible"
+    - "memsys3/ agnóstico + memsys3_dev/ específico - Separar versión reutilizable de instancia desarrollo"
+
+  proximos_pasos:
+    - "Testing real-world con memsys3_dev/"
+    - "Validar rotación automática (simular >1800 líneas)"
+    - "Validar Plan Contingencia (simular >150K tokens)"
+    - "Documentar deploy.md en README principal"
+    - "Posiblemente: guía de migración desde sistemas existentes"
+
+# ============================================
+# GOTCHAS CRÍTICOS
+# ============================================
+gotchas:
+  - id: "read_tool_limit"
+    problema: "Read tool tiene límite de 2000 líneas"
+    solucion: |
+      Sistema de rotación automática cuando archivos superan 1800 líneas.
+      CA lee múltiples archivos rotados (sessions.yaml + sessions_*.yaml).
+      Si supera 150K tokens total, archiva irrelevantes a history/.
+
+  - id: "yaml_indentation"
+    problema: "YAML requiere indentación estricta (2 espacios)"
+    solucion: |
+      Usar | para multiline strings.
+      Seguir formato de templates exactamente.
+      Parser js-yaml es estricto con indentación.
+
+  - id: "context_manual_edit"
+    problema: "context.yaml NO debe editarse manualmente"
+    solucion: |
+      Siempre regenerar ejecutando @prompts/compile-context.md
+      Context Agent es quien compila desde full/
+
+# ============================================
+# PENDIENTES PRIORITARIOS
+# ============================================
+pendientes:
+  - prioridad: 1
+    tarea: "Testing real-world con memsys3_dev/"
+    detalle: "Usar memsys3 para desarrollar el mismo memsys3 (dog-fooding). Validar que el sistema funciona en proyecto real."
+
+  - prioridad: 2
+    tarea: "Documentar flujo de deploy en README principal"
+    detalle: "Guía paso a paso de cómo usar deploy.md para configurar memsys3 en nuevos proyectos."
+
+  - prioridad: 3
+    tarea: "Validar rotación automática en proyecto real"
+    detalle: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas. Testear lectura de múltiples archivos rotados."
+
+  - prioridad: 4
+    tarea: "Validar Plan Contingencia en proyecto grande"
+    detalle: "Comprobar archivado cuando >150K tokens. Verificar que history/ no se lee y ahorra tokens realmente."
+
+# ============================================
+# NOTAS DE COMPILACIÓN DEL CA
+# ============================================
+notes_compilacion:
+  adrs_totales: 5
+  adrs_incluidas: 5
+  sessions_totales: 1
+  sessions_incluidas: 1
+  tokens_iniciales: "~2,925 tokens"
+  tokens_finales: "~4,500 tokens (estimado)"
+  archivament: "No aplicado - bajo 150K tokens"
+  criterios_filtraje: |
+    Como solo hay 1 sesión (la inicial) y 5 ADRs fundamentales, se incluyeron todas.
+    Todas las ADRs tienen impacto arquitectónico global del sistema.
+    La sesión es la fundacional que creó todo el sistema.
+  lineas_totales: "~350 líneas de 2000 máximo"
+
+# ============================================
+# NOTAS DE USO
+# ============================================
+# Este archivo es COMPILADO automáticamente, no editar manualmente
+# Para actualizar: ejecutar @prompts/compile-context.md
+# Para más detalles: ver memory/full/adr.yaml y memory/full/sessions.yaml
+# Si contexto demasiado grande: CA moverá datos a memory/history/ (no leído)
