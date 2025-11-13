@@ -2,9 +2,9 @@
 
 metadata:
   ultima_actualizacion: "2025-11-13"
-  actualizado_por: "Claude (Session: Fix @ mentions + Sistema Sync Catalán)"
+  actualizado_por: "Claude (Session: Fix endSession.md history/)"
   fase: "Development v1.7"
-  memsys3_version: "v0.6.1 (commit: 181742f)"
+  memsys3_version: "v0.6.1 (commit: 3107efe)"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -98,6 +98,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-13"
+    resum: "Fix endSession.md: agregado warning explícito NO crear archivos en memory/history/ (solo Plan Contingencia >150K tokens). Detectado en tallersColomer donde agentes creaban session-*.yaml incorrectamente. Limpieza tallersColomer (3 archivos → history_backup/). Gotcha criticidad media documentado. Commit 3107efe. 2 archivos modificados."
   - data: "2025-11-13"
     resum: "Fix deploy.md PASO 8: warning @ mentions NO funcionan con archivos ignorados + workaround (instrucciones directas). ADR-010 UPDATE 2025-11-13. Prompt actualizar_cat.md creado (650 líneas, workflow 8 pasos, tabla 60+ traducciones). Sincronización completa memsys3_CAT: 20 archivos traducidos, branch catalan GitHub (commit 19e886c). Migración estructura antigua → nueva (95 archivos, +2743/-7592 líneas). 9 archivos modificados. Development v1.7."
   - data: "2025-11-12"
