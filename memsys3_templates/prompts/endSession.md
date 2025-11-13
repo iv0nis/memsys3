@@ -64,6 +64,8 @@ wc -l memsys3/memory/full/adr.yaml
 - ID y data: YYYY-MM-DD de hoy
 - Título descriptivo y conciso
 - Sé completo pero evita detalles demasiado granulares
+- **⚠️ NO crear archivos detallados en `memory/history/`** - toda la info va DIRECTAMENTE en sessions.yaml
+- **Importante**: `memory/history/` es SOLO para archivado del Plan de Contingencia (cuando full/ supera 150K tokens), NO para sesiones normales
 - **IMPORTANTE - Gotchas**: Si has encontrado errores críticos, warnings o traps:
   - Documentarlos en el campo `gotchas:` de la sesión
   - Incluir: `tipus`, `problema`, `solucio`, `criticitat` (alta|media|baja)
