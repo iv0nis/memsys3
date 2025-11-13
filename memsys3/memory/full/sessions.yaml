@@ -2,6 +2,59 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-11-13-fix-mentions-sistema-sync-catalan"
+    data: "2025-11-13"
+    duracion: "~3h"
+    titulo: "Fix @ mentions + Sistema Sincronización Versión Catalana"
+
+    features_implementadas:
+      - "Fix deploy.md PASO 8: warning explícito @ mentions NO funcionan con archivos ignorados (limitación Claude Code)"
+      - "Workaround documentado: usar instrucciones directas ('Ejecuta memsys3/prompts/newSession.md') en lugar de @ mentions"
+      - "ADR-010 actualizado con UPDATE 2025-11-13: limitación @ mentions + workaround"
+      - "Prompt actualizar_cat.md creado (650 líneas): workflow 8 pasos para sincronizar español → catalán"
+      - "Sistema sincronización automática con tabla 60+ traducciones comunes"
+      - "Sincronización completa memsys3_CAT: 20 archivos traducidos (prompts, templates, agents, viz, READMEs)"
+      - "Branch catalan creada y pusheada a GitHub (commit 19e886c)"
+      - "Estructura memsys3_CAT migrada de antigua (pre-ADR-006) a nueva (95 archivos, +2743/-7592 líneas)"
+
+    problemas_resueltos:
+      - problema: "En tallersColomer, al excluir memsys3/ de git, @ mentions dejaron de funcionar (ej: @memsys3/prompts/newSession.md)"
+        solucion: "Agregado warning explícito en deploy.md PASO 8 documentando limitación Claude Code y workaround: usar instrucciones directas"
+
+      - problema: "Repo memsys3_CAT tenía estructura completamente antigua (memsys3/, memsys3_dev/ duplicadas, carpetas obsoletas)"
+        solucion: "Migración completa: eliminadas carpetas antiguas, copiada estructura nueva desde master, traducidos 20 archivos al catalán, branch catalan creada"
+
+      - problema: "Templates distribuibles mezclados con archivos dog-fooding (context.yaml, project-status.yaml, full/*.yaml con ejemplos español)"
+        solucion: "Eliminados archivos que no deben distribuirse, solo mantener templates limpios para deployment"
+
+    decisiones:
+      - decision: "Workaround @ mentions: usar instrucciones directas en lugar de @ mentions cuando memsys3/ está ignorado"
+        motivo: "@ mentions no funcionan con archivos en .gitignore por limitación seguridad Claude Code, pero instrucciones directas SÍ funcionan"
+        impacto: "Cambio UX menor, sistema funciona perfectamente"
+
+      - decision: "Mantener versión catalana en branch catalan del mismo repo GitHub (no repo separado)"
+        motivo: "Facilita sincronización, mantiene history unificado, permite compartir issues/PRs"
+        impacto: "Workflow actualizar_cat.md sincroniza master → catalan automáticamente"
+
+      - decision: "Copiar y reemplazar estructura completa en sincronización (no modificar incremental)"
+        motivo: "Estructura antigua muy diferente a nueva, modificar incremental propenso a errores y tedioso"
+        impacto: "Sincronización limpia, 100% actualizada, más rápida y segura"
+
+    tecnologies_afegides: []
+
+    proxims_passos:
+      - "Testear deployment con consulta .gitignore en nuevo proyecto (validar PASO 8 funciona)"
+      - "Testear actualizar.md en proyecto con estructura correcta (Escenario C - Soluzzia)"
+      - "Testear actualizar_cat.md en futuras actualizaciones cuando haya cambios en master"
+      - "Validar compile-context.md con creación automática README en deCastro"
+
+    gotchas:
+      - tipo: "Limitación Claude Code"
+        problema: "@ mentions NO funcionan cuando archivos están en .gitignore (limitación de seguridad Claude Code)"
+        solucion: "Usar instrucciones directas: 'Ejecuta memsys3/prompts/newSession.md' en lugar de @memsys3/prompts/newSession.md"
+        criticidad: "alta"
+        adr_relacionada: "ADR-010"
+
   - id: "2025-11-12-deployment-tallerscolomer-mejora-gitignore"
     data: "2025-11-12"
     duracion: "~1.5h"
