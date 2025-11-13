@@ -541,3 +541,101 @@ adrs:
 
       Consideración futura: Quizás renombrar memory/templates/ a memory/guides/ para más
       claridad conceptual, pero se mantiene templates/ para no romper nada ahora.
+
+  - id: "010"
+    titulo: "Consulta .gitignore durante deployment de memsys3"
+    data: "2025-11-12"
+    estado: aceptado
+    area: deployment
+
+    context: |
+      Durante el deployment de memsys3 en tallersColomer, se identificó que memsys3/
+      no estaba excluido de git, lo que significa que todo el contexto local (sessions,
+      ADRs, gotchas) se subiría al repositorio.
+
+      El problema es que memsys3/ contiene:
+      - Sesiones de trabajo con Claude (información del flujo de trabajo)
+      - Decisiones arquitectónicas internas del desarrollo
+      - Gotchas y aprendizajes específicos del proceso
+      - Contexto que es útil localmente pero NO debe ser público
+
+      Actualmente deploy.md NO pregunta al usuario si quiere excluir memsys3/ de git,
+      lo cual puede llevar a subir información que debería ser privada.
+
+    decision: |
+      Agregar PASO 8 en deploy.md que pregunte al usuario si quiere excluir memsys3/
+      de GitHub ANTES de finalizar el deployment.
+
+      El paso incluye:
+      1. Explicación de por qué es recomendable excluir memsys3/
+      2. Dos opciones claras:
+         - Opción A: Excluir (RECOMENDADO) - para desarrollo individual
+         - Opción B: Incluir - para equipos que quieran compartir contexto
+      3. WARNING sobre limitación Claude Code: @ mentions NO funcionan con archivos ignorados
+      4. Workaround claro: usar instrucciones directas ("Ejecuta memsys3/prompts/newSession.md")
+      5. Instrucciones para modificar .gitignore si el usuario elige Opción A
+      6. Verificación con git status
+
+      El paso es obligatorio (siempre se pregunta), pero la decisión es del usuario.
+
+      IMPORTANTE: Si el usuario elige Opción A (excluir), debe saber que NO podrá usar
+      @ mentions para los prompts, pero el sistema funcionará igual usando instrucciones
+      directas a Claude.
+
+    alternatives:
+      - nom: "Excluir automáticamente sin preguntar"
+        pros:
+          - Más simple, sin interacción
+          - Seguro por defecto
+        contras:
+          - Asume que nadie quiere compartir el contexto
+          - Equipos no podrían colaborar con memsys3 compartido
+          - Usuario puede no saber que se excluyó
+        por_que_descartada: "No todos los casos de uso son iguales, algunos equipos pueden querer compartir contexto"
+
+      - nom: "Incluir por defecto sin preguntar"
+        pros:
+          - Sin fricción en deployment
+        contras:
+          - Sube información sensible por defecto
+          - Contexto local innecesario en repos públicos
+          - Infla el repositorio con datos cambiantes
+        por_que_descartada: "Riesgo de privacidad alto, información sensible puede filtrarse"
+
+      - nom: "Documentar en deploy.md pero no automatizar"
+        pros:
+          - Usuario decide manualmente después
+        contras:
+          - Fácil de olvidar
+          - Se descubre tarde (ya se subió a git)
+          - Requiere revertir commits
+        por_que_descartada: "Deployment debe ser completo, no dejar tareas pendientes"
+
+    consequencies:
+      positives:
+        - "Usuario es consciente de la decisión de privacidad"
+        - "Flexibilidad: equipos pueden elegir compartir contexto si quieren"
+        - "Deployment completo y correcto desde el inicio"
+        - "No hay sorpresas después (ya se subió a git accidentalmente)"
+        - "Recomendación clara (Opción A recomendada)"
+        - "Warning explícito sobre limitación @ mentions con workaround claro"
+        - "Usuario sabe desde el inicio cómo invocar prompts si elige Opción A"
+      negatives:
+        - "Un paso más en el deployment (fricción mínima)"
+        - "Usuario debe tomar una decisión (aunque hay recomendación)"
+        - "Si elige Opción A: @ mentions no funcionan (limitación Claude Code)"
+        - "Requiere usar instrucciones directas en lugar de @ mentions (cambio UX)"
+      impacto: "Privacidad del contexto, configuración .gitignore, UX de invocación de prompts"
+
+    notes: |
+      Esta ADR surgió de experiencia real durante deployment en tallersColomer.
+      La consulta se agregó como Paso 8 en deploy.md (entre Paso 7 y antiguo Paso 8).
+
+      Consideración: La mayoría de proyectos deberían excluir memsys3/, pero hay
+      casos de uso legítimos para incluirlo (equipos pequeños, repos privados de empresa).
+
+      UPDATE 2025-11-13: Se descubrió que @ mentions NO funcionan con archivos en .gitignore
+      (limitación de seguridad de Claude Code). Se agregó warning explícito y workaround claro
+      en PASO 8. El sistema funciona perfectamente, solo cambia la forma de invocar prompts:
+      - ❌ @memsys3/prompts/newSession.md (no funciona si está ignorado)
+      - ✅ "Ejecuta memsys3/prompts/newSession.md" (funciona siempre)

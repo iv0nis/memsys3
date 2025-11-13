@@ -2,6 +2,59 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-11-12-deployment-tallerscolomer-mejora-gitignore"
+    data: "2025-11-12"
+    duracion: "~1.5h"
+    titulo: "Deployment tallersColomer + Mejora deploy.md con consulta .gitignore"
+
+    features_implementadas:
+      - "Deployment exitoso de memsys3 en tallersColomer (primer proyecto nuevo desde mejoras v0.6.1)"
+      - "project-status.yaml personalizado: sistema gestión taller mecánico (Next.js + FastAPI + Supabase)"
+      - "newSession.md personalizado con contexto completo del proyecto"
+      - "Mejora en deploy.md: PASO 8 agregado para consultar .gitignore (66 líneas nuevas)"
+      - "ADR-010 creado documentando decisión sobre consulta .gitignore durante deployment"
+      - ".gitignore configurado en tallersColomer excluyendo memsys3/"
+
+    problemas_resueltos:
+      - problema: "deploy.md no contemplaba configuración .gitignore, memsys3/ se subiría al repositorio"
+        solucion: "PASO 8 agregado que pregunta al usuario con Opción A (excluir, recomendado) y Opción B (incluir)"
+        impacto: "Previene subir información sensible de contexto local, pero permite flexibilidad para equipos"
+
+      - problema: "Usuario debía acordarse manualmente de agregar memsys3/ a .gitignore después del deployment"
+        solucion: "Proceso automatizado con verificación (lee .gitignore, agrega exclusión si hace falta, verifica con git status)"
+        impacto: "Deployment completo sin tareas pendientes, configuración correcta desde el inicio"
+
+    decisiones_tomadas:
+      - decision: "Consulta obligatoria .gitignore durante deployment (no excluir automáticamente)"
+        motivo: "Algunos equipos pueden querer compartir contexto en repos privados, no todos los casos son iguales"
+        alternativas_consideradas:
+          - "Excluir automáticamente sin preguntar (descartado: no todos quieren esto)"
+          - "Incluir por defecto (descartado: riesgo privacidad alto)"
+          - "Documentar pero no automatizar (descartado: fácil de olvidar)"
+        impacto: "Usuario consciente de decisión, flexibilidad para diferentes casos de uso"
+        adr_relacionada: "ADR-010"
+
+    tecnologias_agregadas: []
+
+    proximos_pasos:
+      - "Testear deployment completo en otro proyecto con nueva consulta .gitignore"
+      - "Commit y push de cambios (deploy.md + ADR-010)"
+      - "Validar que tallersColomer funciona correctamente con memsys3 deployado"
+
+    notas_adicionales: |
+      Esta mejora surgió durante el deployment en tallersColomer cuando el usuario detectó
+      que memsys3/ no estaba excluido de git. La sugerencia del usuario fue: "habría que
+      añadir en los deploys del memsys3 una consulta al usuario para saber si quiere que
+      el sistema esté ignorado por github".
+
+      Deployment de tallersColomer completado exitosamente:
+      - Versión memsys3 deployada: v0.6.1 (commit: 6c15e3c)
+      - Proyecto: Sistema modular taller mecánico con OCR albaranes
+      - Stack: Next.js 14 + FastAPI + Supabase + Docker
+      - Fase: MVP en producción
+
+    gotchas_documentados: []
+
   - id: "2025-11-12-feature-002-actualizar-readme-opcional"
     data: "2025-11-12"
     duracion: "~4h"

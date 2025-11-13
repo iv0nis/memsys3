@@ -101,7 +101,18 @@ Pregunta al usuario:
    - Idioma UI?
    - Idioma variables/comentarios?
 
-### Paso 4: Crear project-status.yaml
+### Paso 4: Registrar Versión de memsys3
+
+Obtén la versión y commit del repositorio clonado:
+
+```bash
+cd memsys3_temp
+MEMSYS3_VERSION=$(git describe --tags --always)
+MEMSYS3_COMMIT=$(git log -1 --format=%h)
+cd ..
+```
+
+### Paso 5: Crear project-status.yaml
 
 Con la info recopilada, crea `memsys3/memory/project-status.yaml`:
 
@@ -112,6 +123,8 @@ metadata:
   ultima_actualitzacio: "[DATA_AVUI]"
   actualitzat_per: "Claude (Initial Deployment)"
   fase: "[FASE]"
+  memsys3_version: "[MEMSYS3_VERSION obtenida en Paso 4]"
+  memsys3_deployed: "[DATA_AVUI]"
 
 visio_general:
   que_es: "[DESCRIPCIO_1_LINIA]"
@@ -149,7 +162,7 @@ convencions_codi: {}
 historic_sessions: []
 ```
 
-### Paso 5: Personalizar prompts/newSession.md
+### Paso 6: Personalizar prompts/newSession.md
 
 Edita `memsys3/prompts/newSession.md` con la información del proyecto:
 
@@ -160,7 +173,7 @@ Edita `memsys3/prompts/newSession.md` con la información del proyecto:
 - Lee @memsys3/memory/project-status.yaml y @memsys3/memory/context.yaml
 ```
 
-### Paso 6: Personalizar agents/main-agent.yaml (opcional)
+### Paso 7: Personalizar agents/main-agent.yaml (opcional)
 
 Si el usuario ha especificado algo particular sobre el comportamiento del agente, añádelo:
 
@@ -169,13 +182,93 @@ comportamiento_especific:
   [SI_USER_HA_PEDIDO]: "[INSTRUCCION]"
 ```
 
-### Paso 7: Eliminar Clone Temporal
+### Paso 8: Configurar .gitignore (Excluir memsys3 de GitHub)
+
+**IMPORTANTE:** Pregunta al usuario si quiere excluir memsys3/ de GitHub.
+
+**Razón para excluir:**
+- memsys3 contiene información específica de tu flujo de trabajo con IA
+- Incluye sesiones de trabajo, decisiones internas, gotchas del desarrollo
+- Es contexto local que NO debe ser público en el repositorio
+- Se regenera/actualiza constantemente en cada sesión
+
+Pregunta al usuario:
+
+---
+
+**🔒 ¿Quieres excluir memsys3/ de GitHub?**
+
+memsys3 contiene tu contexto de desarrollo local (sesiones, decisiones, gotchas). Esta información es útil para ti pero generalmente NO debe subirse al repositorio público.
+
+**Opciones:**
+
+**A) Sí, excluir memsys3/ de git (RECOMENDADO)**
+- memsys3/ será ignorado por git
+- No se subirá al repositorio
+- Permanecerá solo en tu máquina local
+
+⚠️ **IMPORTANTE - Limitación de Claude Code:**
+Si eliges esta opción, las @ menciones NO funcionarán (ej: `@memsys3/prompts/newSession.md`).
+Esto es una limitación de seguridad de Claude Code con archivos ignorados.
+
+**Solución/Workaround:**
+En lugar de usar @ menciones, dale instrucciones directas a Claude:
+- ✅ **"Ejecuta memsys3/prompts/newSession.md"**
+- ✅ **"Lee y ejecuta las instrucciones en memsys3/prompts/compile-context.md"**
+- ❌ ~~`@memsys3/prompts/newSession.md`~~ (no funcionará)
+
+El sistema funcionará perfectamente, solo cambia la forma de invocar los prompts.
+
+**B) No, permitir que memsys3/ se suba a git**
+- memsys3/ se incluirá en commits
+- Se subirá al repositorio (público o privado)
+- Útil si quieres compartir el contexto con tu equipo
+- ✅ Las @ menciones funcionarán normalmente
+
+---
+
+**Si el usuario elige OPCIÓN A (recomendado):**
+
+1. Lee el .gitignore existente (si existe):
+   ```bash
+   cat .gitignore 2>/dev/null || echo "# .gitignore no existe, se creará"
+   ```
+
+2. Verifica si memsys3/ ya está excluido:
+   ```bash
+   grep -q "memsys3" .gitignore 2>/dev/null && echo "✅ Ya está excluido" || echo "➕ Necesita agregarse"
+   ```
+
+3. Si NO está excluido, agrégalo al .gitignore:
+   - Si .gitignore existe → usa Edit tool para agregar al final:
+     ```
+     # memsys3 - Sistema de gestión de contexto (local only)
+     memsys3/
+     ```
+   - Si .gitignore NO existe → usa Write tool para crearlo:
+     ```
+     # memsys3 - Sistema de gestión de contexto (local only)
+     memsys3/
+     ```
+
+4. Verifica que funciona:
+   ```bash
+   git status --short | grep memsys3
+   # Si no aparece nada → ✅ correctamente ignorado
+   ```
+
+**Si el usuario elige OPCIÓN B:**
+
+- No modificar .gitignore
+- Informar que memsys3/ se incluirá en commits
+
+### Paso 9: Eliminar Clone Temporal
 
 ```bash
 rm -rf memsys3_temp
 ```
 
-### Paso 8: Informar al Usuario
+### Paso 10: Informar al Usuario
 
 Confirma que el deployment se ha completado correctamente:
 
