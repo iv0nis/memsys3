@@ -19,11 +19,12 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Sistema de documentación estructurado (ADRs, sessions, status)
 - ✅ Context Agent que filtra automáticamente la información relevante
 - ✅ Visualizador web para ver la "mente" de los agents
-- ✅ Prompts reutilizables para comenzar/terminar sesiones
+- ✅ Prompts reutilizables (newSession, endSession, compile-context, mind, deploy, actualizar, backlog, github)
 - ✅ Sistema de rotación automática cuando supera límites (>1800 líneas)
 - ✅ Plan de contingencia con archivado inteligente (>150K tokens)
-- ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes
+- ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes (con detección estructura antigua)
 - ✅ README opcional: Context Agent acepta proyectos sin README o puede crear automáticamente
+- ✅ Consulta .gitignore durante deployment: pregunta si excluir memsys3/ de git (PASO 8, privacidad)
 
 ## ⚡ Quick Start
 
@@ -118,7 +119,10 @@ memsys3/                          # Repositorio GitHub
 │       ├── endSession.md      # Template de prompt para documentar
 │       ├── compile-context.md # Template de prompt del Context Agent
 │       ├── mind.md           # Template de prompt para visualizador
-│       └── deploy.md         # Guía de deployment
+│       ├── deploy.md         # Guía de deployment inicial
+│       ├── actualizar.md      # Guía de actualización segura de memsys3
+│       ├── backlog.md        # Template para gestionar backlog
+│       └── github.md         # Template para commits/push a GitHub
 └── memsys3/                     # Dog-fooding (desarrollo de memsys3)
     └── (Instancia específica, NO se distribuye)
 ```
@@ -190,6 +194,12 @@ python3 serve.py
 - Backups automáticos antes de tocar datos
 - Preserva histórico completo durante migración
 
+### Deployment con Privacidad
+- **Consulta .gitignore** (PASO 8 en deploy.md): pregunta si excluir memsys3/ de git
+- Opción A (RECOMENDADO): Excluir - contexto local privado
+- Opción B: Incluir - para equipos que compartan contexto
+- Previene subida accidental de información sensible (sessions, decisiones, gotchas)
+
 ## 📖 Documentación Completa
 
 Ver **[memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)** para:
@@ -231,6 +241,6 @@ MIT License - Libre para usar en cualquier proyecto
 
 ---
 
-**Versión**: 1.5
+**Versión**: 1.6
 **Repositorio**: https://github.com/iv0nis/memsys3
 **Documentación**: [memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)
