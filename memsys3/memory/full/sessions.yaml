@@ -2,6 +2,59 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-11-13-fix-endsession-history-folder"
+    data: "2025-11-13"
+    duracion: "~1h"
+    titulo: "Fix endSession.md - Aclarar uso correcto de memory/history/"
+
+    features_implementadas:
+      - "Fix endSession.md: agregado warning explícito que NO se deben crear archivos en memory/history/ durante sesiones normales"
+      - "Aclarado que memory/history/ es SOLO para archivado del Plan de Contingencia (ADR-003, cuando full/ supera 150K tokens)"
+      - "Actualizado endSession.md en memsys3_templates/ y memsys3/ (dog-fooding)"
+      - "Limpiado tallersColomer: movidos 3 archivos incorrectos de history/ a history_backup/"
+      - "Eliminadas referencias arxiu_detall de sessions.yaml en tallersColomer"
+
+    problemas_resueltos:
+      - problema: "En tallersColomer, agente creaba archivos detallados en memory/history/ durante endSession (session-2025-11-13-compile-context.yaml, etc.)"
+        solucion: "Agregadas 2 líneas explícitas en endSession.md: warning de NO crear archivos en history/ y aclaración de uso correcto"
+        impacto: "Previene confusión sobre propósito de history/, mantiene estructura limpia según diseño original"
+
+      - problema: "endSession.md no especificaba explícitamente que NO se deben crear archivos detallados en history/"
+        solucion: "Warning visible con ⚠️ y explicación clara del propósito de history/ (solo Plan Contingencia >150K tokens)"
+        impacto: "Agentes futuros no repetirán este error, documentación más clara"
+
+    decisiones:
+      - decision: "Agregar warning explícito en endSession.md en lugar de confiar en que agentes infieran el comportamiento correcto"
+        motivo: "Agentes pueden interpretar que pueden crear archivos detallados separados si no se especifica explícitamente"
+        impacto: "Documentación más robusta, menos ambigüedad"
+
+    tecnologies_afegides: []
+
+    proximos_pasos:
+      - "Monitorear próximas sesiones en tallersColomer para validar que fix funciona"
+      - "Considerar si otros prompts necesitan aclaraciones similares"
+
+    gotchas:
+      - tipo: "error"
+        problema: "endSession.md sin warning explícito puede causar que agentes creen archivos detallados en memory/history/ (confundiendo su propósito: Plan Contingencia vs documentación activa)"
+        solucion: "Agregar warning explícito: '⚠️ NO crear archivos detallados en memory/history/ - toda la info va DIRECTAMENTE en sessions.yaml'. Aclarar que history/ es SOLO para archivado >150K tokens"
+        criticidad: "media"
+        contexto: "Detectado en tallersColomer donde 3 sesiones crearon archivos incorrectos (session-2025-11-13-*.yaml). Campo arxiu_detall inventado por agente no está en diseño original."
+
+    notas_adicionales: |
+      Este fix surgió después de revisar tallersColomer donde el usuario reportó que
+      "estaba haciendo mal los endsessions, porque estaba creandolos en history".
+
+      Análisis reveló que agentes estaban creando:
+      1. Resumen en sessions.yaml (CORRECTO)
+      2. Archivo detallado en history/ (INCORRECTO)
+
+      Causa raíz: endSession.md no especificaba explícitamente que NO crear archivos
+      en history/. Agentes interpretaron que podían crear documentación detallada separada.
+
+      Solución: 2 líneas claras en endSession.md previenen este patrón incorrecto.
+      Archivos incorrectos movidos a history_backup/ en tallersColomer (preservados).
+
   - id: "2025-11-13-fix-mentions-sistema-sync-catalan"
     data: "2025-11-13"
     duracion: "~3h"
