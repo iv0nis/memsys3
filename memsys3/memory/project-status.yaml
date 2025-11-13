@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-11-12"
-  actualizado_por: "Claude (Session: Deployment tallersColomer + Mejora .gitignore)"
-  fase: "Development v1.6"
-  memsys3_version: "v0.6.1 (commit: 6c15e3c)"
+  ultima_actualizacion: "2025-11-13"
+  actualizado_por: "Claude (Session: Fix @ mentions + Sistema Sync Catalán)"
+  fase: "Development v1.7"
+  memsys3_version: "v0.6.1 (commit: 181742f)"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v1.6"
-  ultima_feature: "Deployment tallersColomer exitoso + Mejora deploy.md con consulta .gitignore (PASO 8) + ADR-010"
-  siguiente_milestone: "Commit mejoras + Testear deployment con consulta .gitignore en nuevo proyecto"
+  fase: "Development v1.7"
+  ultima_feature: "Fix @ mentions limitación + Sistema sincronización versión catalana (actualizar_cat.md) + Branch catalan GitHub"
+  siguiente_milestone: "Testear deployment con consulta .gitignore + Testear actualizar_cat.md en futuras sincronizaciones"
 
 features:
   context_agent:
@@ -41,12 +41,17 @@ features:
   prompts:
     nombre: "Prompts Reutilitzables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas memsys3/"
+    descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, backlog, github - TODOS con rutas memsys3/"
 
   documentacio:
     nombre: "Sistema de Documentación Multi-nivel"
     estado: "operativo"
     descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
+
+  sincronizacion_catalan:
+    nombre: "Sistema Sincronización Versión Catalana"
+    estado: "operativo"
+    descripcion: "Prompt actualizar_cat.md sincroniza memsys3_templates/ español → catalán, branch catalan en GitHub"
 
 stack_tecnologic:
   frontend: "HTML/CSS/JS (visualizador)"
@@ -60,12 +65,12 @@ urls:
 
 pendientes_prioritarios:
   - prioritat: 1
-    tasca: "Commit y push mejoras deploy.md + ADR-010"
-    detall: "Subir a GitHub: mejora consulta .gitignore en deploy.md (PASO 8) + ADR-010 documentando decisión"
+    tasca: "Testear deployment con consulta .gitignore en nuevo proyecto"
+    detall: "Validar que PASO 8 funciona correctamente con warning @ mentions y usuario puede elegir Opción A o B"
 
   - prioritat: 2
-    tasca: "Testear deployment con consulta .gitignore en nuevo proyecto"
-    detall: "Validar que PASO 8 funciona correctamente y usuario puede elegir Opción A o B"
+    tasca: "Testear actualizar_cat.md en futuras sincronizaciones"
+    detall: "Cuando haya nuevos cambios en master, validar que actualizar_cat.md sincroniza y traduce correctamente a branch catalan"
 
   - prioritat: 3
     tasca: "Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
@@ -93,6 +98,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-13"
+    resum: "Fix deploy.md PASO 8: warning @ mentions NO funcionan con archivos ignorados + workaround (instrucciones directas). ADR-010 UPDATE 2025-11-13. Prompt actualizar_cat.md creado (650 líneas, workflow 8 pasos, tabla 60+ traducciones). Sincronización completa memsys3_CAT: 20 archivos traducidos, branch catalan GitHub (commit 19e886c). Migración estructura antigua → nueva (95 archivos, +2743/-7592 líneas). 9 archivos modificados. Development v1.7."
   - data: "2025-11-12"
     resum: "Deployment tallersColomer exitoso (memsys3 v0.6.1, proyecto Next.js+FastAPI+Supabase). Mejora deploy.md: PASO 8 agregado consulta .gitignore (Opción A excluir recomendado, Opción B incluir). ADR-010 creado documentando decisión. 3 archivos modificados, +236 líneas. Development v1.6."
   - data: "2025-11-12"
