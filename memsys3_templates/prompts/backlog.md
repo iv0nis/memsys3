@@ -1,13 +1,28 @@
-# Crear Item en Backlog
+# Gestionar Backlog del Proyecto
 
-**Contexto:** El backlog (`docs/backlog/`) organiza trabajo futuro del desarrollo de memsys3 (issues, features, specs, blueprints, mejoras, exploraciones).
+**Contexto:** El backlog (`memsys3/backlog/`) organiza trabajo futuro del proyecto (issues, features, specs, blueprints, mejoras, exploraciones).
 
 **Tu tarea:**
-1. Pregunta al usuario qué tipo de item quiere crear (usa la leyenda abajo)
-2. Lee `@docs/backlog/README.md` para entender estructura de documentos
-3. Crea el archivo `docs/backlog/[PREFIJO]-[NUMERO]-[nombre].md` con la estructura correcta
-4. Usa numeración secuencial por prefijo (ISSUE-001, ISSUE-002, etc. - verifica último número)
+
+## 1. Consultar Backlog
+Si el usuario quiere ver el estado del backlog:
+1. Lee `memsys3/backlog/README.md` para entender el sistema
+2. Lista los ítems actuales en `memsys3/backlog/` (excluye README.md)
+3. Muestra: prefijo, título, estado, prioridad de cada ítem
+
+## 2. Crear Nuevo Item
+Si el usuario quiere crear un item:
+1. Pregunta qué tipo de item quiere crear (usa la leyenda abajo)
+2. Lee `memsys3/backlog/README.md` para entender estructura de documentos
+3. Verifica numeración existente del prefijo elegido
+4. Crea el archivo `memsys3/backlog/[PREFIJO]-[NUMERO]-[nombre].md` con estructura correcta
 5. Incluye: Estado, Prioridad, Tipo, Plazo, Fecha, Problema/Propuesta, Referencias
+
+## 3. Actualizar Item Existente
+Si el usuario quiere actualizar un item:
+1. Lee el archivo del item
+2. Actualiza el campo correspondiente (Estado, Prioridad, etc.)
+3. Agrega información en la sección apropiada
 
 ---
 
@@ -19,3 +34,5 @@
 - **BLUEPRINT-XXX**: Diseño arquitectónico de alto nivel
 - **IMPROVEMENT-XXX**: Mejoras de funcionalidad existente
 - **EXPLORATION-XXX**: Investigación sin solución clara
+
+Ver `memsys3/backlog/README.md` para workflow completo y estructura de documentos.
