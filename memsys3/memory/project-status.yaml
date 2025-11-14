@@ -1,9 +1,9 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-11-13"
-  actualizado_por: "Claude (Session: Fix endSession.md history/)"
-  fase: "Development v1.7"
+  ultima_actualizacion: "2025-11-14"
+  actualizado_por: "Claude (Session: Mejora CA Análisis README + Backlog Selectivo)"
+  fase: "Development v1.9"
   memsys3_version: "v0.6.1 (commit: 3107efe)"
   memsys3_deployed: "2025-10-28"
 
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v1.7"
-  ultima_feature: "Fix @ mentions limitación + Sistema sincronización versión catalana (actualizar_cat.md) + Branch catalan GitHub"
-  siguiente_milestone: "Testear deployment con consulta .gitignore + Testear actualizar_cat.md en futuras sincronizaciones"
+  fase: "Development v1.9"
+  ultima_feature: "Context Agent mejorado: Análisis profundo README automático (PASO 7 obligatorio, 10 categorías) + Integración backlog selectiva (lee solo items referenciados)"
+  siguiente_milestone: "Testear análisis README automático + Validar lectura selectiva backlog + Evaluar ADR-011 sobre análisis README"
 
 features:
   context_agent:
@@ -52,6 +52,11 @@ features:
     nombre: "Sistema Sincronización Versión Catalana"
     estado: "operativo"
     descripcion: "Prompt actualizar_cat.md sincroniza memsys3_templates/ español → catalán, branch catalan en GitHub"
+
+  backlog_distribuible:
+    nombre: "Sistema Backlog Distribuible"
+    estado: "operativo"
+    descripcion: "memsys3/backlog/ con README agnóstico (315 líneas) + 3 ejemplos ilustrativos + prompt backlog.md (3 operaciones: consultar, crear, actualizar)"
 
 stack_tecnologic:
   frontend: "HTML/CSS/JS (visualizador)"
@@ -94,10 +99,14 @@ decisions_clau:
   templates: "memory/templates/ son guías permanentes, NO se borran post-deployment"
   gotchas: "Se documentan en sessions.yaml (contextualizados), NO en project-status"
   deployment: "Clone temporal memsys3_temp, copiar, briefing con templates, borrar temp"
-  backlog: "docs/backlog/ organiza trabajo futuro con 6 prefijos, NO se distribuye (específico dev memsys3)"
+  backlog: "Sistema unificado: memsys3/backlog/ (dog-fooding con items reales) + memsys3_templates/backlog/ (distribuible, solo README). docs/backlog/ ELIMINADO."
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-11-14"
+    resum: "MEJORA CRÍTICA Context Agent: Análisis profundo README automático (PASO 7 obligatorio) + Integración backlog selectiva. compile-context.md: +309 líneas (10 categorías exhaustivas A-J con evidencia, reporte estructurado, aprovecha 200K tokens sin releer). context-template.yaml: +34 líneas (nueva sección backlog). Lectura selectiva: backlog/README.md + items referenciados en pendientes. Criterios inclusión/exclusión definidos. Confusión README pokerezza vs memsys3 detectada/corregida. Meta-aprendizaje: CA debe aprovechar contexto en mismo flujo compilación. Development v1.9."
+  - data: "2025-11-14"
+    resum: "Feature Backlog convertido dog-fooding → distribuible. README agnóstico (315 líneas) con 3 ejemplos. Prompt backlog.md mejorado (38 líneas, 3 operaciones). Desplegado en 4 ubicaciones. Migración completa: 3 items movidos docs/backlog/ → memsys3/backlog/, docs/backlog/ ELIMINADO. Prompt actualizado rutas correctas. Sistema unificado. Development v1.8."
   - data: "2025-11-13"
     resum: "Fix endSession.md: agregado warning explícito NO crear archivos en memory/history/ (solo Plan Contingencia >150K tokens). Detectado en tallersColomer donde agentes creaban session-*.yaml incorrectamente. Limpieza tallersColomer (3 archivos → history_backup/). Gotcha criticidad media documentado. Commit 3107efe. 2 archivos modificados."
   - data: "2025-11-13"
