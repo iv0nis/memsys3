@@ -1,4 +1,4 @@
-# Backlog - memsys3
+# Backlog - Sistema de Gestión de Trabajo Futuro
 
 Este directorio contiene **trabajo futuro pendiente**: issues identificados, features propuestas, especificaciones técnicas, blueprints arquitectónicos y exploraciones.
 
@@ -15,7 +15,7 @@ Cada documento usa un prefijo para identificar su tipo:
 - Requiere solución pero no es bloqueante inmediato
 - Puede incluir análisis de opciones
 
-**Ejemplo:** `ISSUE-001-escalabilidad-mantenimiento.md`
+**Ejemplo:** `ISSUE-001-error-carga-datos.md`
 
 ### `FEATURE-XXX`
 **Nueva funcionalidad a implementar**
@@ -24,7 +24,7 @@ Cada documento usa un prefijo para identificar su tipo:
 - Describe qué se quiere lograr y por qué
 - Puede incluir diseño preliminar
 
-**Ejemplo:** `FEATURE-001-exportar-contexto-markdown.md`
+**Ejemplo:** `FEATURE-001-exportar-resultados-csv.md`
 
 ### `SPEC-XXX`
 **Especificación técnica detallada**
@@ -33,7 +33,7 @@ Cada documento usa un prefijo para identificar su tipo:
 - Incluye API, estructura de datos, flujos
 - Más detallado que un issue o feature
 
-**Ejemplo:** `SPEC-001-api-compilacion-contexto.md`
+**Ejemplo:** `SPEC-001-estructura-datos-ejercicios.md`
 
 ### `BLUEPRINT-XXX`
 **Diseño arquitectónico de alto nivel**
@@ -42,7 +42,7 @@ Cada documento usa un prefijo para identificar su tipo:
 - Decisiones de diseño con múltiples componentes
 - Suele generar múltiples ADRs después
 
-**Ejemplo:** `BLUEPRINT-001-sistema-plugins.md`
+**Ejemplo:** `BLUEPRINT-001-sistema-validacion-automatica.md`
 
 ### `IMPROVEMENT-XXX`
 **Mejora de funcionalidad existente**
@@ -51,7 +51,7 @@ Cada documento usa un prefijo para identificar su tipo:
 - Optimización, UX, performance de algo que ya existe
 - Cambio incremental
 
-**Ejemplo:** `IMPROVEMENT-001-optimizar-compilacion.md`
+**Ejemplo:** `IMPROVEMENT-001-optimizar-tiempo-ejecucion.md`
 
 ### `EXPLORATION-XXX`
 **Investigación sin solución clara**
@@ -60,7 +60,7 @@ Cada documento usa un prefijo para identificar su tipo:
 - Requiere investigación, pruebas, experimentación
 - Puede resultar en un SPEC o BLUEPRINT después
 
-**Ejemplo:** `EXPLORATION-001-cache-inteligente.md`
+**Ejemplo:** `EXPLORATION-001-alternativas-visualizacion.md`
 
 ---
 
@@ -146,9 +146,9 @@ Cada documento debe incluir como mínimo:
 
 ## 🎯 Priorización
 
-No hay sistema formal de priorización en memsys3, pero usa estos criterios:
+Usa estos criterios para asignar prioridades:
 
-- **Alta**: Bloquea trabajo o frena escalabilidad significativamente
+- **Alta**: Bloquea trabajo o frena progreso significativamente
 - **Media**: Importante pero no urgente, puede esperar
 - **Baja**: Nice to have, mejora incremental
 
@@ -156,10 +156,12 @@ No hay sistema formal de priorización en memsys3, pero usa estos criterios:
 
 ## 📚 Relación con Otros Documentos
 
-- **ADRs** (`memory/full/adr.yaml`): Decisiones arquitectónicas TOMADAS
+Si estás usando memsys3 o un sistema similar de documentación:
+
+- **ADRs**: Decisiones arquitectónicas TOMADAS
 - **Backlog**: Trabajo PENDIENTE de hacer
-- **Sessions** (`memory/full/sessions.yaml`): Trabajo REALIZADO
-- **Project Status** (`memory/project-status.yaml`): Estado ACTUAL
+- **Sessions**: Trabajo REALIZADO
+- **Project Status**: Estado ACTUAL
 
 **Flujo:**
 ```
@@ -187,4 +189,127 @@ Backlog (futuro) → Sessions (hacer) → ADRs (decidir) → Project Status (aho
 
 ---
 
-**Última actualización:** 2025-11-03
+## 📚 Ejemplos Ilustrativos
+
+### Ejemplo de ISSUE
+
+```markdown
+# ISSUE-001: Error al validar entrada de usuario en ejercicio 3
+
+**Estado:** Abierto
+**Prioridad:** Alta
+**Tipo:** Bug
+**Plazo:** Corto plazo
+**Fecha identificación:** 2025-11-14
+
+---
+
+## Problema / Necesidad
+
+Al ejecutar el ejercicio 3 de la PEC2, si el usuario introduce un string vacío,
+el programa lanza una excepción no controlada en lugar de mostrar un mensaje
+de error amigable.
+
+## Propuesta / Opciones
+
+**Opción A:** Agregar validación con try/except antes del procesamiento
+**Opción B:** Usar función auxiliar validate_input() reutilizable
+**Opción C:** Agregar validación con if/else simple
+
+## Decisiones / Acciones
+
+Pendiente de análisis. Revisar si otros ejercicios tienen el mismo problema.
+
+## Referencias
+
+- Archivo: `Activity_2/ejercicio_3.py`
+- Línea: 42
+```
+
+### Ejemplo de FEATURE
+
+```markdown
+# FEATURE-001: Sistema de tests automatizados para ejercicios
+
+**Estado:** Propuesto
+**Prioridad:** Media
+**Tipo:** Feature
+**Plazo:** Medio plazo
+**Fecha identificación:** 2025-11-14
+
+---
+
+## Problema / Necesidad
+
+Actualmente validamos ejercicios manualmente ejecutando y revisando output.
+Sería útil tener tests automatizados que validen las soluciones antes de entregar.
+
+## Propuesta / Opciones
+
+**Opción A:** Usar pytest para cada ejercicio
+- Pros: Estándar de la industria, fácil de usar
+- Contras: Requiere aprender pytest
+
+**Opción B:** Crear scripts de validación custom
+- Pros: Control total, más simple
+- Contras: Reinventar la rueda
+
+## Decisiones / Acciones
+
+No decidido aún. Explorar pytest en próxima sesión.
+
+## Referencias
+
+- PEC1, PEC2 completadas sin tests
+- Interés en mejorar workflow de validación
+```
+
+### Ejemplo de IMPROVEMENT
+
+```markdown
+# IMPROVEMENT-001: Optimizar tiempo de ejecución del análisis de datos
+
+**Estado:** Completado
+**Prioridad:** Baja
+**Tipo:** Optimization
+**Plazo:** Corto plazo
+**Fecha identificación:** 2025-11-10
+**Fecha completado:** 2025-11-12
+
+---
+
+## Problema / Necesidad
+
+El ejercicio 4 de PEC2 tarda 45 segundos en ejecutarse con dataset grande.
+Podemos optimizar usando pandas en lugar de loops manuales.
+
+## Propuesta / Opciones
+
+Reemplazar:
+```python
+for row in data:
+    result.append(process(row))
+```
+
+Por:
+```python
+result = df.apply(process, axis=1)
+```
+
+## Decisiones / Acciones
+
+✅ Implementado con pandas.apply()
+✅ Tiempo reducido de 45s a 2.3s
+✅ Código más limpio y pythonic
+
+## Referencias
+
+- Commit: a1b2c3d
+- Archivo: `Activity_2/ejercicio_4.py`
+- Session: 2025-11-12
+```
+
+---
+
+**Sistema de backlog basado en memsys3**
+**Última actualización:** 2025-11-14
