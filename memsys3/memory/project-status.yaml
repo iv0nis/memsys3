@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-11-14"
-  actualizado_por: "Claude (Session: Mejora CA Análisis README + Backlog Selectivo)"
+  ultima_actualizacion: "2025-12-01"
+  actualizado_por: "Context Agent (compile-context v1.9)"
   fase: "Development v1.9"
-  memsys3_version: "v0.6.1 (commit: 3107efe)"
+  memsys3_version: "v1.9 (commit: 5efffb0)"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -14,8 +14,8 @@ visio_general:
 
 estat_actual:
   fase: "Development v1.9"
-  ultima_feature: "Context Agent mejorado: Análisis profundo README automático (PASO 7 obligatorio, 10 categorías) + Integración backlog selectiva (lee solo items referenciados)"
-  siguiente_milestone: "Testear análisis README automático + Validar lectura selectiva backlog + Evaluar ADR-011 sobre análisis README"
+  ultima_feature: "Compilación context.yaml v1.9 exitosa (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas) + README.md actualizado con 8 discrepancias corregidas"
+  siguiente_milestone: "Testear análisis README automático + Validar lectura selectiva backlog en próxima compilación"
 
 features:
   context_agent:
@@ -103,6 +103,10 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-12-01"
+    resum: "Compilación context.yaml v1.9 exitosa (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas). Análisis profundo README automático (PASO 7, 10 categorías): 8 discrepancias detectadas y corregidas. README actualizado v1.9 (versión, features recientes, Stack Tecnológico, warning @ mentions). Sincronización metadata: context.yaml ↔ README.md ↔ project-status.yaml. IMPROVEMENT-003 creado: planning Opción A mejorada para sincronización automática metadata en github.md (separar memsys3_version manual vs memsys3_commit/memsys3_last_push auto). Movido actualizar_cat.md a /prompts/ (ADR-011). ~2h."
+  - data: "2025-11-17"
+    resum: "Sesión planning/ideación (~15min). Observación: algunos prompts pueden requerir contexto específico diferente al general (newSession.md carga context.yaml completo, pero compile-context no necesita newSession, endSession podría no necesitar todo). IMPROVEMENT-002 creado en backlog con 4 opciones analizadas. No implementación, solo identificación mejora potencial. Prioridad Media. Development v1.9."
   - data: "2025-11-14"
     resum: "MEJORA CRÍTICA Context Agent: Análisis profundo README automático (PASO 7 obligatorio) + Integración backlog selectiva. compile-context.md: +309 líneas (10 categorías exhaustivas A-J con evidencia, reporte estructurado, aprovecha 200K tokens sin releer). context-template.yaml: +34 líneas (nueva sección backlog). Lectura selectiva: backlog/README.md + items referenciados en pendientes. Criterios inclusión/exclusión definidos. Confusión README pokerezza vs memsys3 detectada/corregida. Meta-aprendizaje: CA debe aprovechar contexto en mismo flujo compilación. Development v1.9."
   - data: "2025-11-14"
