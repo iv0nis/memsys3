@@ -639,3 +639,120 @@ adrs:
       en PASO 8. El sistema funciona perfectamente, solo cambia la forma de invocar prompts:
       - ❌ @memsys3/prompts/newSession.md (no funciona si está ignorado)
       - ✅ "Ejecuta memsys3/prompts/newSession.md" (funciona siempre)
+
+  - id: "011"
+    titulo: "Separación de prompts agnósticos (distribuibles) vs específicos (proyecto memsys3)"
+    data: "2025-11-17"
+    estado: aceptado
+    area: arquitectura
+
+    context: |
+      Durante el desarrollo de memsys3 surgió la necesidad de crear prompts que solo tienen
+      sentido en el contexto del desarrollo del propio memsys3, NO en proyectos que usen memsys3.
+
+      Ejemplos detectados:
+      - actualizar_cat.md: Sincroniza memsys3_templates/ español → catalán (branch catalan GitHub)
+      - comprobar_alineamiento.md: Verifica sincronización dog-fooding ↔ templates
+
+      El problema: Inicialmente estos archivos se crearon en memsys3/prompts/ y memsys3_templates/prompts/,
+      lo que significa que se DISTRIBUIRÍAN a otros proyectos durante el deployment.
+
+      Esto contaminaría los deployments con herramientas internas específicas del desarrollo de memsys3
+      que no tienen sentido fuera de este repositorio.
+
+      Necesidad: Regla clara para determinar qué es agnóstico (distribuible) vs específico (solo memsys3).
+
+    decision: |
+      **Regla de Oro para decidir ubicación de archivos:**
+
+      Pregunta: "¿Tiene sentido este archivo en CUALQUIER proyecto que use memsys3?"
+      - SI SÍ → Agnóstico: va en memsys3_templates/ (se distribuye)
+      - SI NO → Específico: va en directorios raíz como /prompts/ (NO se distribuye)
+
+      **Ubicaciones:**
+
+      1. AGNÓSTICOS (distribuibles) → memsys3_templates/:
+         - prompts/newSession.md ✅
+         - prompts/endSession.md ✅
+         - prompts/compile-context.md ✅
+         - prompts/deploy.md ✅
+         - prompts/actualizar.md ✅
+         - prompts/mind.md ✅
+         - prompts/backlog.md ✅
+         - prompts/github.md ✅
+         - agents/*.yaml ✅
+         - memory/templates/*.yaml ✅
+         - viz/* ✅
+
+      2. ESPECÍFICOS (solo memsys3) → /prompts/ en raíz:
+         - prompts/actualizar_cat.md ❌ (solo memsys3 tiene versión catalana)
+         - prompts/comprobar_alineamiento.md ❌ (solo memsys3 tiene dog-fooding)
+         - Futuros prompts de desarrollo interno ❌
+
+      **Implementación sin enforcement rígido:**
+
+      La ADR NO especifica archivos concretos a verificar (brindis al sol), sino que:
+      1. Documenta la REGLA DE ORO en README.md sección Dog-fooding
+      2. Confía en que el Context Agent incluirá esta ADR en context.yaml
+      3. Los futuros agents trabajando en memsys3 verán la regla en su contexto
+      4. La práctica "emerge" del contexto compilado (meta-memsys3)
+
+      **Práctica recomendada (documentada en README.md):**
+      "Al finalizar sesiones donde modificaste archivos agnósticos, ejecutar
+      @prompts/comprobar_alineamiento.md ANTES de endSession para verificar
+      sincronización dog-fooding ↔ templates."
+
+      Esta práctica NO se incluye en endSession.md distribuible (contaminaría deployments),
+      sino que emerge del contexto del proyecto memsys3.
+
+    alternatives:
+      - nom: "Verificación automática con script pre-commit"
+        pros:
+          - Enforcement rígido
+          - Imposible cometer error
+        contras:
+          - Complejidad adicional (git hooks)
+          - Fricción en desarrollo
+          - No flexible
+        por_que_descartada: "Preferimos confiar en el sistema memsys3 (contexto compilado) para crear la práctica naturalmente"
+
+      - nom: "Modificar endSession.md con recordatorio"
+        pros:
+          - Recordatorio visible siempre
+        contras:
+          - Contamina endSession.md distribuible
+          - Recordatorio aparecería en TODOS los proyectos
+          - Va contra filosofía agnóstico/específico
+        por_que_descartada: "endSession.md es agnóstico, no debe tener lógica específica de memsys3"
+
+      - nom: "Todos los prompts en memsys3_templates/"
+        pros:
+          - Simple, todo en un lugar
+        contras:
+          - Distribuye herramientas internas a otros proyectos
+          - Contamina deployments
+          - Confusión en proyectos destino
+        por_que_descartada: "Rompe la filosofía de distribución limpia"
+
+    consequencies:
+      positives:
+        - "Deployments limpios: solo archivos agnósticos se distribuyen"
+        - "Claridad sobre qué es producto (templates) vs desarrollo interno"
+        - "Regla simple y memorable para tomar decisiones"
+        - "Práctica emerge del contexto (dog-fooding real de memsys3)"
+        - "No requiere enforcement rígido (confía en el sistema)"
+        - "Flexible: nuevos archivos se clasifican fácilmente"
+      negatives:
+        - "Requiere disciplina al crear nuevos archivos (pensar dónde ubicarlos)"
+        - "No hay verificación automática (confianza en contexto)"
+        - "Prompts específicos en /prompts/ pueden olvidarse"
+      impacto: "Qué archivos se distribuyen durante deployment, claridad de separación producto vs desarrollo"
+
+    notes: |
+      Esta ADR usa memsys3 para desarrollar memsys3 (meta):
+      - La regla se documenta en README.md
+      - Context Agent la incluye en context.yaml compilado
+      - Futuros agents la ven en su contexto al cargar newSession.md
+      - La práctica emerge naturalmente sin modificar archivos distribuibles
+
+      Dog-fooding real del concepto: el sistema se documenta a sí mismo.

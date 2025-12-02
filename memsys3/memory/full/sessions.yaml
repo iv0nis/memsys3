@@ -2,6 +2,152 @@
 # Histórico de sesiones de desarrollo de memsys3
 
 sessions:
+  - id: "2025-12-01-compilacion-context-v19-readme-sync"
+    data: "2025-12-01"
+    duracion: "~2h"
+    titulo: "Compilación Context v1.9 + Actualización README + Planning Sync Metadata"
+
+    objetivo: "Ejecutar compile-context.md para generar context.yaml v1.9, analizar y actualizar README.md con discrepancias, y planificar mejora de sincronización metadata en github.md"
+
+    que_es_va_fer:
+      - "Compilación exitosa context.yaml v1.9 (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas)"
+      - "PASO 7 ejecutado: Análisis profundo README automático con 10 categorías (A-J)"
+      - "Identificadas 8 discrepancias: 1 crítica (versión 1.6→1.9), 3 importantes, 4 mejoras"
+      - "README.md actualizado: versión 1.9, fecha actualización, 3 features recientes agregadas, warning @ mentions, sección Stack Tecnológico, ADR-011 en Dog-fooding"
+      - "Detección metadata desactualizada: memsys3_version v0.6.1 → v1.9 en project-status.yaml"
+      - "Discusión sobre cuándo actualizar versión metadata (durante compilación vs durante github push)"
+      - "Decisión: actualizar versión en project-status.yaml durante compilación (sincronizada con context.yaml)"
+      - "Planning mejora: Opción A mejorada para sincronización automática metadata en github.md"
+      - "IMPROVEMENT-003 creado en backlog documentando mejora propuesta"
+      - "Movidos prompts específicos memsys3 (actualizar_cat.md) de memsys3_templates/ a /prompts/ según ADR-011"
+
+    decisiones_tomadas:
+      - decision: "Actualizar memsys3_version en project-status.yaml durante compile-context, no esperar a github.md"
+        motivo: "Mantener sincronización inmediata versión context.yaml ↔ project-status.yaml ↔ README.md"
+        impacto: "Versión siempre coherente en los 3 archivos principales"
+
+      - decision: "Opción A mejorada para futura sincronización metadata en github.md"
+        motivo: "Separar versión semántica (manual/milestone) de commit hash (automático) y fecha push"
+        estructura_propuesta: |
+          memsys3_version: "v1.9"              # MANUAL
+          memsys3_commit: "5efffb0"            # AUTO (github.md)
+          memsys3_last_push: "2025-12-01"      # AUTO (github.md)
+        opciones_tecnicas: "1A (endSession actualiza version), 2A (hash corto 7 chars), 3A (actualizar antes commit), 4 (problema fecha falsa si push falla)"
+
+      - decision: "Mover actualizar_cat.md de memsys3_templates/prompts/ a /prompts/ (específico memsys3)"
+        motivo: "Aplicación ADR-011: prompt específico de desarrollo memsys3 (solo este proyecto tiene versión catalana), NO debe distribuirse"
+        archivos_movidos: "memsys3/prompts/actualizar_cat.md y memsys3_templates/prompts/actualizar_cat.md eliminados de templates"
+
+    problemas_resueltos:
+      - problema: "README.md con versión desactualizada (1.6 en lugar de 1.9)"
+        solucion: "Análisis profundo README automático (PASO 7) detectó discrepancia crítica + 7 más"
+        resultado: "README actualizado: versión 1.9, fecha 2025-11-17, 3 features recientes, Stack Tecnológico, warning @ mentions"
+
+      - problema: "project-status.yaml con memsys3_version: v0.6.1 desactualizada"
+        solucion: "Actualizar a v1.9 (commit: 5efffb0) durante compilación para sincronizar con context.yaml"
+        resultado: "3 archivos sincronizados: context.yaml v1.9, README.md v1.9, project-status.yaml v1.9"
+
+      - problema: "Confusión sobre cuándo actualizar versión metadata (compilación vs github)"
+        solucion: "Aclarar: versión se actualiza durante compilación, futura mejora IMPROVEMENT-003 sincronizará commit/fecha en github.md"
+        resultado: "Separación clara de responsabilidades: compile-context actualiza versión, github.md (futuro) actualizará commit+fecha"
+
+    features_implementadas:
+      - "Análisis profundo README automático en compile-context.md (PASO 7) con 10 categorías y reporte estructurado"
+      - "Sistema de sincronización versión entre context.yaml, README.md y project-status.yaml"
+
+    tecnologias_agregadas: []
+
+    gotchas: []
+
+    backlog_items:
+      - "IMPROVEMENT-003-sync-version-metadata-github.md creado"
+      - "Documenta Opción A mejorada: separar memsys3_version (manual) de memsys3_commit (auto) y memsys3_last_push (auto)"
+      - "Plan detallado disponible en ~/.claude/plans/cryptic-yawning-sutton.md"
+
+    proximos_pasos:
+      - "Evaluar si implementar IMPROVEMENT-003 (sincronización metadata github.md) en próxima sesión"
+      - "Considerar crear ADR-012 si se implementa IMPROVEMENT-003 (decisión arquitectónica sobre metadata)"
+      - "Testear análisis README automático en próxima compilación"
+
+    archivos_modificados:
+      - "memsys3/memory/context.yaml (256→403 líneas, compilación v1.9)"
+      - "README.md (256→279 líneas, 8 discrepancias corregidas)"
+      - "memsys3/memory/project-status.yaml (metadata actualizada: versión v1.9, ultima_actualizacion 2025-12-01)"
+      - "memsys3/memory/full/sessions.yaml (+41 líneas, esta sesión)"
+      - "memsys3/memory/full/adr.yaml (+117 líneas, ADR-011 agregada en compilación anterior)"
+
+    archivos_creados:
+      - "memsys3/backlog/IMPROVEMENT-003-sync-version-metadata-github.md"
+      - "prompts/ (directorio nuevo para prompts específicos memsys3)"
+
+    archivos_eliminados:
+      - "memsys3/prompts/actualizar_cat.md (movido a /prompts/ según ADR-011)"
+      - "memsys3_templates/prompts/actualizar_cat.md (eliminado de templates, solo en /prompts/)"
+
+    estadisticas:
+      lineas_totales_modificadas: "+429, -869"
+      archivos_tocados: 7
+      context_yaml_lineas: 403
+      readme_lineas: 279
+      tokens_iniciales_compilacion: "~37,410"
+      tokens_finales_compilacion: "~9,200"
+      reduccion_tokens: "76%"
+
+    notas_adicionales: |
+      Sesión productiva con 3 objetivos principales cumplidos:
+      1. Compilación context.yaml v1.9 exitosa con análisis README automático
+      2. README.md actualizado completamente sincronizado con realidad del proyecto
+      3. Planning IMPROVEMENT-003 para futura sincronización automática metadata
+
+      Decisión importante: actualizar versión durante compilación (no esperar a github.md).
+      Mantiene sincronización inmediata context.yaml ↔ project-status.yaml ↔ README.md.
+
+      IMPROVEMENT-003 queda documentada para futura implementación cuando se considere prioritaria.
+      Plan detallado disponible para referencia futura.
+
+      Aplicación ADR-011: actualizar_cat.md correctamente movido a /prompts/ (específico memsys3).
+
+  - id: "2025-11-17-planning-contexto-especifico-prompts"
+    data: "2025-11-17"
+    duracion: "~15min"
+    titulo: "Planning: Contexto Específico por Prompt"
+
+    objetivo: "Sesión de planning e ideación para identificar posible mejora en sistema de carga de contexto de prompts"
+
+    que_es_va_fer:
+      - "Carga de contexto inicial del proyecto con newSession.md"
+      - "Discusión sobre necesidades de contexto específico por prompt"
+      - "Análisis de diferentes prompts y sus necesidades contextuales (compile-context, endSession, deploy, actualizar, backlog)"
+      - "Creación de IMPROVEMENT-002 en backlog documentando la observación"
+
+    decisiones_tomadas:
+      - "Documentar la observación en el backlog en lugar de implementar inmediatamente"
+      - "Motivo: requiere análisis detallado de cada prompt antes de decidir aproximación"
+      - "Prioridad Media: no es urgente, sistema actual funciona correctamente"
+
+    problemas_identificados:
+      - problema: "newSession.md carga contexto general (context.yaml completo), pero algunos prompts pueden tener necesidades específicas diferentes"
+        ejemplos: "compile-context.md no necesita newSession (instancia limpia), endSession.md podría no necesitar todo context.yaml"
+        impacto: "Posible desperdicio de tokens o falta de contexto específico en algunos casos"
+
+    backlog_items:
+      - "IMPROVEMENT-002-contexto-especifico-prompts.md creado"
+      - "4 opciones analizadas: Pre-requisitos explícitos, Niveles de newSession, Mínimo+específico, Autocontenidos"
+      - "Acciones pendientes: revisar cada prompt, identificar necesidades reales, evaluar opciones"
+
+    proximos_pasos:
+      - "Evaluar IMPROVEMENT-002 cuando se decida trabajar en optimización de contexto"
+      - "Revisar cada prompt actual y documentar qué contexto REALMENTE necesita"
+      - "Decidir aproximación más coherente con filosofía memsys3"
+
+    archivos_creados:
+      - "memsys3/backlog/IMPROVEMENT-002-contexto-especifico-prompts.md"
+
+    notas_adicionales: |
+      Sesión muy breve de planning/ideación.
+      No hubo implementación, solo identificación y documentación de mejora potencial.
+      Usuario tuvo la observación correcta sobre contexto diferenciado por prompt.
+
   - id: "2025-11-14-mejora-context-agent-analisis-readme-backlog"
     data: "2025-11-14"
     duracion: "~3h"
