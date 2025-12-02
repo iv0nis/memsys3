@@ -25,6 +25,9 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes (con detección estructura antigua)
 - ✅ README opcional: Context Agent acepta proyectos sin README o puede crear automáticamente
 - ✅ Consulta .gitignore durante deployment: pregunta si excluir memsys3/ de git (PASO 8, privacidad)
+- ✅ Sistema Backlog distribuible: memsys3/backlog/ con README agnóstico + prompt backlog.md (consultar, crear, actualizar)
+- ✅ Sistema sincronización catalana: actualizar_cat.md sincroniza español → catalán (branch catalan GitHub)
+- ✅ Context Agent mejorado: análisis profundo README automático (PASO 7, 10 categorías) + integración backlog selectiva
 
 ## ⚡ Quick Start
 
@@ -194,11 +197,26 @@ python3 serve.py
 - Backups automáticos antes de tocar datos
 - Preserva histórico completo durante migración
 
+### Sistema Backlog Distribuible
+- **memsys3/backlog/**: gestión de trabajo futuro estructurado
+- README agnóstico (315 líneas) con 3 ejemplos ilustrativos (ISSUE, FEATURE, IMPROVEMENT)
+- **Prompt backlog.md**: 3 operaciones (consultar, crear, actualizar)
+- Sistema de prefijos: ISSUE-XXX, FEATURE-XXX, IMPROVEMENT-XXX, SPEC-XXX, BLUEPRINT-XXX, EXPLORATION-XXX
+
 ### Deployment con Privacidad
 - **Consulta .gitignore** (PASO 8 en deploy.md): pregunta si excluir memsys3/ de git
 - Opción A (RECOMENDADO): Excluir - contexto local privado
 - Opción B: Incluir - para equipos que compartan contexto
 - Previene subida accidental de información sensible (sessions, decisiones, gotchas)
+- **⚠️ Workaround @ mentions**: Si eliges Opción A (excluir), @ mentions NO funcionan (limitación Claude Code). Solución: usar instrucciones directas ("Ejecuta memsys3/prompts/newSession.md")
+
+## 🛠 Stack Tecnológico
+
+- **Frontend**: HTML/CSS/JS (visualizador web)
+- **Backend**: Python 3.x (servidor visualizador)
+- **Database**: Ninguno (YAML files como almacenamiento)
+- **Deploy**: GitHub + clonado local
+- **Lenguaje Docs**: YAML + Markdown
 
 ## 📖 Documentación Completa
 
@@ -231,6 +249,20 @@ Este proyecto usa **memsys3** para desarrollarse a sí mismo.
 
 Los cambios/mejoras se aplican primero en `memsys3_templates/` y luego se prueban desplegándolos en `memsys3/`.
 
+**Separación Agnóstico/Específico (ADR-011):**
+
+Al crear nuevos archivos, pregúntate: **"¿Tiene sentido esto en CUALQUIER proyecto con memsys3?"**
+- **SI SÍ** → Agnóstico: va en `memsys3_templates/` (se distribuye a otros proyectos)
+- **SI NO** → Específico: va en `/prompts/` raíz (solo desarrollo memsys3, NO se distribuye)
+
+**Ejemplos de archivos específicos (NO se distribuyen):**
+- `prompts/actualizar_cat.md` - Solo memsys3 tiene versión catalana
+- `prompts/comprobar_alineamiento.md` - Solo memsys3 tiene dog-fooding
+
+**Práctica recomendada:**
+
+Al finalizar sesiones donde modificaste archivos agnósticos (prompts, agents, viz, templates), ejecutar `@prompts/comprobar_alineamiento.md` ANTES de endSession para verificar sincronización dog-fooding ↔ templates.
+
 ## 🤝 Contribuciones
 
 Este sistema está abierto a mejoras. Si tienes ideas o encuentras bugs, abre un issue o PR en GitHub.
@@ -241,6 +273,7 @@ MIT License - Libre para usar en cualquier proyecto
 
 ---
 
-**Versión**: 1.6
+**Versión**: 1.9
+**Última actualización**: 2025-11-17
 **Repositorio**: https://github.com/iv0nis/memsys3
 **Documentación**: [memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)
