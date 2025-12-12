@@ -19,13 +19,14 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Sistema de documentación estructurado (ADRs, sessions, status)
 - ✅ Context Agent que filtra automáticamente la información relevante
 - ✅ Visualizador web para ver la "mente" de los agents
-- ✅ Prompts reutilizables (newSession, endSession, compile-context, mind, deploy, actualizar, backlog, github)
+- ✅ Prompts reutilizables (newSession, endSession, compile-context, mind, deploy, actualizar, adr, backlog, github)
 - ✅ Sistema de rotación automática cuando supera límites (>1800 líneas)
 - ✅ Plan de contingencia con archivado inteligente (>150K tokens)
 - ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes (con detección estructura antigua)
 - ✅ README opcional: Context Agent acepta proyectos sin README o puede crear automáticamente
 - ✅ Consulta .gitignore durante deployment: pregunta si excluir memsys3/ de git (PASO 8, privacidad)
 - ✅ Sistema Backlog distribuible: memsys3/backlog/ con README agnóstico + prompt backlog.md (consultar, crear, actualizar)
+- ✅ Sistema ADRs gestionable: prompt adr.md para gestionar decisiones arquitectónicas (consultar, crear, actualizar)
 - ✅ Sistema sincronización catalana: actualizar_cat.md sincroniza español → catalán (branch catalan GitHub)
 - ✅ Context Agent mejorado: análisis profundo README automático (PASO 7, 10 categorías) + integración backlog selectiva
 
@@ -124,6 +125,7 @@ memsys3/                          # Repositorio GitHub
 │       ├── mind.md           # Template de prompt para visualizador
 │       ├── deploy.md         # Guía de deployment inicial
 │       ├── actualizar.md      # Guía de actualización segura de memsys3
+│       ├── adr.md            # Template para gestionar ADRs
 │       ├── backlog.md        # Template para gestionar backlog
 │       └── github.md         # Template para commits/push a GitHub
 └── memsys3/                     # Dog-fooding (desarrollo de memsys3)
@@ -273,7 +275,7 @@ MIT License - Libre para usar en cualquier proyecto
 
 ---
 
-**Versión**: 1.9
-**Última actualización**: 2025-11-17
+**Versión**: 0.8.0
+**Última actualización**: 2025-12-11
 **Repositorio**: https://github.com/iv0nis/memsys3
 **Documentación**: [memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)
