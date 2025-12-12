@@ -230,21 +230,37 @@ adrs:
       impacto: "Cómo se compila todo el contexto del sistema"
 
   - id: "002"
-    titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
+    titulo: "Rotación automática de sessions/ADRs (flexible 1800-2000 líneas)"
     data: "2025-10-28"
     estado: aceptado
     area: escalabilidad
+    ultima_actualizacion: "2025-12-03"
 
     context: |
       Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml crecen
       demasiado, los agents no pueden leerlos.
 
+      UPDATE 2025-12-03: Sistema de rotación mejorado con umbral flexible que aprovecha
+      espacio disponible (1800-2000) y evita duplicación de sesión actual.
+
     decision: |
-      Cuando sessions.yaml o adr.yaml superen 1800 líneas:
-      - endSession.md detecta automáticamente
-      - Hace rotación segura: copia → verifica → crea nuevo
-      - sessions.yaml → sessions_N.yaml
-      - adr.yaml → adr_N.yaml
+      Sistema de rotación flexible con dos escenarios:
+
+      **Escenario A: 1800 < líneas < 2000** (Rotación LITE post-documentación)
+      1. Documentar sesión normalmente en sessions.yaml
+      2. DESPUÉS de documentar, si supera 1800 líneas:
+         - Copiar sessions.yaml → sessions_N.yaml (incluye sesión actual)
+         - Verificar copia (debe tener sesión actual)
+         - Crear nuevo sessions.yaml VACÍO (solo header YAML)
+      3. Resultado: Sesión actual SOLO en sessions_N.yaml (no duplicación)
+
+      **Escenario B: líneas > 2000** (Rotación PRE-documentación)
+      1. ANTES de documentar, rotar:
+         - Copiar sessions.yaml → sessions_N.yaml (sin sesión actual)
+         - Verificar copia
+         - Crear nuevo sessions.yaml vacío
+      2. Documentar sesión actual en sessions.yaml NUEVO (desde cero)
+      3. Resultado: Sesión actual SOLO en sessions.yaml nuevo
 
       Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
 
@@ -270,10 +286,19 @@ adrs:
         - "No se pierden datos nunca"
         - "Automático, sin intervención manual"
         - "Preserva histórico completo"
+        - "Rotación flexible (1800-2000): aprovecha espacio disponible"
+        - "Evita duplicación: sesión actual solo en un archivo"
+        - "Solo rota cuando REALMENTE necesario (>2000)"
       negatives:
         - "Múltiples archivos (sessions_1, sessions_2, etc.)"
         - "CA debe leer múltiples archivos"
+        - "Dos escenarios posibles (complejidad decisión)"
       impacto: "Cómo se gestiona el crecimiento de datos históricos"
+
+    notes: |
+      UPDATE 2025-12-03: Sistema mejorado tras primera rotación real (sessions.yaml 1849 líneas).
+      Rotación flexible más eficiente: no rota rígidamente en 1800, aprovecha espacio hasta 2000.
+      Evita duplicación documentando dónde queda sesión actual según escenario.
 
   - id: "003"
     titulo: "Plan de Contingenciaconarchivado inteligente (>150K tokens)"
@@ -541,3 +566,109 @@ adrs:
 
       Consideración futura: Quizás renombrar memory/templates/ a memory/guides/ para más
       claridad conceptual, pero se mantiene templates/ para no romper nada ahora.
+
+  - id: "012"
+    titulo: "README como lectura directa vs duplicado en context.yaml"
+    data: "2025-12-03"
+    estado: aceptado
+    area: arquitectura
+
+    context: |
+      Durante el deployment en otros proyectos se detectó que README.md cambia frecuentemente
+      (versiones, features nuevas, URLs, stack tecnológico), pero context.yaml solo se actualiza
+      cuando se ejecuta compile-context.md.
+
+      Problema identificado:
+      - README sintetizado en context.yaml quedaba desactualizado
+      - Requería re-ejecutar compile-context por cambios triviales en README
+      - Context Agent hacía "Análisis profundo README" (PASO 7) comparando README vs realidad,
+        pero si README ES la realidad, el análisis no tiene sentido
+      - Duplicación innecesaria: README existe como archivo independiente
+
+      Observación arquitectónica:
+      - README.md = "Quién soy ahora" (identidad actual del proyecto)
+      - context.yaml = "Qué he aprendido" (memoria histórica: sessions, ADRs, gotchas)
+
+      Estos son dos conceptos diferentes que no deberían mezclarse.
+
+    decision: |
+      README.md se lee DIRECTAMENTE en newSession.md, NO se incluye en context.yaml.
+
+      Cambios implementados:
+
+      1. newSession.md:
+         - Agregada instrucción explícita: "Lee README.md del proyecto"
+         - Orden de carga: README.md → project-status.yaml → context.yaml
+         - README proporciona identidad actual, context proporciona memoria histórica
+
+      2. compile-context.md:
+         - ELIMINADO "Paso Previo: Verificar README.md" (creación automática)
+         - ELIMINADO "PASO 7: Análisis profundo README" (comparación vs realidad)
+         - ELIMINADO de lista de archivos a leer
+         - Context Agent ya NO incluye README en el contexto compilado
+
+      3. context-template.yaml:
+         - ELIMINADA sección `readme_proyecto:`
+         - Agregado comentario: "README.md se lee directamente en newSession.md"
+
+      Filosofía: Separation of Concerns
+      - README = Identidad actual (fuente de verdad, siempre actualizada)
+      - context = Memoria histórica (síntesis de aprendizajes)
+
+    alternatives:
+      - nom: "Status quo (mantener README en context.yaml)"
+        pros:
+          - context.yaml sigue siendo archivo único con todo
+          - No requiere cambios
+        contras:
+          - Riesgo permanente de desincronización
+          - Re-compilaciones por cambios triviales
+          - Mantenimiento innecesario
+          - Análisis README paradójico (comparar contra sí mismo)
+        por_que_descartada: "Desincronización inevitable, mantenimiento costoso"
+
+      - nom: "README solo si no existe en proyecto"
+        pros:
+          - Útil para proyectos sin README
+          - Permite crear README automático desde project-status
+        contras:
+          - Complejidad condicional
+          - Sigue teniendo problema de desincronización si README existe
+        por_que_descartada: "No resuelve el problema principal (desincronización)"
+
+      - nom: "README en context + análisis profundo mejorado"
+        pros:
+          - Detecta discrepancias automáticamente
+          - CA puede actualizar README automáticamente
+        contras:
+          - Añade complejidad enorme (PASO 7 era ~250 líneas)
+          - Sigue duplicando información
+          - README debería SER la realidad, no compararse contra ella
+        por_que_descartada: "Arquitectónicamente incorrecto: README ES la fuente de verdad"
+
+    consequencies:
+      positives:
+        - "Imposible desincronización: README siempre es la versión actual"
+        - "No duplicación: una sola fuente de verdad"
+        - "Menos mantenimiento: no re-compilar por cambios en README"
+        - "Overhead trivial: 1 Read adicional (~200-400 líneas) es irrelevante"
+        - "Coherencia conceptual: README = identidad, context = memoria"
+        - "compile-context más enfocado: solo memoria histórica"
+        - "~95 líneas menos en context.yaml (~1.4K tokens ahorrados)"
+      negatives:
+        - "context.yaml ya NO es archivo único con todo (pequeña desviación conceptual)"
+        - "Un Read adicional en newSession (+1 tool call)"
+      impacto: "newSession.md, compile-context.md, context-template.yaml, context.yaml de todos los proyectos"
+
+    notes: |
+      Esta ADR resuelve IMPROVEMENT-004 del backlog.
+
+      Conflicto resuelto: IMPROVEMENT-001 (2025-11-03) proponía incluir README en context,
+      pero esta decisión (IMPROVEMENT-004, 2025-12-03) es arquitectónicamente más madura:
+      separar "identidad actual" vs "memoria histórica".
+
+      IMPROVEMENT-001 puede reconsiderarse para OTROS documentos críticos (DEVELOPMENT.md, etc.)
+      pero README específicamente debe leerse directamente.
+
+      Compatibilidad: Proyectos con context.yaml antiguo (con README incluido) seguirán funcionando,
+      pero en próxima compilación README se eliminará del context automáticamente.
