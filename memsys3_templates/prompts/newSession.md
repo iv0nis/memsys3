@@ -1,16 +1,13 @@
 # New Session - Cargar Contexto del Proyecto
 
-- En este proyecto trabajaremos en **memsys3**: sistema de gestión de contexto para AI Development Agents
-- Actúa según las instrucciones en '@memsys3/agents/main-agent.yaml'
-- Este es un proyecto meta: usamos memsys3 para desarrollar el mismo memsys3 (dog-fooding)
-- Lee @memsys3/memory/project-status.yaml y @memsys3/memory/context.yaml
-- **IMPORTANTE: Trabaja en ESPAÑOL siempre**
+- Lee **README.md** del proyecto para entender su visión general y objetivo
+- Lee **@memsys3/memory/project-status.yaml** para conocer el estado actual (fase, features, pendientes)
+- Lee **@memsys3/memory/context.yaml** para cargar la memoria histórica (ADRs, sessions, gotchas)
+- Actúa según las instrucciones en **@memsys3/agents/main-agent.yaml**
 
-## Estructura Crítica
+## Notas
 
-- **memsys3_templates/** = PRODUCTO FINAL (templates agnósticos que se distribuyen)
-- **memsys3/** = Instancia de dog-fooding (desarrollo interno, NO se distribuye)
+- README.md contiene la identidad actual del proyecto (siempre actualizada)
+- context.yaml contiene memoria histórica sintetizada (decisiones, aprendizajes)
+- Juntos proporcionan contexto completo para trabajar efectivamente
 
-## Workflow de Desarrollo
-
-Los cambios/mejoras se aplican PRIMERO en `memsys3_templates/` y luego se prueban desplegándolos en `memsys3/`.

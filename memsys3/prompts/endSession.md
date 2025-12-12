@@ -38,23 +38,43 @@ Identifica:
 
 ### 3. Comprobar Rotaciones Automáticas
 
-**Sessions.yaml:**
+**IMPORTANTE: Rotación flexible según líneas totales**
+
 ```bash
 wc -l memsys3/memory/full/sessions.yaml
-# Si > 1800 líneas:
+```
+
+**Escenario A: 1800 < líneas < 2000** (Rotación LITE después de documentar)
+```bash
+# 1. Documentar sesión normalmente en sessions.yaml (paso 4)
+# 2. DESPUÉS de documentar, si supera 1800 líneas:
+ls memsys3/memory/full/sessions_*.yaml 2>/dev/null  # Encontrar próximo número
+cp memsys3/memory/full/sessions.yaml memsys3/memory/full/sessions_N.yaml  # Copiar completo
+wc -l memsys3/memory/full/sessions_N.yaml  # Verificar (debe incluir sesión actual)
+# 3. Crear nuevo sessions.yaml VACÍO (solo header YAML):
+# sessions:
+```
+
+**Escenario B: líneas > 2000** (Rotación PRE-documentar)
+```bash
+# 1. ANTES de documentar, rotar:
 ls memsys3/memory/full/sessions_*.yaml 2>/dev/null  # Encontrar próximo número
 cp memsys3/memory/full/sessions.yaml memsys3/memory/full/sessions_N.yaml  # Copiar
-wc -l memsys3/memory/full/sessions_N.yaml  # Verificar
-# Crear nuevo sessions.yaml con header YAML vacío
+wc -l memsys3/memory/full/sessions_N.yaml  # Verificar (sin sesión actual)
+# 2. Crear nuevo sessions.yaml vacío (solo header YAML)
+# 3. Documentar sesión actual en sessions.yaml NUEVO (desde cero)
 ```
 
-**adr.yaml:**
+**adr.yaml (mismo proceso):**
 ```bash
 wc -l memsys3/memory/full/adr.yaml
-# Si > 1800 líneas: mismo proceso → adr_N.yaml
+# Aplicar Escenario A o B según líneas
 ```
 
-**Rotación = Copia segura + Verificación + Nuevo archivo vacío**
+**Ventajas rotación flexible:**
+- ✅ No rotación rígida en 1800 (aprovecha espacio 1800-2000)
+- ✅ Evita duplicación (sesión actual solo en un archivo)
+- ✅ Solo rota cuando REALMENTE necesario (>2000)
 
 ### 4. Documentar
 

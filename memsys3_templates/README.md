@@ -36,8 +36,9 @@ Al comenzar a trabajar, carga el contexto del proyecto:
 ```
 
 Esto carga automáticamente:
+- Visión general del proyecto (`README.md`)
 - Estado actual del proyecto (`memory/project-status.yaml`)
-- Contexto compilado (`memory/context.yaml`)
+- Memoria histórica compilada (`memory/context.yaml`)
 - Instrucciones del Main Agent (`agents/main-agent.yaml`)
 
 ### Durante el Desarrollo
