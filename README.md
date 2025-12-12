@@ -275,7 +275,6 @@ MIT License - Libre para usar en cualquier proyecto
 
 ---
 
-**Versión**: 0.8.0
-**Última actualización**: 2025-12-11
 **Repositorio**: https://github.com/iv0nis/memsys3
+**Releases**: [Ver versiones en GitHub](https://github.com/iv0nis/memsys3/releases)
 **Documentación**: [memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)
