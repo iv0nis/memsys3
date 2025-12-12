@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-12-01"
-  actualizado_por: "Context Agent (compile-context v1.9)"
-  fase: "Development v1.9"
-  memsys3_version: "v1.9 (commit: 5efffb0)"
+  ultima_actualizacion: "2025-12-11"
+  actualizado_por: "Claude (Session Sistema Gestión ADRs)"
+  fase: "Development v0.8.0"
+  memsys3_version: "v0.8.0"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v1.9"
-  ultima_feature: "Compilación context.yaml v1.9 exitosa (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas) + README.md actualizado con 8 discrepancias corregidas"
-  siguiente_milestone: "Testear análisis README automático + Validar lectura selectiva backlog en próxima compilación"
+  fase: "Development v0.8.0"
+  ultima_feature: "Sistema gestión ADRs con prompt adr.md creado. Consistencia arquitectónica con backlog.md. ADR-013 documentada. README actualizado. Prompt validado (consulta 10 ADRs)"
+  siguiente_milestone: "Testear adr.md creando nueva ADR + Considerar sessions.md para consistencia completa + Testing compile-context sin README"
 
 features:
   context_agent:
@@ -41,7 +41,7 @@ features:
   prompts:
     nombre: "Prompts Reutilitzables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, backlog, github - TODOS con rutas memsys3/"
+    descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, adr, backlog, github - TODOS con rutas memsys3/"
 
   documentacio:
     nombre: "Sistema de Documentación Multi-nivel"
@@ -57,6 +57,11 @@ features:
     nombre: "Sistema Backlog Distribuible"
     estado: "operativo"
     descripcion: "memsys3/backlog/ con README agnóstico (315 líneas) + 3 ejemplos ilustrativos + prompt backlog.md (3 operaciones: consultar, crear, actualizar)"
+
+  sistema_gestion_adrs:
+    nombre: "Sistema Gestión ADRs"
+    estado: "operativo"
+    descripcion: "Prompt adr.md (71 líneas) para gestionar ADRs conversacionalmente: consultar, crear, actualizar. Leyendas integradas (3 estados + 10 áreas). Consistencia arquitectónica con backlog.md"
 
 stack_tecnologic:
   frontend: "HTML/CSS/JS (visualizador)"
@@ -103,6 +108,12 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-12-11"
+    resum: "Sistema gestión ADRs con prompt adr.md creado para consistencia arquitectónica con backlog.md. Usuario observa: backlog tiene README+prompt dedicado, ADRs no. AskUserQuestion: Opción A (solo documentación, bajo riesgo). Decisiones: adr.yaml permanece memory/full/, documentación integrada en prompt (no README separado), estructura Contexto→3 operaciones→Leyendas. Archivos: memsys3_templates/prompts/adr.md + memsys3/prompts/adr.md (71 líneas c/u). Leyendas: 3 estados + 10 áreas. README actualizado: adr agregado a prompts, nuevo bullet Sistema ADRs gestionable. Testing: prompt validado consultando 10 ADRs con Python. ADR-013 creada documentando decisión. Sesión corta (~45min), enfocada, solución minimalista correcta. Sistema ahora consistente y más usable."
+  - data: "2025-12-09"
+    resum: "Comando global /deploy-memsys3 creado, testeado y validado exitosamente. Usuario propone crear ~/.claude/commands/deploy-memsys3.md para ejecutar desde cualquier proyecto. Investigación completa: prompts globales, WebFetch vs curl, análisis deploy.md standalone. Bug encontrado: Write tool genera path /home/xevivim/ (usuario inexistente) al expandir ~. Workaround: mkdir bash + cat heredoc con $HOME explícito. Comando global creado (780 bytes), testeado en 'Agente de Vida 2025' → deployment 10/10 perfecto (8 prompts, 2 agents, 4 templates, viz, personalización correcta, limpieza OK). Feature operativa y lista para distribuir. Ciclo completo: Idea → Investigación → Implementación → Testing → Validación. ~2h."
+  - data: "2025-12-03"
+    resum: "IMPROVEMENT-004 completado + Sistema rotación flexible documentado. README lectura directa en newSession (Separation of Concerns). compile-context sin PASO 7 (-260 líneas). ADR-012 creado. Primera rotación real ejecutada (sessions_1.yaml, 1849 líneas). Sistema rotación mejorado: flexible 1800-2000 (post-documentar LITE) vs >2000 (pre-documentar). endSession.md + ADR-002 actualizados con 2 escenarios. Resuelto conflicto IMPROVEMENT-001 vs 004. 13 archivos (+445/-2515 líneas). ~3h."
   - data: "2025-12-01"
     resum: "Compilación context.yaml v1.9 exitosa (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas). Análisis profundo README automático (PASO 7, 10 categorías): 8 discrepancias detectadas y corregidas. README actualizado v1.9 (versión, features recientes, Stack Tecnológico, warning @ mentions). Sincronización metadata: context.yaml ↔ README.md ↔ project-status.yaml. IMPROVEMENT-003 creado: planning Opción A mejorada para sincronización automática metadata en github.md (separar memsys3_version manual vs memsys3_commit/memsys3_last_push auto). Movido actualizar_cat.md a /prompts/ (ADR-011). ~2h."
   - data: "2025-11-17"
