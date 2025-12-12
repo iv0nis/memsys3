@@ -230,21 +230,37 @@ adrs:
       impacto: "Cómo se compila todo el contexto del sistema"
 
   - id: "002"
-    titulo: "Rotación automática de sessions/ADRs (>1800 líneas)"
+    titulo: "Rotación automática de sessions/ADRs (flexible 1800-2000 líneas)"
     data: "2025-10-28"
     estado: aceptado
     area: escalabilidad
+    ultima_actualizacion: "2025-12-03"
 
     context: |
       Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml crecen
       demasiado, los agents no pueden leerlos.
 
+      UPDATE 2025-12-03: Sistema de rotación mejorado con umbral flexible que aprovecha
+      espacio disponible (1800-2000) y evita duplicación de sesión actual.
+
     decision: |
-      Cuando sessions.yaml o adr.yaml superen 1800 líneas:
-      - endSession.md detecta automáticamente
-      - Hace rotación segura: copia → verifica → crea nuevo
-      - sessions.yaml → sessions_N.yaml
-      - adr.yaml → adr_N.yaml
+      Sistema de rotación flexible con dos escenarios:
+
+      **Escenario A: 1800 < líneas < 2000** (Rotación LITE post-documentación)
+      1. Documentar sesión normalmente en sessions.yaml
+      2. DESPUÉS de documentar, si supera 1800 líneas:
+         - Copiar sessions.yaml → sessions_N.yaml (incluye sesión actual)
+         - Verificar copia (debe tener sesión actual)
+         - Crear nuevo sessions.yaml VACÍO (solo header YAML)
+      3. Resultado: Sesión actual SOLO en sessions_N.yaml (no duplicación)
+
+      **Escenario B: líneas > 2000** (Rotación PRE-documentación)
+      1. ANTES de documentar, rotar:
+         - Copiar sessions.yaml → sessions_N.yaml (sin sesión actual)
+         - Verificar copia
+         - Crear nuevo sessions.yaml vacío
+      2. Documentar sesión actual en sessions.yaml NUEVO (desde cero)
+      3. Resultado: Sesión actual SOLO en sessions.yaml nuevo
 
       Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
 
@@ -270,10 +286,19 @@ adrs:
         - "No se pierden datos nunca"
         - "Automático, sin intervención manual"
         - "Preserva histórico completo"
+        - "Rotación flexible (1800-2000): aprovecha espacio disponible"
+        - "Evita duplicación: sesión actual solo en un archivo"
+        - "Solo rota cuando REALMENTE necesario (>2000)"
       negatives:
         - "Múltiples archivos (sessions_1, sessions_2, etc.)"
         - "CA debe leer múltiples archivos"
+        - "Dos escenarios posibles (complejidad decisión)"
       impacto: "Cómo se gestiona el crecimiento de datos históricos"
+
+    notes: |
+      UPDATE 2025-12-03: Sistema mejorado tras primera rotación real (sessions.yaml 1849 líneas).
+      Rotación flexible más eficiente: no rota rígidamente en 1800, aprovecha espacio hasta 2000.
+      Evita duplicación documentando dónde queda sesión actual según escenario.
 
   - id: "003"
     titulo: "Plan de Contingenciaconarchivado inteligente (>150K tokens)"
@@ -542,217 +567,195 @@ adrs:
       Consideración futura: Quizás renombrar memory/templates/ a memory/guides/ para más
       claridad conceptual, pero se mantiene templates/ para no romper nada ahora.
 
-  - id: "010"
-    titulo: "Consulta .gitignore durante deployment de memsys3"
-    data: "2025-11-12"
-    estado: aceptado
-    area: deployment
-
-    context: |
-      Durante el deployment de memsys3 en tallersColomer, se identificó que memsys3/
-      no estaba excluido de git, lo que significa que todo el contexto local (sessions,
-      ADRs, gotchas) se subiría al repositorio.
-
-      El problema es que memsys3/ contiene:
-      - Sesiones de trabajo con Claude (información del flujo de trabajo)
-      - Decisiones arquitectónicas internas del desarrollo
-      - Gotchas y aprendizajes específicos del proceso
-      - Contexto que es útil localmente pero NO debe ser público
-
-      Actualmente deploy.md NO pregunta al usuario si quiere excluir memsys3/ de git,
-      lo cual puede llevar a subir información que debería ser privada.
-
-    decision: |
-      Agregar PASO 8 en deploy.md que pregunte al usuario si quiere excluir memsys3/
-      de GitHub ANTES de finalizar el deployment.
-
-      El paso incluye:
-      1. Explicación de por qué es recomendable excluir memsys3/
-      2. Dos opciones claras:
-         - Opción A: Excluir (RECOMENDADO) - para desarrollo individual
-         - Opción B: Incluir - para equipos que quieran compartir contexto
-      3. WARNING sobre limitación Claude Code: @ mentions NO funcionan con archivos ignorados
-      4. Workaround claro: usar instrucciones directas ("Ejecuta memsys3/prompts/newSession.md")
-      5. Instrucciones para modificar .gitignore si el usuario elige Opción A
-      6. Verificación con git status
-
-      El paso es obligatorio (siempre se pregunta), pero la decisión es del usuario.
-
-      IMPORTANTE: Si el usuario elige Opción A (excluir), debe saber que NO podrá usar
-      @ mentions para los prompts, pero el sistema funcionará igual usando instrucciones
-      directas a Claude.
-
-    alternatives:
-      - nom: "Excluir automáticamente sin preguntar"
-        pros:
-          - Más simple, sin interacción
-          - Seguro por defecto
-        contras:
-          - Asume que nadie quiere compartir el contexto
-          - Equipos no podrían colaborar con memsys3 compartido
-          - Usuario puede no saber que se excluyó
-        por_que_descartada: "No todos los casos de uso son iguales, algunos equipos pueden querer compartir contexto"
-
-      - nom: "Incluir por defecto sin preguntar"
-        pros:
-          - Sin fricción en deployment
-        contras:
-          - Sube información sensible por defecto
-          - Contexto local innecesario en repos públicos
-          - Infla el repositorio con datos cambiantes
-        por_que_descartada: "Riesgo de privacidad alto, información sensible puede filtrarse"
-
-      - nom: "Documentar en deploy.md pero no automatizar"
-        pros:
-          - Usuario decide manualmente después
-        contras:
-          - Fácil de olvidar
-          - Se descubre tarde (ya se subió a git)
-          - Requiere revertir commits
-        por_que_descartada: "Deployment debe ser completo, no dejar tareas pendientes"
-
-    consequencies:
-      positives:
-        - "Usuario es consciente de la decisión de privacidad"
-        - "Flexibilidad: equipos pueden elegir compartir contexto si quieren"
-        - "Deployment completo y correcto desde el inicio"
-        - "No hay sorpresas después (ya se subió a git accidentalmente)"
-        - "Recomendación clara (Opción A recomendada)"
-        - "Warning explícito sobre limitación @ mentions con workaround claro"
-        - "Usuario sabe desde el inicio cómo invocar prompts si elige Opción A"
-      negatives:
-        - "Un paso más en el deployment (fricción mínima)"
-        - "Usuario debe tomar una decisión (aunque hay recomendación)"
-        - "Si elige Opción A: @ mentions no funcionan (limitación Claude Code)"
-        - "Requiere usar instrucciones directas en lugar de @ mentions (cambio UX)"
-      impacto: "Privacidad del contexto, configuración .gitignore, UX de invocación de prompts"
-
-    notes: |
-      Esta ADR surgió de experiencia real durante deployment en tallersColomer.
-      La consulta se agregó como Paso 8 en deploy.md (entre Paso 7 y antiguo Paso 8).
-
-      Consideración: La mayoría de proyectos deberían excluir memsys3/, pero hay
-      casos de uso legítimos para incluirlo (equipos pequeños, repos privados de empresa).
-
-      UPDATE 2025-11-13: Se descubrió que @ mentions NO funcionan con archivos en .gitignore
-      (limitación de seguridad de Claude Code). Se agregó warning explícito y workaround claro
-      en PASO 8. El sistema funciona perfectamente, solo cambia la forma de invocar prompts:
-      - ❌ @memsys3/prompts/newSession.md (no funciona si está ignorado)
-      - ✅ "Ejecuta memsys3/prompts/newSession.md" (funciona siempre)
-
-  - id: "011"
-    titulo: "Separación de prompts agnósticos (distribuibles) vs específicos (proyecto memsys3)"
-    data: "2025-11-17"
+  - id: "012"
+    titulo: "README como lectura directa vs duplicado en context.yaml"
+    data: "2025-12-03"
     estado: aceptado
     area: arquitectura
 
     context: |
-      Durante el desarrollo de memsys3 surgió la necesidad de crear prompts que solo tienen
-      sentido en el contexto del desarrollo del propio memsys3, NO en proyectos que usen memsys3.
+      Durante el deployment en otros proyectos se detectó que README.md cambia frecuentemente
+      (versiones, features nuevas, URLs, stack tecnológico), pero context.yaml solo se actualiza
+      cuando se ejecuta compile-context.md.
 
-      Ejemplos detectados:
-      - actualizar_cat.md: Sincroniza memsys3_templates/ español → catalán (branch catalan GitHub)
-      - comprobar_alineamiento.md: Verifica sincronización dog-fooding ↔ templates
+      Problema identificado:
+      - README sintetizado en context.yaml quedaba desactualizado
+      - Requería re-ejecutar compile-context por cambios triviales en README
+      - Context Agent hacía "Análisis profundo README" (PASO 7) comparando README vs realidad,
+        pero si README ES la realidad, el análisis no tiene sentido
+      - Duplicación innecesaria: README existe como archivo independiente
 
-      El problema: Inicialmente estos archivos se crearon en memsys3/prompts/ y memsys3_templates/prompts/,
-      lo que significa que se DISTRIBUIRÍAN a otros proyectos durante el deployment.
+      Observación arquitectónica:
+      - README.md = "Quién soy ahora" (identidad actual del proyecto)
+      - context.yaml = "Qué he aprendido" (memoria histórica: sessions, ADRs, gotchas)
 
-      Esto contaminaría los deployments con herramientas internas específicas del desarrollo de memsys3
-      que no tienen sentido fuera de este repositorio.
-
-      Necesidad: Regla clara para determinar qué es agnóstico (distribuible) vs específico (solo memsys3).
+      Estos son dos conceptos diferentes que no deberían mezclarse.
 
     decision: |
-      **Regla de Oro para decidir ubicación de archivos:**
+      README.md se lee DIRECTAMENTE en newSession.md, NO se incluye en context.yaml.
 
-      Pregunta: "¿Tiene sentido este archivo en CUALQUIER proyecto que use memsys3?"
-      - SI SÍ → Agnóstico: va en memsys3_templates/ (se distribuye)
-      - SI NO → Específico: va en directorios raíz como /prompts/ (NO se distribuye)
+      Cambios implementados:
 
-      **Ubicaciones:**
+      1. newSession.md:
+         - Agregada instrucción explícita: "Lee README.md del proyecto"
+         - Orden de carga: README.md → project-status.yaml → context.yaml
+         - README proporciona identidad actual, context proporciona memoria histórica
 
-      1. AGNÓSTICOS (distribuibles) → memsys3_templates/:
-         - prompts/newSession.md ✅
-         - prompts/endSession.md ✅
-         - prompts/compile-context.md ✅
-         - prompts/deploy.md ✅
-         - prompts/actualizar.md ✅
-         - prompts/mind.md ✅
-         - prompts/backlog.md ✅
-         - prompts/github.md ✅
-         - agents/*.yaml ✅
-         - memory/templates/*.yaml ✅
-         - viz/* ✅
+      2. compile-context.md:
+         - ELIMINADO "Paso Previo: Verificar README.md" (creación automática)
+         - ELIMINADO "PASO 7: Análisis profundo README" (comparación vs realidad)
+         - ELIMINADO de lista de archivos a leer
+         - Context Agent ya NO incluye README en el contexto compilado
 
-      2. ESPECÍFICOS (solo memsys3) → /prompts/ en raíz:
-         - prompts/actualizar_cat.md ❌ (solo memsys3 tiene versión catalana)
-         - prompts/comprobar_alineamiento.md ❌ (solo memsys3 tiene dog-fooding)
-         - Futuros prompts de desarrollo interno ❌
+      3. context-template.yaml:
+         - ELIMINADA sección `readme_proyecto:`
+         - Agregado comentario: "README.md se lee directamente en newSession.md"
 
-      **Implementación sin enforcement rígido:**
-
-      La ADR NO especifica archivos concretos a verificar (brindis al sol), sino que:
-      1. Documenta la REGLA DE ORO en README.md sección Dog-fooding
-      2. Confía en que el Context Agent incluirá esta ADR en context.yaml
-      3. Los futuros agents trabajando en memsys3 verán la regla en su contexto
-      4. La práctica "emerge" del contexto compilado (meta-memsys3)
-
-      **Práctica recomendada (documentada en README.md):**
-      "Al finalizar sesiones donde modificaste archivos agnósticos, ejecutar
-      @prompts/comprobar_alineamiento.md ANTES de endSession para verificar
-      sincronización dog-fooding ↔ templates."
-
-      Esta práctica NO se incluye en endSession.md distribuible (contaminaría deployments),
-      sino que emerge del contexto del proyecto memsys3.
+      Filosofía: Separation of Concerns
+      - README = Identidad actual (fuente de verdad, siempre actualizada)
+      - context = Memoria histórica (síntesis de aprendizajes)
 
     alternatives:
-      - nom: "Verificación automática con script pre-commit"
+      - nom: "Status quo (mantener README en context.yaml)"
         pros:
-          - Enforcement rígido
-          - Imposible cometer error
+          - context.yaml sigue siendo archivo único con todo
+          - No requiere cambios
         contras:
-          - Complejidad adicional (git hooks)
-          - Fricción en desarrollo
-          - No flexible
-        por_que_descartada: "Preferimos confiar en el sistema memsys3 (contexto compilado) para crear la práctica naturalmente"
+          - Riesgo permanente de desincronización
+          - Re-compilaciones por cambios triviales
+          - Mantenimiento innecesario
+          - Análisis README paradójico (comparar contra sí mismo)
+        por_que_descartada: "Desincronización inevitable, mantenimiento costoso"
 
-      - nom: "Modificar endSession.md con recordatorio"
+      - nom: "README solo si no existe en proyecto"
         pros:
-          - Recordatorio visible siempre
+          - Útil para proyectos sin README
+          - Permite crear README automático desde project-status
         contras:
-          - Contamina endSession.md distribuible
-          - Recordatorio aparecería en TODOS los proyectos
-          - Va contra filosofía agnóstico/específico
-        por_que_descartada: "endSession.md es agnóstico, no debe tener lógica específica de memsys3"
+          - Complejidad condicional
+          - Sigue teniendo problema de desincronización si README existe
+        por_que_descartada: "No resuelve el problema principal (desincronización)"
 
-      - nom: "Todos los prompts en memsys3_templates/"
+      - nom: "README en context + análisis profundo mejorado"
         pros:
-          - Simple, todo en un lugar
+          - Detecta discrepancias automáticamente
+          - CA puede actualizar README automáticamente
         contras:
-          - Distribuye herramientas internas a otros proyectos
-          - Contamina deployments
-          - Confusión en proyectos destino
-        por_que_descartada: "Rompe la filosofía de distribución limpia"
+          - Añade complejidad enorme (PASO 7 era ~250 líneas)
+          - Sigue duplicando información
+          - README debería SER la realidad, no compararse contra ella
+        por_que_descartada: "Arquitectónicamente incorrecto: README ES la fuente de verdad"
 
     consequencies:
       positives:
-        - "Deployments limpios: solo archivos agnósticos se distribuyen"
-        - "Claridad sobre qué es producto (templates) vs desarrollo interno"
-        - "Regla simple y memorable para tomar decisiones"
-        - "Práctica emerge del contexto (dog-fooding real de memsys3)"
-        - "No requiere enforcement rígido (confía en el sistema)"
-        - "Flexible: nuevos archivos se clasifican fácilmente"
+        - "Imposible desincronización: README siempre es la versión actual"
+        - "No duplicación: una sola fuente de verdad"
+        - "Menos mantenimiento: no re-compilar por cambios en README"
+        - "Overhead trivial: 1 Read adicional (~200-400 líneas) es irrelevante"
+        - "Coherencia conceptual: README = identidad, context = memoria"
+        - "compile-context más enfocado: solo memoria histórica"
+        - "~95 líneas menos en context.yaml (~1.4K tokens ahorrados)"
       negatives:
-        - "Requiere disciplina al crear nuevos archivos (pensar dónde ubicarlos)"
-        - "No hay verificación automática (confianza en contexto)"
-        - "Prompts específicos en /prompts/ pueden olvidarse"
-      impacto: "Qué archivos se distribuyen durante deployment, claridad de separación producto vs desarrollo"
+        - "context.yaml ya NO es archivo único con todo (pequeña desviación conceptual)"
+        - "Un Read adicional en newSession (+1 tool call)"
+      impacto: "newSession.md, compile-context.md, context-template.yaml, context.yaml de todos los proyectos"
 
     notes: |
-      Esta ADR usa memsys3 para desarrollar memsys3 (meta):
-      - La regla se documenta en README.md
-      - Context Agent la incluye en context.yaml compilado
-      - Futuros agents la ven en su contexto al cargar newSession.md
-      - La práctica emerge naturalmente sin modificar archivos distribuibles
+      Esta ADR resuelve IMPROVEMENT-004 del backlog.
 
-      Dog-fooding real del concepto: el sistema se documenta a sí mismo.
+      Conflicto resuelto: IMPROVEMENT-001 (2025-11-03) proponía incluir README en context,
+      pero esta decisión (IMPROVEMENT-004, 2025-12-03) es arquitectónicamente más madura:
+      separar "identidad actual" vs "memoria histórica".
+
+      IMPROVEMENT-001 puede reconsiderarse para OTROS documentos críticos (DEVELOPMENT.md, etc.)
+      pero README específicamente debe leerse directamente.
+
+      Compatibilidad: Proyectos con context.yaml antiguo (con README incluido) seguirán funcionando,
+      pero en próxima compilación README se eliminará del context automáticamente.
+
+  - id: "013"
+    titulo: "Sistema de gestión de ADRs con prompt dedicado (consistencia arquitectónica)"
+    data: "2025-12-11"
+    estado: aceptado
+    area: usabilidad
+
+    context: |
+      El sistema backlog tiene:
+      - memsys3/backlog/README.md (documentación del sistema)
+      - memsys3/prompts/backlog.md (prompt para gestionar: consultar, crear, actualizar)
+      - Estructura clara y usable
+
+      El sistema ADRs tenía:
+      - memsys3/memory/full/adr.yaml (todas las ADRs en un archivo)
+      - memsys3/memory/templates/adr-template.yaml (solo template)
+      - Sin prompt dedicado para gestionar ADRs
+      - Sin documentación de estados/áreas disponibles
+
+      Usuario observó inconsistencia arquitectónica: backlog tiene interfaz conversacional
+      para gestión, ADRs no. Falta de consistencia entre ambos sistemas.
+
+    decision: |
+      Crear prompt memsys3/prompts/adr.md para gestionar ADRs con:
+
+      **Estructura:**
+      1. Contexto (explicación del sistema ADRs)
+      2. 3 Operaciones:
+         - Consultar ADRs (listar con filtros)
+         - Crear Nuevo ADR (guía paso a paso)
+         - Actualizar ADR Existente (modificar estado/notes/consequencies)
+      3. Leyendas integradas:
+         - Estados: accepted, deprecated, superseded_by
+         - Áreas: 10 categorías (arquitectura, frontend, backend, infrastructure,
+           escalabilidad, format, workflow, documentación, usabilidad, process)
+
+      **Decisiones adicionales:**
+      - adr.yaml permanece en memory/full/ (NO moverlo a subcarpeta)
+      - Documentación integrada en prompt (NO README separado)
+      - Estructura idéntica a backlog.md para consistencia
+
+    alternatives:
+      - nombre: "Opción B: Reestructuración completa (archivos separados ADR-XXX.md)"
+        pros:
+          - "Escalable (cada ADR en su archivo)"
+          - "Más parecido a backlog"
+          - "Fácil versionar ADRs individuales"
+        contras:
+          - "Requiere migración de datos (10 ADRs a archivos)"
+          - "Actualizar compile-context.md para leer múltiples archivos"
+          - "Mayor complejidad implementación"
+          - "Alto riesgo de romper algo"
+        por_que_descartada: "Demasiado complejo para el problema actual. Opción A resuelve inconsistencia arquitectónica con cambio mínimo."
+
+      - nombre: "Opción C: Híbrida (crear README+prompt ahora, migrar después)"
+        pros:
+          - "Mejora inmediata + planificación futura"
+          - "Enfoque incremental"
+        contras:
+          - "Deja trabajo pendiente (IMPROVEMENT futuro)"
+          - "No resuelve completamente ahora"
+        por_que_descartada: "Innecesariamente complejo. Opción A es suficiente y completa."
+
+    consequencies:
+      positives:
+        - "Consistencia arquitectónica: backlog y ADRs tienen misma interfaz gestión"
+        - "Usabilidad mejorada: usuarios pueden gestionar ADRs conversacionalmente"
+        - "Documentación accesible: estados/áreas explicadas en prompt"
+        - "Bajo riesgo: cambio minimalista, no toca estructura datos"
+        - "Testing inmediato: prompt validado consultando 10 ADRs existentes"
+      negatives:
+        - "Prompt adr.md más largo que backlog.md (71 vs 38 líneas) por mayor complejidad ADRs"
+        - "No resuelve escalabilidad si ADRs crecen muchísimo (pero rotación automática existe)"
+      impacto: "memsys3_templates/prompts/adr.md (nuevo), memsys3/prompts/adr.md (nuevo), README.md (actualizado)"
+
+    notes: |
+      Sesión corta (~45min) y enfocada.
+
+      Usuario identificó inconsistencia importante y propuso solución.
+
+      Opción A (solo documentación) fue la correcta: resuelve problema con mínimo cambio.
+
+      Sistema ahora más consistente y usable.
+
+      Próximos pasos posibles (futuro):
+      - Considerar si sessions.yaml necesita prompt dedicado sessions.md (consistencia completa)
+      - Testear crear nueva ADR con prompt (no solo consultar)

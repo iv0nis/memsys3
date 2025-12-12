@@ -2,27 +2,14 @@
 # Este es el archivo que carga DevAI para entender el proyecto
 # Es compilado por el Context Agent (CA) desde memory/full/
 # Límite ÚNICO: máximo 2000 líneas total
+#
+# NOTA: README.md se lee directamente en newSession.md (identidad actual del proyecto)
+#       context.yaml contiene solo memoria histórica (sessions, ADRs, gotchas)
 
 metadata:
   compilado_por: "Context Agent"
   ultima_compilacion: "[TIMESTAMP]"
   version_context: "[NUMERO_VERSIO]"
-
-# ============================================
-# README DEL PROYECTO
-# Sintetizado del README.md principal (máx 300 líneas)
-# ============================================
-readme_proyecto: |
-  [CONTENIDO SINTETIZADO DEL README.md]
-
-  CA debe incluir:
-  - Título y descripción del proyecto
-  - Propósito y objetivos
-  - Setup básico (comandos install, dev, build)
-  - Estructura relevante
-  - Links importantes
-
-  Omitir badges, licencias, detalles menores
 
 # ============================================
 # PROJECT INFO
@@ -129,6 +116,36 @@ pendientes:
   # CA añade según prioridad real, no límite fijo
 
 # ============================================
+# BACKLOG (OPCIONAL - solo si existe memsys3/backlog/)
+# Trabajo futuro pendiente: issues, features, improvements
+# CA incluye SOLO items referenciados o críticos
+# ============================================
+backlog:
+  sistema: |
+    [Resumen del sistema de backlog desde README.md]
+    - 6 tipos de items: ISSUE, FEATURE, SPEC, BLUEPRINT, IMPROVEMENT, EXPLORATION
+    - Estados: Propuesto, Abierto, En Progreso, Bloqueado, Completado, Cancelado
+
+  estadisticas:
+    issues: "[N issues totales]"
+    features: "[M features totales]"
+    improvements: "[X improvements totales]"
+    otros: "[Y otros (SPEC, BLUEPRINT, EXPLORATION)]"
+
+  items_criticos:
+    - id: "[TIPO-XXX]"
+      titulo: "[Título del item]"
+      estado: "[Abierto/En Progreso/etc]"
+      prioridad: "[Alta/Media/Baja]"
+      resumen: "[Breve descripción del problema/necesidad]"
+      referencia: "[Si está referenciado en pendientes_prioritarios]"
+
+    # CA añade SOLO:
+    # 1. Items referenciados en project-status.yaml pendientes_prioritarios
+    # 2. Items prioridad ALTA en estado Abierto/En Progreso
+    # NO incluir: Completados, Cancelados, Baja prioridad sin referencias
+
+# ============================================
 # NOTAS DE COMPILACIÓN DEL CA
 # Transparencia del proceso de compilación
 # ============================================
@@ -137,6 +154,10 @@ notas_compilacion:
   adrs_incluidas: "[M seleccionades per context]"
   sesiones_totales: "[X total a memory/full/sessions.yaml]"
   sesiones_incluidas: "[Y sintetitzades en context]"
+  backlog_existe: "[true/false]"
+  backlog_items_totales: "[N items totales en backlog/ si existe]"
+  backlog_items_incluidos: "[M items incluidos en context (referenciados o críticos)]"
+  justificacion_backlog: "[Por qué se incluyeron estos items: referenciados en pendientes, prioridad alta, etc.]"
   tokens_iniciales: "[Tokens llegits de full/]"
   tokens_finales: "[Tokens del context.yaml generat]"
   archivamiento: "[Si se ha activado Plan Contingencia: sessions/ADRs archivadas a history/]"

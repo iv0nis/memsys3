@@ -14,100 +14,15 @@ Tú tienes la **visión panorámica completa** del proyecto. Lee todo el histór
 
 ## Inputs que debes procesar
 
-### 🔍 Paso Previo: Verificar README.md
-
-**ANTES de leer todos los archivos**, verifica si existe README.md en la raíz del proyecto:
-
-```bash
-ls README.md 2>/dev/null && echo "✅ README.md existe" || echo "❌ README.md NO existe"
-```
-
-**Si README.md NO existe:**
-
-Pregunta al usuario:
-
----
-
-**📝 README.md no encontrado**
-
-El proyecto NO tiene un README.md en la raíz.
-
-El README es fundamental para que el Context Agent incluya información básica del proyecto (qué es, para qué sirve, cómo instalarlo) en el contexto compilado.
-
-**¿Quieres que cree un README.md básico para este proyecto?**
-
-**Opción A: Sí, crear README básico ahora**
-- El CA creará un README.md con información extraída de `project-status.yaml`
-- Incluirá: título, descripción, features principales, stack, comandos básicos
-- Puedes editarlo después para agregar más detalles
-
-**Opción B: No, continuar sin README**
-- El CA compilará el contexto SIN sección `readme_proyecto`
-- **ADVERTENCIA:** Nuevas instancias tendrán menos contexto sobre el proyecto
-- Puedes crear el README manualmente después y re-ejecutar compile-context
-
----
-
-**Si el usuario elige OPCIÓN A:**
-
-1. Lee `@memsys3/memory/project-status.yaml` completo
-2. Extrae información clave:
-   - Título del proyecto (campo `que_es` o nombre del directorio)
-   - Descripción (campo `objectiu`)
-   - Features principales (sección `features`)
-   - Stack tecnológico (sección `stack_tecnologic`)
-   - Comandos útiles (si hay `comandos_utils`)
-3. Crea `README.md` en raíz del proyecto siguiendo esta estructura:
-
-```markdown
-# [NOMBRE_PROYECTO]
-
-## Descripción
-[que_es del project-status]
-
-## Objetivo
-[objectiu del project-status]
-
-## Features Principales
-[Listar 3-5 features más importantes del project-status con enlaces si hay URLs]
-
-## Stack Tecnológico
-[Resumen del stack_tecnologic]
-
-## Instalación y Uso
-
-\`\`\`bash
-# [comandos básicos: install, dev, build, deploy]
-\`\`\`
-
-## Enlaces
-[URLs principales del project-status]
-```
-
-4. Después de crear README.md, continúa con la compilación normal
-
-**Si el usuario elige OPCIÓN B:**
-
-1. Continúa con la compilación SIN leer README.md
-2. El `context.yaml` NO tendrá sección `readme_proyecto`
-3. Añade nota en `notes_compilacion`:
-   ```yaml
-   observaciones: |
-     README.md no encontrado en raíz del proyecto.
-     Contexto compilado SIN sección readme_proyecto.
-     Recomendación: Crear README.md y re-ejecutar compile-context.
-   ```
-
----
-
 ### Archivos a leer
 
 Lee **TODOS** estos archivos completos:
 
-1. `README.md` (raíz del proyecto) - **Descripción general del proyecto** *(solo si existe o fue creado)*
-2. `@memsys3/memory/full/adr.yaml` - **Todas** las Architecture Decision Records
-3. `@memsys3/memory/full/sessions.yaml` - **Todo** el histórico de sesiones
-4. `@memsys3/memory/project-status.yaml` - Status actual del proyecto
+1. `@memsys3/memory/full/adr.yaml` - **Todas** las Architecture Decision Records
+2. `@memsys3/memory/full/sessions.yaml` - **Todo** el histórico de sesiones
+3. `@memsys3/memory/project-status.yaml` - Status actual del proyecto
+4. `@memsys3/backlog/README.md` - **Sistema de backlog** *(solo si existe)*
+5. Items de backlog referenciados en `pendientes_prioritarios` - **SOLO los referenciados** *(lectura selectiva)*
 
 ## Output que debes generar
 
@@ -126,14 +41,6 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
 ## Criterio de Selección
 
 ### Qué INCLUIR (ejemplos):
-
-**README.md:**
-- Título y descripción del proyecto (qué es, para qué sirve)
-- Propósito y objetivos principales
-- Instalación/Setup básico (comandos clave: install, dev, build)
-- Estructura de carpetas si es relevante para entender el proyecto
-- Links importantes (documentación, demo, etc.)
-- **Máximo 300 líneas** - sintetizar manteniendo esencia
 
 **ADRs:**
 - Decisiones con impacto global (afecta todo el proyecto)
@@ -157,21 +64,25 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
 - Blockers conocidos
 - Features a medio implementar
 
+**Backlog (si existe):**
+- Resumen del sistema de backlog (README.md)
+- Conteo de items por tipo (X issues, Y features, etc.)
+- Detalles SOLO de items referenciados en pendientes_prioritarios
+- Items críticos de prioridad alta en estado "Abierto"
+
 ### Qué EXCLUIR (ejemplos):
-
-**Del README.md:**
-- Badges/shields innecesarios
-- Secciones genéricas de contribución
-- Licencias (ya están en el repo)
-- Detalles excesivos de configuración
-- Screenshots (mantener solo descripción)
-
-**General:**
 - Cambios cosméticos (colores, padding, typos)
 - ADRs deprecated u obsoletas
 - Sesiones muy antiguas (>6 meses sin relevancia)
 - Detalles de implementación que se ven en el código
 - Gotchas ya resueltos permanentemente
+
+**Del Backlog:**
+- Items con estado "Completado" o "Cancelado" (ya están en sessions/ADRs)
+- Items de prioridad baja sin referencias en pendientes
+- Exploraciones sin decisión clara
+- Detalles de implementación de SPECs (solo contexto general)
+- Items NO referenciados en project-status.yaml
 
 ## Proceso de Compilación
 
@@ -183,9 +94,36 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
    - `memsys3/memory/full/sessions.yaml`
    - `memsys3/memory/project-status.yaml`
 
-2. **Estima tokens totales** (aproximado: caracteres / 4)
+2. **Lee backlog selectivamente** (si existe `memsys3/backlog/`):
 
-3. **Decide estrategia:**
+   a) **Verifica existencia del backlog:**
+   ```bash
+   ls memsys3/backlog/README.md 2>/dev/null && echo "✅ Backlog existe" || echo "❌ No hay backlog"
+   ```
+
+   b) **Si existe, lee README.md del backlog:**
+   - Lee `memsys3/backlog/README.md` completo
+   - Entiende el sistema de códigos (ISSUE, FEATURE, SPEC, etc.)
+
+   c) **Cuenta items por tipo:**
+   ```bash
+   ls memsys3/backlog/*.md | grep -v README | wc -l
+   # Contar por prefijo: ISSUE-*, FEATURE-*, IMPROVEMENT-*, etc.
+   ```
+
+   d) **Lee SOLO items referenciados en pendientes:**
+   - Busca en `project-status.yaml: pendientes_prioritarios`
+   - Si menciona "FEATURE-002", "ISSUE-005", etc. → lee esos archivos específicos
+   - **NO leas todos los items** del backlog, solo los referenciados
+
+   e) **Si no hay backlog:**
+   - Continúa sin problema (backlog es opcional)
+   - El context.yaml NO tendrá sección backlog
+
+3. **Estima tokens totales** (aproximado: caracteres / 4)
+   - Incluye tokens del backlog/README.md + items referenciados
+
+4. **Decide estrategia:**
    - Si < 150K tokens → Proceso normal (continúa a Fase 2)
    - Si > 150K tokens → Archivado necesario (continúa a Plan de Contingencia)
 
@@ -330,47 +268,24 @@ solucio: "Corregido"
 
 ---
 
-## ⚠️ Verificación Post-Compilación
+## 📋 Resumen del Flujo Completo
 
-**Después de generar `context.yaml` exitosamente**, pregunta al usuario:
+**PROCESO OPTIMIZADO (aprovecha 200K tokens):**
 
----
+```
+1. Fase 1: Evaluación Inicial
+   └─> Leer adr.yaml, sessions.yaml, project-status.yaml
+   └─> Leer backlog selectivamente (si existe):
+       • backlog/README.md (sistema completo)
+       • Contar items por tipo
+       • Leer SOLO items referenciados en pendientes_prioritarios
+   └─> Estimar tokens totales (incluir backlog)
+   └─> Decidir estrategia (normal vs contingencia)
 
-**📝 Verificación de README.md**
-
-El contexto compilado ahora incluye una versión sintetizada de tu `README.md` del proyecto.
-
-**¿El README.md refleja el estado actual del proyecto?**
-
-Considera si el README incluye:
-- ✅ Descripción actualizada de lo que hace el proyecto
-- ✅ Objetivos y propósito actuales (no obsoletos)
-- ✅ Stack tecnológico correcto (si ha cambiado)
-- ✅ Instrucciones de instalación/setup vigentes
-- ✅ Features principales implementadas recientemente
-- ✅ Links a documentación/demo actualizados
-
-**¿Necesitas que revise y actualice el README.md del proyecto?**
-
-Si el usuario responde que SÍ:
-1. Lee el README.md actual completo
-2. Lee el project-status.yaml para ver features, stack actual, estado del proyecto
-3. Identifica discrepancias (features no mencionadas, stack desactualizado, objetivos cambiados)
-4. Propón actualizaciones concretas al README.md
-5. Si el usuario aprueba, actualiza el README.md
-6. **IMPORTANTE**: Re-ejecuta compile-context.md para incluir el README actualizado en el contexto
-
-Si el usuario responde que NO:
-- Confirma que la compilación está completa
-- Recuerda que el README se puede actualizar en cualquier momento ejecutando este prompt de nuevo
-
----
-
-**Razón de esta verificación:**
-
-El README es el primer archivo que nuevas instancias verán en el contexto compilado. Mantenerlo actualizado asegura que:
-- Nuevas instancias tengan información correcta del proyecto
-- No haya confusión entre lo documentado y lo real
-- El contexto compilado sea una fuente única de verdad
+2. Fase 2: Compilación Normal
+   └─> Aplicar criterio de selección
+   └─> Generar context.yaml (máx 2000 líneas)
+   └─> Añadir notas de compilación
+```
 
 ---
