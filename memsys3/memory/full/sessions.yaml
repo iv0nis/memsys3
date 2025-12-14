@@ -3,12 +3,12 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
-  - id: "2025-12-11-sistema-gestion-adrs"
+  - id: "2025-12-11-sistema-gestion-adrs-versionado-release"
     data: "2025-12-11"
-    duracion: "~45min"
-    titulo: "Sistema de gestión de ADRs con prompt adr.md"
+    duracion: "~3.5h"
+    titulo: "Sistema gestión ADRs + Versionado automático + Release v0.8.0"
 
-    objetivo: "Crear consistencia arquitectónica entre sistema backlog y sistema ADRs, agregando prompt dedicado para gestionar ADRs (consultar, crear, actualizar)"
+    objetivo: "Crear consistencia arquitectónica entre backlog y ADRs, resolver ISSUE-002 sobre versionado, mejorar github.md con workflow automático y ejecutar primera release con nuevo sistema"
 
     que_es_va_fer:
       - "Sesión iniciada con newSession.md (carga README, project-status, context v1.10)"
@@ -25,6 +25,36 @@ sessions:
       - "Verificación consistencia arquitectónica: backlog.md (38 líneas) vs adr.md (71 líneas) - estructura idéntica"
       - "Actualización README.md: agregado adr a lista prompts, nuevo bullet Sistema ADRs gestionable, agregado en estructura archivos"
       - "Testing: prompt validado consultando 10 ADRs existentes con script Python (tabla formato)"
+      - "--- BLOQUE 2: Versionado y Release ---"
+      - "Usuario pregunta: ¿Mejor nueva instancia o /compact + compile-context?"
+      - "Análisis crítico: contexto rico vs tokens libres (89K usados, 111K libres)"
+      - "Decisión: instancia limpia (ADR-008), pero reconocer valor contexto en casos específicos"
+      - "Usuario: README debe tener versión del PROYECTO, no de memsys3 (en proyectos dog-fooding)"
+      - "Análisis ISSUE-002: inconsistencia v1.9 interna vs v0.7.1 git tags"
+      - "Usuario: actualizar.md DEPENDE de git tags para funcionar (git log, diff entre versiones)"
+      - "Conclusión crítica: git tags NO opcionales, son NECESARIOS para actualizar.md"
+      - "Decisión arquitectónica: Unificar en v0.x.x (git tags = fuente de verdad)"
+      - "Usuario propone: github.md debe SIEMPRE proponer tag (filosofía memsys3: sesión = progreso)"
+      - "Discusión: ¿tags automáticos vs semi-automáticos vs manuales?"
+      - "Opción elegida: Semi-automático híbrido (agente propone con justificación, usuario confirma)"
+      - "Reescritura completa github.md (186 líneas): análisis cambios, propuesta estructurada, metadata rica, criterios Minor/Patch"
+      - "Ejecución primer workflow nuevo: análisis 2 sesiones desde v0.7.1, propuesta v0.8.0 minor bump"
+      - "Usuario confirma v0.8.0"
+      - "Bump versión: README v1.9→v0.8.0, project-status v1.9→v0.8.0"
+      - "Commits: chore bump + feat sistema ADRs + mejora github.md"
+      - "Tag v0.8.0 creado con metadata rica (sesiones, ADRs, breaking changes)"
+      - "Push exitoso: tag v0.8.0 en GitHub"
+      - "Usuario aclara: README repo memsys3 NO debe tener versión explícita (git tags = fuente verdad)"
+      - "Corrección README: quitar versión, enlazar a GitHub Releases"
+      - "Commit docs: aclaración arquitectura versiones"
+      - "--- BLOQUE 3: Documentación y Backlog ---"
+      - "Primera ejecución endSession.md: documentación completa sesión (312 líneas sessions.yaml)"
+      - "Usuario solicita: registrar ISSUE en backlog sobre limpieza .git residual en deployment"
+      - "Creación ISSUE-003: Limpiar .git/ residual en memsys3/ después de deployment"
+      - "Análisis: 3 opciones (limpieza explícita, rsync exclude, verificar/advertir)"
+      - "Recomendación: Opción A (limpieza explícita en deploy.md PASO 7b)"
+      - "Commit docs(backlog): ISSUE-003 creado y pusheado"
+      - "Segunda ejecución endSession.md: actualización documentación con BLOQUE 3"
 
     decisiones_tomadas:
       - decision: "adr.yaml permanece en memory/full/ (no moverlo a subcarpeta adr/)"
@@ -36,25 +66,74 @@ sessions:
       - decision: "Estructura prompt: Contexto → 3 operaciones → Leyendas"
         justificacion: "Consistencia arquitectónica con backlog.md. Misma experiencia usuario"
         adr_relacionada: "013"
+      - decision: "Unificar versionado en v0.x.x con git tags como fuente de verdad única"
+        justificacion: "actualizar.md DEPENDE de git tags para funcionar (git log, diff). Git tags NO son opcionales. Versión interna v1.9 → v0.8.0 para sincronizar. SemVer: v0.x = desarrollo, v1.0 = estable"
+        resuelve: "ISSUE-002"
+      - decision: "github.md SIEMPRE propone tag con justificación (usuario confirma)"
+        justificacion: "Filosofía memsys3: sesión documentada = progreso significativo = merece tag. Workflow semi-automático: agente analiza y propone, usuario decide. Metadata rica en tags"
+      - decision: "README repo memsys3 sin versión explícita, enlazar a GitHub Releases"
+        justificacion: "Dog-fooding: git tags son fuente de verdad. En proyectos con memsys3 desplegado: README del proyecto tiene su versión, project-status.yaml tiene memsys3_version"
 
     features_implementadas:
       - nombre: "Prompt adr.md para gestión de ADRs"
         descripcion: "Prompt conversacional con 3 operaciones (consultar, crear, actualizar ADRs). Incluye leyendas estados (accepted/deprecated/superseded_by) y 10 áreas (arquitectura, frontend, backend, infrastructure, escalabilidad, format, workflow, documentación, usabilidad, process)"
-      - nombre: "README.md actualizado"
-        descripcion: "Agregado adr a lista prompts reutilizables, nuevo bullet Sistema ADRs gestionable, agregado en estructura archivos repositorio"
+      - nombre: "github.md con workflow versionado automático"
+        descripcion: "Reescritura completa (186 líneas): análisis cambios desde último tag, propuesta estructurada Minor/Patch con justificación, metadata rica en tags (sesiones, ADRs, breaking changes), actualización versiones internas, criterios explícitos"
+      - nombre: "Release v0.8.0 ejecutada con nuevo sistema"
+        descripcion: "Primera release usando workflow mejorado: análisis 2 sesiones, propuesta v0.8.0 minor, bump versión, 3 commits, tag con metadata, push GitHub. Validado exitosamente"
+      - nombre: "Corrección arquitectura versiones"
+        descripcion: "README repo sin versión explícita (enlaza a releases). Aclaración: proyectos con memsys3 tienen versión propia en README + memsys3_version en project-status"
 
     problemas_resueltos:
       - problema: "Inconsistencia arquitectónica: backlog tiene README+prompt dedicado, ADRs no tenían gestión conversacional"
         solucion: "Creado prompt adr.md con estructura idéntica a backlog.md. Sistema ahora consistente"
       - problema: "Confusión sobre ubicación README si adr.yaml se queda en memory/full/"
         solucion: "Documentación integrada directamente en prompt (no README separado). Usuario confirmó que solo necesitaba especificar tipos/áreas"
+      - problema: "ISSUE-002: Inconsistencia v1.9 interna vs v0.7.1 git tags. actualizar.md no funciona sin tags"
+        solucion: "Unificado en v0.8.0. Git tags ahora fuente de verdad única. actualizar.md depende de tags para git log/diff entre versiones"
+      - problema: "Workflow versionado ambiguo (github.md decía 'si procede crear tag' sin criterios claros)"
+        solucion: "github.md reescrito: SIEMPRE propone tag con análisis estructurado, justificación Minor/Patch, metadata rica. Usuario confirma antes de crear"
+      - problema: "README repo memsys3 con versión explícita puede quedar desincronizado con git tags"
+        solucion: "README sin versión, enlaza a GitHub Releases. Git tags = fuente única de verdad"
 
     proximos_pasos:
-      - "Crear ADR-013 documentando decisión arquitectónica"
+      - "Nueva instancia limpia → compile-context.md para generar context.yaml v1.11"
       - "Testear prompt adr.md creando nueva ADR (no solo consultando)"
-      - "Considerar si sessions.yaml también necesita prompt dedicado sessions.md (¿consistencia completa?)"
+      - "Validar workflow github.md en próximas releases"
+      - "Considerar si sessions.yaml necesita prompt dedicado sessions.md (consistencia completa)"
 
-    notes_addicionals: "Sesión corta y enfocada. Usuario identificó inconsistencia arquitectónica importante. Solución minimalista (Opción A) fue la correcta. Prompt adr.md es 71 líneas vs backlog.md 38 líneas porque ADRs tienen más complejidad (estados + áreas vs solo códigos). Sistema ahora más usable para gestión ADRs."
+    notes_addicionals: |
+      Sesión larga (~3.5h) con 3 bloques bien definidos:
+
+      BLOQUE 1 (~45min): Sistema gestión ADRs
+      - Solución minimalista correcta (Opción A: solo documentación)
+      - Consistencia arquitectónica lograda
+
+      BLOQUE 2 (~2h): Versionado y Release
+      - Discusión crítica sobre git tags vs versión interna
+      - Usuario aportó claridad arquitectónica clave: actualizar.md DEPENDE de tags
+      - Primer release con nuevo workflow: exitosa (v0.8.0)
+      - ISSUE-002 parcialmente resuelto (unificado v0.8.0, falta documentar)
+
+      BLOQUE 3 (~30min): Documentación y Backlog
+      - Ejecución endSession.md (documentación completa)
+      - ISSUE-003 creado: limpieza .git residual en deployment
+      - Segunda ejecución endSession.md (auto-documentación recursiva)
+
+      Commits totales: 4
+      - 97758a7: chore bump version v0.8.0
+      - 16ade95: feat sistema ADRs + github.md
+      - 192d0d2: docs quitar versión README
+      - e6492bf: docs(backlog) ISSUE-003
+
+      Meta-aprendizajes:
+      - Git tags NO son opcionales para memsys3 (actualizar.md los requiere)
+      - Metadata rica en tags mejora trazabilidad significativamente
+      - Workflow semi-automático (propuesta + confirmación) es balance correcto
+      - Dog-fooding: README repo sin versión, git tags = fuente verdad
+      - Documentación recursiva: endSession puede ejecutarse múltiples veces en misma sesión
+
+      Calidad sesión: 10/10 - Discusión arquitectónica profunda, decisiones bien fundamentadas, sistema versionado ahora robusto y claro
 
   - id: "2025-12-09-prompt-global-deploy-exitoso"
     data: "2025-12-09"
