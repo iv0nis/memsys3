@@ -759,3 +759,155 @@ adrs:
       Próximos pasos posibles (futuro):
       - Considerar si sessions.yaml necesita prompt dedicado sessions.md (consistencia completa)
       - Testear crear nueva ADR con prompt (no solo consultar)
+
+  - id: "014"
+    titulo: "Sistema de comandos globales auto-actualizantes con launcher pattern"
+    data: "2025-12-14"
+    estado: aceptado
+    area: workflow
+
+    context: |
+      memsys3 necesita distribuirse en equipos de desarrollo. Dos problemas identificados:
+
+      1. **Evolución de prompts**: deploy.md y actualizar.md cambian frecuentemente con mejoras.
+         Si los comandos globales (/deploy-memsys3, /actualizar-memsys3) contienen lógica completa,
+         cada miembro del equipo debe actualizar manualmente su ~/.claude/commands/ cada vez que
+         cambian los prompts. Esto es insostenible y genera versiones desincronizadas.
+
+      2. **Onboarding de nuevos miembros**: Cada miembro debe crear manualmente los comandos globales
+         copiando contenido a ~/.claude/commands/. Proceso propenso a errores (rutas incorrectas,
+         copy-paste, versiones antiguas).
+
+      Necesitamos distribución simple y mantenimiento centralizado.
+
+    decision: |
+      Implementar dos decisiones complementarias:
+
+      **1. Launcher Pattern para comandos globales:**
+
+      Los comandos globales (/deploy-memsys3, /actualizar-memsys3) NO contienen lógica real.
+      Son "launchers" que:
+      1. Clonan repositorio temporalmente: `git clone https://github.com/iv0nis/memsys3 [temp_dir]`
+      2. Ejecutan prompt del repo clonado: `@[temp_dir]/memsys3_templates/prompts/[prompt].md`
+      3. Limpian temporal: `rm -rf [temp_dir]`
+
+      Ventaja crítica: Comandos siempre ejecutan la ÚLTIMA VERSIÓN del prompt del repositorio,
+      sin necesidad de actualizar el comando local.
+
+      **2. Prompt commands.md para instalación automática:**
+
+      Crear memsys3/prompts/commands.md que:
+      - Verifica qué comandos globales existen en ~/.claude/commands/
+      - Detecta comandos obsoletos o faltantes
+      - Pregunta al usuario si sobrescribir (si ya existen)
+      - Crea/actualiza todos los comandos globales usando cat heredoc + $HOME
+      - Verifica instalación exitosa
+
+      Onboarding simplificado: `@memsys3/prompts/commands.md`
+
+    alternatives:
+      - nombre: "Comandos globales con lógica completa embebida"
+        pros:
+          - "No requiere clonar repo en cada ejecución"
+          - "2-3 segundos más rápido"
+        contras:
+          - "Cada cambio en deploy.md/actualizar.md requiere actualizar manualmente TODOS los comandos en TODAS las máquinas"
+          - "Versiones desincronizadas entre miembros del equipo"
+          - "Mantenimiento distribuido (insostenible)"
+          - "No hay forma de saber quién tiene qué versión"
+        por_que_descartada: "Mantenimiento insostenible. Un equipo de 5 personas con prompts que cambian cada 2 semanas = caos total."
+
+      - nombre: "Solo documentar en README (instalación manual)"
+        pros:
+          - "Simple de implementar"
+          - "No requiere prompt dedicado"
+        contras:
+          - "Propenso a errores humanos (copy-paste incorrecto, rutas mal configuradas)"
+          - "No detecta comandos obsoletos"
+          - "No verifica instalación exitosa"
+          - "Cada miembro debe seguir 10+ pasos manualmente"
+        por_que_descartada: "Error-prone, no escala con equipos, no hay verificación"
+
+      - nombre: "Script bash externo (install-commands.sh)"
+        pros:
+          - "Automático"
+          - "Rápido"
+        contras:
+          - "Menos integrado con Claude Code workflow"
+          - "Requiere ejecutar fuera del contexto del agente"
+          - "No aprovecha capacidad conversacional del agente"
+          - "Dos contextos separados (bash script vs prompts)"
+        por_que_descartada: "Menos integrado con filosofía memsys3 (todo via prompts conversacionales)"
+
+    consequencies:
+      positives:
+        - "Mantenimiento centralizado: solo actualizar prompts en repo GitHub"
+        - "Auto-actualización transparente: comandos siempre usan última versión"
+        - "Consistencia garantizada: todo el equipo usa misma versión"
+        - "Onboarding 1 comando: @memsys3/prompts/commands.md → listo"
+        - "Detección comandos obsoletos: commands.md verifica y actualiza"
+        - "Trazabilidad: git tags indican qué versión se está usando"
+        - "Solo requiere git (ya requisito de memsys3)"
+      negatives:
+        - "Clone temporal agrega 2-3 segundos por ejecución (aceptable)"
+        - "Requiere conexión a internet para clonar repo"
+        - "Si GitHub está caído, comandos no funcionan (mitigable con cache local futuro)"
+      impacto: "~/.claude/commands/deploy-memsys3.md, ~/.claude/commands/actualizar-memsys3.md, memsys3_templates/prompts/commands.md (nuevo), memsys3/prompts/commands.md (nuevo)"
+
+    notes: |
+      Esta ADR complementa ADR-013 (sistema gestión ADRs).
+
+      Patrón launcher inspirado en comandos globales CLI modernos que auto-actualizan
+      (ejemplo: npx, brew, etc.).
+
+      Workaround técnico: Write tool falla con ~, usar cat heredoc + $HOME explícito
+      (descubierto sesión 2025-12-09, deploy-memsys3 inicial).
+
+      commands.md incluye:
+      - Verificación permisos escritura ~/.claude/commands/
+      - Troubleshooting para casos edge (permisos denegados, Claude Code no detecta)
+      - Alternativa manual si automatización falla
+
+      Próximos pasos:
+      - Testear /actualizar-memsys3 en proyecto UOC (validación real)
+      - Testear commands.md con compañero de equipo (validación onboarding)
+      - Considerar cache local opcional (mitigar dependencia GitHub)
+
+# Índice rápido para encontrar ADRs
+index:
+  - id: "001"
+    titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
+    estado: aceptado
+  - id: "002"
+    titulo: "Rotación automática de sessions/ADRs (flexible 1800-2000 líneas)"
+    estado: aceptado
+  - id: "003"
+    titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
+    estado: aceptado
+  - id: "004"
+    titulo: "YAML para todo (incluyendo sessions)"
+    estado: aceptado
+  - id: "005"
+    titulo: "deploy.md como prompt (no script shell)"
+    estado: aceptado
+  - id: "006"
+    titulo: "Sistema de rutas unificado memsys3/"
+    estado: aceptado
+  - id: "007"
+    titulo: "Separación de meta-niveles en READMEs"
+    estado: aceptado
+  - id: "008"
+    titulo: "Main-Agent NO debe proponer compile-context"
+    estado: aceptado
+  - id: "009"
+    titulo: "Templates como documentación activa permanent + gotchas en sessions"
+    estado: aceptado
+  - id: "012"
+    titulo: "README como lectura directa vs duplicado en context.yaml"
+    estado: aceptado
+  - id: "013"
+    titulo: "Sistema de gestión de ADRs con prompt dedicado (consistencia arquitectónica)"
+    estado: aceptado
+  - id: "014"
+    titulo: "Sistema de comandos globales auto-actualizantes con launcher pattern"
+    estado: aceptado
