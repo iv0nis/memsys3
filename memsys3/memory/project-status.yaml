@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-12-11"
-  actualizado_por: "Claude (Session Sistema Gestión ADRs)"
-  fase: "Development v0.8.0"
-  memsys3_version: "v0.8.0"
+  ultima_actualizacion: "2025-12-12"
+  actualizado_por: "Claude (Session Completar Documentación v0.8.0)"
+  fase: "Development v0.8.1"
+  memsys3_version: "v0.8.1"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -109,7 +109,7 @@ decisions_clau:
 
 historic_sessions:
   - data: "2025-12-11"
-    resum: "Sistema gestión ADRs con prompt adr.md creado para consistencia arquitectónica con backlog.md. Usuario observa: backlog tiene README+prompt dedicado, ADRs no. AskUserQuestion: Opción A (solo documentación, bajo riesgo). Decisiones: adr.yaml permanece memory/full/, documentación integrada en prompt (no README separado), estructura Contexto→3 operaciones→Leyendas. Archivos: memsys3_templates/prompts/adr.md + memsys3/prompts/adr.md (71 líneas c/u). Leyendas: 3 estados + 10 áreas. README actualizado: adr agregado a prompts, nuevo bullet Sistema ADRs gestionable. Testing: prompt validado consultando 10 ADRs con Python. ADR-013 creada documentando decisión. Sesión corta (~45min), enfocada, solución minimalista correcta. Sistema ahora consistente y más usable."
+    resum: "Sistema gestión ADRs + Versionado automático + Release v0.8.0. BLOQUE 1: Prompt adr.md creado (consistencia con backlog). ADR-013 documentada. BLOQUE 2: Resuelto ISSUE-002 (v1.9→v0.8.0, git tags = fuente verdad). github.md reescrito completamente: workflow semi-automático, siempre propone tag con justificación, metadata rica. Primera release con nuevo sistema: análisis 2 sesiones, propuesta v0.8.0 minor, 3 commits, tag exitoso. Corrección README: sin versión explícita (enlaza releases). Meta-aprendizaje crítico: actualizar.md DEPENDE de git tags (git log/diff). Sistema versionado ahora robusto y claro. ~3h, calidad 10/10."
   - data: "2025-12-09"
     resum: "Comando global /deploy-memsys3 creado, testeado y validado exitosamente. Usuario propone crear ~/.claude/commands/deploy-memsys3.md para ejecutar desde cualquier proyecto. Investigación completa: prompts globales, WebFetch vs curl, análisis deploy.md standalone. Bug encontrado: Write tool genera path /home/xevivim/ (usuario inexistente) al expandir ~. Workaround: mkdir bash + cat heredoc con $HOME explícito. Comando global creado (780 bytes), testeado en 'Agente de Vida 2025' → deployment 10/10 perfecto (8 prompts, 2 agents, 4 templates, viz, personalización correcta, limpieza OK). Feature operativa y lista para distribuir. Ciclo completo: Idea → Investigación → Implementación → Testing → Validación. ~2h."
   - data: "2025-12-03"
