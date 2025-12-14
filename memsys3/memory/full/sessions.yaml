@@ -3,6 +3,134 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2025-12-14-comandos-globales-auto-actualizantes"
+    data: "2025-12-14"
+    duracion: "~1h"
+    titulo: "Sistema comandos globales auto-actualizantes + Prompt instalador commands.md"
+
+    objetivo: "Crear sistema de comandos globales que siempre usen versión actualizada del repo (launcher pattern) y facilitar instalación en equipos con prompt automatizado"
+
+    que_es_va_fer:
+      - "Usuario propone crear /actualizar-memsys3 similar a /deploy-memsys3 pero para actualizaciones"
+      - "Diseño flujo: comando clona repo temp → ejecuta actualizar.md del repo → limpia temp"
+      - "Creación /actualizar-memsys3 comando global (804 bytes) con patrón clone"
+      - "Análisis comparativo: /deploy-memsys3 (curl) vs /actualizar-memsys3 (clone)"
+      - "Justificación launcher pattern: dependencias unificadas (solo git), @ mentions nativo, futuro-proof, consistencia"
+      - "Actualización /deploy-memsys3 al patrón clone (836 bytes) para consistencia con actualizar"
+      - "Usuario propone commands.md: prompt que instala/verifica todos los comandos globales automáticamente"
+      - "Análisis brechas: permisos, SO diferentes, sobrescritura, mantenimiento doble"
+      - "Creación memsys3_templates/prompts/commands.md (4 pasos: verificar, detectar, crear, verificar)"
+      - "Copia a memsys3/prompts/commands.md (dog-fooding)"
+      - "Usuario solicita ADR para documentar launcher pattern + commands.md"
+      - "Creación ADR-014 'Sistema comandos globales auto-actualizantes con launcher pattern'"
+      - "Actualización índice adr.yaml (12 ADRs total)"
+      - "Validación /actualizar-memsys3 pendiente para mañana (proyecto UOC)"
+
+    features_implementadas:
+      - nombre: "/actualizar-memsys3 comando global"
+        descripcion: "Comando que clona repo temporalmente, ejecuta actualizar.md del repo clonado, limpia. Garantiza siempre usar última versión de instrucciones."
+
+      - nombre: "commands.md prompt instalador"
+        descripcion: "Prompt que detecta comandos existentes, pregunta sobrescribir, instala/actualiza todos los comandos globales usando cat heredoc + $HOME. Onboarding simplificado a 1 comando."
+
+      - nombre: "/deploy-memsys3 actualizado a patrón clone"
+        descripcion: "Migrado de curl a clone para consistencia con actualizar. Ambos comandos ahora funcionan igual: clone → ejecutar → limpiar."
+
+      - nombre: "ADR-014 documentada"
+        descripcion: "Decisión arquitectónica sobre launcher pattern para comandos globales auto-actualizantes. 3 alternativas analizadas, consecuencias documentadas."
+
+    decisiones_tomadas:
+      - decision: "Launcher Pattern para comandos globales (NO lógica embebida)"
+        justificacion: "Mantenimiento centralizado en repo GitHub. Equipos siempre usan última versión sin actualizar comandos locales. Escalable con equipos distribuidos."
+        adr_relacionada: "014"
+
+      - decision: "Patrón clone (git) en lugar de curl para deploy-memsys3"
+        justificacion: "Consistencia con actualizar-memsys3, dependencia unificada (solo git), @ mentions nativo Claude Code, futuro-proof si prompts necesitan otros archivos del repo"
+        adr_relacionada: "014"
+
+      - decision: "commands.md para instalación automática de comandos globales"
+        justificacion: "Simplifica onboarding de nuevos miembros del equipo. Detecta comandos obsoletos. Verifica instalación exitosa. Reduce errores humanos (copy-paste, rutas)"
+        adr_relacionada: "014"
+
+    problemas_resueltos:
+      - problema: "Evolución de prompts (deploy.md, actualizar.md) requería actualizar manualmente comandos globales en cada máquina"
+        solucion: "Launcher Pattern: comandos clonan repo y ejecutan prompt del repo. Auto-actualización transparente."
+
+      - problema: "Onboarding de nuevos miembros requería 10+ pasos manuales propensos a errores"
+        solucion: "Prompt commands.md automatiza detección, creación y verificación de todos los comandos globales en 1 ejecución"
+
+      - problema: "Inconsistencia entre /deploy-memsys3 (curl) y /actualizar-memsys3 (clone)"
+        solucion: "Migrar deploy-memsys3 a patrón clone. Ambos comandos ahora idénticos en estructura."
+
+    tecnologias_agregadas: []
+
+    gotchas:
+      - tipo: "warning"
+        problema: "Write tool falla con ~ al crear archivos en ~/.claude/commands/"
+        solucion: "Usar cat heredoc con $HOME explícito en lugar de Write tool (workaround descubierto sesión 2025-12-09)"
+        criticidad: "media"
+
+    proximos_pasos:
+      - "PENDIENTE: Testear /actualizar-memsys3 en proyecto UOC (validación real en proyecto existente)"
+      - "PENDIENTE: Testear commands.md con compañero de equipo (validar onboarding)"
+      - "Nueva instancia limpia → compile-context.md para generar context.yaml v1.11"
+      - "Considerar cache local opcional para comandos (mitigar dependencia GitHub si está caído)"
+
+    notas_adicionales: |
+      Sesión productiva enfocada en distribuibilidad y mantenimiento de memsys3 en equipos.
+
+      Patrón launcher inspirado en herramientas CLI modernas (npx, brew) que auto-actualizan.
+
+      Usuario tuvo buena intuición sobre crear commands.md después de ver el patrón con actualizar-memsys3.
+
+      ADR-014 complementa ADR-013 (gestión ADRs) en mejora de usabilidad del sistema.
+
+      Validación real pendiente para mañana (proyecto UOC no dio tiempo hoy).
+
+      Calidad: 9/10 (arquitectura sólida, documentación completa, pendiente validación real)
+  - id: "2025-12-14-release-v0.8.1"
+    data: "2025-12-14"
+    duracion: "~15min"
+    titulo: "Release v0.8.1: Documentación completada"
+
+    objetivo: "Ejecutar release v0.8.1 siguiendo workflow github.md mejorado para publicar documentación completada de sesión v0.8.0"
+
+    que_es_va_fer:
+      - "Sesión iniciada con newSession.md (carga README, project-status v0.8.0, context v1.10)"
+      - "Usuario solicita: commitear todo y push según github.md"
+      - "Análisis cambios desde v0.8.0: git status, diff, log"
+      - "Revisión archivos modificados: sessions.yaml (BLOQUE 2 agregado), project-status.yaml (resumen actualizado), CLAUDE.md, ms3.md (nuevos)"
+      - "Análisis: 1 commit desde v0.8.0 (192d0d2 docs quitar versión explícita README)"
+      - "Evaluación: 0 sesiones nuevas, 0 features, 0 ADRs, solo mejora documentación sesión existente"
+      - "Propuesta: v0.8.1 patch (Opción A) vs solo commit sin tag (Opción B recomendada)"
+      - "Usuario elige: Opción A (v0.8.1)"
+      - "Actualización versiones: project-status.yaml (v0.8.0 → v0.8.1, fecha, fase)"
+      - "Commit 1: chore bump version to v0.8.1 (ab96f66)"
+      - "Commit 2: docs completar documentación sesión 2025-12-11 + archivos adicionales (f5a55b6)"
+      - "Tag v0.8.1 creado con metadata rica: Release v0.8.1: Completar documentación sesión v0.8.0"
+      - "Push exitoso: commits + tag a GitHub"
+      - "Verificación: tag v0.8.1 en remoto, commits pusheados correctamente"
+
+    decisiones_tomadas:
+      - decision: "Release v0.8.1 patch en lugar de solo commit sin tag"
+        justificacion: "Usuario eligió Opción A. Considerar mejora documentación como cambio que merece patch según filosofía memsys3 (sesión documentada = progreso)"
+
+    features_implementadas:
+      - nombre: "Release v0.8.1 ejecutada"
+        descripcion: "Primera release completamente siguiendo nuevo workflow github.md: análisis cambios, propuesta justificada, bump versión, commits atómicos, tag metadata rica, push verificado"
+
+    problemas_resueltos: []
+
+    proximos_pasos:
+      - "Nueva instancia limpia → compile-context.md para generar context.yaml v1.11"
+      - "Testear adr.md creando nueva ADR (no solo consultando)"
+      - "Considerar si sessions.yaml necesita prompt dedicado sessions.md (consistencia completa)"
+
+    notes_addicionals: |
+      Sesión muy corta (~15min) ejecutando workflow github.md.
+      Primera release usando sistema de versionado automático completo.
+      Sin problemas técnicos, ejecución estándar del proceso.
+
   - id: "2025-12-11-sistema-gestion-adrs-versionado-release"
     data: "2025-12-11"
     duracion: "~3.5h"

@@ -1,8 +1,8 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-12-12"
-  actualizado_por: "Claude (Session Completar Documentación v0.8.0)"
+  ultima_actualizacion: "2025-12-14"
+  actualizado_por: "Claude (Session Comandos Globales Auto-actualizantes)"
   fase: "Development v0.8.1"
   memsys3_version: "v0.8.1"
   memsys3_deployed: "2025-10-28"
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v0.8.0"
-  ultima_feature: "Sistema gestión ADRs con prompt adr.md creado. Consistencia arquitectónica con backlog.md. ADR-013 documentada. README actualizado. Prompt validado (consulta 10 ADRs)"
-  siguiente_milestone: "Testear adr.md creando nueva ADR + Considerar sessions.md para consistencia completa + Testing compile-context sin README"
+  fase: "Development v0.8.1"
+  ultima_feature: "Sistema comandos globales auto-actualizantes creado: /actualizar-memsys3, /deploy-memsys3 (launcher pattern), commands.md (instalador), ADR-014 documentada. Pendiente validación real en proyecto UOC"
+  siguiente_milestone: "Testear /actualizar-memsys3 en proyecto UOC + Testear commands.md con compañero + Nueva instancia compile-context v1.11"
 
 features:
   context_agent:
@@ -108,6 +108,10 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-12-14"
+    resum: "Sistema comandos globales auto-actualizantes + Prompt instalador commands.md. Creado /actualizar-memsys3 comando global (804 bytes, patrón clone). Análisis comparativo deploy (curl) vs actualizar (clone). Justificación launcher pattern: dependencias unificadas (git), @ mentions nativo, futuro-proof. Actualizado /deploy-memsys3 a patrón clone (836 bytes, consistencia). Usuario propone commands.md: prompt detecta/instala/verifica comandos globales automáticamente. Análisis brechas: permisos, SO, sobrescritura. Creado commands.md (memsys3_templates + memsys3). ADR-014 documentada: launcher pattern + instalador automático. Índice adr.yaml actualizado (12 ADRs). Validación /actualizar-memsys3 PENDIENTE mañana (proyecto UOC). ~1h, calidad 9/10 (pendiente testing real)."
+  - data: "2025-12-14"
+    resum: "Release v0.8.1 ejecutada. Sesión corta (~15min) aplicando workflow github.md mejorado. Análisis cambios desde v0.8.0: documentación completada sesión 2025-12-11, archivos auxiliares (CLAUDE.md, ms3.md). Propuesta v0.8.1 patch vs solo commit. Usuario eligió patch. Bump versión, 2 commits (chore bump + docs completar), tag metadata rica, push exitoso. Verificación GitHub correcta. Primera release usando sistema versionado completo end-to-end."
   - data: "2025-12-11"
     resum: "Sistema gestión ADRs + Versionado automático + Release v0.8.0. BLOQUE 1: Prompt adr.md creado (consistencia con backlog). ADR-013 documentada. BLOQUE 2: Resuelto ISSUE-002 (v1.9→v0.8.0, git tags = fuente verdad). github.md reescrito completamente: workflow semi-automático, siempre propone tag con justificación, metadata rica. Primera release con nuevo sistema: análisis 2 sesiones, propuesta v0.8.0 minor, 3 commits, tag exitoso. Corrección README: sin versión explícita (enlaza releases). Meta-aprendizaje crítico: actualizar.md DEPENDE de git tags (git log/diff). Sistema versionado ahora robusto y claro. ~3h, calidad 10/10."
   - data: "2025-12-09"
