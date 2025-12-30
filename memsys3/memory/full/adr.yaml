@@ -873,6 +873,218 @@ adrs:
       - Testear commands.md con compañero de equipo (validación onboarding)
       - Considerar cache local opcional (mitigar dependencia GitHub)
 
+  - id: "015"
+    titulo: "Terminología unificada: Main Agent como nomenclatura estándar"
+    data: "2025-12-17"
+    estado: aceptado
+    area: documentación
+
+    context: |
+      Durante revisión del sistema se detectó inconsistencia terminológica para referirse
+      al agente que utiliza memsys3 para desarrollar el proyecto:
+
+      Términos usados en diferentes ubicaciones:
+      - main-agent.yaml (línea 3): "Development Agent"
+      - README.md: "AI Development Agents" / "DevAI"
+      - ADR-008: "Main-Agent NO debe proponer..."
+      - context.yaml: "Development Agents"
+      - compile-context.md: "Development Agents"
+
+      Problema: Tres términos diferentes para el mismo concepto generan confusión:
+      1. "Main Agent" - sugiere agente principal
+      2. "Development Agent" - sugiere especialista en desarrollo
+      3. "DevAI" - abreviatura informal
+
+      Si existiera un agente especialista en desarrollo futuro, se llamaría "Development Agent"
+      o similar, generando conflicto con el uso actual del término.
+
+    decision: |
+      Adoptar "Main Agent" como terminología estándar ÚNICA para el agente que utiliza memsys3.
+
+      **Razón del nombre:**
+      - "Main" indica que es el agente principal del proyecto
+      - Deja espacio conceptual para agentes especializados futuros (Development Agent,
+        Testing Agent, Documentation Agent, etc.)
+      - Ya usado en archivos críticos: main-agent.yaml, ADR-008
+
+      **Decisión:** Main Agent es el agente principal. Si en el futuro surge necesidad
+      de agentes especializados, podrán tener nombres específicos sin conflicto.
+
+      **Archivos/lugares a actualizar:**
+      - main-agent.yaml línea 3: "Development Agent" → "Main Agent"
+      - README.md: todas las referencias a "Development Agent" / "DevAI" → "Main Agent"
+      - compile-context.md: "Development Agents" → "Main Agent"
+      - Todos los prompts que referencien "Development Agent"
+      - ADRs que mencionen "Development Agent" (mantener consistencia histórica con notas)
+
+      **Excepción:** context.yaml ya compilado NO se actualiza (se regenerará en próxima compilación)
+
+    alternatives:
+      - nombre: "Mantener 'Development Agent' como estándar"
+        pros:
+          - "Más descriptivo del propósito"
+          - "Ya usado en varios archivos"
+        contras:
+          - "Conflicto futuro si aparece agente especialista en desarrollo"
+          - "No refleja que es el agente PRINCIPAL"
+          - "Genera ambigüedad: ¿es especialista o principal?"
+        por_que_descartada: "No escalable. Conflicto conceptual inevitable con agentes especializados futuros"
+
+      - nombre: "Crear sistema dual: Main Agent + Development Agent coexisten"
+        pros:
+          - "Permite especialización inmediata"
+        contras:
+          - "Complejidad innecesaria (no hay agentes especializados todavía)"
+          - "Confusión sobre cuál usar en cada contexto"
+          - "Requiere definir roles de ambos"
+        por_que_descartada: "Over-engineering. Resolver problema que no existe todavía"
+
+      - nombre: "Usar 'Agent' genérico sin calificativo"
+        pros:
+          - "Simple, corto"
+        contras:
+          - "Demasiado ambiguo"
+          - "No distingue entre Context Agent y Main Agent"
+          - "Pierde claridad conceptual"
+        por_que_descartada: "Pérdida de claridad. Sistema tiene múltiples agentes (Main, Context)"
+
+    consequencies:
+      positives:
+        - "Terminología consistente en todo el sistema"
+        - "Espacio conceptual claro para agentes especializados futuros"
+        - "Nombre refleja su rol: agente principal del proyecto"
+        - "Evita conflictos terminológicos futuros"
+        - "Más fácil explicar el sistema (Main Agent usa contexto, Context Agent compila)"
+      negatives:
+        - "Requiere actualización de múltiples archivos (templates, prompts, docs)"
+        - "Cambio breaking para proyectos con memsys3 desplegado (mitigable: solo nombre, no funcionalidad)"
+      impacto: "main-agent.yaml, compile-context.md, README.md, prompts varios, documentación completa del sistema"
+
+    notes: |
+      Esta ADR documenta decisión basada en feedback del usuario sobre inconsistencias detectadas.
+
+      El cambio es cosmético (renombrado) pero conceptualmente importante para escalabilidad
+      del sistema y claridad terminológica.
+
+      IMPROVEMENT-006 creado en backlog para trackear la depuración sistemática de todas
+      las referencias desalineadas en el codebase.
+
+  - id: "016"
+    titulo: "memsys3 agnóstico de modelo de IA + Commands como feature opcional Claude-específica"
+    data: "2025-12-30"
+    estado: aceptado
+    area: arquitectura
+
+    context: |
+      Durante investigación del bug ISSUE-005 (archivos faltantes en actualizar.md),
+      surgió discusión sobre la naturaleza de los comandos locales (.claude/commands/).
+
+      Observaciones:
+      1. memsys3 se diseñó para funcionar con CUALQUIER modelo de IA (Claude, Gemini, Codex, etc.)
+      2. Commands (.claude/commands/) es una feature ESPECÍFICA de Claude Code
+      3. Existe confusión sobre si commands es parte del core de memsys3 o un workaround opcional
+      4. La documentación no deja claro el principio fundamental de agnosticismo
+
+      Problema de jerarquía:
+      - ¿Cuál es la fuente de verdad? ¿templates, prompts específicos, o commands?
+      - ¿Commands debe ser obligatorio en deployment/actualización?
+      - ¿Usuarios de otros modelos pueden usar memsys3 sin commands?
+
+      Contexto adicional:
+      - Commands sirve como workaround para limitación de Claude Code con .gitignore
+      - Si excluyes memsys3/ en .gitignore, @ mentions dejan de funcionar
+      - Con commands locales (/adr, /backlog) funcionan aunque memsys3/ esté ignorado
+      - Otros modelos pueden tener (o no) alternativas similares con otros símbolos
+
+    decision: |
+      **Principio fundamental: memsys3 es agnóstico de modelo de IA**
+
+      **Arquitectura de fuente de verdad:**
+      1. memsys3_templates/prompts/ = AGNÓSTICOS (producto final distribuible, funcionan en cualquier modelo)
+      2. memsys3/prompts/ = ESPECÍFICOS del proyecto (pueden adaptarse/personalizarse)
+      3. .claude/commands/ = COMANDOS LOCALES (workaround opcional Claude-específico)
+
+      **Flujo de sincronización:**
+      ```
+      memsys3_templates/prompts/ (AGNÓSTICO)
+          ↓ deployment/actualización
+      memsys3/prompts/ (ESPECÍFICO, puede adaptarse)
+          ↓ sincronización opcional
+      .claude/commands/ (COMANDOS LOCALES, solo si usas Claude Code + .gitignore)
+      ```
+
+      **Decisiones concretas:**
+      1. Commands NO es parte del core de memsys3
+      2. Commands es un workaround opcional específico de Claude Code
+      3. La documentación debe dejar MUY CLARO que commands es OPCIONAL
+      4. Deployment/actualización incluye commands.md (es un prompt válido), pero documentado como feature opcional
+      5. Usuarios de Gemini, Codex, u otros modelos pueden IGNORAR completamente los commands
+
+      **Documentación requerida:**
+      - README.md debe mencionar principio agnóstico
+      - deploy.md debe documentar commands como sección OPCIONAL (solo Claude Code)
+      - actualizar.md debe documentar commands como sección OPCIONAL (solo Claude Code)
+      - commands.md debe tener warning claro: "Este prompt es ESPECÍFICO de Claude Code"
+
+    alternatives:
+      - nombre: "Hacer commands parte obligatoria del core"
+        pros:
+          - "Simplifica documentación (un solo workflow)"
+          - "Usuarios Claude tienen mejor experiencia"
+        contras:
+          - "Rompe principio agnóstico fundamental"
+          - "Excluye usuarios de Gemini, Codex, otros modelos"
+          - "Añade dependencia innecesaria a herramienta específica"
+          - "Va contra filosofía de memsys3 (portabilidad universal)"
+        por_que_descartada: "Viola principio fundamental de memsys3: ser agnóstico de modelo de IA"
+
+      - nombre: "Eliminar commands completamente del sistema"
+        pros:
+          - "Máxima simplicidad"
+          - "Cero confusión sobre qué es core vs opcional"
+        contras:
+          - "Usuarios Claude pierden workaround útil para .gitignore"
+          - "Obliga a usar @ mentions (que NO funcionan con archivos ignorados)"
+          - "Reduce usabilidad en caso de uso común (excluir memsys3/ de git)"
+        por_que_descartada: "Commands es útil para usuarios Claude. Mejor tenerlo como OPCIONAL que eliminarlo"
+
+      - nombre: "Crear sistema de comandos universal (agnóstico de herramienta)"
+        pros:
+          - "Funcionaría en cualquier modelo"
+          - "Parte del core sin romper agnosticismo"
+        contras:
+          - "No existe estándar universal para comandos entre modelos"
+          - "Requeriría implementación específica por modelo (vuelve a ser específico)"
+          - "Complejidad innecesaria (los prompts .md YA funcionan universalmente)"
+        por_que_descartada: "Los prompts .md YA son el estándar universal. No necesitamos otra capa"
+
+    consequencies:
+      positives:
+        - "memsys3 mantiene su principio fundamental: agnóstico de modelo de IA"
+        - "Usuarios de Gemini, Codex, otros modelos pueden usar memsys3 sin confusión"
+        - "Usuarios Claude tienen workaround útil para .gitignore (opcional pero disponible)"
+        - "Documentación clara sobre qué es core vs qué es específico de herramienta"
+        - "Jerarquía de fuente de verdad bien definida: templates → prompts → commands"
+        - "Sistema escalable: si Gemini implementa algo similar, podemos documentarlo como opcional también"
+      negatives:
+        - "Requiere actualización documentación (README, deploy, actualizar) para clarificar"
+        - "Usuarios Claude deben leer sección OPCIONAL para entender commands"
+        - "Ligera complejidad adicional en documentación (core vs opcional)"
+      impacto: "README.md, deploy.md, actualizar.md, commands.md (agregar warnings), documentación conceptual del sistema"
+
+    notes: |
+      Esta ADR surge del bug ISSUE-005 y la discusión sobre el rol de commands en memsys3.
+
+      Aclaraciones importantes:
+      - commands.md SÍ debe estar en actualizar.md (es un prompt válido del sistema)
+      - commands.md debe tener warning explícito: "OPCIONAL - Solo Claude Code"
+      - La documentación de deployment debe tener sección: "(OPCIONAL - Solo Claude Code) Comandos Locales"
+
+      Filosofía clave: memsys3 es una herramienta universal. Features específicas de herramientas
+      (Claude, Gemini, etc.) son bienvenidas como OPCIONALES, pero NUNCA como obligatorias.
+
+      Este principio debe guiar futuras decisiones sobre features específicas de modelos.
+
 # Índice rápido para encontrar ADRs
 index:
   - id: "001"
@@ -910,4 +1122,10 @@ index:
     estado: aceptado
   - id: "014"
     titulo: "Sistema de comandos globales auto-actualizantes con launcher pattern"
+    estado: aceptado
+  - id: "015"
+    titulo: "Terminología unificada: Main Agent como nomenclatura estándar"
+    estado: aceptado
+  - id: "016"
+    titulo: "memsys3 agnóstico de modelo de IA + Commands como feature opcional Claude-específica"
     estado: aceptado

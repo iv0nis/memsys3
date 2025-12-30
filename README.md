@@ -219,6 +219,7 @@ python3 serve.py
 - **Database**: Ninguno (YAML files como almacenamiento)
 - **Deploy**: GitHub + clonado local
 - **Lenguaje Docs**: YAML + Markdown
+- **Compatibilidad**: Agnóstico de modelo de IA (funciona con Claude, Gemini, Codex, etc.)
 
 ## 📖 Documentación Completa
 
@@ -239,8 +240,10 @@ Para actualizar memsys3 en un proyecto que ya lo tiene desplegado, ver la guía 
 ## 🛠 Requisitos
 
 - Python 3.x (para el visualizador web)
-- AI agent compatible con prompts markdown
+- **Cualquier modelo de IA** compatible con prompts markdown (Claude, Gemini, Codex, etc.)
 - Git (opcional, para versionado)
+
+**Nota:** memsys3 es **agnóstico de modelo de IA**. Los prompts (.md) y archivos YAML funcionan universalmente. Features específicas de herramientas (como comandos locales de Claude Code) son opcionales.
 
 ## 🎓 Dog-fooding
 
