@@ -1,5 +1,13 @@
 # Instalar Comandos Globales de memsys3
 
+> **⚠️ OPCIONAL - Solo Claude Code**
+>
+> Este prompt es **ESPECÍFICO de Claude Code**. Si usas otro modelo de IA (Gemini, Codex, etc.), puedes **IGNORAR completamente** este archivo.
+>
+> Los prompts en `memsys3/prompts/` funcionan universalmente en cualquier modelo. Los comandos locales son un workaround opcional para usuarios de Claude Code con .gitignore.
+
+---
+
 **Tu tarea:** Configurar comandos globales de memsys3 en este sistema para que el usuario pueda ejecutarlos desde cualquier proyecto.
 
 ## ¿Qué son los comandos globales?
