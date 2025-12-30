@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-12-14"
-  actualizado_por: "Claude (Session Comandos Globales Auto-actualizantes)"
+  ultima_actualizacion: "2025-12-30"
+  actualizado_por: "Claude (Session Bug Fix ISSUE-005 + ADR-016)"
   fase: "Development v0.8.1"
-  memsys3_version: "v0.8.1"
+  memsys3_version: "v0.9.0"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -14,8 +14,8 @@ visio_general:
 
 estat_actual:
   fase: "Development v0.8.1"
-  ultima_feature: "Sistema comandos globales auto-actualizantes creado: /actualizar-memsys3, /deploy-memsys3 (launcher pattern), commands.md (instalador), ADR-014 documentada. Pendiente validación real en proyecto UOC"
-  siguiente_milestone: "Testear /actualizar-memsys3 en proyecto UOC + Testear commands.md con compañero + Nueva instancia compile-context v1.11"
+  ultima_feature: "Bug Fix ISSUE-005 + ADR-016: Corregido bug crítico actualizar.md (3 prompts faltantes: adr.md, backlog.md, commands.md). Usuario reportó caso real Taller Colomer v0.6.1→v0.8.1. Fix aplicado (Opción A manual) + sincronizado. ADR-016 documenta principio fundamental: memsys3 agnóstico modelo IA, commands opcional Claude-específico. Arquitectura fuente verdad: templates→prompts→commands. Documentación actualizada (commands.md warning, README compatibilidad). ISSUE-006 + FEATURE-004 creados (backups .gitignore, detectar prompts/agents). Índice ADRs: 16 totales. ~2.5h"
+  siguiente_milestone: "Testing ISSUE-005 fix en Taller Colomer + Implementar ISSUE-006 (backups .gitignore) + Evaluar FEATURE-004 + Subir a GitHub con tag"
 
 features:
   context_agent:
@@ -83,8 +83,8 @@ pendientes_prioritarios:
     detall: "Cuando haya nuevos cambios en master, validar que actualizar_cat.md sincroniza y traduce correctamente a branch catalan"
 
   - prioritat: 3
-    tasca: "Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
-    detall: "Validar actualización en proyecto que solo tenga /memsys3 (no estructura antigua). Probar en Soluzzia."
+    tasca: "✅ COMPLETADO: Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
+    detall: "Validado exitosamente en proyecto UOC (fundamentos-programacion). Actualización v0.6.1→v0.8.1 funcionó perfectamente. Merge inteligente validado. Gotcha confirmaciones Bash documentado. Pendiente: validaciones finales (compile-context, visualizador, uso real)."
 
   - prioritat: 4
     tasca: "Validar compile-context.md con creación automática de README"
@@ -108,6 +108,12 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2025-12-30"
+    resum: "Bug Fix ISSUE-005 + ADR-016: Resuelto bug crítico actualizar.md (3 prompts faltantes: adr.md, backlog.md, commands.md) reportado por usuario tras actualización Taller Colomer v0.6.1→v0.8.1. Investigación completa + confirmación con instancia que hizo actualización. Fix manual aplicado (Opción A). ADR-016 documenta principio fundamental: memsys3 agnóstico modelo IA, commands opcional Claude-específico. Arquitectura fuente verdad clara: templates→prompts→commands. Documentación actualizada (commands.md warning, README compatibilidad agnóstica). ISSUE-006 (backups .gitignore alta prioridad) + FEATURE-004 (detectar prompts/agents media prioridad) documentados. Índice ADRs: 16 totales. ~2.5h, calidad 9/10 (bug fix crítico + decisión arquitectónica fundamental)."
+  - data: "2025-12-17"
+    resum: "ADR-015 + IMPROVEMENT-006: Unificación terminológica 'Main Agent' como nomenclatura estándar. Feedback de compilación detectó inconsistencias (Development Agent vs Main Agent vs DevAI). Usuario aclaró: Main Agent = agente principal, Development Agent = especialista futuro. ADR-015 documenta decisión completa (alternatives, consequences). IMPROVEMENT-006 trackea depuración sistemática 8+ ubicaciones. Correcciones inmediatas: 4 archivos (compile-context.md x2, main-agent.yaml x2). Índice ADRs: 15 totales. Cambio cosmético pero conceptualmente importante para escalabilidad. ~30min, calidad 9/10 (pendiente depuración completa)."
+  - data: "2025-12-15"
+    resum: "Testing /actualizar-memsys3 - Primera Ejecución Real (Proyecto UOC). Actualización exitosa v0.6.1→v0.8.1 en proyecto fundamentos-programacion. Trackeo exhaustivo PASO 0-11. Claude saltó PASO 4 → usuario corrigió → Claude volvió atrás correctamente. Directorio temporal residual detectado y limpiado. Merge inteligente newSession.md EXITOSO: conservadas personalizaciones (español, saludo, estructura) + integradas mejoras v0.8.1 (README.md, notas). Validado principio diferencial memsys3: merge contextual LLM vs sobrescritura tradicional. Gotcha documentado: launchers requieren confirmación Bash manual (útil para seguridad). 22 archivos actualizados. Backup creado. Validaciones preliminares OK. Pendiente: compile-context + visualizador + uso real. ~2h, calidad 10/10 (validación exitosa del sistema de actualización inteligente)."
   - data: "2025-12-14"
     resum: "Sistema comandos globales auto-actualizantes + Prompt instalador commands.md. Creado /actualizar-memsys3 comando global (804 bytes, patrón clone). Análisis comparativo deploy (curl) vs actualizar (clone). Justificación launcher pattern: dependencias unificadas (git), @ mentions nativo, futuro-proof. Actualizado /deploy-memsys3 a patrón clone (836 bytes, consistencia). Usuario propone commands.md: prompt detecta/instala/verifica comandos globales automáticamente. Análisis brechas: permisos, SO, sobrescritura. Creado commands.md (memsys3_templates + memsys3). ADR-014 documentada: launcher pattern + instalador automático. Índice adr.yaml actualizado (12 ADRs). Validación /actualizar-memsys3 PENDIENTE mañana (proyecto UOC). ~1h, calidad 9/10 (pendiente testing real)."
   - data: "2025-12-14"

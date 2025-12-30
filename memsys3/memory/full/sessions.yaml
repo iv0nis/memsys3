@@ -3,6 +3,370 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2025-12-30-bug-fix-issue-005-adr-016-agnostico"
+    data: "2025-12-30"
+    duracion: "~2.5h"
+    titulo: "Bug Fix ISSUE-005 + ADR-016: Principio Agnóstico memsys3"
+
+    objetivo: "Investigar bug reportado por usuario (archivos faltantes tras actualización v0.6.1→v0.8.1) y documentar principio arquitectónico fundamental de memsys3 sobre agnosticismo de modelo de IA"
+
+    que_es_va_fer:
+      - "Usuario reporta: tras actualizar Taller Colomer (v0.6.1→v0.8.1), falta adr.md"
+      - "Investigación completa: actualizar.md PASO 6.1 no incluye 3 archivos nuevos (adr.md v0.8.0, backlog.md v0.7.0, commands.md v0.8.1)"
+      - "Confirmación con instancia que hizo actualización: bug confirmado al 100%"
+      - "ISSUE-005 creado: documentación exhaustiva (evidencia, causa raíz, 3 opciones evaluadas)"
+      - "Fix aplicado: Opción A (manual) agregando 3 líneas en actualizar.md PASO 6.1"
+      - "Fix sincronizado: memsys3_templates/ + memsys3/ (dog-fooding)"
+      - "Actualizado PASO 4 documentación con nuevos prompts"
+      - "Discusión arquitectónica: rol de commands en memsys3 (¿core u opcional?)"
+      - "ADR-016 creada: memsys3 agnóstico de modelo IA, commands opcional Claude-específico"
+      - "Documentación actualizada: commands.md (warning OPCIONAL), README.md (compatibilidad agnóstica)"
+      - "Usuario detecta 2 issues adicionales: backups versionados + detectar prompts/agents proyecto"
+      - "ISSUE-006 creado: backups memsys3_backup_*/ siempre en .gitignore (alta prioridad)"
+      - "FEATURE-004 creado: detectar y preservar prompts/agents del proyecto durante deploy/actualizar"
+
+    features_implementadas:
+      - nombre: "ISSUE-005: Bug fix actualizar.md archivos faltantes"
+        descripcion: |
+          Corregido bug crítico en actualizar.md PASO 6.1 que no copiaba 3 prompts nuevos:
+          - adr.md (introducido v0.8.0)
+          - backlog.md (introducido v0.7.0)
+          - commands.md (introducido v0.8.1)
+
+          Causa raíz: patrón de olvido sistemático (3 archivos en 3 versiones diferentes).
+          Fix manual aplicado (Opción A). Opción B (loop automático) evaluada pero pendiente.
+
+          Archivos modificados:
+          - memsys3_templates/prompts/actualizar.md PASO 6.1 (+3 líneas)
+          - memsys3/prompts/actualizar.md (sincronizado)
+          - Ambos PASO 4 documentación (+3 prompts en lista)
+
+      - nombre: "ADR-016: Principio agnóstico memsys3 + Commands opcional Claude-específica"
+        descripcion: |
+          Documentada decisión arquitectónica fundamental: memsys3 es agnóstico de modelo de IA.
+
+          Arquitectura de fuente de verdad:
+          1. memsys3_templates/prompts/ = AGNÓSTICOS (distribuible, universal)
+          2. memsys3/prompts/ = ESPECÍFICOS (pueden adaptarse al proyecto)
+          3. .claude/commands/ = COMANDOS LOCALES (workaround opcional Claude Code)
+
+          Decisiones concretas:
+          - Commands NO es parte del core de memsys3
+          - Commands es workaround opcional para .gitignore + @ mentions
+          - Usuarios Gemini/Codex/otros pueden IGNORAR commands completamente
+          - Documentación debe dejar MUY CLARO que commands es OPCIONAL
+
+          Alternativas evaluadas:
+          - Hacer commands obligatorio → ❌ Rompe agnosticismo
+          - Eliminar commands → ❌ Quita workaround útil
+          - Sistema universal → ❌ No existe estándar
+
+          ADR completa con context, 3 alternatives, consequences, impacto.
+
+      - nombre: "Warnings en commands.md (OPCIONAL - Solo Claude Code)"
+        descripcion: |
+          Agregado warning explícito al inicio de commands.md (templates + dog-fooding):
+
+          > ⚠️ OPCIONAL - Solo Claude Code
+          > Este prompt es ESPECÍFICO de Claude Code. Si usas otro modelo de IA
+          > (Gemini, Codex, etc.), puedes IGNORAR completamente este archivo.
+
+          Clarifica que prompts .md funcionan universalmente, commands es workaround.
+
+      - nombre: "README.md actualizado con compatibilidad agnóstica"
+        descripcion: |
+          Agregadas 2 menciones del principio agnóstico:
+
+          1. Stack Tecnológico: "Compatibilidad: Agnóstico de modelo de IA (Claude, Gemini, Codex, etc.)"
+          2. Requisitos: Nota explícita sobre agnosticismo y features opcionales específicas de herramientas
+
+          Refuerza mensaje: memsys3 funciona en cualquier modelo de IA.
+
+      - nombre: "ISSUE-006: Backups memsys3 siempre .gitignore (documentado)"
+        descripcion: |
+          Creado ISSUE-006 documentando riesgo crítico de seguridad:
+
+          Problema: Si memsys3/ NO está en .gitignore (Opción B deploy), backups
+          memsys3_backup_*/ se versionan en git → datos sensibles expuestos.
+
+          Solución propuesta: Agregar regla automática a .gitignore durante deploy/actualizar:
+          grep -q "memsys3_backup_" .gitignore || echo "memsys3_backup_*/" >> .gitignore
+
+          Filosofía: Backups SIEMPRE temporales, NUNCA versionados.
+          Prioridad ALTA. Testing pendiente.
+
+      - nombre: "FEATURE-004: Detectar prompts/agents del proyecto (documentado)"
+        descripcion: |
+          Creado FEATURE-004 para detectar y preservar /prompts o /agents existentes
+          en raíz del proyecto (fuera de memsys3/) durante deployment/actualización.
+
+          Workflow propuesto:
+          1. Detección automática de directorios existentes
+          2. Consulta al usuario (listar, usar como fuente info, ignorar)
+          3. Opcional: usar para personalizar deployment
+          4. Preservación en backup (memsys3_backup_original/)
+
+          Casos de uso: proyectos con deploy-production.md, test-runner.yaml propios.
+          Prioridad MEDIA. Fase 1 (MVP) vs Fase 2 (personalización inteligente).
+
+    problemas_resueltos:
+      - problema: "Bug crítico ISSUE-005: actualizar.md no copiaba 3 prompts (adr.md, backlog.md, commands.md)"
+        solucion: "Fix manual aplicado agregando 3 líneas cp en PASO 6.1. Documentado en ISSUE-005 con 3 opciones (A manual aplicada, B loop automático evaluada, C verificación post-update). Sincronizado templates + dog-fooding"
+
+      - problema: "Confusión arquitectónica sobre rol de commands: ¿es parte del core o workaround opcional?"
+        solucion: "ADR-016 creada documentando principio fundamental: memsys3 agnóstico de modelo IA, commands es workaround OPCIONAL específico de Claude Code. Jerarquía clara: templates (agnóstico) → prompts (específico) → commands (opcional Claude)"
+
+      - problema: "Usuario reporta caso real: actualización v0.6.1→v0.8.1 en Taller Colomer perdió adr.md"
+        solucion: "Colaboración con instancia que hizo actualización: confirmación exhaustiva del bug (seguido literalmente actualizar.md PASO 6.1 que no incluía adr.md). Fix aplicado previene futuros casos"
+
+    decisiones_tomadas:
+      - decision: "memsys3 es agnóstico de modelo de IA (principio arquitectónico fundamental)"
+        justificacion: "Debe funcionar en Claude, Gemini, Codex, cualquier modelo. Features específicas de herramientas (commands) son OPCIONALES, nunca obligatorias. Prompts .md y YAML son el estándar universal"
+        adr_relacionada: "016"
+
+      - decision: "Commands como workaround opcional Claude-específico (NO parte del core)"
+        justificacion: "Commands solo resuelve limitación Claude Code con @ mentions + .gitignore. Usuarios de otros modelos pueden IGNORAR completamente. Documentación debe ser explícita sobre opcionalidad"
+        adr_relacionada: "016"
+
+      - decision: "Fix manual (Opción A) aplicado inmediatamente, Opción B (loop automático) pendiente evaluación"
+        justificacion: "Opción A resuelve bug inmediatamente sin riesgo. Opción B (for loop copiando todos los prompts) más robusta pero requiere testing que no rompe nada. Evaluación futura recomendada"
+        adr_relacionada: null
+
+      - decision: "Backups memsys3_backup_*/ SIEMPRE deben estar en .gitignore"
+        justificacion: "Backups son temporales y pueden contener datos sensibles. No deben versionarse NUNCA, independiente de si memsys3/ está versionado o no. Protección automática es mejor que depender del usuario"
+        adr_relacionada: null
+
+    tecnologies_afegides: []
+    tecnologies_eliminades: []
+
+    gotchas:
+      - tipo: "gotcha"
+        problema: "Backups de memsys3 (memsys3_backup_*/) pueden versionarse en git si memsys3/ NO está en .gitignore (Opción B deploy)"
+        solucion: "Agregar regla explícita a .gitignore durante deploy/actualizar: grep -q 'memsys3_backup_' .gitignore || echo 'memsys3_backup_*/' >> .gitignore. Backups SIEMPRE deben estar ignorados"
+        criticidad: "alta"
+
+      - tipo: "gotcha"
+        problema: "Patrón de deuda técnica: 3 archivos olvidados en actualizar.md en 3 versiones diferentes (backlog.md v0.7.0, adr.md v0.8.0, commands.md v0.8.1)"
+        solucion: "Cada nuevo prompt debe recordarse agregar manualmente a actualizar.md PASO 6.1. Considerar Opción B (loop automático) para prevenir olvidos futuros. Implementar checklist o verificación post-update"
+        criticidad: "media"
+
+    proximos_pasos:
+      - "Testing fix ISSUE-005 en Taller Colomer (actualizar nuevamente con actualizar.md corregido)"
+      - "Implementar ISSUE-006: agregar protección backups .gitignore en deploy.md + actualizar.md"
+      - "Evaluar Opción B de ISSUE-005: reemplazar lista manual con loop automático en actualizar.md"
+      - "Evaluar FEATURE-004 Fase 1 (detección + preservación prompts/agents proyecto)"
+      - "Subir cambios a GitHub con tag (sesión documentada + ADR-016 + bug fixes)"
+
+    notas_adicionales: |
+      Sesión altamente productiva con 3 componentes principales:
+
+      1. Bug Fix Real (ISSUE-005):
+         - Caso confirmado por usuario en proyecto real
+         - Colaboración con otra instancia de Claude que hizo la actualización
+         - Fix aplicado inmediatamente + documentación exhaustiva
+         - Patrón detectado: 3 archivos olvidados en 3 versiones → deuda técnica sistemática
+
+      2. Decisión Arquitectónica Fundamental (ADR-016):
+         - Surgió de discusión sobre rol de commands en memsys3
+         - Usuario aclaró principio clave: memsys3 debe funcionar en CUALQUIER modelo IA
+         - ADR completa documentando agnosticismo + jerarquía fuente de verdad
+         - Impacto: commands.md, README.md, documentación futura
+
+      3. Identificación Proactiva (ISSUE-006, FEATURE-004):
+         - Usuario detectó 2 issues adicionales durante discusión
+         - ISSUE-006 (backups .gitignore) = alta prioridad, riesgo seguridad
+         - FEATURE-004 (detectar prompts/agents) = media prioridad, nice to have
+
+      Calidad sesión: 9/10 (bug fix crítico + decisión arquitectónica importante + documentación completa)
+
+      Meta-aprendizaje: Importancia de colaborar con otras instancias (confirmación exhaustiva del bug).
+      Importancia de documentar principios arquitectónicos fundamentales (ADR-016 guiará decisiones futuras).
+  - id: "2025-12-17-terminologia-main-agent"
+    data: "2025-12-17"
+    duracion: "~30min"
+    titulo: "ADR-015 + IMPROVEMENT-006: Unificación Terminología 'Main Agent'"
+
+    objetivo: "Resolver inconsistencias terminológicas detectadas durante feedback de compilación context.yaml. Establecer 'Main Agent' como nomenclatura estándar única del sistema"
+
+    que_es_va_fer:
+      - "Usuario solicita feedback sobre main-agent.yaml y alineamiento tras compilación"
+      - "Feedback entregado: main-agent.yaml vacío (decisión correcta), inconsistencia terminológica detectada (Development Agent vs Main Agent vs DevAI), mensaje compile-context desalineado"
+      - "Usuario aclara: 'Main Agent' es correcto (agente principal), 'Development Agent' sería especialista futuro, mensaje debe ser genérico"
+      - "ADR-015 creada documentando decisión: Main Agent como nomenclatura estándar única"
+      - "IMPROVEMENT-006 creada en backlog: depuración sistemática de 8+ ubicaciones con referencias desalineadas"
+      - "Correcciones aplicadas inmediatamente en 4 archivos:"
+      - "  • memsys3_templates/prompts/compile-context.md línea 7: 'Development Agents' → 'el Main Agent'"
+      - "  • memsys3/prompts/compile-context.md línea 7: mismo cambio"
+      - "  • memsys3_templates/agents/main-agent.yaml líneas 3-4: 'Development Agent' → 'Main Agent', agregado 'principal'"
+      - "  • memsys3/agents/main-agent.yaml líneas 3-4: mismo cambio"
+      - "Índice ADRs actualizado (ahora 15 ADRs totales)"
+
+    features_implementadas:
+      - nombre: "ADR-015: Terminología unificada Main Agent"
+        descripcion: |
+          Documentada decisión arquitectónica de adoptar "Main Agent" como término estándar único.
+          Razón: Deja espacio conceptual para agentes especializados futuros (Development Agent,
+          Testing Agent, etc.) sin conflictos. Alternativas evaluadas: mantener Development Agent
+          (descartado: conflicto futuro), sistema dual (descartado: over-engineering), Agent genérico
+          (descartado: ambiguo). ADR completa con context, alternatives, consequences.
+
+      - nombre: "IMPROVEMENT-006: Backlog item para depuración completa"
+        descripcion: |
+          Creado item en backlog identificando 8+ ubicaciones que requieren actualización:
+          main-agent.yaml (templates + dog-fooding), compile-context.md (ambos), README.md (ambos),
+          prompts varios, ADRs históricas. Estrategia: depuración sistemática completa (Opción A).
+          Criterios aceptación: 0 resultados grep "Development Agent|DevAI". Prioridad ALTA.
+
+    decisiones_clau:
+      - decision: "Main Agent como terminología estándar única del sistema"
+        justificacio: "Deja espacio conceptual para agentes especializados futuros sin conflictos terminológicos. 'Development Agent' sería confuso si existe agente especialista en desarrollo"
+        alternatives_descartades: "Development Agent (conflicto), sistema dual (over-engineering), Agent genérico (ambiguo)"
+        impacte: "Claridad conceptual, escalabilidad, documentación consistente"
+        adr_relacionada: "ADR-015"
+
+    tecnologies_afegides: []
+    tecnologies_eliminades: []
+
+    problemes_resolts:
+      - problema: "Inconsistencia terminológica: 3 términos diferentes (Main Agent, Development Agent, DevAI) para mismo concepto"
+        solucio: "Unificación en 'Main Agent' como estándar. ADR-015 documenta decisión con justificación arquitectónica completa"
+        impacte: "Sistema ahora tiene terminología clara y escalable para agentes especializados futuros"
+
+    gotchas: []
+
+    proxims_passos:
+      - tasca: "Ejecutar IMPROVEMENT-006: depuración sistemática completa"
+        prioritat: "alta"
+        detall: "Actualizar README.md (raíz + templates), prompts restantes (newSession, endSession), ADRs históricas (notas UPDATE). Validación final: grep exhaustivo 0 resultados"
+
+      - tasca: "Testing: ejecutar newSession + compile-context tras depuración"
+        prioritat: "media"
+        detall: "Validar que terminología actualizada funciona correctamente en flujo completo"
+
+    notes_adicionals: |
+      Sesión corta (~30min) pero conceptualmente importante.
+
+      Cambio es cosmético (renombrado) pero arquitectónicamente significativo:
+      establece nomenclatura clara que escala con agentes especializados futuros.
+
+      Usuario proporcionó feedback claro sobre decisión correcta de main-agent.yaml vacío
+      (contexto se suministra via archivos) y necesidad de unificar terminología.
+
+      4 correcciones aplicadas inmediatamente, resto trackeado en IMPROVEMENT-006 para
+      depuración sistemática completa.
+
+    calidad: "9/10 (decisión arquitectónica clara, implementación parcial, pendiente depuración completa)"
+
+  - id: "2025-12-15-testing-actualizar-memsys3"
+    data: "2025-12-15"
+    duracion: "~2h"
+    titulo: "Testing /actualizar-memsys3 - Primera Ejecución Real (Proyecto UOC)"
+
+    objetivo: "Ejecutar y validar /actualizar-memsys3 por primera vez en proyecto real (fundamentos-programacion UOC), trackeando paso a paso para detectar problemas y validar merge inteligente vs sobrescritura"
+
+    que_es_va_fer:
+      - "Usuario inicia testing: prompt detallado solicitando reportes paso a paso de la actualización"
+      - "Claude detecta versión actual v0.6.1-2-g181742f desde project-status.yaml (después de varios intentos con git describe)"
+      - "Claude clona repositorio memsys3 temporal → detecta v0.8.1-2-gdcf606e disponible"
+      - "Error: directorio memsys3_update_temp ya existe (residuo interrumpido previo) → Claude reporta, elimina y reclona"
+      - "Carga prompt actualizar.md (552 líneas) y comienza ejecución secuencial"
+      - "PASO 0-3 completados: verificación estructura, versión, clone temporal"
+      - "⚠️ Claude salta del PASO 5 al PASO 6 (omite PASO 4) → usuario le llama la atención → Claude reconoce error y vuelve atrás"
+      - "PASO 4: categorización de archivos (22 a actualizar, 10 personalizados a conservar, 5 datos a preservar)"
+      - "PASO 5: backup creado (memsys3_backup_20251215_115410)"
+      - "PASO 6: actualización archivos del sistema (22 archivos)"
+      - "PASO 6.2: Claude detecta diferencias en newSession.md y propone 4 opciones (conservar, usar nueva, merge, posponer)"
+      - "🔑 MOMENTO CLAVE: Usuario explica principio fundamental de /actualizar-memsys3: 'implementar mejoras/fixes/features acumuladas, NO desplegar de nuevo el sistema'"
+      - "Claude realiza merge inteligente de newSession.md conservando personalizaciones (español, saludo, estructura) + integrando mejoras v0.8.1 (README.md, notas)"
+      - "Validación del principio: acumulación de valor vs reseteo, merge contextual LLM vs cp tradicional"
+      - "PASO 7: actualización metadata project-status.yaml (solo bloque metadata, preserva resto)"
+      - "PASO 8: limpieza temporal, backup conservado para validación"
+      - "PASO 9: verificaciones preliminares (compile-context verificado, visualizador verificado, newSession verificado)"
+      - "PASO 10: documentación de actualización en sessions.yaml del proyecto UOC (128 líneas detalladas)"
+      - "PASO 11: Claude propone commitear → usuario pregunta si mejor después de validar → Claude acepta (flujo correcto)"
+      - "Reporte final completo: 23 archivos actualizados, merge manual exitoso, validaciones pendientes listadas"
+
+    features_implementadas:
+      - nombre: "Testing completo /actualizar-memsys3"
+        descripcion: |
+          Primera ejecución real del comando /actualizar-memsys3 en proyecto fundamentos-programacion (UOC)
+          Actualización v0.6.1-2-g181742f → v0.8.1-2-gdcf606e (salto 2 minor versions)
+          22 archivos del sistema actualizados: 7 prompts, 1 agent, 4 templates, 5 visualizador, 1 docs
+          10 prompts personalizados conservados, 5 archivos de datos preservados
+          Backup creado, validaciones preliminares completadas
+
+      - nombre: "Validación merge inteligente vs sobrescritura"
+        descripcion: |
+          Validado principio diferencial de memsys3: merge contextual usando LLM
+          newSession.md: merge exitoso conservando personalizaciones + integrando mejoras
+          project-status.yaml: solo metadata actualizada, resto preservado
+          Demuestra: acumulación de valor vs reseteo de software tradicional
+
+      - nombre: "Trackeo detallado paso a paso"
+        descripcion: |
+          Seguimiento exhaustivo PASO 0-11 del flujo actualizar.md
+          Reportes detallados de cada comando ejecutado, archivos modificados, decisiones
+          Detección de errores (salto PASO 4, directorio temporal residual)
+          Validación de correcciones automáticas de Claude
+
+    problemas_resueltos:
+      - problema: "Claude saltó PASO 4 (categorización archivos)"
+        solucion: "Usuario le llamó la atención ('y el paso 4?'), Claude reconoció error inmediatamente y volvió atrás para ejecutarlo correctamente"
+        criticidad: "media"
+
+      - problema: "Directorio temporal memsys3_update_temp ya existía (residuo interrumpido)"
+        solucion: "Claude detectó el problema, verificó contenido (solo .git/), propuso eliminar y reclonar, ejecutó correctamente"
+        criticidad: "baja"
+
+      - problema: "Claude intentó git describe antes de consultar project-status.yaml"
+        solucion: "Usuario le indicó mirar project-status.yaml para versión. Mejora: debería consultarlo PRIMERO (fuente de verdad)"
+        criticidad: "baja"
+
+    decisiones_tomadas:
+      - decision: "No commitear hasta después de validar"
+        justificacion: |
+          Claude propuso commitear en PASO 11. Usuario preguntó si mejor validar primero.
+          Claude aceptó razonamiento: evitar commit seguido de correcciones si hay problemas.
+          Flujo correcto: actualizar → validar → commitear → eliminar backup
+        alternativas_consideradas:
+          - "Commitear inmediatamente (rechazada: riesgo revertir si falla validación)"
+
+      - decision: "No ejecutar compile-context.md en esta sesión"
+        justificacion: |
+          ADR-008: compile-context debe ejecutarse en instancia limpia sin tokens acumulados.
+          Esta sesión ya consumió muchos tokens trackeando la actualización.
+          Mejor ejecutar en nueva instancia después para validación correcta.
+        alternativas_consideradas:
+          - "Ejecutar ahora (rechazada: contra ADR-008, sesión ya con muchos tokens)"
+
+    tecnologias_agregadas: []
+
+    gotchas:
+      - tipo: "limitation"
+        problema: "Launchers globales (/actualizar-memsys3, /deploy-memsys3) requieren confirmación manual de Bash para cada git clone/pull"
+        solucion: "Aprovechar como feature de seguridad para validación paso a paso. Usuario puede aprobar directorio específico ('Yes, and don't ask again...') para evitar múltiples confirmaciones"
+        criticidad: "baja"
+        contexto: "SlashCommand launcher puede auto-ejecutarse, pero Bash calls internos no heredan aprobación. Permite validar cada comando git antes de ejecutar - útil para testing y seguridad"
+
+    proximos_pasos:
+      - "Ejecutar @memsys3/prompts/compile-context.md en proyecto UOC (nueva instancia limpia)"
+      - "Ejecutar @memsys3/prompts/mind.md en proyecto UOC (validar visualizador)"
+      - "Ejecutar @memsys3/prompts/newSession.md en proyecto UOC (validar merge funcionando)"
+      - "Uso en 1-2 sesiones reales del proyecto UOC para validación completa"
+      - "Commitear actualización después de validar funcionamiento"
+      - "Eliminar backup memsys3_backup_20251215_115410 después de validación exitosa"
+
+    meta_aprendizaje:
+      - "El valor de /actualizar-memsys3 NO es sobrescribir archivos, es merge inteligente contextual usando capacidad LLM"
+      - "Software tradicional: cp -r upstream/* local/ → pérdida de personalizaciones"
+      - "Software inteligente (agentes LLM): merge contextual → acumulación de valor sobre tiempo"
+      - "Cada actualización ENRIQUECE en lugar de resetear (principio fundamental diferencial)"
+      - "Testing reveló: launchers requieren confirmación Bash manual, pero esto es ventaja para seguridad y validación"
+      - "Claude puede auto-corregir cuando se le llama la atención (saltó PASO 4, volvió correctamente)"
+      - "project-status.yaml debería ser primera fuente consultada para detectar versión, no git describe"
+
+    adr_relacionada: ["ADR-014"]
+
   - id: "2025-12-14-comandos-globales-auto-actualizantes"
     data: "2025-12-14"
     duracion: "~1h"

@@ -4,7 +4,7 @@
 
 - Actúa según las instrucciones en '@memsys3/agents/context-agent.yaml'
 - **IMPORTANTE: Trabaja en ESPAÑOL siempre**
-- Tu misión es compilar el contexto completo del proyecto desde `memsys3/memory/full/` en un archivo compacto `memsys3/memory/context.yaml` que los Development Agents puedan cargar eficientemente.
+- Tu misión es compilar el contexto completo del proyecto desde `memsys3/memory/full/` en un archivo compacto `memsys3/memory/context.yaml` que el Main Agent pueda cargar eficientemente.
 
 ## Filosofía
 
