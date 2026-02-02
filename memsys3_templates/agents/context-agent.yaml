@@ -86,17 +86,48 @@ limits:
       - Prioriza decisiones recientes
 
   ultima_sesion:
-    maxim_linies: 15
-    estructura:
-      data: 1 línia
-      duracion: 1 línia
-      que_es_va_fer: 3-5 items (solo los más importantes)
-      decisions: 1-3 items (solo decisiones clave)
-      proximos_pasos: 2-3 items
-    accions:
-      - Sintetizar: combinar items similares
-      - Eliminar: detalles técnicos excesivos (cambios de padding, typos, etc.)
-      - Mantener: features implementadas, problemas críticos resueltos
+    # Límites orientativos según peso de la sesión
+    peso_alto:
+      maxim_linies: 35  # ~90% del original (~140 líneas)
+      estructura:
+        data: 1 línia
+        duracion: 1 línia
+        que_es_va_fer: 8-10 items (casi completos)
+        decisions: 5-8 items (con contexto, alternativas, justificaciones)
+        proximos_pasos: 3-5 items
+      accions:
+        - Preservar: contexto completo, decisiones, alternativas, impacto
+        - Omitir solo: detalles muy menores (typos, CSS)
+        - Mantener: gotchas, problemas_resueltos, features_implementadas
+
+    peso_medio:
+      maxim_linies: 20  # ~60-70% del original (~95 líneas)
+      estructura:
+        data: 1 línia
+        duracion: 1 línia
+        que_es_va_fer: 5-7 items (highlights principales)
+        decisions: 2-4 items (decisiones clave sin contexto extenso)
+        proximos_pasos: 2-3 items
+      accions:
+        - Sintetizar: combinar items similares
+        - Eliminar: detalles técnicos excesivos, alternativas descartadas
+        - Mantener: features implementadas, problemas críticos, gotchas relevantes
+
+    peso_bajo:
+      maxim_linies: 8  # ~40-50% del original (~70 líneas)
+      estructura:
+        data: 1 línia
+        duracion: 1 línia
+        highlights: 2-3 items (solo esenciales)
+        proximos_pasos: 1-2 items (si relevantes)
+      accions:
+        - Filtrar agresivamente: solo highlights esenciales
+        - Omitir: features_implementadas detalladas, problemas_resueltos, notas
+        - Formato ultra-conciso: máximo 3 bullets totales
+
+    retrocompatibilidad:
+      sesiones_sin_peso: "Asumir peso 'medio' (comportamiento por defecto)"
+      no_fallar_si_ausente: true
 
   gotchas:
     maxim: 5

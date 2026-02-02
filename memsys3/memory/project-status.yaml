@@ -1,9 +1,9 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2025-12-30"
-  actualizado_por: "Claude (Session Bug Fix ISSUE-005 + ADR-016)"
-  fase: "Development v0.8.1"
+  ultima_actualizacion: "2025-02-02"
+  actualizado_por: "Claude (Session FEATURE-006 Sistema Pesos)"
+  fase: "Development v0.10.0 (pending)"
   memsys3_version: "v0.9.0"
   memsys3_deployed: "2025-10-28"
 
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v0.8.1"
-  ultima_feature: "Bug Fix ISSUE-005 + ADR-016: Corregido bug crítico actualizar.md (3 prompts faltantes: adr.md, backlog.md, commands.md). Usuario reportó caso real Taller Colomer v0.6.1→v0.8.1. Fix aplicado (Opción A manual) + sincronizado. ADR-016 documenta principio fundamental: memsys3 agnóstico modelo IA, commands opcional Claude-específico. Arquitectura fuente verdad: templates→prompts→commands. Documentación actualizada (commands.md warning, README compatibilidad). ISSUE-006 + FEATURE-004 creados (backups .gitignore, detectar prompts/agents). Índice ADRs: 16 totales. ~2.5h"
-  siguiente_milestone: "Testing ISSUE-005 fix en Taller Colomer + Implementar ISSUE-006 (backups .gitignore) + Evaluar FEATURE-004 + Subir a GitHub con tag"
+  fase: "Development v0.10.0 (pending)"
+  ultima_feature: "FEATURE-006 Sistema Pesos Sesiones: Implementado sistema completo de pesos (bajo ~70, medio ~95, alto ~140 líneas) para documentación diferenciada según importancia arquitectónica. 11 archivos modificados (5 templates + 5 dog-fooding + 1 testing). PASO 2.5 nuevo en endSession.md con tabla criterios. Estrategia síntesis diferenciada en compile-context.md (Context Agent filtra por peso + recencia). Límites orientativos en context-agent.yaml. 100% retrocompatible (sesiones sin peso → medio). Filosofía ADR-001 preservada (orientativos NO rígidos). Beneficios: +13% eficiencia rotación, mejor signal-to-noise. Plan mode exhaustivo usado (Explore + Plan agents). ~3h"
+  siguiente_milestone: "Compilar contexto para verificar síntesis diferenciada + Testing producción (3-5 sesiones variadas) + Bump version v0.10.0 + Git commit/push + Implementar FEATURE-007 (auditoría) después de testing"
 
 features:
   context_agent:

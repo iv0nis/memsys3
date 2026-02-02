@@ -7,6 +7,7 @@ sessions:
     titulo: "[Títol Descriptiu de la Sessió]"
     data: "YYYY-MM-DD"
     duracion: "[Xh o X dies]"
+    peso: "medio"  # bajo|medio|alto - Importancia arquitectónica (🟢🟡🔴)
     participantes: ["Nom/Agent"]
     objetivo: "[Què es volia aconseguir en aquesta sessió]"
 
@@ -71,6 +72,7 @@ instruccions:
   ordre: "Añade nuevas sesiones al PRINCIPIO del array (orden inverso cronológico)"
   concisio: "Sé conciso pero completo - detalles suficientes para entender contexto"
   adr_links: "Linkea ADRs (campo adr_relacionada) si se toman decisiones arquitectónicas"
+  peso_sesion: "Evalúa peso (bajo/medio/alto) ANTES de documentar - ajusta densidad según importancia"
   consistencia: "Usa siempre el mismo formato para facilitar parsing del Context Agent"
 
 # ============================================
@@ -122,3 +124,34 @@ exemples:
         problema: "El botón no tiene focus state"
         solucion: "Añadir outline al CSS"
         criticidad: "baja"  # Demasiado trivial
+
+  peso_alto_ejemplo: |
+    # PESO ALTO - ADR o decisión arquitectónica:
+    - id: "2025-01-15-cambio-arquitectura-pdf"
+      peso: "alto"
+      features_implementadas:
+        - nombre: "Migración html2canvas → jsPDF"
+          descripcion: |
+            CONTEXTO: html2canvas pixelado (300 DPI insuficiente)
+            ALTERNATIVAS: Puppeteer (descartado), react-pdf (limitado)
+            ELEGIDO: jsPDF + autotable (profesional, seleccionable)
+            IMPACTO: Todos los PDFs del proyecto ahora profesionales
+      decisiones_tomadas:
+        - decision: "ADR-003: jsPDF como estándar PDF"
+          adr_relacionada: "003"
+
+  peso_medio_ejemplo: |
+    # PESO MEDIO - Feature estándar:
+    - id: "2025-01-20-formulario-validacion"
+      peso: "medio"
+      features_implementadas:
+        - nombre: "Validación formulario contacto"
+          descripcion: "Zod schema, mensajes error, UX mejorada"
+
+  peso_bajo_ejemplo: |
+    # PESO BAJO - Fix menor:
+    - id: "2025-01-25-fix-typos-css"
+      peso: "bajo"
+      highlights:
+        - "5 typos README corregidos"
+        - "Padding header 10px → 12px"
