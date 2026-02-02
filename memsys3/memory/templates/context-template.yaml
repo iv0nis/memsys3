@@ -154,6 +154,11 @@ notas_compilacion:
   adrs_incluidas: "[M seleccionades per context]"
   sesiones_totales: "[X total a memory/full/sessions.yaml]"
   sesiones_incluidas: "[Y sintetitzades en context]"
+  sesiones_por_peso:
+    alto: "[N sesiones peso alto incluidas]"
+    medio: "[M sesiones peso medio incluidas]"
+    bajo: "[K sesiones peso bajo incluidas (si las hay)]"
+  pesos_ajustados: "[Si Context Agent ajustó algún peso: explicar cuál y por qué]"
   backlog_existe: "[true/false]"
   backlog_items_totales: "[N items totales en backlog/ si existe]"
   backlog_items_incluidos: "[M items incluidos en context (referenciados o críticos)]"

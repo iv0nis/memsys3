@@ -36,6 +36,42 @@ Identifica:
 - **Gotchas**: Errores críticos, warnings, traps encontrados durante la sesión (con criticidad)
 - **Próximos Pasos**: Qué queda pendiente
 
+### 2.5. Evaluar Peso de la Sesión
+
+Antes de documentar, determina la importancia arquitectónica de esta sesión:
+
+**🔴 PESO ALTO (~140 líneas):**
+- Creaste/actualizaste ADRs importantes
+- Decisiones arquitectónicas fundamentales
+- Features críticas del core del proyecto
+- Cambios de stack tecnológico
+- Bugs críticos con gotchas importantes
+
+**🟡 PESO MEDIO (~95 líneas):**
+- Features normales dentro del scope
+- Refactorings significativos
+- Mejoras de features existentes
+- Bugs moderados resueltos
+
+**🟢 PESO BAJO (~70 líneas):**
+- Fixes menores, typos, mantenimiento
+- Cambios cosméticos (CSS, UI tweaks)
+- Trabajo fuera del scope principal
+- Setup/configuración inicial
+
+**Ajusta la densidad de documentación según el peso:**
+
+| Peso | Densidad | Qué Incluir | Qué Omitir |
+|------|----------|-------------|------------|
+| BAJO | ~70 líneas | Highlights concisos (3-5 bullets) | Detalles técnicos, decisiones menores |
+| MEDIO | ~95 líneas | Highlights + decisions + gotchas | Contexto extenso, alternativas descartadas |
+| ALTO | ~140 líneas | Contexto completo, justificaciones, alternativas | Nada - documenta exhaustivamente |
+
+**Notas importantes:**
+- Las líneas son **orientativas, no rígidas** - usa tu criterio según contenido real
+- Si dudas entre dos pesos, elige el menor (evita inflar importancia)
+- El Context Agent puede auditar y sugerir ajustes (FEATURE-007)
+
 ### 3. Comprobar Rotaciones Automáticas
 
 **IMPORTANTE: Rotación flexible según líneas totales**
@@ -79,11 +115,46 @@ wc -l memsys3/memory/full/adr.yaml
 ### 4. Documentar
 
 **A. Añadir Sesión a `memsys3/memory/full/sessions.yaml`:**
-- Añadir al PRINCIPIO del array `sessions:`
-- Usar `memsys3/memory/templates/sessions-template.yaml` como guía
+
+Usa **Edit tool** para añadir tu sesión al PRINCIPIO del array:
+
+```
+old_string: "sessions:"
+new_string: "sessions:
+  - id: YYYY-MM-DD-titulo-descriptivo
+    data: YYYY-MM-DD
+    duracion: ~Xh
+    peso: bajo|medio|alto  # Evaluado en PASO 2.5
+    titulo: Título conciso
+    highlights:
+      - [tu contenido aquí]
+    ..."
+```
+
+⚠️ **NO uses Write tool** → sobrescribiría todas las sesiones previas y rompería el sistema de memoria del proyecto.
+
+**Guía de contenido según peso:**
+
+- **Peso BAJO (~70 líneas):**
+  - Solo highlights (3-5 bullets concisos)
+  - Omitir secciones features_implementadas, problemas_resueltos si son triviales
+  - Mención breve de próximos_pasos
+
+- **Peso MEDIO (~95 líneas):**
+  - Usa `memsys3/memory/templates/sessions-template.yaml` como referencia
+  - Highlights + features_implementadas + problemas_resueltos + decisions
+  - Secciones completas pero sin contexto extenso
+  - Gotchas solo si son relevantes
+
+- **Peso ALTO (~140 líneas):**
+  - Documentación exhaustiva y completa
+  - Contexto de decisiones (por qué, alternativas consideradas)
+  - Justificaciones detalladas, trade-offs aceptados
+  - Vincular con ADRs creadas (campo adr_relacionada)
+
+**General (todos los pesos):**
 - ID y data: YYYY-MM-DD de hoy
 - Título descriptivo y conciso
-- Sé completo pero evita detalles demasiado granulares
 - **⚠️ NO crear archivos detallados en `memory/history/`** - toda la info va DIRECTAMENTE en sessions.yaml
 - **Importante**: `memory/history/` es SOLO para archivado del Plan de Contingencia (cuando full/ supera 150K tokens), NO para sesiones normales
 - **IMPORTANTE - Gotchas**: Si has encontrado errores críticos, warnings o traps:
@@ -125,6 +196,7 @@ Resumen breve de qué se ha documentado:
 
 ```
 ✅ Sesión documentada en memsys3/memory/full/sessions.yaml
+   Peso: [BAJO/MEDIO/ALTO] (~X líneas)
 ✅ [N] ADRs creadas (si las hay)
 ✅ memsys3/memory/project-status.yaml actualizado
 ✅ Rotación hecha (si hacía falta): sessions.yaml → sessions_N.yaml
