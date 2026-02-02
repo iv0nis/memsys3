@@ -53,6 +53,7 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
 - Cambios significativos en la arquitectura
 - Problemas resueltos que pueden repetirse
 - Decisiones tomadas que afectan el futuro
+- **PRIORIZAR por:** peso (alto > medio > bajo) + recencia + criticidad
 
 **Gotchas:**
 - Errores que rompen el proyecto si no se conocen
@@ -83,6 +84,43 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
 - Exploraciones sin decisión clara
 - Detalles de implementación de SPECs (solo contexto general)
 - Items NO referenciados en project-status.yaml
+
+### Estrategia de Síntesis Diferenciada por Peso
+
+El Context Agent debe aplicar filtrado inteligente según el campo `peso:` de cada sesión:
+
+**Sesiones peso ALTO (🔴):**
+- Incluir casi completas (~90% del contenido original)
+- Preservar: contexto completo, decisiones, alternativas consideradas, impacto
+- Omitir solo: detalles muy menores (typos corregidos, ajustes CSS puntuales)
+- Objetivo: Mantener riqueza de contexto arquitectónico
+
+**Sesiones peso MEDIO (🟡):**
+- Aplicar síntesis estándar (~60-70% del contenido original)
+- Preservar: highlights, features principales, decisiones clave, gotchas relevantes
+- Omitir: detalles de implementación, contexto extenso, alternativas descartadas triviales
+- Objetivo: Balance entre contexto y eficiencia
+
+**Sesiones peso BAJO (🟢):**
+- Filtrar agresivamente (~40-50% del contenido original)
+- Preservar SOLO: highlights esenciales (2-3 bullets máximo)
+- Omitir: features_implementadas detalladas, problemas_resueltos triviales, notas adicionales
+- Objetivo: Máxima eficiencia, mínimo ruido
+
+**Priorización en caso de límite 2000 líneas:**
+1. Sesiones ALTO recientes (últimas 2-3) → incluir casi completas
+2. Sesiones MEDIO recientes (últimas 3-5) → síntesis estándar
+3. Sesiones BAJO → solo si hay espacio, ultra-sintetizadas (1-3 líneas)
+4. Sesiones antiguas: aplicar decay temporal (peso efectivo reduce con tiempo)
+
+**Retrocompatibilidad:**
+- Sesiones SIN campo `peso:` → asumir peso "medio" (comportamiento por defecto)
+- No fallar si el campo está ausente
+
+**Notas importantes:**
+- Los porcentajes son **orientativos** - usa criterio inteligente (ADR-001)
+- Context Agent puede IGNORAR peso si detecta inconsistencia flagrante
+- Documentar en `notes_compilacio` si se ha ajustado algún peso
 
 ## Proceso de Compilación
 
@@ -130,11 +168,13 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
 ### Fase 2: Compilación Normal (< 150K tokens)
 
 1. **Evalúa** la relevancia de cada elemento con el criterio de selección
+   - Para sesiones: aplicar estrategia de síntesis diferenciada por peso
+   - Para ADRs: criterio estándar (impacto global, no obvia)
 2. **Decide** qué es imprescindible para un agent descontextualizado
 3. **Sintetiza** manteniendo solo lo crítico
 4. **Genera** context.yaml siguiendo el template
 5. **Comprueba** que no supera 2000 líneas
-6. **Añade notas** a `notes_compilacio` explicando tus criterios
+6. **Añade notas** a `notes_compilacio` explicando tus criterios (incluir si ajustaste algún peso)
 
 ### Plan de Contingencia (> 150K tokens)
 
