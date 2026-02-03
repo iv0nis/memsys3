@@ -8,6 +8,15 @@
 - No subas la versión más allá de la 0.x.x hasta que sea estable
 - Solo aumenta el minor si hay cambio relevante, en caso contrario aumenta el patch
 
+## ⚠️ IMPORTANTE: Commits SIN Firma
+
+**NUNCA añadas firma "Co-Authored-By: Claude" en commits.**
+
+- ❌ MAL: Incluir "Co-Authored-By: Claude Sonnet 4.5" en mensaje
+- ✅ BIEN: Commits limpios sin líneas adicionales de autoría
+
+**Razón:** Los commits deben reflejar solo autoría del usuario, no del agente.
+
 ## Workflow
 
 ### 1. Revisar cambios
@@ -94,9 +103,12 @@ Breaking changes: [Ninguno/Descripción]
 # Editar archivos con nueva versión
 # ...
 
-# Commit cambios de versión
+# ⚠️ Commit SIN Co-Authored-By (NO añadir firma de Claude)
 git add README.md memsys3/memory/project-status.yaml
 git commit -m "chore: bump version to v0.X.Y"
+
+# Verificar que NO contiene firma
+git log -1 --format="%B"
 ```
 
 ### 5. Ejecutar commits y push
@@ -107,7 +119,7 @@ git commit -m "chore: bump version to v0.X.Y"
 # Push commits (incluye bump de versión)
 git push origin master
 
-# Crear y subir tag con metadata rica
+# Crear y subir tag con metadata rica (NO añadir Co-Authored-By)
 git tag -a v0.X.Y -m "Release v0.X.Y: [Resumen]
 
 Features:
@@ -135,6 +147,9 @@ git push origin master
 ### 6. Verificar en GitHub
 
 ```bash
+# Verificar que commits NO tienen firma
+git log -5 --format="%B" | grep -i "co-authored" && echo "❌ ERROR: Firma detectada" || echo "✅ OK: Sin firma"
+
 # Verificar que tag llegó
 git ls-remote --tags origin | tail -3
 
