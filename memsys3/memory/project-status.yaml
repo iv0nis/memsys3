@@ -3,8 +3,8 @@
 metadata:
   ultima_actualizacion: "2025-02-02"
   actualizado_por: "Claude (Session FEATURE-006 Sistema Pesos)"
-  fase: "Development v0.10.0 (pending)"
-  memsys3_version: "v0.9.0"
+  fase: "Development v0.10.0"
+  memsys3_version: "v0.10.0"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -13,7 +13,7 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v0.10.0 (pending)"
+  fase: "Development v0.10.0"
   ultima_feature: "FEATURE-006 Sistema Pesos Sesiones: Implementado sistema completo de pesos (bajo ~70, medio ~95, alto ~140 líneas) para documentación diferenciada según importancia arquitectónica. 11 archivos modificados (5 templates + 5 dog-fooding + 1 testing). PASO 2.5 nuevo en endSession.md con tabla criterios. Estrategia síntesis diferenciada en compile-context.md (Context Agent filtra por peso + recencia). Límites orientativos en context-agent.yaml. 100% retrocompatible (sesiones sin peso → medio). Filosofía ADR-001 preservada (orientativos NO rígidos). Beneficios: +13% eficiencia rotación, mejor signal-to-noise. Plan mode exhaustivo usado (Explore + Plan agents). ~3h"
   siguiente_milestone: "Compilar contexto para verificar síntesis diferenciada + Testing producción (3-5 sesiones variadas) + Bump version v0.10.0 + Git commit/push + Implementar FEATURE-007 (auditoría) después de testing"
 
