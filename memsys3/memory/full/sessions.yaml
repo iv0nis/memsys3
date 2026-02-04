@@ -16,7 +16,7 @@ sessions:
       - "Reflexión arquitectónica post-compilación: Identificada duplicación ineficiente (Explore + Subagent leen mismo contenido → ~145K tokens totales)"
       - "Análisis comparativo 6 estrategias: Plan+yo, Plan+subagent, Plan+sin-releer, Directo, Subagent-solo, Subagent+ExtThinking"
       - "Propuesta optimización: Subagent con extended thinking (una lectura ~95K, +5% calidad, -34% tokens vs actual)"
-      - "Documentación completa: Propuesta ADR (docs/) + IMPROVEMENT-007 (backlog/) con comparativa cuantitativa y trade-offs"
+      - "Documentación completa: Propuesta ADR (memsys3/docs/) + IMPROVEMENT-007 (backlog/) con comparativa cuantitativa y trade-offs"
       - "Usuario acepta trade-off: menos transparencia previa a cambio de máxima eficiencia + calidad para tarea crítica"
 
     features_implementadas:
@@ -34,7 +34,7 @@ sessions:
           - Reducción 96% tokens: ~95K leídos → ~3.5K generados
           - YAML válido, estructura template completa, notas compilación transparentes
 
-      - nombre: "docs/adr-proposal-extended-thinking-compile-context.md"
+      - nombre: "memsys3/docs/adr-proposal-extended-thinking-compile-context.md"
         descripcion: |
           Propuesta ADR completa documentando optimización compile-context.md:
           - Contexto: Duplicación identificada (Explore agents + Subagent = ~145K tokens leídos)
@@ -54,7 +54,7 @@ sessions:
           - Propuesta: Subagent + Extended Thinking (Opción A recomendada)
           - Implementación: Actualizar compile-context.md con 2 opciones (A: óptima, B: transparencia)
           - Comparación cuantitativa: -34% tokens, -50% tiempo, +5% calidad
-          - Referencias: propuesta ADR completa en docs/, ADR-001, ADR-008
+          - Referencias: propuesta ADR completa en memsys3/docs/, ADR-001, ADR-008
           - Notas: Extended thinking específico Claude, fall back a subagent estándar si no disponible
 
     decisions:
@@ -142,10 +142,10 @@ sessions:
     highlights:
       - "Implementado sistema completo de Reuniones Colaborativas: metodología formal para debugging multi-agente y análisis de incidentes"
       - "Prompt reunion.md ejecutable (905 líneas): workflow 6 fases estructuradas (Presentación → Respuesta Inicial → Respuesta Detallada → Análisis Profundo → Implementación → Cierre Formal)"
-      - "Documentación completa docs/reunion/README.md (836 líneas): filosofía (5 principios fundamentales), anatomía reunión, ejemplos reales (ISSUE-007, firmas commits)"
+      - "Documentación completa memsys3/docs/reunion/README.md (836 líneas): filosofía (5 principios fundamentales), anatomía reunión, ejemplos reales (ISSUE-007, firmas commits)"
       - "Fix github.md implementado: defensa en profundidad 4 capas contra firmas Co-Authored-By (hábito arraigado detectado en reunión 030226_1.md)"
       - "Sincronización completa: memsys3_templates/ (producto final) + memsys3/ (dog-fooding)"
-      - "Archivos nuevos: memsys3/prompts/reunion.md, docs/reunion/README.md, memsys3_templates/prompts/reunion.md"
+      - "Archivos nuevos: memsys3/prompts/reunion.md, memsys3/docs/reunion/README.md, memsys3_templates/prompts/reunion.md"
       - "Archivos modificados: memsys3/prompts/github.md + template (4 capas prevención añadidas)"
       - "Filosofía: transparencia radical + no culpabilización + análisis riguroso + respeto formal + compromiso concreto"
 
@@ -155,7 +155,7 @@ sessions:
           Workflow 6 fases completo (905 líneas):
           - PASO 0: Verificar necesidad (filtro ✅/❌ cuando usar reuniones)
           - PASO 1: Recopilar contexto (Investigador: preguntas diagnósticas / Investigado: análisis honesto)
-          - PASO 2: Iniciar reunión (crear docs/reunion/DDMMYY_N.md con header)
+          - PASO 2: Iniciar reunión (crear memsys3/docs/reunion/DDMMYY_N.md con header)
           - PASO 3: Ejecutar fases (6 fases iterativas documentadas)
           - PASO 4: Guardar y referenciar (sessions.yaml referencia, NO duplica)
           - PASO 5: Informar usuario
@@ -164,7 +164,7 @@ sessions:
           Templates completos para cada fase con ejemplos concretos.
           Troubleshooting: interrupciones, múltiples reuniones/día, bilateral sin memsys3.
 
-      - nombre: "docs/reunion/README.md: Documentación Completa Sistema"
+      - nombre: "memsys3/docs/reunion/README.md: Documentación Completa Sistema"
         descripcion: |
           Documentación exhaustiva 836 líneas con:
           - Introducción: valor diferencial (análisis forense colaborativo, transparencia radical, trazabilidad completa)
@@ -206,7 +206,7 @@ sessions:
           - "Documentar solo en sessions.yaml como gotcha: descartado (pierde contexto completo del análisis forense, no hay diálogo estructurado, dificulta debugging colaborativo)"
           - "Conversación directa sin formato formal: descartado (no es reproducible, pierde trazabilidad, no es reutilizable como metodología)"
           - "Formato ad-hoc para cada incidente: descartado (inconsistencia, no escalable, dificulta aprendizaje de patrones)"
-        impacto: "Metodología reutilizable para futuros incidentes críticos. Proyectos con memsys3 pueden beneficiarse de análisis colaborativo entre agentes. Reuniones generan ADRs (si decisión arquitectónica) o updates backlog (si bug sistemático). Context Agent NO lee docs/reunion/ por defecto (solo si sessions.yaml referencia), optimiza tokens."
+        impacto: "Metodología reutilizable para futuros incidentes críticos. Proyectos con memsys3 pueden beneficiarse de análisis colaborativo entre agentes. Reuniones generan ADRs (si decisión arquitectónica) o updates backlog (si bug sistemático). Context Agent NO lee memsys3/docs/reunion/ por defecto (solo si sessions.yaml referencia), optimiza tokens."
         adr_relacionada: null
 
       - decision: "Defensa en profundidad 4 capas para prevención firmas commits"
@@ -219,16 +219,16 @@ sessions:
         impacto: "Mejora esperada 65 puntos porcentuales. Para fallar, agente debe ignorar 4 advertencias consecutivas (altamente improbable). Verificación final detecta 100% errores residuales antes de considerar workflow completado."
         origen: "Reunión colaborativa 030226_1.md: Investigador (memsys3), Investigado (TallersColomer)"
 
-      - decision: "Ubicación docs/reunion/ para reuniones (vs memory/full/)"
-        justificacion: "Reuniones son documentos largos (300-800 líneas típico, hasta 1000+ líneas posibles) con formato conversacional multi-agente. Incluirlas en memory/full/ sessions.yaml o ADR explotan límites rápidamente (sessions.yaml ya rota en 1800-2000 líneas). docs/reunion/ separado permite: (1) archivos independientes sin rotación frecuente, (2) sessions.yaml solo referencia (NO duplica), (3) Context Agent carga selectivamente si sessions.yaml menciona, (4) escalable (50+ reuniones sin problemas)."
+      - decision: "Ubicación memsys3/docs/reunion/ para reuniones (vs memory/full/)"
+        justificacion: "Reuniones son documentos largos (300-800 líneas típico, hasta 1000+ líneas posibles) con formato conversacional multi-agente. Incluirlas en memory/full/ sessions.yaml o ADR explotan límites rápidamente (sessions.yaml ya rota en 1800-2000 líneas). memsys3/docs/reunion/ separado permite: (1) archivos independientes sin rotación frecuente, (2) sessions.yaml solo referencia (NO duplica), (3) Context Agent carga selectivamente si sessions.yaml menciona, (4) escalable (50+ reuniones sin problemas)."
         alternativas_consideradas:
           - "memory/full/reunions.yaml: descartado (explotan límites rápido, rotación frecuente, difícil lectura archivos grandes)"
           - "memory/history/reunions/: descartado (history es para Plan Contingencia >150K tokens, semántica incorrecta)"
-          - "docs/meetings/: descartado (mezcla inglés-español inconsistente)"
+          - "memsys3/docs/meetings/: descartado (mezcla inglés-español inconsistente)"
         impacto: "Documentación organizada y escalable. Reuniones preservadas indefinidamente sin rotación. Context Agent optimiza tokens (solo carga si referenciada). Naming DDMMYY_N.md permite múltiples reuniones/día."
 
       - decision: "Referencia en sessions.yaml (NO duplicar contenido reunión)"
-        justificacion: "Reuniones tienen contexto completo (300-800 líneas). Duplicar en sessions.yaml: (1) explota límites tokens rápidamente, (2) duplicación innecesaria, (3) inconsistencias si se actualiza reunión post-cierre. sessions.yaml debe contener solo: referencia archivo (docs/reunion/DDMMYY_N.md), resultado principal (1 línea), impacto específico, gotchas extraídos si aplica."
+        justificacion: "Reuniones tienen contexto completo (300-800 líneas). Duplicar en sessions.yaml: (1) explota límites tokens rápidamente, (2) duplicación innecesaria, (3) inconsistencias si se actualiza reunión post-cierre. sessions.yaml debe contener solo: referencia archivo (memsys3/docs/reunion/DDMMYY_N.md), resultado principal (1 línea), impacto específico, gotchas extraídos si aplica."
         alternativas_consideradas:
           - "Copiar contenido completo: descartado (100s de líneas duplicadas, explota sessions.yaml)"
           - "Resumen extenso 50+ líneas: descartado (todavía pesado, pierde detalles técnicos)"
@@ -242,8 +242,8 @@ sessions:
 
       - problema: "Falta metodología formal para debugging colaborativo multi-agente"
         contexto: "Incidentes críticos (ISSUE-007, firmas commits) requerían análisis forense con dos perspectivas: agente que causó problema (contexto ejecución, razonamiento, compromisos) + agente que investiga (análisis código/prompts, propuesta solución, justificación decisiones). Documentación unilateral en sessions.yaml insuficiente: pierde diálogo estructurado, dificulta identificación causa raíz, no extrae lecciones sistémicas."
-        solucion_implementada: "Sistema Reuniones Colaborativas: prompt reunion.md ejecutable (905 líneas) con workflow 6 fases formales + documentación completa docs/reunion/README.md (836 líneas). Metodología reproducible: cualquier par agentes puede usar (Development ↔ Testing, Main ↔ Context, ProjectA ↔ ProjectB). Filosofía 5 principios (transparencia radical, no culpabilización, respeto formal, análisis riguroso, compromiso concreto). Integración ecosistema: reuniones generan ADRs, updates backlog, gotchas en sessions.yaml. Filtro PASO 0 (cuándo SÍ/NO usar) previene abuso."
-        resultado: "Metodología formal operativa y lista para reutilizar. Ejemplos reales documentados (300126_1.md: 446 líneas, 030226_1.md: 740 líneas). Escalable a 50+ reuniones sin problemas (docs/reunion/ independiente). Context Agent carga selectivamente (optimiza tokens)."
+        solucion_implementada: "Sistema Reuniones Colaborativas: prompt reunion.md ejecutable (905 líneas) con workflow 6 fases formales + documentación completa memsys3/docs/reunion/README.md (836 líneas). Metodología reproducible: cualquier par agentes puede usar (Development ↔ Testing, Main ↔ Context, ProjectA ↔ ProjectB). Filosofía 5 principios (transparencia radical, no culpabilización, respeto formal, análisis riguroso, compromiso concreto). Integración ecosistema: reuniones generan ADRs, updates backlog, gotchas en sessions.yaml. Filtro PASO 0 (cuándo SÍ/NO usar) previene abuso."
+        resultado: "Metodología formal operativa y lista para reutilizar. Ejemplos reales documentados (300126_1.md: 446 líneas, 030226_1.md: 740 líneas). Escalable a 50+ reuniones sin problemas (memsys3/docs/reunion/ independiente). Context Agent carga selectivamente (optimiza tokens)."
 
     tech_stack_changes:
       - cambio: "Sin cambios tecnológicos"
@@ -253,7 +253,7 @@ sessions:
     gotchas:
       - tipo: "Metodología documentación"
         problema: "Reuniones largas (300-800 líneas) pueden explotar límites si se duplican en sessions.yaml"
-        solucion: "Principio fundamental: reunión en docs/reunion/DDMMYY_N.md (fuente verdad), sessions.yaml solo referencia + síntesis (highlights: 3-5 bullets, decisions: resumen, gotchas: extraídos). NO duplicar contenido completo. Context Agent carga reunión si sessions.yaml menciona."
+        solucion: "Principio fundamental: reunión en memsys3/docs/reunion/DDMMYY_N.md (fuente verdad), sessions.yaml solo referencia + síntesis (highlights: 3-5 bullets, decisions: resumen, gotchas: extraídos). NO duplicar contenido completo. Context Agent carga reunión si sessions.yaml menciona."
         criticidad: "media"
         origen: "Diseño sistema reuniones sesión 2026-02-03"
 
@@ -272,8 +272,8 @@ sessions:
     notas:
       - "Sesión PESO ALTO justificado: (1) Sistema completo nuevo (metodología formal 1741 líneas totales docs), (2) Decisión arquitectónica importante (reuniones colaborativas vs documentación unilateral), (3) Fix crítico implementado (defensa 4 capas hábito arraigado), (4) Documentación exhaustiva con ejemplos reales"
       - "Sincronización templates completa: reunion.md + github.md (producto final + dog-fooding)"
-      - "Context Agent optimizado: NO lee docs/reunion/ por defecto, solo si sessions.yaml referencia (reduce tokens)"
-      - "Sistema escalable: docs/reunion/ puede tener 50+ reuniones sin rotación (archivos independientes)"
+      - "Context Agent optimizado: NO lee memsys3/docs/reunion/ por defecto, solo si sessions.yaml referencia (reduce tokens)"
+      - "Sistema escalable: memsys3/docs/reunion/ puede tener 50+ reuniones sin rotación (archivos independientes)"
       - "Filosofía preservada: transparencia radical (admitir errores), no culpabilización (mejora sistémica), análisis riguroso (referencias específicas), respeto formal (saludos/firmas), compromiso concreto (acciones específicas)"
 
   - id: "2025-02-02-feature-006-sistema-pesos-sesiones"

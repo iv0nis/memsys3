@@ -14,7 +14,7 @@ visio_general:
 
 estat_actual:
   fase: "Development v0.11.1"
-  ultima_feature: "Compilación context.yaml v0.11.0 + Propuesta Extended Thinking: Primera compilación exitosa post-FEATURE-006 usando sistema de pesos (bajo/medio/alto). context.yaml generado 467 líneas (23.4% utilización), 13 ADRs incluidas, 7 sesiones sintetizadas (5 alto ~90%, 2 medio ~60-70%), 4 gotchas críticos, reducción 96% tokens (95K→3.5K). Estrategia: Plan mode → 3 Explore agents → Subagent compila (calidad 9/10, duplicación ~145K tokens totales). Reflexión arquitectónica: identificada duplicación ineficiente. Propuesta optimización: Subagent + Extended Thinking (-34% tokens, -50% tiempo, +5% calidad). Documentación: propuesta ADR (docs/) + IMPROVEMENT-007 (backlog/). Usuario acepta trade-off: menos transparencia previa a cambio de máxima eficiencia + calidad para tarea crítica. Decisión pendiente futura sesión. ~3h peso alto"
+  ultima_feature: "Compilación context.yaml v0.11.0 + Propuesta Extended Thinking: Primera compilación exitosa post-FEATURE-006 usando sistema de pesos (bajo/medio/alto). context.yaml generado 467 líneas (23.4% utilización), 13 ADRs incluidas, 7 sesiones sintetizadas (5 alto ~90%, 2 medio ~60-70%), 4 gotchas críticos, reducción 96% tokens (95K→3.5K). Estrategia: Plan mode → 3 Explore agents → Subagent compila (calidad 9/10, duplicación ~145K tokens totales). Reflexión arquitectónica: identificada duplicación ineficiente. Propuesta optimización: Subagent + Extended Thinking (-34% tokens, -50% tiempo, +5% calidad). Documentación: propuesta ADR (memsys3/docs/) + IMPROVEMENT-007 (backlog/). Usuario acepta trade-off: menos transparencia previa a cambio de máxima eficiencia + calidad para tarea crítica. Decisión pendiente futura sesión. ~3h peso alto"
   siguiente_milestone: "Decidir aceptar propuesta Extended Thinking → ADR-017 oficial + actualizar compile-context.md + testear Opción A en próxima compilación + Git commit/push cambios actuales (context.yaml, propuesta ADR, IMPROVEMENT-007)"
 
 features:
@@ -66,7 +66,7 @@ features:
   sistema_reuniones_colaborativas:
     nombre: "Sistema Reuniones Colaborativas"
     estado: "operativo"
-    descripcion: "Metodología formal debugging multi-agente. Prompt reunion.md (905 líneas) workflow 6 fases + docs/reunion/README.md (836 líneas). Filosofía 5 principios (transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto). Reuniones en docs/reunion/DDMMYY_N.md, sessions.yaml solo referencia. Context Agent carga selectivamente. Escalable 50+ reuniones. Ejemplos: ISSUE-007 (300126_1.md 446 líneas), firmas commits (030226_1.md 740 líneas)"
+    descripcion: "Metodología formal debugging multi-agente. Prompt reunion.md (905 líneas) workflow 6 fases + memsys3/docs/reunion/README.md (836 líneas). Filosofía 5 principios (transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto). Reuniones en memsys3/docs/reunion/DDMMYY_N.md, sessions.yaml solo referencia. Context Agent carga selectivamente. Escalable 50+ reuniones. Ejemplos: ISSUE-007 (300126_1.md 446 líneas), firmas commits (030226_1.md 740 líneas)"
 
 stack_tecnologic:
   frontend: "HTML/CSS/JS (visualizador)"
@@ -109,14 +109,14 @@ decisions_clau:
   templates: "memory/templates/ son guías permanentes, NO se borran post-deployment"
   gotchas: "Se documentan en sessions.yaml (contextualizados), NO en project-status"
   deployment: "Clone temporal memsys3_temp, copiar, briefing con templates, borrar temp"
-  backlog: "Sistema unificado: memsys3/backlog/ (dog-fooding con items reales) + memsys3_templates/backlog/ (distribuible, solo README). docs/backlog/ ELIMINADO."
+  backlog: "Sistema unificado: memsys3/backlog/ (dog-fooding con items reales) + memsys3_templates/backlog/ (distribuible, solo README). memsys3/docs/backlog/ ELIMINADO."
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
   - data: "2026-02-04"
     resum: "Compilación context.yaml v0.11.0 (467L, 9/10 calidad, reducción 96% tokens). Estrategia Plan+Subagent (duplicación ~145K tokens). Reflexión arquitectónica: propuesta Extended Thinking (Opción A: -34% tokens, +5% calidad). Documentación propuesta ADR + IMPROVEMENT-007. Usuario acepta trade-off eficiencia vs transparencia previa. Decisión pendiente. ~3h peso alto."
   - data: "2026-02-03"
-    resum: "Sistema Reuniones Colaborativas + Fix Firmas: Implementado sistema completo debugging multi-agente (reunion.md 905L + README.md 836L). Metodología 6 fases formales. Filosofía 5 principios. Fix github.md: defensa 4 capas firmas Co-Authored-By (warning prominente + recordatorio crítico + verificación grep). Basado reunión 030226_1.md análisis forense. Reuniones docs/reunion/ (sessions referencia NO duplica). Context Agent selectivo. Sincronización templates. ~2.5h, peso alto."
+    resum: "Sistema Reuniones Colaborativas + Fix Firmas: Implementado sistema completo debugging multi-agente (reunion.md 905L + README.md 836L). Metodología 6 fases formales. Filosofía 5 principios. Fix github.md: defensa 4 capas firmas Co-Authored-By (warning prominente + recordatorio crítico + verificación grep). Basado reunión 030226_1.md análisis forense. Reuniones memsys3/docs/reunion/ (sessions referencia NO duplica). Context Agent selectivo. Sincronización templates. ~2.5h, peso alto."
   - data: "2025-12-30"
     resum: "Bug Fix ISSUE-005 + ADR-016: Resuelto bug crítico actualizar.md (3 prompts faltantes: adr.md, backlog.md, commands.md) reportado por usuario tras actualización Taller Colomer v0.6.1→v0.8.1. Investigación completa + confirmación con instancia que hizo actualización. Fix manual aplicado (Opción A). ADR-016 documenta principio fundamental: memsys3 agnóstico modelo IA, commands opcional Claude-específico. Arquitectura fuente verdad clara: templates→prompts→commands. Documentación actualizada (commands.md warning, README compatibilidad agnóstica). ISSUE-006 (backups .gitignore alta prioridad) + FEATURE-004 (detectar prompts/agents media prioridad) documentados. Índice ADRs: 16 totales. ~2.5h, calidad 9/10 (bug fix crítico + decisión arquitectónica fundamental)."
   - data: "2025-12-17"
@@ -140,7 +140,7 @@ historic_sessions:
   - data: "2025-11-14"
     resum: "MEJORA CRÍTICA Context Agent: Análisis profundo README automático (PASO 7 obligatorio) + Integración backlog selectiva. compile-context.md: +309 líneas (10 categorías exhaustivas A-J con evidencia, reporte estructurado, aprovecha 200K tokens sin releer). context-template.yaml: +34 líneas (nueva sección backlog). Lectura selectiva: backlog/README.md + items referenciados en pendientes. Criterios inclusión/exclusión definidos. Confusión README pokerezza vs memsys3 detectada/corregida. Meta-aprendizaje: CA debe aprovechar contexto en mismo flujo compilación. Development v1.9."
   - data: "2025-11-14"
-    resum: "Feature Backlog convertido dog-fooding → distribuible. README agnóstico (315 líneas) con 3 ejemplos. Prompt backlog.md mejorado (38 líneas, 3 operaciones). Desplegado en 4 ubicaciones. Migración completa: 3 items movidos docs/backlog/ → memsys3/backlog/, docs/backlog/ ELIMINADO. Prompt actualizado rutas correctas. Sistema unificado. Development v1.8."
+    resum: "Feature Backlog convertido dog-fooding → distribuible. README agnóstico (315 líneas) con 3 ejemplos. Prompt backlog.md mejorado (38 líneas, 3 operaciones). Desplegado en 4 ubicaciones. Migración completa: 3 items movidos memsys3/docs/backlog/ → memsys3/backlog/, memsys3/docs/backlog/ ELIMINADO. Prompt actualizado rutas correctas. Sistema unificado. Development v1.8."
   - data: "2025-11-13"
     resum: "Fix endSession.md: agregado warning explícito NO crear archivos en memory/history/ (solo Plan Contingencia >150K tokens). Detectado en tallersColomer donde agentes creaban session-*.yaml incorrectamente. Limpieza tallersColomer (3 archivos → history_backup/). Gotcha criticidad media documentado. Commit 3107efe. 2 archivos modificados."
   - data: "2025-11-13"
@@ -152,7 +152,7 @@ historic_sessions:
   - data: "2025-11-12"
     resum: "Deployment exitoso en Soluzzia (primer proyecto real). Context Agent lee README.md (input obligatorio, máx 300 líneas). Sistema tracking versiones memsys3 (memsys3_version, memsys3_deployed). Verificación post-compilación de README. FEATURE-002 backlog (prompt actualizar.md). 9 archivos modificados, 254 líneas agregadas. IMPROVEMENT-001 parcialmente resuelto."
   - data: "2025-11-03"
-    resum: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
+    resum: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración memsys3/docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
   - data: "2025-11-02"
     duracion: "~2.5h"
     objetivo: "FASE 3 Correcciones - Valores Descriptivos YAML"
