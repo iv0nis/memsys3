@@ -3,11 +3,98 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-02-06-deployment-businesshub-testing-real"
+    data: "2026-02-06"
+    duracion: "~1h"
+    peso: "medio"
+    titulo: "Deployment Testing Real - BusinessHub (Proyecto Externo)"
+    highlights:
+      - "Primera validación completa del sistema de deployment en proyecto real externo (BusinessHub)"
+      - "Workflow completo /deploy-memsys3 ejecutado: clone temp → briefing → personalización → compile-context"
+      - "Deployment exitoso: estructura completa desplegada en /mnt/c/PROYECTOS/SoluzzIAvers/BusinessHub"
+      - "Briefing interactivo con 7 preguntas (descripción, fase, stack, deployment, idiomas, objetivo)"
+      - "Generados project-status.yaml y newSession.md personalizados para BusinessHub"
+      - "Compilación context.yaml inicial (v0.1.0): 140 líneas, 600 tokens, 7% utilización"
+      - "Gotcha detectado: newSession.md sin instrucción 'TRABAJA EN ESPAÑOL' → otra instancia respondió en inglés"
+
+    que_se_va_fer:
+      - "Usuario solicitó deployment de memsys3 en proyecto nuevo (BusinessHub)"
+      - "Ejecutado comando /deploy-memsys3 (launcher pattern)"
+      - "Clone temporal de repo memsys3 desde GitHub"
+      - "Copia de estructura completa a BusinessHub/memsys3/"
+      - "Briefing con usuario: 7 preguntas sobre el proyecto (descripción, fase, stack frontend/backend, deployment, idiomas UI/código, objetivo)"
+      - "Obtención versión memsys3: v0.11.1-1-gb4e17ad"
+      - "Generación project-status.yaml personalizado con toda la info de BusinessHub"
+      - "Personalización newSession.md con contexto específico del proyecto"
+      - "Usuario eligió Opción B: incluir memsys3/ en git (@ menciones funcionarán)"
+      - "Limpieza clone temporal"
+      - "Ejecución compile-context.md como Context Agent"
+      - "Generación context.yaml inicial (deployment sin historial)"
+      - "Usuario reportó que otra instancia (en BusinessHub) respondió en inglés"
+      - "Proporcionado prompt para que otra instancia corrija newSession.md"
+
+    features_implementadas: []
+    # Nota: No se implementaron features nuevas de memsys3, solo testing de deployment
+
+    problemas_resueltos:
+      - problema: "Testing real del sistema de deployment en proyecto externo"
+        solucio: "Deployment completo exitoso en BusinessHub validando todo el workflow"
+      - problema: "newSession.md sin instrucción de idioma → instancia habla en inglés"
+        solucio: "Detectado gotcha, proporcionado prompt para corrección en otra instancia"
+
+    decisions_tomades:
+      - "BusinessHub eligió Opción B de .gitignore: incluir memsys3/ en git (@ menciones funcionarán)"
+      - "Context Agent generó contexto mínimo inicial (sin ADRs, sesiones, gotchas - proyecto nuevo)"
+
+    gotchas:
+      - tipus: "deployment"
+        problema: "newSession.md personalizado en deployment NO incluye instrucción 'TRABAJA EN ESPAÑOL SIEMPRE'"
+        solucio: "Agregar bloque 'Importante' con instrucción de idioma en newSession.md durante personalización (PASO 6 de deploy.md)"
+        criticitat: "media"
+        contexto: "Durante deployment en BusinessHub, el newSession.md personalizado no incluyó la instrucción de trabajar en español. Resultado: cuando se ejecutó newSession.md en BusinessHub, Claude respondió en inglés. El newSession.md de memsys3 (dog-fooding) SÍ tiene esta instrucción, pero no se copia al personalizar. Deploy.md debe actualizar PASO 6 para incluir siempre este bloque."
+
+    tech_afegida: []
+    tech_eliminada: []
+
+    urls_desplegades: []
+    # Nota: Deployment fue en proyecto externo BusinessHub, no en memsys3
+
+    proxims_passos:
+      - "Actualizar deploy.md PASO 6 para incluir bloque '## Importante' con instrucción de idioma español"
+      - "Testear actualizar.md en próximo proyecto que tenga memsys3 desplegado"
+      - "Considerar agregar validación post-deployment que verifique instrucción de idioma"
+
+    notes: |
+      Primera validación real del sistema de deployment memsys3 en proyecto externo (BusinessHub).
+
+      Contexto BusinessHub:
+      - Hub empresarial all-in-one: CRM, ERP, facturación, proyectos, inventario, tesorería
+      - Fase: MVP / Desarrollo inicial
+      - Stack: Next.js + Node.js/Express + Python/FastAPI
+      - Referencia: Holded como base, expandiendo funcionalidades
+      - Objetivo: crear hub empresarial definitivo con IA
+      - Idioma UI: Multi-idioma (Catalán, Español, Inglés)
+      - Idioma código: Inglés
+
+      Deployment workflow validado completo:
+      1. ✅ Clone temporal de repo
+      2. ✅ Copia estructura a memsys3/
+      3. ✅ Briefing interactivo (7 preguntas)
+      4. ✅ Personalización project-status.yaml
+      5. ✅ Personalización newSession.md
+      6. ✅ Configuración .gitignore (Opción B)
+      7. ✅ Limpieza temporal
+      8. ✅ Compilación context.yaml inicial
+
+      Gotcha detectado: newSession.md sin instrucción de idioma causó respuesta en inglés.
+
+      Sistema de deployment funciona correctamente end-to-end. Mejora identificada para PASO 6 de deploy.md.
+
   - id: "2026-02-04-compilacion-context-v0110-propuesta-extended-thinking"
     data: "2026-02-04"
-    duracion: "~3h"
+    duracion: "~4h"
     peso: "alto"
-    titulo: "Compilación context.yaml v0.11.0 + Propuesta Extended Thinking (Eficiencia Arquitectónica)"
+    titulo: "Compilación context.yaml v0.11.0 + Propuesta Extended Thinking + Refactor Arquitectónico"
 
     highlights:
       - "Primera compilación exitosa post-FEATURE-006 (sistema pesos): context.yaml v0.11.0 generado (467 líneas, 9/10 calidad)"
@@ -16,8 +103,12 @@ sessions:
       - "Reflexión arquitectónica post-compilación: Identificada duplicación ineficiente (Explore + Subagent leen mismo contenido → ~145K tokens totales)"
       - "Análisis comparativo 6 estrategias: Plan+yo, Plan+subagent, Plan+sin-releer, Directo, Subagent-solo, Subagent+ExtThinking"
       - "Propuesta optimización: Subagent con extended thinking (una lectura ~95K, +5% calidad, -34% tokens vs actual)"
-      - "Documentación completa: Propuesta ADR (memsys3/docs/) + IMPROVEMENT-007 (backlog/) con comparativa cuantitativa y trade-offs"
-      - "Usuario acepta trade-off: menos transparencia previa a cambio de máxima eficiencia + calidad para tarea crítica"
+      - "Documentación: IMPROVEMENT-007 (backlog/) + análisis técnico memsys3/docs/specs/ (369L) consolidado"
+      - "Usuario acepta trade-off: menos transparencia previa a cambio de máxima eficiencia + calidad"
+      - "Refactor arquitectónico: docs/ → memsys3/docs/ (14 archivos movidos, referencias actualizadas)"
+      - "ISSUE-008 creado: sincronizar cambio docs/ en templates (medio plazo)"
+      - "Carpeta specs/ creada: análisis consolidado (eliminada redundancia adr-proposal 197L)"
+      - "Git workflow: v0.11.1 tagged + commit refactor + consolidación docs"
 
     features_implementadas:
       - nombre: "context.yaml v0.11.0 compilado con sistema de pesos"
@@ -34,9 +125,9 @@ sessions:
           - Reducción 96% tokens: ~95K leídos → ~3.5K generados
           - YAML válido, estructura template completa, notas compilación transparentes
 
-      - nombre: "memsys3/docs/adr-proposal-extended-thinking-compile-context.md"
+      - nombre: "memsys3/docs/specs/analisis-estrategias-compilacion-context-2026-02-04.md"
         descripcion: |
-          Propuesta ADR completa documentando optimización compile-context.md:
+          Análisis técnico completo + propuesta ADR optimización compile-context.md (369 líneas):
           - Contexto: Duplicación identificada (Explore agents + Subagent = ~145K tokens leídos)
           - Decisión propuesta: Un solo subagent con extended thinking (una lectura ~95K tokens)
           - Análisis 6 estrategias con pros/contras/razones descartadas
