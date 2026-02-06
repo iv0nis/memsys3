@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-02-04"
-  actualizado_por: "Claude (Session Compilación context.yaml v0.11.0 + Propuesta Extended Thinking)"
-  fase: "Development v0.11.1"
-  memsys3_version: "v0.11.1"
+  ultima_actualizacion: "2026-02-06"
+  actualizado_por: "Claude (Release v0.11.2)"
+  fase: "Development v0.11.2"
+  memsys3_version: "v0.11.2"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -13,9 +13,9 @@ visio_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estat_actual:
-  fase: "Development v0.11.1"
-  ultima_feature: "Compilación context.yaml v0.11.0 + Propuesta Extended Thinking: Primera compilación exitosa post-FEATURE-006 usando sistema de pesos (bajo/medio/alto). context.yaml generado 467 líneas (23.4% utilización), 13 ADRs incluidas, 7 sesiones sintetizadas (5 alto ~90%, 2 medio ~60-70%), 4 gotchas críticos, reducción 96% tokens (95K→3.5K). Estrategia: Plan mode → 3 Explore agents → Subagent compila (calidad 9/10, duplicación ~145K tokens totales). Reflexión arquitectónica: identificada duplicación ineficiente. Propuesta optimización: Subagent + Extended Thinking (-34% tokens, -50% tiempo, +5% calidad). Documentación: propuesta ADR (memsys3/docs/) + IMPROVEMENT-007 (backlog/). Usuario acepta trade-off: menos transparencia previa a cambio de máxima eficiencia + calidad para tarea crítica. Decisión pendiente futura sesión. ~3h peso alto"
-  siguiente_milestone: "Decidir aceptar propuesta Extended Thinking → ADR-017 oficial + actualizar compile-context.md + testear Opción A en próxima compilación + Git commit/push cambios actuales (context.yaml, propuesta ADR, IMPROVEMENT-007)"
+  fase: "Development v0.11.2"
+  ultima_feature: "Deployment Testing Real BusinessHub: Primera validación completa deployment en proyecto externo. Workflow /deploy-memsys3 end-to-end exitoso (clone, briefing 7 preguntas, personalización, compile-context inicial v0.1.0). Gotcha detectado: newSession.md sin instrucción idioma español. Deployment exitoso en BusinessHub (hub empresarial all-in-one CRM/ERP Next.js+Node.js+Python). ~1h peso medio"
+  siguiente_milestone: "Actualizar deploy.md PASO 6 con instrucción idioma español + Resolver ISSUE-008 (sincronizar docs/ en templates) + Decidir propuesta Extended Thinking → ADR-017 + Git commit/push cambios pendientes"
 
 features:
   context_agent:
@@ -113,8 +113,10 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2026-02-06"
+    resum: "Deployment Testing Real - BusinessHub: Primera validación completa deployment en proyecto externo. Workflow /deploy-memsys3 end-to-end exitoso. Briefing 7 preguntas + personalización + compile-context inicial v0.1.0 (140L). Gotcha: newSession.md sin instrucción idioma español → otra instancia habló inglés. Deployment exitoso hub empresarial BusinessHub (Next.js+Node.js+Python). ~1h peso medio."
   - data: "2026-02-04"
-    resum: "Compilación context.yaml v0.11.0 (467L, 9/10 calidad, reducción 96% tokens). Estrategia Plan+Subagent (duplicación ~145K tokens). Reflexión arquitectónica: propuesta Extended Thinking (Opción A: -34% tokens, +5% calidad). Documentación propuesta ADR + IMPROVEMENT-007. Usuario acepta trade-off eficiencia vs transparencia previa. Decisión pendiente. ~3h peso alto."
+    resum: "Compilación context.yaml v0.11.0 (467L, reducción 96% tokens). Propuesta Extended Thinking (-34% tokens, +5% calidad). Refactor: docs/ → memsys3/docs/ (14 archivos). ISSUE-008 + specs/ creados. Análisis consolidado (369L). Git: v0.11.1 tagged. Usuario acepta trade-off. ~4h peso alto."
   - data: "2026-02-03"
     resum: "Sistema Reuniones Colaborativas + Fix Firmas: Implementado sistema completo debugging multi-agente (reunion.md 905L + README.md 836L). Metodología 6 fases formales. Filosofía 5 principios. Fix github.md: defensa 4 capas firmas Co-Authored-By (warning prominente + recordatorio crítico + verificación grep). Basado reunión 030226_1.md análisis forense. Reuniones memsys3/docs/reunion/ (sessions referencia NO duplica). Context Agent selectivo. Sincronización templates. ~2.5h, peso alto."
   - data: "2025-12-30"
