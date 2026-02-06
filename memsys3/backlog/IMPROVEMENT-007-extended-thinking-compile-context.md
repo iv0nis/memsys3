@@ -172,7 +172,7 @@ a cambio de menos transparencia previa (-33%). Para tarea regular, el trade-off 
 
 **Próximos pasos:**
 
-1. ✅ Documentar propuesta en `memsys3/docs/adr-proposal-extended-thinking-compile-context.md`
+1. ✅ Documentar propuesta en `memsys3/docs/specs/analisis-estrategias-compilacion-context-2026-02-04.md`
 2. ✅ Crear IMPROVEMENT-007 en backlog (este documento)
 3. ⏳ Decidir si aceptar propuesta → crear ADR-017 oficial
 4. ⏳ Si se acepta: actualizar compile-context.md con sección "Ejecución Recomendada"
@@ -189,7 +189,7 @@ a cambio de menos transparencia previa (-33%). Para tarea regular, el trade-off 
   - ADR-008: Main-Agent NO debe proponer compile-context
 
 - **Documentos:**
-  - `memsys3/docs/adr-proposal-extended-thinking-compile-context.md` (propuesta completa)
+  - `memsys3/docs/specs/analisis-estrategias-compilacion-context-2026-02-04.md` (propuesta completa)
   - `memsys3/prompts/compile-context.md` (prompt a actualizar)
   - `memsys3/agents/context-agent.yaml` (opcional actualizar)
 
