@@ -1,10 +1,11 @@
 # ISSUE-009: endSession.md crea estructura en directorio incorrecto (rutas relativas inseguras)
 
-**Estado**: Abierto
+**Estado**: Completado
 **Prioridad**: Alta
 **Tipo**: Bug
 **Plazo**: Corto plazo
 **Fecha creación**: 2026-02-06
+**Fecha completado**: 2026-02-17
 
 ---
 
