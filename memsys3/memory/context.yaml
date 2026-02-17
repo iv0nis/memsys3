@@ -15,7 +15,7 @@ project:
   nombre: "memsys3"
   descripcion: "Sistema de gestión de contexto para AI Development Agents - optimiza tokens proporcionando contexto compacto y relevante"
   fase: "Development v0.11.0"
-  ultima_feature: "Sistema Reuniones Colaborativas + Fix Firmas Commits: Metodología formal 6 fases para debugging multi-agente. Prompt reunion.md (905L) + docs completa (836L). Filosofía 5 principios. Fix github.md defensa 4 capas firmas Co-Authored-By. Basado reunión 030226_1.md análisis forense. Escalable 50+ reuniones. ~2.5h peso alto"
+  ultima_feature: "Sistema Reuniones Colaborativas + Fix Firmas Commits: Metodología formal 6 fases para debugging multi-agente. Prompt meet-research.md (905L) + meet-coord.md (65L) + docs completa (836L). Filosofía 5 principios. Fix github.md defensa 4 capas firmas Co-Authored-By. Basado reunión 030226_1.md análisis forense. Escalable 50+ reuniones. ~2.5h peso alto"
   siguiente_milestone: "Testear fix firmas commits en próximo workflow github.md completo + Validar metodología reuniones en próximo incidente crítico + Git commit/push"
 
 # ============================================
@@ -80,7 +80,7 @@ features:
   sistema_reuniones_colaborativas:
     nombre: "Sistema Reuniones Colaborativas"
     estado: "operativo"
-    descripcion: "Metodología formal debugging multi-agente. Prompt reunion.md (905L) workflow 6 fases + docs/reunion/README.md (836L). Filosofía 5 principios: transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto. Reuniones docs/reunion/DDMMYY_N.md, sessions.yaml solo referencia. Context Agent carga selectivamente. Escalable 50+ reuniones"
+    descripcion: "Dos tipos de reunión: meet-research.md (905L, 6 fases, debugging forense multi-agente) + meet-coord.md (65L, coordinación general). docs/meets/README.md (836L). Filosofía 5 principios: transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto. Reuniones docs/meets/DDMMYY_N.md, sessions.yaml solo referencia. Context Agent carga selectivamente. Escalable 50+ reuniones"
 
 # ============================================
 # STACK TECNOLÓGICO
@@ -227,17 +227,17 @@ sesiones:
     peso: "alto"
     que_hizo:
       - "Implementado sistema completo Reuniones Colaborativas: metodología formal debugging multi-agente"
-      - "Prompt reunion.md ejecutable (905L): workflow 6 fases estructuradas (Presentación → Respuesta Inicial → Respuesta Detallada → Análisis Profundo → Implementación → Cierre Formal)"
-      - "Documentación completa docs/reunion/README.md (836L): filosofía 5 principios fundamentales, anatomía reunión, ejemplos reales"
+      - "Prompt meet-research.md ejecutable (905L): workflow 6 fases estructuradas (Presentación → Respuesta Inicial → Respuesta Detallada → Análisis Profundo → Implementación → Cierre Formal)"
+      - "Documentación completa docs/meets/README.md (836L): filosofía 5 principios fundamentales, anatomía reunión, ejemplos reales"
       - "Fix github.md implementado: defensa en profundidad 4 capas contra firmas Co-Authored-By (hábito arraigado detectado en reunión 030226_1.md)"
       - "Sincronización completa: memsys3_templates/ (producto final) + memsys3/ (dog-fooding)"
       - "Filosofía: transparencia radical + no culpabilización + análisis riguroso + respeto formal + compromiso concreto"
     decisions:
       - "Sistema Reuniones Colaborativas para debugging multi-agente: Incidentes críticos requieren análisis forense con dos perspectivas (investigador + investigado). Documentación unilateral en sessions.yaml es insuficiente para problemas complejos con patrones recurrentes. Formato formal garantiza trazabilidad completa y mejora sistémica"
       - "Defensa en profundidad 4 capas para prevención firmas commits: Reunión colaborativa reveló que hábito arraigado de añadir 'Co-Authored-By: Claude' requiere múltiples capas de prevención. 1 advertencia insuficiente. Defensa multi-capa ataca en 4 momentos críticos: inicio, commit version, tag, verificación post-push"
-      - "Ubicación docs/reunion/ para reuniones (vs memory/full/): Reuniones son documentos largos (300-800 líneas). Incluirlas en memory/full/ sessions.yaml explota límites rápidamente. docs/reunion/ separado permite archivos independientes, sessions.yaml solo referencia (NO duplica), Context Agent carga selectivamente, escalable 50+ reuniones"
+      - "Ubicación docs/meets/ para reuniones (vs memory/full/): Reuniones son documentos largos (300-800 líneas). Incluirlas en memory/full/ sessions.yaml explota límites rápidamente. docs/meets/ separado permite archivos independientes, sessions.yaml solo referencia (NO duplica), Context Agent carga selectivamente, escalable 50+ reuniones"
     gotchas:
-      - "Reuniones largas (300-800L) pueden explotar límites si se duplican en sessions.yaml. Principio: reunión en docs/reunion/DDMMYY_N.md (fuente verdad), sessions.yaml solo referencia + síntesis. NO duplicar contenido completo"
+      - "Reuniones largas (300-800L) pueden explotar límites si se duplican en sessions.yaml. Principio: reunión en docs/meets/DDMMYY_N.md (fuente verdad), sessions.yaml solo referencia + síntesis. NO duplicar contenido completo"
       - "1 advertencia insuficiente para prevenir comportamientos arraigados en training data (firmas Co-Authored-By). Defensa en profundidad multi-capa: atacar hábito en múltiples momentos críticos. Ejemplo: github.md 4 capas (warning prominente + recordatorio commit + recordatorio tag + verificación grep). Margen error esperado: 70% → 5%"
 
   - id: "2025-02-02"
@@ -358,7 +358,7 @@ gotchas:
 
   - id: "reuniones_largas_duplicacion"
     problema: "Reuniones largas (300-800 líneas) pueden explotar límites si se duplican en sessions.yaml. Incluir contenido completo generaría 100s de líneas duplicadas"
-    solucion: "Principio fundamental: reunión en docs/reunion/DDMMYY_N.md (fuente verdad), sessions.yaml solo referencia + síntesis (highlights: 3-5 bullets, decisions: resumen, gotchas: extraídos). NO duplicar contenido completo. Context Agent carga reunión si sessions.yaml menciona"
+    solucion: "Principio fundamental: reunión en docs/meets/DDMMYY_N.md (fuente verdad), sessions.yaml solo referencia + síntesis (highlights: 3-5 bullets, decisions: resumen, gotchas: extraídos). NO duplicar contenido completo. Context Agent carga reunión si sessions.yaml menciona"
     criticidad: "media"
 
 # ============================================
