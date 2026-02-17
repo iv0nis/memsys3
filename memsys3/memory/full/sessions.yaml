@@ -3,6 +3,39 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-02-17-release-v0112-fix-issue009-backlog"
+    data: "2026-02-17"
+    duracion: "~1h"
+    peso: "medio"
+    titulo: "Release v0.11.2 + Fix ISSUE-009 rutas inseguras + Backlog"
+
+    highlights:
+      - "Release v0.11.2: github.md workflow, 2 commits (bump versión + docs sesiones 2026-02-04 y 2026-02-06), tag pusheado"
+      - "Fix ISSUE-009 implementado: PASO 0 checkpoint MEMSYS=$(find...) en endSession.md + rutas relativas → \$MEMSYS en PASO 3"
+      - "Limpieza actualizar.md: eliminada firma Co-Authored-By del PASO 11 (inconsistente con política github.md desde sesión 2026-02-03)"
+      - "Sincronización: cambios aplicados en memsys3/prompts/ + memsys3_templates/prompts/"
+      - "Backlog: ISSUE-009 cerrado (Completado), ISSUE-010 creado (actualización automática estado backlog), ISSUE-011 creado (simplificar pregunta .gitignore en deploy)"
+      - "Aprendizaje: variables bash NO persisten entre tool calls → cada bloque bash redefine MEMSYS con find"
+
+    features_implementadas:
+      - nombre: "Fix ISSUE-009: Checkpoint memsys3 en endSession.md"
+        descripcion: |
+          Implementada Opción A del ISSUE-009:
+          - PASO 0 nuevo: find . -maxdepth 3 -name "memsys3" para localizar memsys3 antes de operar
+          - PASO 3: todos los bloques bash redefinen MEMSYS=$(find...) y usan rutas absolutas con "$MEMSYS"
+          - Nota documental: variables bash no persisten entre tool calls (importante para futuros devs)
+          - Falla limpiamente si memsys3 no existe (no crea basura en CWD incorrecto)
+
+    problemas_resueltos:
+      - problema: "ISSUE-009: endSession.md creaba estructura en directorio incorrecto"
+        solucio: "PASO 0 con find detecta ruta real. PASO 3 usa \$MEMSYS en todos los comandos"
+      - problema: "actualizar.md propagaba firma Co-Authored-By a proyectos desplegados"
+        solucio: "Eliminadas 4 líneas del PASO 11 (emoji, línea vacía, Co-Authored-By)"
+
+    decisions_tomadas:
+      - "Variables bash en prompts: NO usar variables de PASO 0 en pasos posteriores. Cada bloque redefine."
+      - "Estado backlog: deben actualizarse manualmente al cerrar (ISSUE-010 trackea automatización futura)"
+
   - id: "2026-02-06-deployment-businesshub-testing-real"
     data: "2026-02-06"
     duracion: "~1h"
