@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-02-06"
-  actualizado_por: "Claude (Release v0.11.2)"
+  ultima_actualizacion: "2026-02-17"
+  actualizado_por: "Claude (Session Release v0.11.2 + Fix ISSUE-009)"
   fase: "Development v0.11.2"
-  memsys3_version: "v0.11.3"
+  memsys3_version: "v0.11.2"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -14,8 +14,8 @@ visio_general:
 
 estat_actual:
   fase: "Development v0.11.2"
-  ultima_feature: "Deployment Testing Real BusinessHub: Primera validación completa deployment en proyecto externo. Workflow /deploy-memsys3 end-to-end exitoso (clone, briefing 7 preguntas, personalización, compile-context inicial v0.1.0). Gotcha detectado: newSession.md sin instrucción idioma español. Deployment exitoso en BusinessHub (hub empresarial all-in-one CRM/ERP Next.js+Node.js+Python). ~1h peso medio"
-  siguiente_milestone: "Actualizar deploy.md PASO 6 con instrucción idioma español + Resolver ISSUE-008 (sincronizar docs/ en templates) + Decidir propuesta Extended Thinking → ADR-017 + Git commit/push cambios pendientes"
+  ultima_feature: "Fix ISSUE-009: rutas relativas inseguras en endSession.md. PASO 0 checkpoint con MEMSYS=$(find...) + PASO 3 usa \$MEMSYS. Limpieza: eliminada firma Co-Authored-By de actualizar.md PASO 11. Release v0.11.2 + ISSUE-010/011 creados. ~1h peso medio"
+  siguiente_milestone: "Resolver ISSUE-010 (actualización automática estado backlog en endSession) + ISSUE-011 (simplificar pregunta .gitignore en deploy) + ISSUE-008 (sincronizar docs/ en templates) + Decidir propuesta Extended Thinking → ADR-017"
 
 features:
   context_agent:
@@ -113,6 +113,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2026-02-17"
+    resum: "Release v0.11.2 + Fix ISSUE-009 (rutas inseguras endSession: PASO 0 checkpoint MEMSYS + \$MEMSYS en PASO 3) + Limpieza firma actualizar.md + ISSUE-010/011 creados. ~1h peso medio."
   - data: "2026-02-06"
     resum: "Deployment Testing Real - BusinessHub: Primera validación completa deployment en proyecto externo. Workflow /deploy-memsys3 end-to-end exitoso. Briefing 7 preguntas + personalización + compile-context inicial v0.1.0 (140L). Gotcha: newSession.md sin instrucción idioma español → otra instancia habló inglés. Deployment exitoso hub empresarial BusinessHub (Next.js+Node.js+Python). ~1h peso medio."
   - data: "2026-02-04"
