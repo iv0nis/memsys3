@@ -29,6 +29,7 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Sistema ADRs gestionable: prompt adr.md para gestionar decisiones arquitectónicas (consultar, crear, actualizar)
 - ✅ Sistema sincronización catalana: actualizar_cat.md sincroniza español → catalán (branch catalan GitHub)
 - ✅ Context Agent mejorado: análisis profundo README automático (PASO 7, 10 categorías) + integración backlog selectiva
+- ✅ Statusline personalizable para Claude Code: monitoreo de uso de contexto activo en tiempo real (tokens/porcentaje alineado con `/context`)
 
 ## ⚡ Quick Start
 
@@ -211,6 +212,12 @@ python3 serve.py
 - Opción B: Incluir - para equipos que compartan contexto
 - Previene subida accidental de información sensible (sessions, decisiones, gotchas)
 - **⚠️ Workaround @ mentions**: Si eliges Opción A (excluir), @ mentions NO funcionan (limitación Claude Code). Solución: usar instrucciones directas ("Ejecuta memsys3/prompts/newSession.md")
+
+### Statusline para Claude Code
+- Script `~/.claude/statusline.sh` que muestra modelo y uso de contexto activo en tiempo real
+- Muestra porcentaje y tokens calculados desde `used_percentage` (no `total_input_tokens` histórico)
+- Esto alinea los valores con los que muestra `/context`, evitando confusión por tokens acumulados
+- **Nota**: `/compact` y `/context` no disparan actualización del statusline — enviar cualquier mensaje regular sí lo actualiza
 
 ## 🛠 Stack Tecnológico
 
