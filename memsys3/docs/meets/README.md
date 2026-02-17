@@ -562,7 +562,7 @@ Las reuniones usan emojis consistentemente para categorización rápida:
 
 1. **Verificar necesidad:** ¿Realmente requiere reunión formal? (Ver "Cuándo Usar")
 2. **Determinar roles:** ¿Quién investiga? ¿Quién es investigado?
-3. **Crear archivo:** `docs/reunion/DDMMYY_N.md`
+3. **Crear archivo:** `docs/meets/DDMMYY_N.md`
 4. **Escribir header:** Título, fecha, participantes, objetivo
 
 ### Paso 2: Ejecutar Fases
@@ -577,16 +577,16 @@ Seguir estructura de 6 fases descrita en "Anatomía de una Reunión":
 
 ### Paso 3: Guardar y Referenciar
 
-**Guardar:** `docs/reunion/DDMMYY_N.md` (archivo completo)
+**Guardar:** `docs/meets/DDMMYY_N.md` (archivo completo)
 
 **Referenciar en sessions.yaml:**
 ```yaml
 highlights:
-  - "Reunión colaborativa con [agente] sobre [tema] (docs/reunion/DDMMYY_N.md)"
+  - "Reunión colaborativa con [agente] sobre [tema] (docs/meets/DDMMYY_N.md)"
   - "[Resultado principal de la reunión]"
 
 decisions:
-  - "Implementado fix [problema] basado en análisis reunión (ver docs/reunion/DDMMYY_N.md)"
+  - "Implementado fix [problema] basado en análisis reunión (ver docs/meets/DDMMYY_N.md)"
 ```
 
 **IMPORTANTE:** NO duplicar contenido. Reunión está en su archivo, `sessions.yaml` solo REFERENCIA.
@@ -618,7 +618,7 @@ decisions:
 - `030226_1.md` = 03 de febrero de 2026, primera reunión del día
 - `030226_2.md` = 03 de febrero de 2026, segunda reunión del día
 
-**Ubicación:** `docs/reunion/`
+**Ubicación:** `docs/meets/`
 
 **Nota:** Este formato prioriza **consistencia** sobre ordenamiento alfabético. Si en futuro hay 50+ reuniones, considerar migración a `YYYYMMDD_N.md`.
 
@@ -788,13 +788,13 @@ highlights:
 ```yaml
 # sessions.yaml
 highlights:
-  - "Reunión colaborativa Agente Taller Colomer sobre ISSUE-007 (docs/reunion/300126_1.md)"
+  - "Reunión colaborativa Agente Taller Colomer sobre ISSUE-007 (docs/meets/300126_1.md)"
   - "Identificado bug crítico: Write tool sobrescribe sessions.yaml"
   - "Fix implementado: endSession.md ahora especifica Edit tool explícitamente"
 
 decisions:
   - decision: "Modificar endSession.md PASO 4.A para prevenir uso Write tool"
-    justificacion: "Ver análisis completo en docs/reunion/300126_1.md"
+    justificacion: "Ver análisis completo en docs/meets/300126_1.md"
     adr_relacionada: null
 
 gotchas:
@@ -816,13 +816,14 @@ gotchas:
 ## Referencias
 
 **Documentación:**
-- Prompt ejecutable: `memsys3/prompts/reunion.md`
+- Prompt investigación: `memsys3/prompts/meet-research.md`
+- Prompt coordinación: `memsys3/prompts/meet-coord.md`
 - Template sessions: `memsys3/memory/templates/sessions-template.yaml`
 - Prompt endSession: `memsys3/prompts/endSession.md`
 
 **Ejemplos completos:**
-- ISSUE-007: `docs/reunion/300126_1.md` (446 líneas)
-- Firmas commits: `docs/reunion/030226_1.md` (740 líneas)
+- ISSUE-007: `docs/meets/300126_1.md` (446 líneas)
+- Firmas commits: `docs/meets/030226_1.md` (740 líneas)
 
 **Contacto:**
 - GitHub: [iv0nis/memsys3](https://github.com/iv0nis/memsys3)

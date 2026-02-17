@@ -133,7 +133,7 @@ grep -r "patrón_problema" memsys3/
 
 #### Crear archivo de reunión
 
-**Ubicación:** `docs/reunion/DDMMYY_N.md`
+**Ubicación:** `docs/meets/DDMMYY_N.md`
 
 **Naming:**
 - `DD` = día hoy (01-31)
@@ -714,7 +714,7 @@ Saludos respetuosos y mucho éxito con memsys3,
 
 #### Guardar archivo
 
-**Ubicación:** `docs/reunion/DDMMYY_N.md`
+**Ubicación:** `docs/meets/DDMMYY_N.md`
 
 Asegurar que archivo tiene:
 - Header completo
@@ -736,13 +736,13 @@ sessions:
     peso: "[alto/medio/bajo]"
 
     highlights:
-      - "Reunión colaborativa con Agente [Nombre] sobre [tema] (docs/reunion/DDMMYY_N.md)"
+      - "Reunión colaborativa con Agente [Nombre] sobre [tema] (docs/meets/DDMMYY_N.md)"
       - "[Resultado principal de la reunión en 1 línea]"
       - "[Impacto: fix implementado / decisión tomada / etc]"
 
     decisions:
       - decision: "Implementado fix [problema]"
-        justificacion: "Ver análisis forense completo en docs/reunion/DDMMYY_N.md"
+        justificacion: "Ver análisis forense completo en docs/meets/DDMMYY_N.md"
         alternativas_consideradas:
           - "[Alternativa si aplica]"
         impacto: "[Impacto específico]"
@@ -764,7 +764,7 @@ sessions:
 ```
 ✅ Reunión colaborativa documentada
 
-   **Archivo:** docs/reunion/DDMMYY_N.md
+   **Archivo:** docs/meets/DDMMYY_N.md
    **Participantes:** [Agente 1], [Agente 2]
    **Resultado:** [Resultado principal]
    **Líneas:** ~X
@@ -879,15 +879,15 @@ Si se resuelve en <5min análisis:
 5. **Integración ecosistema:**
    - Si genera ADR: crear referenciando reunión
    - Si identifica issue: crear en backlog referenciando reunión
-   - Context Agent NO lee docs/reunion/ por defecto (solo si sessions.yaml referencia)
+   - Context Agent NO lee docs/meets/ por defecto (solo si sessions.yaml referencia)
 
 ---
 
 ## Referencias
 
 **Documentación completa:**
-- Sistema reuniones: `docs/reunion/README.md`
-- Ejemplos reales: `docs/reunion/300126_1.md`, `docs/reunion/030226_1.md`
+- Sistema reuniones: `docs/meets/README.md`
+- Ejemplos reales: `docs/meets/300126_1.md`, `docs/meets/030226_1.md`
 
 **Prompts relacionados:**
 - endSession: `memsys3/prompts/endSession.md`
