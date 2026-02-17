@@ -27,7 +27,6 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Consulta .gitignore durante deployment: pregunta si excluir memsys3/ de git (PASO 8, privacidad)
 - ✅ Sistema Backlog distribuible: memsys3/backlog/ con README agnóstico + prompt backlog.md (consultar, crear, actualizar)
 - ✅ Sistema ADRs gestionable: prompt adr.md para gestionar decisiones arquitectónicas (consultar, crear, actualizar)
-- ✅ Sistema sincronización catalana: actualizar_cat.md sincroniza español → catalán (branch catalan GitHub)
 - ✅ Context Agent mejorado: análisis profundo README automático (PASO 7, 10 categorías) + integración backlog selectiva
 - ✅ Statusline personalizable para Claude Code: monitoreo de uso de contexto activo en tiempo real (tokens/porcentaje alineado con `/context`)
 
@@ -268,7 +267,6 @@ Al crear nuevos archivos, pregúntate: **"¿Tiene sentido esto en CUALQUIER proy
 - **SI NO** → Específico: va en `/prompts/` raíz (solo desarrollo memsys3, NO se distribuye)
 
 **Ejemplos de archivos específicos (NO se distribuyen):**
-- `prompts/actualizar_cat.md` - Solo memsys3 tiene versión catalana
 - `prompts/comprobar_alineamiento.md` - Solo memsys3 tiene dog-fooding
 
 **Práctica recomendada:**
