@@ -471,11 +471,7 @@ git commit -m "actualizar: memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA]
 - Templates actualizados
 - Visualizador actualizado
 - history/ creado (Plan Contingencia)
-- Metadata versión actualizada en project-status.yaml
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+- Metadata versión actualizada en project-status.yaml"
 ```
 
 ---

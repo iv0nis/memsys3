@@ -8,6 +8,26 @@ Registrar qué se ha hecho durante esta sesión para que el próximo DevAgent te
 
 ## Workflow
 
+### 0. Localizar memsys3 (CHECKPOINT CRÍTICO)
+
+**Antes de cualquier operación**, verifica que memsys3 existe y obtén su ruta:
+
+```bash
+MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
+
+if [ -z "$MEMSYS" ]; then
+  echo "❌ ERROR: memsys3 no encontrado en este proyecto"
+  echo "¿Has desplegado memsys3? Ejecuta: @memsys3/prompts/deploy.md"
+else
+  echo "✅ memsys3 encontrado en: $MEMSYS"
+  ls "$MEMSYS/memory/full/sessions.yaml" && echo "✅ sessions.yaml OK" || echo "❌ sessions.yaml no encontrado"
+fi
+```
+
+**Si el comando no devuelve ruta:** detén la ejecución, memsys3 no está desplegado.
+
+**⚠️ Importante:** Las variables bash NO persisten entre tool calls. Cada bloque de código redefine `MEMSYS` con este mismo `find`.
+
 ### 1. Recopilar Evidencias Objetivas
 
 Recopila evidencias de qué se ha hecho:
@@ -77,33 +97,37 @@ Antes de documentar, determina la importancia arquitectónica de esta sesión:
 **IMPORTANTE: Rotación flexible según líneas totales**
 
 ```bash
-wc -l memsys3/memory/full/sessions.yaml
+MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
+wc -l "$MEMSYS/memory/full/sessions.yaml"
 ```
 
 **Escenario A: 1800 < líneas < 2000** (Rotación LITE después de documentar)
 ```bash
+MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
 # 1. Documentar sesión normalmente en sessions.yaml (paso 4)
 # 2. DESPUÉS de documentar, si supera 1800 líneas:
-ls memsys3/memory/full/sessions_*.yaml 2>/dev/null  # Encontrar próximo número
-cp memsys3/memory/full/sessions.yaml memsys3/memory/full/sessions_N.yaml  # Copiar completo
-wc -l memsys3/memory/full/sessions_N.yaml  # Verificar (debe incluir sesión actual)
+ls "$MEMSYS/memory/full/sessions_"*.yaml 2>/dev/null  # Encontrar próximo número
+cp "$MEMSYS/memory/full/sessions.yaml" "$MEMSYS/memory/full/sessions_N.yaml"  # Copiar completo
+wc -l "$MEMSYS/memory/full/sessions_N.yaml"  # Verificar (debe incluir sesión actual)
 # 3. Crear nuevo sessions.yaml VACÍO (solo header YAML):
 # sessions:
 ```
 
 **Escenario B: líneas > 2000** (Rotación PRE-documentar)
 ```bash
+MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
 # 1. ANTES de documentar, rotar:
-ls memsys3/memory/full/sessions_*.yaml 2>/dev/null  # Encontrar próximo número
-cp memsys3/memory/full/sessions.yaml memsys3/memory/full/sessions_N.yaml  # Copiar
-wc -l memsys3/memory/full/sessions_N.yaml  # Verificar (sin sesión actual)
+ls "$MEMSYS/memory/full/sessions_"*.yaml 2>/dev/null  # Encontrar próximo número
+cp "$MEMSYS/memory/full/sessions.yaml" "$MEMSYS/memory/full/sessions_N.yaml"  # Copiar
+wc -l "$MEMSYS/memory/full/sessions_N.yaml"  # Verificar (sin sesión actual)
 # 2. Crear nuevo sessions.yaml vacío (solo header YAML)
 # 3. Documentar sesión actual en sessions.yaml NUEVO (desde cero)
 ```
 
 **adr.yaml (mismo proceso):**
 ```bash
-wc -l memsys3/memory/full/adr.yaml
+MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
+wc -l "$MEMSYS/memory/full/adr.yaml"
 # Aplicar Escenario A o B según líneas
 ```
 
