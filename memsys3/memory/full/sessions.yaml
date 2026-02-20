@@ -3,6 +3,48 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-02-20-sistema-reuniones-autonomas-meet-unificado"
+    data: "2026-02-20"
+    duracion: "~4h"
+    peso: "alto"
+    titulo: "Sistema Reuniones Autónomas + meet.md Unificado"
+    highlights:
+      - "Test real reunión autónoma multi-agente con polling bash background (Bash run_in_background)"
+      - "Protocolo reuniones robustizado: headers siempre → [agente], marcador CIERRE, polling en contexto principal"
+      - "meet.md v2.0 creado: Protocolo común + Modo coordinación + Modo investigación"
+      - "Decisión: unificar meet-coord.md + meet-research.md → eliminar tras confirmación"
+      - "ISSUE-005 acordado con Agent B (tallersColomer): loop automático en actualizar.md, excluir solo newSession.md"
+      - "5 reuniones ejecutadas (200226_1 a 200226_5): diagnóstico build, fix actualizar, robustización, planificación, implementación"
+    features_implementadas:
+      - nombre: "meet.md v2.0 unificado"
+        descripcion: "Prompt único con bifurcación al inicio. Protocolo común + Modo coordinación + Modo investigación. Reemplaza meet-coord.md y meet-research.md. Solo en memsys3_templates/prompts/ — pendiente copiar a memsys3/prompts/ y eliminar anteriores"
+        archivos: ["memsys3_templates/prompts/meet.md"]
+      - nombre: "Protocolo reuniones autónomas"
+        descripcion: "Headers siempre → [agente destinatario], CIERRE para fin de turno, polling con Bash run_in_background en contexto principal (no subagente — no heredan permisos Bash)"
+        archivos: ["memsys3/docs/meets/200226_3.md"]
+    decisions:
+      - "Unificar meet-coord + meet-research: evita divergencia de protocolo al hacer mejoras en un solo archivo"
+      - "Polling en contexto principal no subagente: subagentes Task tool no heredan permisos Bash del padre"
+      - "CIERRE como marcador explícito de fin de turno"
+      - "Ubicación archivos reunión: proyecto dueño del tema discutido, no el anfitrión"
+      - "ISSUE-005: loop copia todo memsys3_templates/prompts/* excepto newSession.md"
+    gotchas:
+      - tipus: "subagents"
+        problema: "Subagentes lanzados con Task tool no heredan permisos Bash del contexto principal — fallan silenciosamente"
+        solucio: "Usar Bash tool con run_in_background: true en contexto principal para polling de archivos"
+        criticitat: "alta"
+      - tipus: "polling"
+        problema: "grep en header fallaba si destinatario cambiaba (→ Ivonis en vez de → Agent B) — timeout falso"
+        solucio: "Estandarizar headers: nunca → Moderador durante turnos activos. CIERRE es la señal de fin"
+        criticitat: "media"
+    pendientes:
+      - "Eliminar meet-coord.md y meet-research.md (pendiente confirmación usuario)"
+      - "Copiar meet.md a memsys3/prompts/ (solo está en templates)"
+      - "Implementar ISSUE-005: loop en actualizar.md (decisión tomada, no implementada)"
+      - "200226_1: diagnóstico meets en tallersColomer sin cerrar"
+      - "multiagent.md prompt (Agent ID + Worktrees)"
+      - "endSession.md: añadir línea Agent ID en compact si aplica"
+
   - id: "2026-02-17-release-v0112-fix-issue009-backlog"
     data: "2026-02-17"
     duracion: "~1h"
