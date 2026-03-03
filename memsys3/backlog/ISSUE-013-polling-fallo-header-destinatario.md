@@ -1,6 +1,6 @@
 # ISSUE-013: Polling falla cuando header no apunta al agente esperado
 
-**Estado:** Parcialmente resuelto
+**Estado:** Completado
 **Prioridad:** Media
 **Tipo:** Bug / Protocolo
 **Fecha identificación:** 2026-02-20

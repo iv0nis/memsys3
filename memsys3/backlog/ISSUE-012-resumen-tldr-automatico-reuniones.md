@@ -1,6 +1,6 @@
 # ISSUE-012: Resumen TL;DR automático al final de reuniones
 
-**Estado:** Abierto
+**Estado:** Completado
 **Prioridad:** Media
 **Tipo:** Mejora / UX
 **Fecha identificación:** 2026-02-20
