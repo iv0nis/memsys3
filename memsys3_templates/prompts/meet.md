@@ -94,9 +94,9 @@ El polling detecta cuándo el otro agente ha escrito su turno. Ejecutar en el **
 
 ```bash
 FILE="memsys3/docs/meets/YYYYMMDD_N.md"
-INITIAL=$(grep -c "^## Agent [DESTINO]" "$FILE")
+INITIAL=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
 for i in $(seq 1 40); do
-  current=$(grep -c "^## Agent [DESTINO]" "$FILE")
+  current=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
   if [ "$current" -gt "$INITIAL" ]; then
     tail -60 "$FILE"
     exit 0
@@ -142,19 +142,28 @@ Para: reparto de tareas, conflictos de trabajo paralelo, decisiones compartidas,
 
 ### Flujo del moderador
 
-**PASO 1 — Crear el archivo**
+**PASO 1 — Crear el archivo y escribir el briefing**
 
-Crear `memsys3/docs/meets/YYYYMMDD_N.md` con la estructura base del Protocolo común. El Briefing puede escribirse aquí o darse por chat y que el primer agente lo incorpore.
+El agente convocante crea `memsys3/docs/meets/YYYYMMDD_N.md` con:
+1. Header estándar (Protocolo común)
+2. Sección `## Briefing` con objetivo, contexto y pregunta a deliberar
+
+El briefing debe ser suficiente para que el otro agente entienda todo sin necesitar contexto adicional por chat.
+
+```markdown
+## Briefing
+
+**Objetivo:** [Qué se quiere decidir]
+**Contexto:** [Información necesaria para deliberar]
+**Pregunta:** [Qué debe responder/proponer el otro agente]
+```
 
 **PASO 2 — Convocar**
 
-Pegar en la ventana de cada agente (uno a uno, respetando el turno):
+Basta con pasar el path al otro agente — el archivo contiene todo el contexto:
 
 ```
-Eres Agent [X] ([proyecto]). Lee y escribe tu turno en:
 memsys3/docs/meets/YYYYMMDD_N.md
-
-Al terminar, lanza el polling del Protocolo común y dime en el chat: CTA + resumen breve.
 ```
 
 **PASO 3 — Esperar turnos**
