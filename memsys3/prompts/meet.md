@@ -85,8 +85,11 @@ Al escribir `CIERRE`, añade también:
 
 ```
 TL;DR: [1-2 líneas de qué se acordó]
+Decisión propuesta: [texto listo para escribir en el archivo si el moderador confirma]
 Pendiente: [próximo paso + responsable]
 ```
+
+El moderador confirma con "sí/no". Si confirma, el convocante escribe la `## Decisión` en el archivo.
 
 ### Polling autónomo (para reuniones sin moderador entre turnos)
 
@@ -172,7 +175,7 @@ Los agentes se coordinan solos via polling. El moderador solo interviene si hay 
 
 **PASO 4 — Decisión**
 
-Cuando todos los agentes han escrito `CIERRE`, el moderador escribe:
+Cuando todos los agentes han escrito `CIERRE`, el convocante propone la Decisión en el chat (ver Resumen en chat). El moderador confirma con "sí/no". Si confirma, el convocante escribe en el archivo:
 
 ```markdown
 ## Decisión (Moderador)
@@ -181,8 +184,6 @@ Cuando todos los agentes han escrito `CIERRE`, el moderador escribe:
 
 **Fecha cierre:** YYYY-MM-DD
 ```
-
-Solo el moderador escribe esta sección.
 
 ---
 
