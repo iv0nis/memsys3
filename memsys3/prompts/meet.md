@@ -142,7 +142,7 @@ Para: reparto de tareas, conflictos de trabajo paralelo, decisiones compartidas,
 
 **PASO 1 — Crear el archivo**
 
-Crear `memsys3/docs/meets/DDMMYY_N.md` con la estructura base del Protocolo común. El Briefing puede escribirse aquí o darse por chat y que el primer agente lo incorpore.
+Crear `memsys3/docs/meets/YYYYMMDD_N.md` con la estructura base del Protocolo común. El Briefing puede escribirse aquí o darse por chat y que el primer agente lo incorpore.
 
 **PASO 2 — Convocar**
 
@@ -150,7 +150,7 @@ Pegar en la ventana de cada agente (uno a uno, respetando el turno):
 
 ```
 Eres Agent [X] ([proyecto]). Lee y escribe tu turno en:
-memsys3/docs/meets/DDMMYY_N.md
+memsys3/docs/meets/YYYYMMDD_N.md
 
 Al terminar, lanza el polling del Protocolo común y dime en el chat: CTA + resumen breve.
 ```
