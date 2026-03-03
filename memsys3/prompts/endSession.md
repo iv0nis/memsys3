@@ -214,6 +214,17 @@ Si creas ADR:
 - `historic_sessions`: Añadir entrada resumida
 - `pendientes_prioritarios`: Actualizar según próximos pasos
 
+### 4.5. Persistir agent_id (si aplica)
+
+Si tienes un `agent_id` asignado en esta sesión (ej: "Agent B", "Agent A"), verifica que esté guardado:
+
+```bash
+# Reemplaza AGENT_ID con tu id (ej: agent_b, agent_a)
+cat /tmp/memsys3_AGENT_ID.md 2>/dev/null || echo "Agent B" > /tmp/memsys3_AGENT_ID.md
+```
+
+Esto garantiza que tras un `/compact` puedas recuperar tu identidad leyendo ese archivo.
+
 ### 5. Informar al Usuario
 
 Resumen breve de qué se ha documentado:
