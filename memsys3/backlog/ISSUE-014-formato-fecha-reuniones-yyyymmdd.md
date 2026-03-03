@@ -1,6 +1,6 @@
 # ISSUE-014: Formato fecha reuniones debería ser YYYYMMDD
 
-**Estado:** Abierto
+**Estado:** Completado
 **Prioridad:** Media
 **Tipo:** Mejora / Consistencia
 **Fecha identificación:** 2026-02-20
