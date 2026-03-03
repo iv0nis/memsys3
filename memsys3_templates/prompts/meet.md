@@ -53,6 +53,8 @@ memsys3/docs/meets/YYYYMMDD_N.md
 - Mismo proyecto: `Agent A`, `Agent B`
 - Proyectos distintos: `Agent A (proyecto)`, `Agent B (proyecto)`
 
+> **Nota:** `Agent A`, `Agent B`, etc. son el nombre que el moderador asigna a cada sesión de Claude Code al convocarla. No es un ID técnico del sistema — es simplemente la identidad conversacional para esta reunión. Si no recuerdas quién eres, pregunta al moderador.
+
 ### Sistema de turnos
 
 **Formato de cada turno:**
