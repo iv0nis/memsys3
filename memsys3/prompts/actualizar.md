@@ -203,6 +203,8 @@ Estos son parte del "motor" de memsys3, se pueden sobrescribir:
 - `memsys3/prompts/adr.md`
 - `memsys3/prompts/backlog.md`
 - `memsys3/prompts/commands.md`
+- `memsys3/prompts/meet.md`
+- `memsys3/prompts/agent-identity.md`
 
 **Agents:**
 - `memsys3/agents/context-agent.yaml`
@@ -272,6 +274,12 @@ cp memsys3_update_temp/memsys3_templates/prompts/actualizar.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/adr.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/backlog.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/commands.md memsys3/prompts/
+cp memsys3_update_temp/memsys3_templates/prompts/meet.md memsys3/prompts/
+cp memsys3_update_temp/memsys3_templates/prompts/agent-identity.md memsys3/prompts/
+
+# Copiar docs/ (crear si no existe)
+mkdir -p memsys3/docs
+cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/
 ```
 
 ### 6.2 Revisar newSession.md
