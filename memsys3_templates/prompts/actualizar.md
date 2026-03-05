@@ -263,6 +263,22 @@ mv memsys3_backup_$TIMESTAMP memsys3
 
 ### 6.1 Actualizar Prompts
 
+**Estrategia recomendada: git diff por versiones**
+
+Si tienes `memsys3_version` en `project-status.yaml`, usa git diff para copiar solo los archivos que cambiaron:
+
+```bash
+CURRENT_VERSION=$(grep "memsys3_version" memsys3/memory/project-status.yaml | head -1 | sed 's/.*: "\(.*\)"/\1/')
+echo "Versión actual: $CURRENT_VERSION"
+
+# Ver qué archivos de templates cambiaron entre versiones
+git -C memsys3_update_temp diff --name-only $CURRENT_VERSION HEAD -- memsys3_templates/
+```
+
+Para cada archivo listado en `memsys3_templates/prompts/` o `memsys3_templates/docs/`, cópialo a `memsys3/prompts/` o `memsys3/docs/` respectivamente (excepto `newSession.md` y `main-agent.yaml` — ver paso 6.2 y 6.3).
+
+**Fallback: lista completa (si no hay versión registrada o git diff falla)**
+
 ```bash
 # Copiar prompts actualizados (excepto newSession.md por ahora)
 cp memsys3_update_temp/memsys3_templates/prompts/compile-context.md memsys3/prompts/
