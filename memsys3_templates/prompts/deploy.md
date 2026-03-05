@@ -114,6 +114,9 @@ cd ..
 
 ### Paso 5: Crear project-status.yaml
 
+> ⚠️ **IMPORTANTE:** Este archivo va en `memsys3/memory/` (raíz de memory),
+> **NO** en `memsys3/memory/full/` como `adr.yaml` y `sessions.yaml`.
+
 Con la info recopilada, crea `memsys3/memory/project-status.yaml`:
 
 ```yaml
