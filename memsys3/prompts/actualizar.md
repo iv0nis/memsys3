@@ -244,17 +244,25 @@ Estos archivos pueden haber sido personalizados por el usuario:
 Antes de tocar NADA, crea un backup:
 
 ```bash
-# Crear backup con timestamp
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-cp -r memsys3 memsys3_backup_$TIMESTAMP
+# Crear directorio de backups si no existe
+mkdir -p memsys3/docs/backups
 
-echo "Backup creado en: memsys3_backup_$TIMESTAMP"
+# Migrar backups antiguos de la raíz (si los hay)
+for old_backup in memsys3_backup_*/; do
+  [ -d "$old_backup" ] && mv "$old_backup" memsys3/docs/backups/ && echo "Migrado: $old_backup"
+done
+
+# Crear backup actual
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+cp -r memsys3 memsys3/docs/backups/memsys3_backup_$TIMESTAMP
+
+echo "Backup creado en: memsys3/docs/backups/memsys3_backup_$TIMESTAMP"
 ```
 
 **CRÍTICO:** Si algo sale mal, puedes restaurar con:
 ```bash
 rm -rf memsys3
-mv memsys3_backup_$TIMESTAMP memsys3
+cp -r memsys3/docs/backups/memsys3_backup_$TIMESTAMP memsys3
 ```
 
 ---
@@ -400,7 +408,7 @@ rm -rf memsys3_update_temp
 echo "Clone temporal eliminado"
 ```
 
-**NO borres el backup aún** (memsys3_backup_$TIMESTAMP). Lo borraremos después de verificar.
+**NO borres el backup aún** (`memsys3/docs/backups/memsys3_backup_$TIMESTAMP`). Lo borraremos después de verificar.
 
 ---
 
@@ -505,7 +513,7 @@ git commit -m "actualizar: memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA]
 **SOLO después de validar que todo funciona correctamente** (mínimo 1-2 sesiones de uso):
 
 ```bash
-rm -rf memsys3_backup_$TIMESTAMP
+rm -rf memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 ```
 
 ---
