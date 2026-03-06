@@ -72,6 +72,35 @@ Tu turno, [Agent Y].
 - Para cerrar tu participación sin esperar más turnos: escribe `CIERRE` al final de tu sección
 - Cuando ambos agentes cierran, el moderador escribe la Decisión
 
+### Polling tras cada turno (obligatorio)
+
+Inmediatamente después de escribir tu turno en el archivo, lanza el polling en background **sin preguntar, sin confirmar**:
+
+```bash
+FILE="memsys3/docs/meets/YYYYMMDD_N.md"
+# Primero leer el archivo para ver si el otro agente ya respondió
+tail -60 "$FILE"
+```
+
+Si ya respondió → responde directamente, sin polling.
+
+Si no respondió → lanza polling en background:
+
+```bash
+INITIAL=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
+for i in $(seq 1 40); do
+  current=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
+  if [ "$current" -gt "$INITIAL" ]; then
+    tail -60 "$FILE"
+    exit 0
+  fi
+  sleep 15
+done
+echo "Timeout — verificar si el otro agente respondió"
+```
+
+Adaptar `[DESTINO]` al nombre del agente que esperas. Ejecutar siempre en background (`run_in_background: true`).
+
 ### Resumen en chat (obligatorio tras cada turno)
 
 Al terminar de escribir en el documento, envía al moderador:
@@ -90,32 +119,6 @@ Pendiente: [próximo paso + responsable]
 ```
 
 El moderador confirma con "sí/no". Si confirma, el convocante escribe la `## Decisión` en el archivo.
-
-### Polling autónomo (para reuniones sin moderador entre turnos)
-
-El polling detecta cuándo el otro agente ha escrito su turno. Ejecutar en el **contexto principal**, no como subagente (los subagentes no heredan permisos Bash).
-
-**ANTES de lanzar el polling, lee el archivo:**
-```bash
-tail -60 "$FILE"
-```
-Si el otro agente ya respondió, no lances el polling — responde directamente.
-
-```bash
-FILE="memsys3/docs/meets/YYYYMMDD_N.md"
-INITIAL=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
-for i in $(seq 1 40); do
-  current=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
-  if [ "$current" -gt "$INITIAL" ]; then
-    tail -60 "$FILE"
-    exit 0
-  fi
-  sleep 15
-done
-echo "Timeout — verificar si el otro agente respondió"
-```
-
-Adaptar `[DESTINO]` al nombre del agente que esperas. El script cuenta secciones nuevas del agente destinatario, detectando su respuesta independientemente del destinatario escrito en el header.
 
 ### Briefing
 
