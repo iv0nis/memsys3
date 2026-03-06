@@ -225,7 +225,28 @@ cat /tmp/memsys3_AGENT_ID.md 2>/dev/null || echo "Agent B" > /tmp/memsys3_AGENT_
 
 Esto garantiza que tras un `/compact` puedas recuperar tu identidad leyendo ese archivo.
 
-### 5. Informar al Usuario
+### 5. Verificar estado de compile-context
+
+```bash
+MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
+ultima=$(grep "ultima_compilacion:" "$MEMSYS/memory/context.yaml" | head -1 | sed 's/.*"\(.*\)".*/\1/')
+sesiones_sin_compilar=$(grep "^  - id:" "$MEMSYS/memory/full/sessions.yaml" | awk -F'"' '{print $2}' | while read id; do
+  fecha=$(echo "$id" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
+  [ "$fecha" \> "$ultima" ] && echo "$id"
+done | wc -l)
+echo "Ultima compilacion: $ultima"
+echo "Sesiones sin compilar: $sesiones_sin_compilar"
+[ "$sesiones_sin_compilar" -ge 5 ] && echo "AVISO: 5+ sesiones sin compilar" || echo "OK"
+```
+
+Si hay 5 o más sesiones sin compilar, avisar al usuario:
+
+```
+⚠️ context.yaml lleva X sesiones sin recompilar (ultima: YYYY-MM-DD)
+   En tu proxima sesion limpia considera ejecutar @memsys3/prompts/compile-context.md
+```
+
+### 6. Informar al Usuario
 
 Resumen breve de qué se ha documentado:
 
