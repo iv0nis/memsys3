@@ -173,6 +173,8 @@ echo "Nueva versión: $NEW_VERSION (commit: $NEW_COMMIT)"
 cd ..
 ```
 
+> **Nota:** Si `memsys3_update_temp/memsys3_templates/prompts/actualizar.md` difiere del archivo que estás leyendo ahora, usa el del repo clonado como referencia — tiene la versión más reciente.
+
 ---
 
 ## Paso 4: Categorizar Archivos Según Estrategia
@@ -252,22 +254,35 @@ for old_backup in memsys3_backup_*/; do
   [ -d "$old_backup" ] && mv "$old_backup" memsys3/docs/backups/ && echo "Migrado: $old_backup"
 done
 
-# Crear backup actual
+# Crear backup actual (fuera de memsys3/ para evitar auto-recursión)
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-cp -r memsys3 memsys3/docs/backups/memsys3_backup_$TIMESTAMP
+rsync -a --exclude='docs/backups' memsys3/ memsys3_backup_temp_$TIMESTAMP/
+mv memsys3_backup_temp_$TIMESTAMP memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 
 echo "Backup creado en: memsys3/docs/backups/memsys3_backup_$TIMESTAMP"
 ```
 
 **CRÍTICO:** Si algo sale mal, puedes restaurar con:
 ```bash
-rm -rf memsys3
-cp -r memsys3/docs/backups/memsys3_backup_$TIMESTAMP memsys3
+cp -r memsys3/docs/backups/memsys3_backup_$TIMESTAMP memsys3_restored
+# Luego renombrar memsys3_restored a memsys3 si es necesario
 ```
 
 ---
 
 ## Paso 6: Actualizar Archivos del Sistema
+
+```bash
+# Crear directorios necesarios (siempre, antes de copiar nada)
+mkdir -p memsys3/docs memsys3/docs/backups memsys3/prompts memsys3/agents memsys3/memory/templates memsys3/viz
+
+# Crear backlog/ si no existe
+if [ ! -f memsys3/backlog/README.md ]; then
+  mkdir -p memsys3/backlog
+  echo "# Backlog" > memsys3/backlog/README.md
+  echo "backlog/ creado"
+fi
+```
 
 ### 6.1 Actualizar Prompts
 
@@ -283,7 +298,13 @@ echo "Versión actual: $CURRENT_VERSION"
 git -C memsys3_update_temp diff --name-only $CURRENT_VERSION HEAD -- memsys3_templates/
 ```
 
-Para cada archivo listado en `memsys3_templates/prompts/` o `memsys3_templates/docs/`, cópialo a `memsys3/prompts/` o `memsys3/docs/` respectivamente (excepto `newSession.md` y `main-agent.yaml` — ver paso 6.2 y 6.3).
+Para cada archivo listado en `memsys3_templates/prompts/`, cópialo a `memsys3/prompts/` (excepto `newSession.md` y `main-agent.yaml` — ver paso 6.2 y 6.3).
+
+```bash
+# Siempre copiar docs/ completo (independientemente de git diff)
+cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/ 2>/dev/null || true
+echo "docs/ actualizada"
+```
 
 **Fallback: lista completa (si no hay versión registrada o git diff falla)**
 
@@ -301,9 +322,9 @@ cp memsys3_update_temp/memsys3_templates/prompts/commands.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/meet.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/agent-identity.md memsys3/prompts/
 
-# Copiar docs/ (crear si no existe)
-mkdir -p memsys3/docs
-cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/
+# Copiar docs/ (siempre, también en fallback)
+cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/ 2>/dev/null || true
+echo "docs/ actualizada"
 ```
 
 ### 6.2 Revisar newSession.md
@@ -380,6 +401,8 @@ cp memsys3_update_temp/memsys3_templates/viz/README.md memsys3/viz/ 2>/dev/null 
 
 ## Paso 7: Actualizar Metadata de Versión
 
+**Hacer esto ANTES de limpiar el clone temporal** (necesitas NEW_VERSION del Paso 3).
+
 Edita `memsys3/memory/project-status.yaml`:
 
 **Actualizar solo el bloque metadata:**
@@ -396,6 +419,12 @@ metadata:
 **IMPORTANTE:**
 - NO toques `visio_general`, `estat_actual`, `features`, `stack_tecnologic`, etc.
 - Solo actualiza el bloque `metadata`
+
+**Verificar que el cambio se aplicó:**
+```bash
+grep "memsys3_version" memsys3/memory/project-status.yaml
+# Debe mostrar la versión NUEVA, no la anterior
+```
 
 ---
 
@@ -558,16 +587,18 @@ rm -rf memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 
 Antes de dar por terminada la actualización, verifica:
 
-- [ ] Versión actualizada en `project-status.yaml` metadata
-- [ ] Backup creado (memsys3_backup_$TIMESTAMP)
+- [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
 - [ ] Archivos del sistema actualizados (prompts, agents, templates, viz)
+- [ ] `docs/` copiada (`ls memsys3/docs/` muestra los 9 archivos)
+- [ ] `backlog/` existe (`ls memsys3/backlog/`)
 - [ ] history/ creado (si no existía)
+- [ ] Versión actualizada en `project-status.yaml` metadata (`grep memsys3_version memsys3/memory/project-status.yaml` muestra versión nueva)
+- [ ] Clone temporal borrado (memsys3_update_temp)
 - [ ] compile-context.md ejecutado exitosamente
 - [ ] Visualizador funciona (mind.md)
 - [ ] newSession.md funciona (nueva instancia)
 - [ ] Actualización documentada en sessions.yaml
 - [ ] (Opcional) Commit creado
-- [ ] Clone temporal borrado (memsys3_update_temp)
 - [ ] Backup borrado (después de 1-2 sesiones de validación)
 
 ---
