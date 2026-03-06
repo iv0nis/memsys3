@@ -10,6 +10,31 @@
 
 ## ⚠️ ANTES DE EMPEZAR
 
+### Paso 0a: Verificar working directory
+
+**CRÍTICO — ejecuta esto primero:**
+
+```bash
+pwd
+ls memsys3/memory/project-status.yaml 2>/dev/null && echo "OK: memsys3/ encontrado" || echo "ERROR: memsys3/ no encontrado en este directorio"
+```
+
+**Si no encuentra `memsys3/`:** detente. Pregunta al usuario desde qué directorio ejecutar la actualización. No continues hasta confirmarlo.
+
+**Si encuentra `memsys3/`:** continúa con el bootstrap.
+
+### Paso 0b: Bootstrap — actualizar este prompt antes de continuar
+
+```bash
+git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
+cp memsys3_update_temp/memsys3_templates/prompts/actualizar.md memsys3/prompts/actualizar.md
+echo "actualizar.md actualizado a la versión del repo"
+```
+
+**Ahora lee `memsys3/prompts/actualizar.md` y continúa desde el Paso 1 de ese archivo.** El resto de este prompt puede estar desactualizado.
+
+---
+
 **Verifica que estás en el proyecto correcto:**
 1. Este proyecto YA tiene memsys3 instalado (carpeta `memsys3/`)
 2. Si NO tiene memsys3, usa `@memsys3/prompts/deploy.md` en su lugar

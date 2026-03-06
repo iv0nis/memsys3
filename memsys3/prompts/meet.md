@@ -93,7 +93,13 @@ El moderador confirma con "sí/no". Si confirma, el convocante escribe la `## De
 
 ### Polling autónomo (para reuniones sin moderador entre turnos)
 
-El polling detecta cuándo el otro agente ha escrito su turno. Ejecutar en el **contexto principal**, no como subagente (los subagentes no heredan permisos Bash):
+El polling detecta cuándo el otro agente ha escrito su turno. Ejecutar en el **contexto principal**, no como subagente (los subagentes no heredan permisos Bash).
+
+**ANTES de lanzar el polling, lee el archivo:**
+```bash
+tail -60 "$FILE"
+```
+Si el otro agente ya respondió, no lances el polling — responde directamente.
 
 ```bash
 FILE="memsys3/docs/meets/YYYYMMDD_N.md"
