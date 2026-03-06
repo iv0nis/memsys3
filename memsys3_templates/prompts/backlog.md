@@ -2,6 +2,35 @@
 
 **Contexto:** El backlog (`memsys3/backlog/`) organiza trabajo futuro del proyecto (issues, features, specs, blueprints, mejoras, exploraciones).
 
+## 0. Verificar que existe el backlog
+
+```bash
+ls memsys3/backlog/README.md 2>/dev/null && echo "OK" || echo "NO EXISTE"
+```
+
+Si no existe, créalo antes de continuar:
+
+```bash
+mkdir -p memsys3/backlog
+```
+
+Luego crea `memsys3/backlog/README.md` copiando el contenido de `memsys3_update_temp/memsys3_templates/backlog/README.md` si está disponible, o bien crea uno mínimo con esta estructura:
+
+```markdown
+# Backlog del Proyecto
+
+## Códigos
+- **ISSUE-XXX**: Problemas técnicos, bugs, tech debt
+- **FEATURE-XXX**: Nueva funcionalidad
+- **IMPROVEMENT-XXX**: Mejora de funcionalidad existente
+- **SPEC-XXX**: Especificación técnica detallada
+- **BLUEPRINT-XXX**: Diseño arquitectónico alto nivel
+- **EXPLORATION-XXX**: Investigación sin solución clara
+
+## Estados
+Propuesto → Abierto → En Progreso → Completado / Cancelado / Rechazado / Bloqueado
+```
+
 **Tu tarea:**
 
 ## 1. Consultar Backlog
