@@ -3,6 +3,59 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-03-06-docs-referencia-agent-id-actualizar-mejoras"
+    data: "2026-03-06"
+    duracion: ~5h
+    peso: alto
+    titulo: "docs/ referencia técnica + sistema agent_id + mejoras actualizar.md"
+    highlights:
+      - "Creados 9 archivos en memsys3_templates/docs/"
+      - "Nuevo prompt agent-identity.md para asignación de agent_id de sesión"
+      - "agent_id persiste entre compacts via /tmp/memsys3_agent_X.md"
+      - "actualizar.md: git diff por versiones antes de lista hardcodeada"
+      - "actualizar.md: backups en memsys3/docs/backups/ + migración backups antiguos"
+      - "actualizar.md: incluye meet.md, agent-identity.md y docs/"
+      - "meet.md: briefing obligatorio del convocante, convocar por path"
+      - "meet.md: convocante propone Decisión en TL;DR, moderador confirma sí/no"
+      - "backlog.md: crea carpeta y README si no existen"
+      - "fix ISSUE-015: deploy.md warning ruta project-status.yaml (merge PR)"
+      - "Limpieza historia git: eliminadas firmas Co-Authored-By"
+      - "Versión bumpeada a v0.14.0"
+    features_implementadas:
+      - nom: "memsys3_templates/docs/"
+        descripcio: "9 docs de referencia técnica. Estructura acordada en reunión 20260303_1 con Agent A. agent-identity.md separado de meets.md por alcance más amplio."
+      - nom: "prompt agent-identity.md"
+        descripcio: "Asigna agent_id a sesión. Guarda en /tmp/memsys3_agent_X.md. Independiente de meets."
+      - nom: "actualizar.md inteligente"
+        descripcio: "git diff entre memsys3_version del proyecto y HEAD del repo clonado para copiar solo archivos cambiados. Fallback a lista hardcodeada."
+      - nom: "backups en memsys3/docs/backups/"
+        descripcio: "Backups dentro de memsys3/. Migración automática de backups antiguos en raíz."
+    problemas_resueltos:
+      - "Polling meet.md fallaba en WSL: grep -c con espacios → fix con tr -d"
+      - "backlog.md bloqueaba si no existía carpeta → crea carpeta y README mínimo"
+      - "deploy.md creaba project-status.yaml en memory/full/ → warning explícito (ISSUE-015)"
+      - "Commits con firma Co-Authored-By → filter-branch completo + force push"
+    decisions_presas:
+      - decisio: "agent-identity.md separado de meets.md"
+        justificacio: "agent_id tiene alcance más amplio — identidad de sesión general con vistas a expansión multiagente"
+      - decisio: "actualizar.md usa git diff como estrategia principal"
+        justificacio: "Determinista y automático. Lista hardcodeada queda como fallback."
+      - decisio: "Backups en memsys3/docs/backups/"
+        justificacio: "Centralizado con docs internos, no ensucia raíz del proyecto."
+    gotchas:
+      - tipus: "bug"
+        problema: "grep -c en WSL devuelve output con newlines que rompe comparación numérica en bash"
+        solucio: "Añadir | tr -d '[:space:]' al resultado de grep -c"
+        criticitat: "media"
+      - tipus: "trap"
+        problema: "GitHub muestra Co-Authored-By como contributor aunque se elimine de commits — commits siguen referenciados en ramas remotas"
+        solucio: "Borrar ramas remotas obsoletas tras filter-branch + force push"
+        criticitat: "media"
+    proximos_pasos:
+      - "Verificar que GitHub ya no muestra Claude en Contributors"
+      - "Compilar contexto con compile-context.md"
+      - "Revisar backlog: ISSUE-005, FEATURE-003, IMPROVEMENT-007"
+
   - id: "2026-02-20-sistema-reuniones-autonomas-meet-unificado"
     data: "2026-02-20"
     duracion: "~4h"
