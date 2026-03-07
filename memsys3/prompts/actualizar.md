@@ -184,8 +184,12 @@ git ls-remote --tags https://github.com/iv0nis/memsys3 | tail -5
 **IMPORTANTE:** NO borres nada aún, solo clona para comparar.
 
 ```bash
-# Clonar en directorio temporal
-git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
+# Si el bootstrap (Paso 0b) ya clonó el repo, reutilizarlo — no clonar de nuevo
+if [ -d "memsys3_update_temp" ]; then
+  echo "Reutilizando clone del bootstrap"
+else
+  git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
+fi
 
 cd memsys3_update_temp
 
@@ -614,7 +618,7 @@ Antes de dar por terminada la actualización, verifica:
 
 - [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
 - [ ] Archivos del sistema actualizados (prompts, agents, templates, viz)
-- [ ] `docs/` copiada (`ls memsys3/docs/` muestra los 9 archivos)
+- [ ] `docs/` copiada (`ls memsys3/docs/reference.md`)
 - [ ] `backlog/` existe (`ls memsys3/backlog/`)
 - [ ] history/ creado (si no existía)
 - [ ] Versión actualizada en `project-status.yaml` metadata (`grep memsys3_version memsys3/memory/project-status.yaml` muestra versión nueva)
