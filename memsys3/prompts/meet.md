@@ -72,19 +72,39 @@ Tu turno, [Agent Y].
 - Para cerrar tu participación sin esperar más turnos: escribe `CIERRE` al final de tu sección
 - Cuando ambos agentes cierran, el moderador escribe la Decisión
 
-### Polling tras cada turno (obligatorio)
+### Checklist obligatorio tras cada turno
 
-Inmediatamente después de escribir tu turno en el archivo, lanza el polling en background **sin preguntar, sin confirmar**:
+Cada vez que escribes un turno en el archivo, ejecutas estos 3 pasos **siempre, en este orden, sin excepciones**:
+
+**1. ESCRIBIR** — tu turno en el archivo con header `## Agent X → Agent Y`
+
+**2. RESUMIR** — envía al moderador en chat:
+
+```
+CTA: [Turno a Agent Y / Pregunta directa a ti / CIERRE]
+Detalle: [Qué propuse, qué cambié, qué quedó sin resolver]
+Polling: lanzado (bg task ID: [ID]) esperando respuesta de Agent Y
+```
+
+Al escribir `CIERRE`, añade también:
+
+```
+TL;DR: [1-2 líneas de qué se acordó]
+Decisión propuesta: [texto listo para escribir en el archivo si el moderador confirma]
+Pendiente: [próximo paso + responsable]
+```
+
+**3. POLLING** — inmediatamente después del resumen, lanza en background:
 
 ```bash
 FILE="memsys3/docs/meets/YYYYMMDD_N.md"
-# Primero leer el archivo para ver si el otro agente ya respondió
+# Primero verificar si el otro agente ya respondió
 tail -60 "$FILE"
 ```
 
 Si ya respondió → responde directamente, sin polling.
 
-Si no respondió → lanza polling en background:
+Si no respondió → lanza polling en background (`run_in_background: true`):
 
 ```bash
 INITIAL=$(grep -c "^## Agent [DESTINO]" "$FILE" | tr -d '[:space:]')
@@ -99,24 +119,7 @@ done
 echo "Timeout — verificar si el otro agente respondió"
 ```
 
-Adaptar `[DESTINO]` al nombre del agente que esperas. Ejecutar siempre en background (`run_in_background: true`).
-
-### Resumen en chat (obligatorio tras cada turno)
-
-Al terminar de escribir en el documento, envía al moderador:
-
-```
-CTA: [Turno a Agent Y / Pregunta directa a ti / CIERRE]
-Detalle: [Qué propuse, qué cambié, qué quedó sin resolver]
-```
-
-Al escribir `CIERRE`, añade también:
-
-```
-TL;DR: [1-2 líneas de qué se acordó]
-Decisión propuesta: [texto listo para escribir en el archivo si el moderador confirma]
-Pendiente: [próximo paso + responsable]
-```
+Adaptar `[DESTINO]` al nombre del agente que esperas. El task ID del background process va en el campo `Polling:` del resumen.
 
 El moderador confirma con "sí/no". Si confirma, el convocante escribe la `## Decisión` en el archivo.
 
