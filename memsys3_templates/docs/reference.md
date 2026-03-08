@@ -139,6 +139,56 @@ Archivos: `serve.py`, `index.html`, `viewer.js`, `style.css` (dark theme).
 
 `@memsys3/prompts/actualizar.md` — bootstrap (sobrescribe prompt local con versión del repo), verifica working directory, backup con rsync, copia archivos del sistema, preserva histórico.
 
+### Migración de proyectos (preservar historial Claude Code)
+
+> Aplica a **Claude Code CLI**. claude.ai guarda historial en la nube y no necesita migración.
+
+Claude Code guarda sesiones en `~/.claude/projects/[hash-del-path]/`. El hash se genera reemplazando `/` por `-` en la ruta absoluta del proyecto. Dentro hay `.jsonl` (transcripciones) y `memory/` (MEMORY.md).
+
+**Pasos:**
+
+0. Identificar el hash actual:
+   ```bash
+   ls ~/.claude/projects/ | grep nombre-proyecto
+   ```
+1. Copiar proyecto al nuevo path (NO mover — mantener fallback)
+2. Calcular hash del nuevo path (mismo algoritmo: `/` → `-`)
+3. Copiar historial:
+   ```bash
+   cp -r ~/.claude/projects/[hash-antiguo]/. ~/.claude/projects/[hash-nuevo]/
+   ```
+4. Abrir Claude Code desde el nuevo path
+5. Verificar con `/resume` que el historial está disponible
+6. Eliminar path antiguo solo tras verificación
+
+**Ejemplo completo:**
+```bash
+# Proyecto original: /mnt/c/Users/User/Documents/Mi Proyecto/
+# Proyecto nuevo: /home/user/mi-proyecto/
+
+# Paso 0: identificar hash
+ls ~/.claude/projects/ | grep "Mi-Proyecto"
+# → -mnt-c-Users-User-Documents-Mi-Proyecto
+
+# Paso 1: copiar proyecto
+cp -r "/mnt/c/Users/User/Documents/Mi Proyecto/." /home/user/mi-proyecto/
+
+# Paso 3: copiar historial Claude Code
+cp -r ~/.claude/projects/-mnt-c-Users-User-Documents-Mi-Proyecto/. \
+      ~/.claude/projects/-home-user-mi-proyecto/
+
+# Paso 4-5: verificar
+cd /home/user/mi-proyecto && claude
+# Dentro de Claude Code: /resume → debería mostrar sesiones anteriores
+```
+
+**Edge cases:**
+- Espacios en path → guiones en hash
+- Hash de destino preexistente → historiales se mezclan, no se pierden
+- `memory/` se incluye en la copia (es parte de la carpeta del hash)
+
+**Limitaciones:** solo verificado en Linux/WSL. macOS: misma estructura esperada (no verificado). Windows nativo: convención de hash desconocida.
+
 ### Privacidad
 
 Opción A (recomendado): excluir `memsys3/` de git (contexto privado). Opción B: incluir (compartir entre equipo).

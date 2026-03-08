@@ -289,6 +289,12 @@ rsync -a --exclude='docs/backups' memsys3/ memsys3_backup_temp_$TIMESTAMP/
 mv memsys3_backup_temp_$TIMESTAMP memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 
 echo "Backup creado en: memsys3/docs/backups/memsys3_backup_$TIMESTAMP"
+
+# Limpiar backups antiguos (máx 3: 2 anteriores + actual)
+cd memsys3/docs/backups
+ls -dt memsys3_backup_* | tail -n +4 | xargs rm -rf
+echo "Backups antiguos limpiados (máx 3)"
+cd -
 ```
 
 **CRÍTICO:** Si algo sale mal, puedes restaurar con:
@@ -313,29 +319,40 @@ if [ ! -f memsys3/backlog/README.md ]; then
 fi
 ```
 
-### 6.1 Actualizar Prompts
+### 6.1 Actualizar Prompts y Docs
 
-**Estrategia recomendada: git diff por versiones**
-
-Si tienes `memsys3_version` en `project-status.yaml`, usa git diff para copiar solo los archivos que cambiaron:
+**Estrategia principal: git diff --name-status**
 
 ```bash
 CURRENT_VERSION=$(grep "memsys3_version" memsys3/memory/project-status.yaml | head -1 | sed 's/.*: "\(.*\)"/\1/')
 echo "Versión actual: $CURRENT_VERSION"
 
-# Ver qué archivos de templates cambiaron entre versiones
-git -C memsys3_update_temp diff --name-only $CURRENT_VERSION HEAD -- memsys3_templates/
+# Ver qué archivos cambiaron, con estado (A=añadido, M=modificado, D=eliminado)
+git -C memsys3_update_temp diff --name-status $CURRENT_VERSION HEAD -- memsys3_templates/
 ```
 
-Para cada archivo listado en `memsys3_templates/prompts/`, cópialo a `memsys3/prompts/` (excepto `newSession.md` y `main-agent.yaml` — ver paso 6.2 y 6.3).
-
-```bash
-# Siempre copiar docs/ completo (independientemente de git diff)
-cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/ 2>/dev/null || true
-echo "docs/ actualizada"
+**Resumen antes de ejecutar (checkpoint):**
+Cuenta y muestra al moderador:
+```
+Archivos a copiar (A/M): X
+Archivos a borrar (D): Y
 ```
 
-**Fallback: lista completa (si no hay versión registrada o git diff falla)**
+**Para cada archivo listado:**
+- **A (añadido) o M (modificado):** cópialo al directorio correspondiente en `memsys3/`
+  - `memsys3_templates/prompts/X` → `memsys3/prompts/X`
+  - `memsys3_templates/docs/X` → `memsys3/docs/X`
+  - `memsys3_templates/agents/X` → `memsys3/agents/X`
+  - `memsys3_templates/viz/X` → `memsys3/viz/X`
+  - `memsys3_templates/memory/X` → `memsys3/memory/X`
+  - **Excepto** `newSession.md` y `main-agent.yaml` → ver pasos 6.2 y 6.3
+- **D (eliminado):** borra el archivo correspondiente en `memsys3/`
+
+**Si git diff funciona, NO ejecutes el fallback. Son mutuamente excluyentes.**
+
+---
+
+**Fallback: lista completa (SOLO si git diff falla — error de salida, versión no encontrada)**
 
 ```bash
 # Copiar prompts actualizados (excepto newSession.md por ahora)
@@ -351,9 +368,10 @@ cp memsys3_update_temp/memsys3_templates/prompts/commands.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/meet.md memsys3/prompts/
 cp memsys3_update_temp/memsys3_templates/prompts/agent-identity.md memsys3/prompts/
 
-# Copiar docs/ (siempre, también en fallback)
+# Limpiar docs/*.md antiguos y copiar los nuevos
+rm -f memsys3/docs/*.md
 cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/ 2>/dev/null || true
-echo "docs/ actualizada"
+echo "docs/ actualizada (limpieza + copia)"
 ```
 
 ### 6.2 Revisar newSession.md

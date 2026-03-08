@@ -3,6 +3,30 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-03-08-actualizar-name-status-backups"
+    data: "2026-03-08"
+    duracion: "~1h"
+    peso: medio
+    titulo: "actualizar.md: git diff --name-status + limpieza backups + borrado obsoletos"
+    highlights:
+      - "Paso 6.1 reescrito: git diff --name-status como estrategia principal (A/M/D), fallback solo si falla"
+      - "Instrucción explícita: si git diff funciona NO ejecutar fallback — son mutuamente excluyentes"
+      - "Archivos D (eliminados) se borran del proyecto — resuelve problema de archivos obsoletos"
+      - "Resumen A/M/D como checkpoint antes de ejecutar"
+      - "Limpieza backups: máx 3 (2 antiguos + actual) tras crear backup nuevo"
+      - "Fallback: rm -f memsys3/docs/*.md antes de copiar (equivalente a rsync --delete)"
+      - "Reunión 20260308_1 con Agent C (gitkigai): feedback de actualización real"
+    problemas_resueltos:
+      - "Agente ejecutaba fallback completo aunque git diff funcionara — falta de priorización explícita"
+      - "Archivos obsoletos (9 docs/ individuales) no se borraban al actualizar — git diff --name-only no mostraba eliminados"
+    decisions_tomadas:
+      - decisio: "git diff --name-status reemplaza --name-only como estrategia principal"
+        justificacio: "Muestra A/M/D en un solo comando, permite borrar archivos obsoletos"
+        adr_relacionada: null
+    proximos_pasos:
+      - "Guiar a Agent C (gitkigai) a reparar su actualización incompleta (9 archivos obsoletos en docs/)"
+      - "Validar --name-status en próxima actualización real"
+
   - id: "2026-03-08-fixes-actualizar-meet-docs"
     data: "2026-03-08"
     duracion: "~4h"
