@@ -3,6 +3,59 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-03-08-fixes-actualizar-meet-docs"
+    data: "2026-03-08"
+    duracion: "~4h"
+    peso: alto
+    titulo: "Fixes críticos actualizar.md + protocolo polling meet.md + docs consolidado"
+    highlights:
+      - "6 fixes en actualizar.md detectados en ejecución real (v0.15.0): bug auto-recursión backup, docs/ no copiada, backlog/ no creado, orden pasos incorrecto, versión no verificada"
+      - "Bootstrap en actualizar.md (v0.16.0): Paso 0a verifica WD, Paso 0b clona repo y sobrescribe prompt local — resuelve problema estructural de prompt desactualizado"
+      - "Protocolo polling meet.md: checklist obligatorio 3 pasos (ESCRIBIR → RESUMIR → POLLING) con task ID en resumen"
+      - "docs/ consolidado: 9 archivos individuales fusionados en reference.md (v0.17.0)"
+      - "5 reuniones multi-agente ejecutadas (20260306_1 a _5) con Agent A (gitkigai), Agent A (neuroMaquina) y Agent C (memsys3)"
+      - "3 versiones tagueadas: v0.15.0, v0.16.0, v0.17.0"
+    features_implementadas:
+      - nom: "Bootstrap actualizar.md"
+        descripcio: "Paso 0a verifica working directory (pwd + ls memsys3/), Paso 0b clona repo y sobrescribe actualizar.md local antes de continuar. Resuelve problema chicken-and-egg de prompts desactualizados"
+      - nom: "Checklist polling meet.md"
+        descripcio: "Tras cada turno: (1) ESCRIBIR turno, (2) RESUMIR en chat con CTA+Detalle+Polling con task ID, (3) POLLING en background. Responsabilidad siempre del que acaba de escribir"
+      - nom: "docs/reference.md"
+        descripcio: "9 archivos de referencia técnica fusionados en un solo documento"
+      - nom: "Fix clone redundante"
+        descripcio: "Paso 3 de actualizar.md reutiliza memsys3_update_temp/ si ya existe del bootstrap"
+    problemas_resueltos:
+      - "Bug auto-recursión backup: cp -r memsys3 memsys3/docs/backups/ se copiaba a sí mismo — fix con rsync --exclude"
+      - "docs/ no copiada en estrategia git diff — ahora se copia siempre en ambas estrategias"
+      - "Carpeta anómala memsys3_docs_backups/ en neuroMaquina — eliminada, causa raíz corregida en v0.15.0"
+      - "Polling sin relanzar en reuniones multi-turno — checklist obligatorio de 3 pasos"
+    decisions_tomadas:
+      - decisio: "Bootstrap en actualizar.md en lugar de archivo separado"
+        justificacio: "Opción más simple, no requiere nuevo archivo"
+        adr_relacionada: null
+      - decisio: "Consolidar 9 archivos docs/ en reference.md"
+        justificacio: "9 archivos sueltos crean ruido visual y se distribuyen mal"
+        adr_relacionada: null
+      - decisio: "Polling es responsabilidad del que acaba de escribir, siempre"
+        justificacio: "Momento natural para lanzar; delegarlo al que espera requiere mecanismo de aviso"
+        adr_relacionada: null
+    gotchas:
+      - tipo: "trap"
+        problema: "actualizar.md local siempre está desactualizado — el agente ejecuta instrucciones viejas"
+        solucion: "Bootstrap en Paso 0b: clonar repo y sobrescribir prompt local antes de continuar"
+        criticidad: "alta"
+      - tipo: "error"
+        problema: "cp -r memsys3 memsys3/docs/backups/ crea recursión infinita"
+        solucion: "rsync -a --exclude='docs/backups' memsys3/ + mv a destino final"
+        criticidad: "alta"
+      - tipo: "warning"
+        problema: "Polling en meet se lanza una vez y no se relanza tras cada turno"
+        solucion: "Checklist obligatorio 3 pasos con task ID"
+        criticidad: "media"
+    proximos_pasos:
+      - "Validar bootstrap y checklist polling en próximas reuniones"
+      - "Backlog pendiente: ISSUE-005, FEATURE-003, IMPROVEMENT-007"
+      - "Compilar contexto con compile-context.md"
   - id: "2026-03-06-docs-referencia-agent-id-actualizar-mejoras"
     data: "2026-03-06"
     duracion: ~5h
