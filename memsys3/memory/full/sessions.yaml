@@ -3,6 +3,60 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-03-08-migrate-md-meet-limpieza-v018"
+    data: "2026-03-08"
+    duracion: "~2h"
+    peso: medio
+    titulo: "migrate.md + limpieza archivos obsoletos + v0.12.1/v0.18.0"
+
+    highlights:
+      - "Feature migrate.md: guia migracion proyectos preservando historial Claude Code CLI"
+      - "Reunion 20260308_2 con Agent B (gitkigai) — experiencia practica migracion"
+      - "Limpieza: eliminados meet-coord.md y meet-research.md (reemplazados por meet.md v2.0)"
+      - "Sincronizado meet.md a dog-fooding (memsys3/prompts/)"
+      - "reference.md: seccion migracion en docs tecnicos"
+      - "Releases v0.12.1 (meet.md unificado) y v0.18.0 (migrate.md + fix actualizar.md)"
+
+    features_implementadas:
+      - "migrate.md: prompt paso a paso para migrar proyectos (hash ~/.claude/projects/)"
+      - "reference.md seccion migracion: documentacion tecnica del proceso"
+      - "meet.md sincronizado con checklist obligatorio, polling mejorado, nota agent identity"
+
+    problemas_resueltos:
+      - "meet-coord.md y meet-research.md eliminados de memsys3_templates/ y memsys3/"
+      - "Renombrado archivos meets a formato YYYYMMDD (ISSUE-014)"
+      - "actualizar.md: --name-status en lugar de --name-only (detecta archivos eliminados)"
+
+    decisions_tomadas:
+      - "migrate.md en prompts/ como prompt invocable (no solo seccion en reference.md)"
+      - "Migracion va en seccion Deployment de reference.md (no archivo separado)"
+      - "v0.18.0 minor bump por feature nueva (migrate.md), no patch"
+
+    proximos_pasos:
+      - "Implementar ISSUE-005 (loop automatico en actualizar.md)"
+      - "Cerrar reunion 200226_1 (diagnostico tallersColomer — abierta)"
+      - "Compilar context.yaml (varias sesiones sin compilar)"
+
+  - id: "2026-03-08-compile-context-intento-fallido"
+    data: "2026-03-08"
+    duracion: "~1.5h"
+    peso: bajo
+    titulo: "Intento compilación context.yaml (revertido) + fix config Read tool"
+    highlights:
+      - "Compilación context.yaml intentada pero revertida — sesión con ~100K tokens usados viola ADR-008 (instancia limpia)"
+      - "Autocrítica: sesgo de sesión (pendientes operativos como prioritarios), gotchas duplicados, estados backlog incorrectos, síntesis homogénea"
+      - "Valoración honesta: 6/10 → corregida a 7.5/10 → decisión final: revertir y compilar en instancia limpia"
+      - "Fix config: CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS=60000 en ~/.claude/settings.json (env section). Read tool tenía límite default 25K tokens"
+      - "context.yaml restaurado a v0.11.0 (2026-02-03) — 7 sesiones pendientes de compilar"
+    problemas_resueltos:
+      - "Read tool fallaba con sessions.yaml (36K tokens > 25K default) — configurada variable entorno a 60K en settings.json"
+    decisions_tomadas:
+      - decisio: "Revertir compilación hecha con contexto contaminado"
+        justificacio: "context.yaml es piedra angular del sistema — merece instancia limpia con 200K tokens frescos y sin sesgo"
+    proximos_pasos:
+      - "Compilar context.yaml en instancia limpia (7 sesiones pendientes desde 2026-02-03)"
+      - "Considerar IMPROVEMENT-007 (Extended Thinking) para próxima compilación"
+
   - id: "2026-03-08-actualizar-name-status-backups"
     data: "2026-03-08"
     duracion: "~1h"
