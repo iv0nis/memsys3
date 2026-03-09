@@ -17,11 +17,21 @@
 ```bash
 pwd
 ls memsys3/memory/project-status.yaml 2>/dev/null && echo "OK: memsys3/ encontrado" || echo "ERROR: memsys3/ no encontrado en este directorio"
+
+# Guardar ruta absoluta del proyecto (se usa en todo el proceso)
+PROJECT_ROOT=$(pwd)
+echo "PROJECT_ROOT=$PROJECT_ROOT"
+
+# Limpiar artefactos de ejecuciones anteriores
+rm -rf memsys3_update_temp memsys3_templates 2>/dev/null
+echo "Artefactos previos limpiados"
 ```
 
 **Si no encuentra `memsys3/`:** detente. Pregunta al usuario desde qué directorio ejecutar la actualización. No continues hasta confirmarlo.
 
 **Si encuentra `memsys3/`:** continúa con el bootstrap.
+
+**IMPORTANTE:** Todos los pasos siguientes deben usar `$PROJECT_ROOT` como referencia para rutas absolutas. Evita `cd` siempre que sea posible.
 
 ### Paso 0b: Bootstrap — actualizar este prompt antes de continuar
 
@@ -280,7 +290,7 @@ mkdir -p memsys3/docs/backups
 
 # Migrar backups antiguos de la raíz (si los hay)
 for old_backup in memsys3_backup_*/; do
-  [ -d "$old_backup" ] && mv "$old_backup" memsys3/docs/backups/ && echo "Migrado: $old_backup"
+  [ -d "$old_backup" ] && mv "$old_backup" "memsys3/docs/backups/$old_backup" && echo "Migrado: $old_backup"
 done
 
 # Crear backup actual (fuera de memsys3/ para evitar auto-recursión)
@@ -478,8 +488,8 @@ grep "memsys3_version" memsys3/memory/project-status.yaml
 ## Paso 8: Limpiar Archivos Temporales
 
 ```bash
-# Borrar clone temporal
-rm -rf memsys3_update_temp
+# Borrar clone temporal (ruta absoluta para evitar fallo si cwd cambió)
+rm -rf "$PROJECT_ROOT/memsys3_update_temp"
 
 echo "Clone temporal eliminado"
 ```
