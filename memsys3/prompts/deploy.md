@@ -86,20 +86,21 @@ EOF
 
 Antes de personalizar, lee `memsys3/memory/templates/project-status-template.yaml` para saber qué campos necesitas.
 
-Pregunta al usuario:
+Usa `AskUserQuestion` para recopilar la info en dos fases (máximo 4 preguntas por llamada):
 
-1. **Nombre del proyecto**: ¿Qué estamos construyendo?
-2. **Descripción 1 línea**: ¿Qué hace el proyecto?
-3. **Objetivo principal**: ¿Cuál es el goal del proyecto?
-4. **Stack tecnológico**:
-   - Frontend (framework + versión)?
-   - Backend (si aplica)?
-   - Deployment platform?
-5. **Fase actual**: Planificación, MVP, Beta, Producción?
-6. **URLs**: Producción, staging (si existen)?
-7. **Convenciones**:
-   - Idioma UI?
-   - Idioma variables/comentarios?
+**Fase A — Información esencial** (usa AskUserQuestion):
+1. **Nombre del proyecto**: ¿Cómo se llama?
+2. **Descripción + objetivo**: ¿Qué hace y cuál es el goal principal?
+3. **Fase actual**: Planificación / MVP / Beta / Producción
+4. **Idioma del proyecto**: ¿UI y código en qué idioma?
+
+**Fase B — Stack y URLs** (segunda llamada AskUserQuestion si la info no quedó clara):
+1. **Frontend**: Framework + versión
+2. **Backend**: Tecnología (si aplica)
+3. **Deployment platform**: Vercel, Railway, VPS, etc.
+4. **URLs**: Producción y staging (si existen)
+
+Si el usuario responde todo en texto libre en la primera fase, no es necesaria la segunda llamada.
 
 ### Paso 4: Registrar Versión de memsys3
 
@@ -185,64 +186,53 @@ comportamiento_especific:
   [SI_USER_HA_PEDIDO]: "[INSTRUCCION]"
 ```
 
-### Paso 8: Configurar .gitignore (Excluir memsys3 de GitHub)
+### Paso 8: Configurar .gitignore (Incluir memsys3 en GitHub)
 
-**IMPORTANTE:** Pregunta al usuario si quiere excluir memsys3/ de GitHub.
+**IMPORTANTE:** Usa `AskUserQuestion` para preguntar al usuario si quiere incluir memsys3/ en git.
+
+**Razón para INCLUIR (recomendado):**
+- Evita perder el contexto si cambias de máquina o el directorio se mueve
+- Las @ menciones funcionan normalmente (`@memsys3/prompts/newSession.md`)
+- Permite compartir contexto con el equipo si el repo es privado
+- El historial de sesiones y decisiones queda respaldado
 
 **Razón para excluir:**
-- memsys3 contiene información específica de tu flujo de trabajo con IA
-- Incluye sesiones de trabajo, decisiones internas, gotchas del desarrollo
-- Es contexto local que NO debe ser público en el repositorio
-- Se regenera/actualiza constantemente en cada sesión
+- Si el repositorio es público y el contexto contiene información sensible
+- Si prefieres que sea estrictamente local
 
-Pregunta al usuario:
+Usa `AskUserQuestion` con esta pregunta:
 
----
+```
+¿Quieres incluir memsys3/ en git?
 
-**🔒 ¿Quieres excluir memsys3/ de GitHub?**
+A) Sí, incluir memsys3/ en git (RECOMENDADO)
+   - Las @ menciones funcionarán normalmente
+   - El contexto queda respaldado y no se pierde
+   - Necesario si el repo es privado y trabajas en equipo
 
-memsys3 contiene tu contexto de desarrollo local (sesiones, decisiones, gotchas). Esta información es útil para ti pero generalmente NO debe subirse al repositorio público.
-
-**Opciones:**
-
-**A) Sí, excluir memsys3/ de git (RECOMENDADO)**
-- memsys3/ será ignorado por git
-- No se subirá al repositorio
-- Permanecerá solo en tu máquina local
-
-⚠️ **IMPORTANTE - Limitación de Claude Code:**
-Si eliges esta opción, las @ menciones NO funcionarán (ej: `@memsys3/prompts/newSession.md`).
-Esto es una limitación de seguridad de Claude Code con archivos ignorados.
-
-**Solución/Workaround:**
-En lugar de usar @ menciones, dale instrucciones directas a Claude:
-- ✅ **"Ejecuta memsys3/prompts/newSession.md"**
-- ✅ **"Lee y ejecuta las instrucciones en memsys3/prompts/compile-context.md"**
-- ❌ ~~`@memsys3/prompts/newSession.md`~~ (no funcionará)
-
-El sistema funcionará perfectamente, solo cambia la forma de invocar los prompts.
-
-**B) No, permitir que memsys3/ se suba a git**
-- memsys3/ se incluirá en commits
-- Se subirá al repositorio (público o privado)
-- Útil si quieres compartir el contexto con tu equipo
-- ✅ Las @ menciones funcionarán normalmente
-
----
+B) No, excluir memsys3/ de git
+   - memsys3/ solo existirá en tu máquina local
+   ⚠️ Las @ menciones NO funcionarán (limitación de Claude Code con archivos ignorados)
+   ⚠️ Riesgo de perder contexto si mueves el directorio o cambias de máquina
+```
 
 **Si el usuario elige OPCIÓN A (recomendado):**
+
+- No modificar .gitignore
+- Verificar que memsys3/ NO está en .gitignore:
+  ```bash
+  grep -q "memsys3" .gitignore 2>/dev/null && echo "⚠️ memsys3 está en .gitignore, considera eliminarlo" || echo "✅ memsys3 no está excluido"
+  ```
+- Si estaba excluido previamente, ofrecer eliminarlo del .gitignore
+
+**Si el usuario elige OPCIÓN B:**
 
 1. Lee el .gitignore existente (si existe):
    ```bash
    cat .gitignore 2>/dev/null || echo "# .gitignore no existe, se creará"
    ```
 
-2. Verifica si memsys3/ ya está excluido:
-   ```bash
-   grep -q "memsys3" .gitignore 2>/dev/null && echo "✅ Ya está excluido" || echo "➕ Necesita agregarse"
-   ```
-
-3. Si NO está excluido, agrégalo al .gitignore:
+2. Si NO está excluido, agrégalo al .gitignore:
    - Si .gitignore existe → usa Edit tool para agregar al final:
      ```
      # memsys3 - Sistema de gestión de contexto (local only)
@@ -254,16 +244,10 @@ El sistema funcionará perfectamente, solo cambia la forma de invocar los prompt
      memsys3/
      ```
 
-4. Verifica que funciona:
-   ```bash
-   git status --short | grep memsys3
-   # Si no aparece nada → ✅ correctamente ignorado
-   ```
-
-**Si el usuario elige OPCIÓN B:**
-
-- No modificar .gitignore
-- Informar que memsys3/ se incluirá en commits
+3. Informa la limitación:
+   > ⚠️ Con esta opción las @ menciones no funcionarán. Usa instrucciones directas:
+   > - "Ejecuta memsys3/prompts/newSession.md"
+   > - "Lee y ejecuta memsys3/prompts/compile-context.md"
 
 ### Paso 9: Eliminar Clone Temporal
 
