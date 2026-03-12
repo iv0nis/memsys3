@@ -1,8 +1,8 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-03-09"
-  actualizado_por: "Claude (Session 2026-03-09 fix 3 bugs actualizar.md)"
+  ultima_actualizacion: "2026-03-11"
+  actualizado_por: "Claude (Session 2026-03-11 deploy.md mejoras + IMPROVEMENT-008)"
   fase: "Development v0.18.2"
   memsys3_version: "v0.18.2"
   memsys3_deployed: "2025-10-28"
@@ -113,6 +113,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2026-03-11"
+    resum: "deploy.md: gitignore incluir por defecto + briefing AskUserQuestion dos fases. IMPROVEMENT-008: deploy agnostico multi-agente. v0.18.2. ~30min peso bajo."
   - data: "2026-03-08"
     resum: "migrate.md (guia migracion historial Claude Code). Reunion 20260308_2 con gitkigai. Limpieza meet-coord/meet-research. Sincronizado meet.md. Releases v0.12.1 y v0.18.0. ~2h peso medio."
   - data: "2026-03-08"

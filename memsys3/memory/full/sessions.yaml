@@ -3,6 +3,20 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: 2026-03-11-deploy-mejoras-gitignore-askuserquestion
+    data: 2026-03-11
+    duracion: ~30min
+    peso: bajo
+    titulo: deploy.md — gitignore incluir por defecto + AskUserQuestion dos fases + IMPROVEMENT-008
+    highlights:
+      - "deploy.md: recomendacion gitignore invertida (incluir memsys3 en git por defecto) — evita perder contexto al mover directorios"
+      - "deploy.md: briefing en dos fases con AskUserQuestion (max 4 preguntas por llamada, Fase A esenciales + Fase B stack/URLs)"
+      - "IMPROVEMENT-008 creado: deploy agnostico — configurar memoria antes del agente, no despues (requiere deliberacion)"
+      - "Discusion con colaborador: memsys3 no debe depender de un modelo especifico (analogia Barca-Messi)"
+    proximos_pasos:
+      - "Deliberar IMPROVEMENT-008: deploy agnostico multi-agente"
+      - "Implementar ISSUE-005 (loop automatico en actualizar.md)"
+      - "Cerrar meeting 20260303_1 (Agent A escribio CIERRE, pendiente respuesta Agent B)"
   - id: "2026-03-08-migrate-md-meet-limpieza-v018"
     data: "2026-03-08"
     duracion: "~2h"
