@@ -219,11 +219,11 @@ Si creas ADR:
 Si tienes un `agent_id` asignado en esta sesión (ej: "Agent B", "Agent A"), verifica que esté guardado:
 
 ```bash
-# Reemplaza AGENT_ID con tu id (ej: agent_b, agent_a)
-cat /tmp/memsys3_AGENT_ID.md 2>/dev/null || echo "Agent B" > /tmp/memsys3_AGENT_ID.md
+# Verifica que esté guardado (persiste entre sesiones y compacts)
+cat ~/.claude/memsys3_agent_id 2>/dev/null || echo "Agent B" > ~/.claude/memsys3_agent_id
 ```
 
-Esto garantiza que tras un `/compact` puedas recuperar tu identidad leyendo ese archivo.
+Esto garantiza que tras un `/compact` o reinicio puedas recuperar tu identidad leyendo ese archivo.
 
 ### 5. Verificar estado de compile-context
 
