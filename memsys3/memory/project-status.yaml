@@ -4,7 +4,7 @@ metadata:
   ultima_actualizacion: "2026-03-11"
   actualizado_por: "Claude (Session 2026-03-11 deploy.md mejoras + IMPROVEMENT-008)"
   fase: "Development v0.18.2"
-  memsys3_version: "v0.18.2"
+  memsys3_version: "v0.18.3"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
