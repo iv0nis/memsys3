@@ -83,7 +83,20 @@ Sessions: [N] desde [ÚLTIMO_TAG]
 Breaking changes: [Ninguno/Descripción]
 """
 
-❓ ¿Confirmas v0.X.Y? (sí / no / propón otra versión)
+```
+
+Tras mostrar el análisis, usa `AskUserQuestion` para confirmar:
+
+```
+AskUserQuestion(
+  question: "¿Qué versión creamos?",
+  header: "Versión tag",
+  options: [
+    { label: "v0.X.Y (Patch)", description: "Confirmar la versión propuesta (patch +0.0.1)" },
+    { label: "v0.X+1.0 (Minor)", description: "Subir minor en su lugar (+0.1.0)" },
+    { label: "Sin tag por ahora", description: "Solo hacer commit, sin crear tag" }
+  ]
+)
 ```
 
 **Criterios para Minor vs Patch:**
