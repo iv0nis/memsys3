@@ -1,8 +1,8 @@
-# GitHub - Subir cambios al repositorio
+# Git - Tracking local de cambios
 
 ## Instrucciones
 
-- Sube el repo a GitHub en español, sin emojis ni firmas
+- Commits en español, sin emojis ni firmas
 - Commits atómicos y descriptivos
 - **SIEMPRE propón crear tag** (usuario confirma)
 - No subas la versión más allá de la 0.x.x hasta que sea estable
@@ -47,7 +47,7 @@ git describe --tags --abbrev=0  # Último tag (ej: v0.7.1)
 **Formato de propuesta:**
 
 ```
-📊 Análisis de cambios desde [ÚLTIMO_TAG]:
+Análisis de cambios desde [ÚLTIMO_TAG]:
 
 - Sesiones documentadas: [N]
   - [FECHA]: [Título sesión 1]
@@ -61,7 +61,7 @@ git describe --tags --abbrev=0  # Último tag (ej: v0.7.1)
 
 ---
 
-💡 Propongo: v0.X.Y
+Propongo: v0.X.Y
 
 Justificación:
 - Minor (+0.1.0): [Razón si aplica]
@@ -124,15 +124,14 @@ git commit -m "chore: bump version to v0.X.Y"
 git log -1 --format="%B"
 ```
 
-### 5. Ejecutar commits y push
-
-**Si usuario confirmó crear tag:**
+### 5. Ejecutar commits y crear tag
 
 ```bash
-# Push commits (incluye bump de versión)
-git push origin master
+# ⚠️ Commit SIN Co-Authored-By (NO añadir firma de Claude)
+git add [archivos relevantes]
+git commit -m "[mensaje descriptivo]"
 
-# Crear y subir tag con metadata rica (NO añadir Co-Authored-By)
+# Si usuario confirmó tag: crear tag local con metadata rica
 git tag -a v0.X.Y -m "Release v0.X.Y: [Resumen]
 
 Features:
@@ -145,26 +144,16 @@ Fixes:
 ADRs: [IDs]
 Sessions: [N] desde [ÚLTIMO_TAG]
 Breaking changes: [Ninguno/Descripción]"
-
-git push --tags
 ```
 
-**Si usuario NO quiere tag (solo en casos excepcionales):**
-
-```bash
-git add .
-git commit -m "[mensaje descriptivo]"
-git push origin master
-```
-
-### 6. Verificar en GitHub
+### 6. Verificar
 
 ```bash
 # Verificar que commits NO tienen firma
 git log -5 --format="%B" | grep -i "co-authored" && echo "❌ ERROR: Firma detectada" || echo "✅ OK: Sin firma"
 
-# Verificar que tag llegó
-git ls-remote --tags origin | tail -3
+# Verificar tag local
+git tag -l --sort=-v:refname | head -3
 
 # Verificar último commit
 git log -1 --oneline
@@ -178,36 +167,4 @@ git log -1 --oneline
 - **actualizar.md:** Depende de tags para funcionar correctamente
 - **SemVer:** Mantener formato v0.X.Y (3 números) estándar
 - **No llegar a v1.0.0** hasta considerar el sistema "estable completo"
-
-## Ejemplo Real
-
-```
-📊 Análisis de cambios desde v0.7.1:
-
-- Sesiones documentadas: 2
-  - 2025-12-09: Comando global deploy-memsys3
-  - 2025-12-11: Sistema gestión ADRs
-
-- Features nuevas: 2 (adr.md, deploy global)
-- ADRs creadas: 1 (ADR-013)
-- Breaking changes: No
-
----
-
-💡 Propongo: v0.8.0 (minor bump: 2 features significativas)
-
-Mensaje del tag:
-"""
-Release v0.8.0: Sistema gestión ADRs + comando global deploy
-
-Features:
-- Comando global /deploy-memsys3 (sesión 2025-12-09)
-- Sistema gestión ADRs con prompt adr.md (sesión 2025-12-11)
-
-ADRs: ADR-013 (consistencia arquitectónica)
-Sessions: 2 desde v0.7.1
-Breaking changes: Ninguno
-"""
-
-❓ ¿Confirmas v0.8.0?
-```
+- **Solo local:** Este prompt NO hace push. Para subir a remoto, usa `@memsys3/prompts/github.md`
