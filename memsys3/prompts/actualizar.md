@@ -10,34 +10,54 @@
 
 ## ⚠️ ANTES DE EMPEZAR
 
-### Paso 0a: Verificar working directory
+### Paso 0a: Identificar tu memsys3
 
-**CRÍTICO — ejecuta esto primero:**
+**CRÍTICO — ejecuta esto ANTES de cualquier otra operación:**
 
 ```bash
-pwd
-ls memsys3/memory/project-status.yaml 2>/dev/null && echo "OK: memsys3/ encontrado" || echo "ERROR: memsys3/ no encontrado en este directorio"
-
-# Guardar ruta absoluta del proyecto (se usa en todo el proceso)
 PROJECT_ROOT=$(pwd)
-echo "PROJECT_ROOT=$PROJECT_ROOT"
+MEMSYS3_ROOT="$PROJECT_ROOT/memsys3"
+
+if [ -f "$MEMSYS3_ROOT/memory/project-status.yaml" ]; then
+  echo "✅ memsys3 encontrado: $MEMSYS3_ROOT"
+  grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml" | head -1
+else
+  echo "⚠️ memsys3/ no encontrado en $(pwd)"
+  echo "Buscando memsys3/ disponibles (máx profundidad 4)..."
+  CANDIDATES=$(find . -maxdepth 4 -path "*/memsys3/memory/project-status.yaml" 2>/dev/null | sed 's|/memory/project-status.yaml$||')
+  COUNT=$(echo "$CANDIDATES" | grep -c . 2>/dev/null || echo 0)
+  if [ "$COUNT" -eq 1 ]; then
+    MEMSYS3_ROOT="$(cd "$CANDIDATES" && pwd)"
+    echo "✅ memsys3 encontrado (único): $MEMSYS3_ROOT"
+  elif [ "$COUNT" -gt 1 ]; then
+    echo "⚠️ Múltiples memsys3 encontrados:"
+    echo "$CANDIDATES"
+    echo "Pregunta al usuario cuál usar para esta actualización."
+  else
+    echo "❌ No se encontró ningún memsys3. ¿Has desplegado memsys3? Usa @memsys3/prompts/deploy.md"
+  fi
+fi
 
 # Limpiar artefactos de ejecuciones anteriores
 rm -rf memsys3_update_temp memsys3_templates 2>/dev/null
 echo "Artefactos previos limpiados"
+echo "PROJECT_ROOT=$PROJECT_ROOT"
+echo "MEMSYS3_ROOT=$MEMSYS3_ROOT"
 ```
 
-**Si no encuentra `memsys3/`:** detente. Pregunta al usuario desde qué directorio ejecutar la actualización. No continues hasta confirmarlo.
+**Si no encuentra memsys3 o hay múltiples:** detente. Pregunta al usuario y NO continúes hasta confirmarlo.
 
-**Si encuentra `memsys3/`:** continúa con el bootstrap.
+**Si encuentra memsys3:** continúa con el bootstrap.
 
-**IMPORTANTE:** Todos los pasos siguientes deben usar `$PROJECT_ROOT` como referencia para rutas absolutas. Evita `cd` siempre que sea posible.
+**IMPORTANTE:** Todos los pasos siguientes deben usar `$MEMSYS3_ROOT` para referirse a memsys3 y `$PROJECT_ROOT` para la raíz del proyecto. Evita `cd` siempre que sea posible.
+
+> **Nota sobre monorepos/submodules:** Un proyecto puede contener múltiples instancias de memsys3 (monorepo, submodules, workspaces). La detección automática prioriza `$(pwd)/memsys3`. Si hay ambigüedad, el usuario decide.
 
 ### Paso 0b: Bootstrap — actualizar este prompt antes de continuar
 
 ```bash
 git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
-cp memsys3_update_temp/memsys3_templates/prompts/actualizar.md memsys3/prompts/actualizar.md
+cp memsys3_update_temp/memsys3_templates/prompts/actualizar.md "$MEMSYS3_ROOT/prompts/actualizar.md"
 echo "actualizar.md actualizado a la versión del repo"
 ```
 
@@ -157,7 +177,7 @@ proyecto/
 Lee el archivo del proyecto:
 
 ```bash
-cat memsys3/memory/project-status.yaml | grep -A2 "metadata:"
+cat "$MEMSYS3_ROOT/memory/project-status.yaml" | grep -A2 "metadata:"
 ```
 
 **Busca los campos:**
@@ -286,22 +306,22 @@ Antes de tocar NADA, crea un backup:
 
 ```bash
 # Crear directorio de backups si no existe
-mkdir -p memsys3/docs/backups
+mkdir -p "$MEMSYS3_ROOT/docs/backups"
 
 # Migrar backups antiguos de la raíz (si los hay)
 for old_backup in memsys3_backup_*/; do
-  [ -d "$old_backup" ] && mv "$old_backup" "memsys3/docs/backups/$old_backup" && echo "Migrado: $old_backup"
+  [ -d "$old_backup" ] && mv "$old_backup" "$MEMSYS3_ROOT/docs/backups/$old_backup" && echo "Migrado: $old_backup"
 done
 
 # Crear backup actual (fuera de memsys3/ para evitar auto-recursión)
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-rsync -a --exclude='docs/backups' memsys3/ memsys3_backup_temp_$TIMESTAMP/
-mv memsys3_backup_temp_$TIMESTAMP memsys3/docs/backups/memsys3_backup_$TIMESTAMP
+rsync -a --exclude='docs/backups' "$MEMSYS3_ROOT/" memsys3_backup_temp_$TIMESTAMP/
+mv memsys3_backup_temp_$TIMESTAMP "$MEMSYS3_ROOT/docs/backups/memsys3_backup_$TIMESTAMP"
 
-echo "Backup creado en: memsys3/docs/backups/memsys3_backup_$TIMESTAMP"
+echo "Backup creado en: $MEMSYS3_ROOT/docs/backups/memsys3_backup_$TIMESTAMP"
 
 # Limpiar backups antiguos (máx 3: 2 anteriores + actual)
-cd memsys3/docs/backups
+cd "$MEMSYS3_ROOT/docs/backups"
 ls -dt memsys3_backup_* | tail -n +4 | xargs rm -rf
 echo "Backups antiguos limpiados (máx 3)"
 cd -
@@ -315,16 +335,53 @@ cp -r memsys3/docs/backups/memsys3_backup_$TIMESTAMP memsys3_restored
 
 ---
 
+## Paso 5.5: Detectar Archivos Custom del Proyecto
+
+**Antes de actualizar, identifica archivos que el usuario creó y NO pertenecen al template.**
+
+```bash
+echo "=== Detectando archivos custom del proyecto ==="
+echo "MEMSYS3_ROOT=$MEMSYS3_ROOT"
+
+for dir in prompts agents docs viz; do
+  if [ -d "$MEMSYS3_ROOT/$dir" ]; then
+    find "$MEMSYS3_ROOT/$dir" -type f | while read f; do
+      relative="${f#$MEMSYS3_ROOT/}"
+      if [ ! -f "memsys3_update_temp/memsys3_templates/$relative" ]; then
+        echo "  CUSTOM: $relative"
+      fi
+    done
+  fi
+done
+
+echo ""
+echo "Los archivos CUSTOM se preservarán intactos durante la actualización."
+echo "=== Fin detección ==="
+```
+
+**Si hay archivos custom:** No requiere acción. La actualización solo tocará archivos del template.
+
+**Si detectas un archivo que existe tanto en el proyecto como en el template nuevo, pero NO existía en la versión anterior del template** (puedes verificar en el backup): es un potencial conflicto. En ese caso:
+
+```
+⚠️ CONFLICTO: [archivo] existe en tu proyecto Y en el template nuevo.
+   Se preserva tu versión. Revisa manualmente si quieres la del template.
+```
+
+**Principio:** En caso de duda, preservar lo del usuario. Lo del template siempre se puede recuperar del repo.
+
+---
+
 ## Paso 6: Actualizar Archivos del Sistema
 
 ```bash
 # Crear directorios necesarios (siempre, antes de copiar nada)
-mkdir -p memsys3/docs memsys3/docs/backups memsys3/prompts memsys3/agents memsys3/memory/templates memsys3/viz
+mkdir -p "$MEMSYS3_ROOT/docs" "$MEMSYS3_ROOT/docs/backups" "$MEMSYS3_ROOT/prompts" "$MEMSYS3_ROOT/agents" "$MEMSYS3_ROOT/memory/templates" "$MEMSYS3_ROOT/viz"
 
 # Crear backlog/ si no existe
-if [ ! -f memsys3/backlog/README.md ]; then
-  mkdir -p memsys3/backlog
-  echo "# Backlog" > memsys3/backlog/README.md
+if [ ! -f "$MEMSYS3_ROOT/backlog/README.md" ]; then
+  mkdir -p "$MEMSYS3_ROOT/backlog"
+  echo "# Backlog" > "$MEMSYS3_ROOT/backlog/README.md"
   echo "backlog/ creado"
 fi
 ```
@@ -334,7 +391,7 @@ fi
 **Estrategia principal: git diff --name-status**
 
 ```bash
-CURRENT_VERSION=$(grep "memsys3_version" memsys3/memory/project-status.yaml | head -1 | sed 's/.*: "\(.*\)"/\1/')
+CURRENT_VERSION=$(grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml" | head -1 | sed 's/.*: "\(.*\)"/\1/')
 echo "Versión actual: $CURRENT_VERSION"
 
 # Ver qué archivos cambiaron, con estado (A=añadido, M=modificado, D=eliminado)
@@ -349,7 +406,10 @@ Archivos a borrar (D): Y
 ```
 
 **Para cada archivo listado:**
-- **A (añadido) o M (modificado):** cópialo al directorio correspondiente en `memsys3/`
+- **A (añadido):** verificar primero si ya existe en `memsys3/` del proyecto.
+  - Si existe → es un archivo custom del usuario con el mismo nombre → **CONFLICTO**: preservar del usuario y avisar `⚠️ CONFLICTO: [archivo] existe en tu proyecto Y en el template nuevo. Se preserva tu versión.`
+  - Si no existe → copiar normalmente.
+- **M (modificado):** cópialo al directorio correspondiente en `memsys3/`
   - `memsys3_templates/prompts/X` → `memsys3/prompts/X`
   - `memsys3_templates/docs/X` → `memsys3/docs/X`
   - `memsys3_templates/agents/X` → `memsys3/agents/X`
@@ -358,37 +418,42 @@ Archivos a borrar (D): Y
   - **Excepto** `newSession.md` y `main-agent.yaml` → ver pasos 6.2 y 6.3
 - **D (eliminado):** borra el archivo correspondiente en `memsys3/`
 
+**IMPORTANTE:** Los archivos custom detectados en Paso 5.5 NO se tocan en ningún caso.
+
 **Si git diff funciona, NO ejecutes el fallback. Son mutuamente excluyentes.**
 
 ---
 
-**Fallback: lista completa (SOLO si git diff falla — error de salida, versión no encontrada)**
+**Fallback: copia dinámica (SOLO si git diff falla — error de salida, versión no encontrada)**
 
 ```bash
-# Copiar prompts actualizados (excepto newSession.md por ahora)
-cp memsys3_update_temp/memsys3_templates/prompts/compile-context.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/endSession.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/mind.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/github.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/deploy.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/actualizar.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/adr.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/backlog.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/commands.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/meet.md memsys3/prompts/
-cp memsys3_update_temp/memsys3_templates/prompts/agent-identity.md memsys3/prompts/
+# Copiar prompts recursivamente (excepto newSession.md → merge manual en 6.2)
+find memsys3_update_temp/memsys3_templates/prompts/ -type f | while read f; do
+  relative="${f#memsys3_update_temp/memsys3_templates/}"
+  fname=$(basename "$f")
+  if [ "$fname" != "newSession.md" ]; then
+    mkdir -p "$MEMSYS3_ROOT/$(dirname "$relative")"
+    cp "$f" "$MEMSYS3_ROOT/$relative"
+  fi
+done
+echo "Prompts actualizados (dinámico)"
 
-# Limpiar docs/*.md antiguos y copiar los nuevos
-rm -f memsys3/docs/*.md
-cp -r memsys3_update_temp/memsys3_templates/docs/* memsys3/docs/ 2>/dev/null || true
-echo "docs/ actualizada (limpieza + copia)"
+# Copiar docs (sin borrar — preserva archivos custom del proyecto)
+find memsys3_update_temp/memsys3_templates/docs/ -type f | while read f; do
+  relative="${f#memsys3_update_temp/memsys3_templates/}"
+  mkdir -p "$MEMSYS3_ROOT/$(dirname "$relative")"
+  cp "$f" "$MEMSYS3_ROOT/$relative"
+done
+echo "Docs actualizados (sin borrar custom)"
 ```
+
+> **⚠️ NUNCA hacer `rm -f memsys3/docs/*.md` ni borrar carpetas enteras.** Eso destruye archivos custom del proyecto. Solo sobrescribir archivos que vienen del template.
 
 ### 6.2 Revisar newSession.md
 
 ```bash
 # Comparar versiones
-diff memsys3/prompts/newSession.md memsys3_update_temp/memsys3_templates/prompts/newSession.md
+diff "$MEMSYS3_ROOT/prompts/newSession.md" memsys3_update_temp/memsys3_templates/prompts/newSession.md
 ```
 
 **Si hay diferencias:**
@@ -399,25 +464,27 @@ diff memsys3/prompts/newSession.md memsys3_update_temp/memsys3_templates/prompts
 
 **Si NO hay diferencias (archivo base sin personalizar):**
 ```bash
-cp memsys3_update_temp/memsys3_templates/prompts/newSession.md memsys3/prompts/
+cp memsys3_update_temp/memsys3_templates/prompts/newSession.md "$MEMSYS3_ROOT/prompts/"
 ```
 
 ### 6.3 Actualizar Agents
 
 ```bash
 # Context Agent (siempre actualizar)
-cp memsys3_update_temp/memsys3_templates/agents/context-agent.yaml memsys3/agents/
+cp memsys3_update_temp/memsys3_templates/agents/context-agent.yaml "$MEMSYS3_ROOT/agents/"
 
 # Main Agent (revisar personalizaciones)
-diff memsys3/agents/main-agent.yaml memsys3_update_temp/memsys3_templates/agents/main-agent.yaml
+diff "$MEMSYS3_ROOT/agents/main-agent.yaml" memsys3_update_temp/memsys3_templates/agents/main-agent.yaml
 ```
 
 **Estrategia main-agent.yaml:** igual que newSession.md (conservar personalizaciones + aplicar mejoras)
 
+> **Nota:** Los archivos custom en `agents/` detectados en Paso 5.5 (ej: `dev-agent.yaml`) no se tocan.
+
 ### 6.4 Actualizar Templates
 
 ```bash
-cp memsys3_update_temp/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
+cp memsys3_update_temp/memsys3_templates/memory/templates/*.yaml "$MEMSYS3_ROOT/memory/templates/"
 ```
 
 ### 6.5 Actualizar Visualizador
@@ -427,31 +494,31 @@ cp memsys3_update_temp/memsys3_templates/memory/templates/*.yaml memsys3/memory/
 **Si tienes memsys3/memory/viz/ (versión antigua):**
 ```bash
 # Mover a raíz (nueva ubicación según ADR-009)
-mkdir -p memsys3/viz
-cp memsys3_update_temp/memsys3_templates/viz/* memsys3/viz/
+mkdir -p "$MEMSYS3_ROOT/viz"
+cp memsys3_update_temp/memsys3_templates/viz/* "$MEMSYS3_ROOT/viz/"
 
 # Opcional: borrar ubicación antigua (después de verificar que funciona)
-# rm -rf memsys3/memory/viz/
+# rm -rf "$MEMSYS3_ROOT/memory/viz/"
 ```
 
 **Si ya tienes memsys3/viz/ (versión nueva):**
 ```bash
-cp memsys3_update_temp/memsys3_templates/viz/* memsys3/viz/
+cp memsys3_update_temp/memsys3_templates/viz/* "$MEMSYS3_ROOT/viz/"
 ```
 
 ### 6.6 Crear history/ si no existe
 
 ```bash
 # Crear directorio para Plan de Contingencia (si no existe)
-mkdir -p memsys3/memory/history
-touch memsys3/memory/history/.gitkeep
+mkdir -p "$MEMSYS3_ROOT/memory/history"
+touch "$MEMSYS3_ROOT/memory/history/.gitkeep"
 ```
 
 ### 6.7 Actualizar Documentación del Sistema
 
 ```bash
-cp memsys3_update_temp/memsys3_templates/memory/README.md memsys3/memory/
-cp memsys3_update_temp/memsys3_templates/viz/README.md memsys3/viz/ 2>/dev/null || true
+cp memsys3_update_temp/memsys3_templates/memory/README.md "$MEMSYS3_ROOT/memory/"
+cp memsys3_update_temp/memsys3_templates/viz/README.md "$MEMSYS3_ROOT/viz/" 2>/dev/null || true
 ```
 
 ---
@@ -460,7 +527,7 @@ cp memsys3_update_temp/memsys3_templates/viz/README.md memsys3/viz/ 2>/dev/null 
 
 **Hacer esto ANTES de limpiar el clone temporal** (necesitas NEW_VERSION del Paso 3).
 
-Edita `memsys3/memory/project-status.yaml`:
+Edita `$MEMSYS3_ROOT/memory/project-status.yaml`:
 
 **Actualizar solo el bloque metadata:**
 
@@ -479,7 +546,7 @@ metadata:
 
 **Verificar que el cambio se aplicó:**
 ```bash
-grep "memsys3_version" memsys3/memory/project-status.yaml
+grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml"
 # Debe mostrar la versión NUEVA, no la anterior
 ```
 
