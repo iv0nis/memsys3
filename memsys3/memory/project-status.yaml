@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-03-11"
-  actualizado_por: "Claude (Session 2026-03-11 deploy.md mejoras + IMPROVEMENT-008)"
-  fase: "Development v0.18.2"
-  memsys3_version: "v0.18.3"
+  ultima_actualizacion: "2026-03-25"
+  actualizado_por: "Claude (Session 2026-03-25 mejoras prompts + git.md + limpieza raiz)"
+  fase: "Development v0.19.0"
+  memsys3_version: "v0.19.0"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -113,6 +113,12 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2026-03-22"
+    resum: "Fix actualizar.md: preservar archivos custom (ISSUE-018) + MEMSYS3_ROOT monorepos (ISSUE-019). Reunión 20260322_1 con gitkigai (10 iteraciones). 8 cambios en 6 prompts templates. ~2.5h peso alto."
+  - data: "2026-03-22"
+    resum: "Nuevo prompt git.md (tracking local sin push, separado de github.md). ~15min peso bajo."
+  - data: "2026-03-14"
+    resum: "ISSUE-017: agent_id persistencia cross-platform (~/.claude/ en lugar de /tmp/). github.md: AskUserQuestion para confirmar version de tag. v0.18.3. ~1.5h peso medio."
   - data: "2026-03-11"
     resum: "deploy.md: gitignore incluir por defecto + briefing AskUserQuestion dos fases. IMPROVEMENT-008: deploy agnostico multi-agente. v0.18.2. ~30min peso bajo."
   - data: "2026-03-08"
