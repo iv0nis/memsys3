@@ -248,6 +248,8 @@ Estos archivos contienen el histórico y estado del proyecto. **JAMÁS los toque
 - `memsys3/memory/full/adr_*.yaml` (si hay rotaciones)
 - `memsys3/memory/project-status.yaml` (excepto metadata de versión)
 - `memsys3/memory/context.yaml` (se regenera con compile-context)
+- `memsys3/memory/full/operations.log` (log de operaciones)
+- `memsys3/memory/full/operations_*.log` (si hay rotaciones)
 - `memsys3/memory/history/*` (si existe)
 
 ### ✅ ACTUALIZAR SIEMPRE (lógica del sistema)
@@ -643,7 +645,69 @@ Usa el template de sessions para documentar esta actualización:
 
 ---
 
-## Paso 11: Commit de Actualización (Opcional)
+## Paso 11: Registrar en Operations Log
+
+Registra esta actualización en `memsys3/memory/full/operations.log` para trazabilidad.
+
+### 11.1 Verificar rotación
+
+```bash
+LOGFILE="$MEMSYS3_ROOT/memory/full/operations.log"
+if [ -f "$LOGFILE" ]; then
+  LINES=$(wc -l < "$LOGFILE" | tr -d '[:space:]')
+  if [ "$LINES" -ge 1800 ]; then
+    # Encontrar próximo número de rotación
+    NEXT=1
+    while [ -f "$MEMSYS3_ROOT/memory/full/operations_${NEXT}.log" ]; do
+      NEXT=$((NEXT + 1))
+    done
+    cp "$LOGFILE" "$MEMSYS3_ROOT/memory/full/operations_${NEXT}.log"
+    echo "Rotado: operations.log → operations_${NEXT}.log ($LINES líneas)"
+    # Crear nuevo operations.log vacío
+    cat > "$LOGFILE" << 'HEADER'
+# Operations Log - memsys3
+# Registro automático de operaciones del sistema (actualizar, compilar)
+# Formato: YAML append-only, orden cronológico inverso (más reciente primero)
+# Rotación: cuando >= 1800 líneas, rotar a operations_N.log (estilo sessions)
+# Archivos rotados se pueden borrar libremente (no hay archivado)
+# Este archivo NO se lee en newSession ni compile-context — solo consulta bajo demanda
+
+operations:
+HEADER
+  fi
+else
+  echo "operations.log no existe, se creará"
+fi
+```
+
+### 11.2 Escribir entrada
+
+Usa **Edit tool** para añadir la entrada al PRINCIPIO del array `operations:` con el resumen estructurado de la actualización:
+
+```yaml
+operations:
+  - timestamp: "[YYYY-MM-DDTHH:MM:SS]"
+    operacion: "actualizar"
+    version_origen: "[VERSIÓN_ACTUAL]"
+    version_destino: "[VERSIÓN_NUEVA]"
+    resultado: "ok"  # o "error: <detalle>"
+    resumen:
+      nuevos: "[N archivos (lista)]"
+      actualizados: "[N archivos (lista)]"
+      eliminados: "[N archivos (lista)]"
+      merge_manual: "[archivos con merge manual, si los hubo]"
+      preservados: "[archivos custom preservados]"
+      backup: "[ruta del backup creado]"
+      pendientes_validacion:
+        - "[pendiente 1]"
+        - "[pendiente 2]"
+```
+
+**El resumen debe reflejar lo que realmente ocurrió en esta actualización** — usa la misma información que mostrarías al usuario en el resumen final.
+
+---
+
+## Paso 12: Commit de Actualización (Opcional)
 
 Si el proyecto usa git:
 
@@ -661,7 +725,7 @@ git commit -m "actualizar: memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA]
 
 ---
 
-## Paso 12: Eliminar Backup (Después de Validar)
+## Paso 13: Eliminar Backup (Después de Validar)
 
 **SOLO después de validar que todo funciona correctamente** (mínimo 1-2 sesiones de uso):
 
@@ -722,6 +786,7 @@ Antes de dar por terminada la actualización, verifica:
 - [ ] Visualizador funciona (mind.md)
 - [ ] newSession.md funciona (nueva instancia)
 - [ ] Actualización documentada en sessions.yaml
+- [ ] Operación registrada en `memsys3/memory/full/operations.log`
 - [ ] (Opcional) Commit creado
 - [ ] Backup borrado (después de 1-2 sesiones de validación)
 
