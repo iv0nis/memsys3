@@ -3,6 +3,97 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03)
 
 sessions:
+  - id: "2026-03-22-fix-actualizar-custom-memsys3root"
+    data: "2026-03-22"
+    duracion: "~2.5h"
+    peso: "alto"
+    titulo: "Fix actualizar.md: preservar archivos custom + $MEMSYS3_ROOT monorepos"
+    highlights:
+      - "Reunión multi-agente 20260322_1 con gitkigai (10 iteraciones, 2 issues)"
+      - "ISSUE-018: actualizar.md borraba archivos custom del proyecto (endSession.dev.md, newSession.dev.md, conciso.md perdidos en gitkigai)"
+      - "ISSUE-019: En monorepos con múltiples memsys3, el agente operaba en el memsys3 equivocado"
+      - "8 cambios implementados en memsys3_templates/prompts/ + sincronizado dog-fooding"
+    features_implementadas:
+      - "Paso 5.5 en actualizar.md: detectar archivos custom comparando proyecto vs template antes de actualizar"
+      - "Fallback dinámico con find recursivo — elimina lista hardcodeada de prompts (frágil, incompleta)"
+      - "Eliminado rm -f memsys3/docs/*.md del fallback — causa principal de pérdida de archivos custom"
+      - "Protección git diff archivos A: verificar si archivo 'añadido' ya existe como custom del usuario"
+      - "Paso 0 estándar en 6 prompts: actualizar, endSession, compile-context, backlog, adr, newSession"
+      - "Detección inteligente MEMSYS3_ROOT: $(pwd)/memsys3 → fallback find → pregunta si ambigüedad"
+      - "Refactor completo $MEMSYS3_ROOT en actualizar.md (todos los bloques bash)"
+      - "Limpieza variable $MEMSYS residual en endSession.md (5 líneas find obsoletas)"
+    decisions:
+      - "Template ya es su propio manifiesto — no necesita manifest.txt externo"
+      - "Duplicar Paso 0 en cada prompt (opción A) vs extraer a _common.md (opción B) — elegida A por simplicidad"
+      - "En caso de duda, preservar lo del usuario. Lo del template siempre se puede recuperar del repo"
+      - "$(pwd)/memsys3 como default. Si falla, buscar. Si hay ambigüedad, preguntar. Nunca asumir"
+      - "Contemplar diversidad de estructuras de proyecto: monorepos, submodules, workspaces"
+    gotchas:
+      - tipo: "warning"
+        problema: "rm -f memsys3/docs/*.md en actualizar.md fallback borra archivos custom del usuario silenciosamente"
+        solucion: "Eliminado. Reemplazado por loop dinámico que solo sobrescribe archivos del template"
+        criticidad: "alta"
+      - tipo: "warning"
+        problema: "En monorepos con múltiples memsys3/, el agente puede operar en el equivocado — bug silencioso"
+        solucion: "Paso 0 con detección automática MEMSYS3_ROOT + find fallback + pregunta si ambigüedad"
+        criticidad: "alta"
+      - tipo: "info"
+        problema: "Variable $MEMSYS (find) residual en endSession.md tras migrar a $MEMSYS3_ROOT — 5 líneas inútiles"
+        solucion: "Limpieza: eliminadas las 5 líneas de MEMSYS=$(find...) que ya no se usaban"
+        criticidad: "baja"
+    proximos_pasos:
+      - "Testear actualizar.md con los fixes en un proyecto real (gitkigai o BusinessHub)"
+      - "Agent B (gitkigai) debe restaurar archivos perdidos desde backup 12/03"
+      - "Valorar ADR para documentar principio: archivos custom tienen mismo nivel de protección que memory/full/"
+
+  - id: "2026-03-22-git-md-separacion-prompts"
+    data: "2026-03-22"
+    duracion: ~15min
+    peso: bajo
+    titulo: "Nuevo prompt git.md - separacion tracking local vs github"
+    highlights:
+      - "Creado git.md: prompt para commits y tags locales sin push (separado de github.md)"
+      - "github.md restaurado intacto (commits + tags + push + verificacion remota)"
+      - "git.md = github.md sin push/verificacion remota, con nota apuntando a github.md"
+      - "Sincronizado templates + dogfooding"
+    archivos_modificados:
+      - memsys3_templates/prompts/git.md (NUEVO)
+      - memsys3_templates/prompts/github.md (restaurado)
+      - memsys3/prompts/git.md (NUEVO, sync)
+      - memsys3/prompts/github.md (sync)
+    proximos_pasos:
+      - "Actualizar actualizar.md para incluir git.md en lista de prompts"
+      - "Actualizar README.md con mencion de git.md"
+  - id: "2026-03-14-issue017-agent-id-persistencia-github-askuserquestion"
+    data: "2026-03-14"
+    duracion: ~1.5h
+    peso: medio
+    titulo: "ISSUE-017 agent_id persistencia cross-platform + github.md AskUserQuestion"
+    highlights:
+      - "ISSUE-017: agent_id movido de /tmp/ a ~/.claude/memsys3_agent_id (persiste en macOS, Linux, WSL, Windows)"
+      - "github.md: confirmacion de version de tag ahora usa AskUserQuestion (estreno del nuevo flujo)"
+      - "Synced dogfooding + templates en ambos cambios"
+      - "v0.18.3 tagueado y pusheado"
+    features_implementadas:
+      - nombre: "ISSUE-017 agent_id cross-platform"
+        descripcion: "Cambiado path de persistencia de /tmp/memsys3_agent_X.md a ~/.claude/memsys3_agent_id. Afecta agent-identity.md y endSession.md (paso 4.5) en dogfooding y templates."
+        archivos:
+          - memsys3/prompts/agent-identity.md
+          - memsys3/prompts/endSession.md
+          - memsys3_templates/prompts/agent-identity.md
+          - memsys3_templates/prompts/endSession.md
+          - memsys3/backlog/ISSUE-017-agent-id-persistencia-cross-platform.md
+      - nombre: "github.md AskUserQuestion para confirmar version"
+        descripcion: "Sustituido el texto plano '? Confirmas v0.X.Y?' por llamada a AskUserQuestion con opciones Patch/Minor/Sin tag."
+        archivos:
+          - memsys3/prompts/github.md
+          - memsys3_templates/prompts/github.md
+    decisiones:
+      - decision: "Usar ~/.claude/ como directorio de persistencia cross-platform para agent_id"
+        razon: "Claude Code gestiona este directorio en todos los OS soportados. /tmp/ no persiste en WSL entre sesiones ni reinicios."
+    proximos_pasos:
+      - "Statusline script en repo (pendiente — solo existe en ~/.claude/statusline.sh, no en memsys3_templates)"
+      - "Colaborador deployment: completar guia con statusline incluido"
   - id: 2026-03-11-deploy-mejoras-gitignore-askuserquestion
     data: 2026-03-11
     duracion: ~30min
