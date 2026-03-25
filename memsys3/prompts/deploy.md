@@ -80,6 +80,17 @@ cat > memsys3/memory/full/sessions.yaml << 'EOF'
 
 sessions: []
 EOF
+
+cat > memsys3/memory/full/operations.log << 'EOF'
+# Operations Log - [NOMBRE_PROYECTO]
+# Registro automático de operaciones del sistema (actualizar, compilar)
+# Formato: YAML append-only, orden cronológico inverso (más reciente primero)
+# Rotación: cuando >= 1800 líneas, rotar a operations_N.log (estilo sessions)
+# Archivos rotados se pueden borrar libremente (no hay archivado)
+# Este archivo NO se lee en newSession ni compile-context — solo consulta bajo demanda
+
+operations: []
+EOF
 ```
 
 ### Paso 3: Briefing con el Usuario
@@ -263,7 +274,7 @@ Confirma que el deployment se ha completado correctamente:
 ✅ memsys3 deployment completado!
 
 Estructura creada:
-- memsys3/memory/full/ (adr.yaml, sessions.yaml inicializados)
+- memsys3/memory/full/ (adr.yaml, sessions.yaml, operations.log inicializados)
 - memsys3/memory/templates/ (guías permanentes)
 - memsys3/memory/history/ (para Plan Contingencia)
 - memsys3/viz/ (visualizador web)

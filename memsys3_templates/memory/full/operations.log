@@ -1,0 +1,8 @@
+# Operations Log - memsys3
+# Registro automático de operaciones del sistema (actualizar, compilar)
+# Formato: YAML append-only, orden cronológico inverso (más reciente primero)
+# Rotación: cuando >= 1800 líneas, rotar a operations_N.log (estilo sessions)
+# Archivos rotados se pueden borrar libremente (no hay archivado)
+# Este archivo NO se lee en newSession ni compile-context — solo consulta bajo demanda
+
+operations:

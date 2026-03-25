@@ -331,6 +331,58 @@ solucio: "Corregido"
 
 ---
 
+## Paso Final: Registrar en Operations Log
+
+Tras generar `context.yaml`, registra la compilación en `memsys3/memory/full/operations.log`.
+
+### Verificar rotación
+
+```bash
+LOGFILE="$MEMSYS3_ROOT/memory/full/operations.log"
+if [ -f "$LOGFILE" ]; then
+  LINES=$(wc -l < "$LOGFILE" | tr -d '[:space:]')
+  if [ "$LINES" -ge 1800 ]; then
+    NEXT=1
+    while [ -f "$MEMSYS3_ROOT/memory/full/operations_${NEXT}.log" ]; do
+      NEXT=$((NEXT + 1))
+    done
+    cp "$LOGFILE" "$MEMSYS3_ROOT/memory/full/operations_${NEXT}.log"
+    echo "Rotado: operations.log → operations_${NEXT}.log ($LINES líneas)"
+    cat > "$LOGFILE" << 'HEADER'
+# Operations Log - memsys3
+# Registro automático de operaciones del sistema (actualizar, compilar)
+# Formato: YAML append-only, orden cronológico inverso (más reciente primero)
+# Rotación: cuando >= 1800 líneas, rotar a operations_N.log (estilo sessions)
+# Archivos rotados se pueden borrar libremente (no hay archivado)
+# Este archivo NO se lee en newSession ni compile-context — solo consulta bajo demanda
+
+operations:
+HEADER
+  fi
+fi
+```
+
+### Escribir entrada
+
+Usa **Edit tool** para añadir al PRINCIPIO del array `operations:`:
+
+```yaml
+operations:
+  - timestamp: "[YYYY-MM-DDTHH:MM:SS]"
+    operacion: "compilar"
+    version_context: "[versión del context.yaml generado]"
+    resultado: "ok"
+    resumen:
+      lineas: [N]
+      adrs_incluidas: "[X de Y]"
+      sesiones_incluidas: "[N (detalle por peso)]"
+      gotchas: "[N críticos]"
+      reduccion_tokens: "[X%]"
+      archivamiento: "[activado/no activado]"
+```
+
+---
+
 **COMIENZA AHORA LA COMPILACIÓN leyendo todos los archivos y aplicando tu criterio para generar `context.yaml`.**
 
 ---
