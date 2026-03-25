@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-03-25"
-  actualizado_por: "Claude (Session 2026-03-25 mejoras prompts + git.md + limpieza raiz)"
-  fase: "Development v0.19.0"
-  memsys3_version: "v0.19.0"
+  ultima_actualizacion: "2026-03-26"
+  actualizado_por: "Claude (Session 2026-03-26 FEATURE-009 operations log)"
+  fase: "Development v0.19.1"
+  memsys3_version: "v0.19.1"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -113,6 +113,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2026-03-26"
+    resum: "FEATURE-009: Sistema operations.log para trazabilidad (actualizar + compilar). Rotación estilo sessions. Integrado en actualizar.md, compile-context.md, deploy.md. Sincronizado templates. ~30min peso bajo."
   - data: "2026-03-22"
     resum: "Fix actualizar.md: preservar archivos custom (ISSUE-018) + MEMSYS3_ROOT monorepos (ISSUE-019). Reunión 20260322_1 con gitkigai (10 iteraciones). 8 cambios en 6 prompts templates. ~2.5h peso alto."
   - data: "2026-03-22"
