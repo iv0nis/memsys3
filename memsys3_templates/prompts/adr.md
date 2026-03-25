@@ -2,6 +2,31 @@
 
 **Contexto:** Los ADRs (`memsys3/memory/full/adr.yaml`) documentan decisiones arquitectónicas del proyecto: qué decidimos, por qué, qué alternativas consideramos y qué impacto tiene.
 
+## 0. Identificar tu memsys3
+
+```bash
+MEMSYS3_ROOT="$(pwd)/memsys3"
+if [ -f "$MEMSYS3_ROOT/memory/project-status.yaml" ]; then
+  echo "✅ memsys3 encontrado: $MEMSYS3_ROOT"
+else
+  echo "⚠️ memsys3/ no encontrado en $(pwd)"
+  CANDIDATES=$(find . -maxdepth 4 -path "*/memsys3/memory/project-status.yaml" 2>/dev/null | sed 's|/memory/project-status.yaml$||')
+  COUNT=$(echo "$CANDIDATES" | grep -c . 2>/dev/null || echo 0)
+  if [ "$COUNT" -eq 1 ]; then
+    MEMSYS3_ROOT="$(cd "$CANDIDATES" && pwd)"
+    echo "✅ memsys3 encontrado (único): $MEMSYS3_ROOT"
+  elif [ "$COUNT" -gt 1 ]; then
+    echo "⚠️ Múltiples memsys3 encontrados:"
+    echo "$CANDIDATES"
+    echo "Pregunta al usuario cuál usar."
+  else
+    echo "❌ No se encontró ningún memsys3."
+  fi
+fi
+```
+
+**Usa `$MEMSYS3_ROOT` como base para todas las operaciones.**
+
 **Tu tarea:**
 
 ## 1. Consultar ADRs

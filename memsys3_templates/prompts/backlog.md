@@ -2,10 +2,29 @@
 
 **Contexto:** El backlog (`memsys3/backlog/`) organiza trabajo futuro del proyecto (issues, features, specs, blueprints, mejoras, exploraciones).
 
-## 0. Verificar que existe el backlog
+## 0. Identificar tu memsys3 y verificar backlog
 
 ```bash
-ls memsys3/backlog/README.md 2>/dev/null && echo "OK" || echo "NO EXISTE"
+MEMSYS3_ROOT="$(pwd)/memsys3"
+if [ -f "$MEMSYS3_ROOT/memory/project-status.yaml" ]; then
+  echo "✅ memsys3 encontrado: $MEMSYS3_ROOT"
+else
+  echo "⚠️ memsys3/ no encontrado en $(pwd)"
+  CANDIDATES=$(find . -maxdepth 4 -path "*/memsys3/memory/project-status.yaml" 2>/dev/null | sed 's|/memory/project-status.yaml$||')
+  COUNT=$(echo "$CANDIDATES" | grep -c . 2>/dev/null || echo 0)
+  if [ "$COUNT" -eq 1 ]; then
+    MEMSYS3_ROOT="$(cd "$CANDIDATES" && pwd)"
+    echo "✅ memsys3 encontrado (único): $MEMSYS3_ROOT"
+  elif [ "$COUNT" -gt 1 ]; then
+    echo "⚠️ Múltiples memsys3 encontrados:"
+    echo "$CANDIDATES"
+    echo "Pregunta al usuario cuál usar."
+  else
+    echo "❌ No se encontró ningún memsys3."
+  fi
+fi
+
+ls "$MEMSYS3_ROOT/backlog/README.md" 2>/dev/null && echo "OK: backlog existe" || echo "NO EXISTE: backlog"
 ```
 
 Si no existe, créalo antes de continuar:

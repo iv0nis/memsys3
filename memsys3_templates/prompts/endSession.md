@@ -8,25 +8,37 @@ Registrar qué se ha hecho durante esta sesión para que el próximo DevAgent te
 
 ## Workflow
 
-### 0. Localizar memsys3 (CHECKPOINT CRÍTICO)
+### 0. Identificar tu memsys3 (CHECKPOINT CRÍTICO)
 
-**Antes de cualquier operación**, verifica que memsys3 existe y obtén su ruta:
+**Antes de cualquier operación**, identifica tu memsys3:
 
 ```bash
-MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
-
-if [ -z "$MEMSYS" ]; then
-  echo "❌ ERROR: memsys3 no encontrado en este proyecto"
-  echo "¿Has desplegado memsys3? Ejecuta: @memsys3/prompts/deploy.md"
+MEMSYS3_ROOT="$(pwd)/memsys3"
+if [ -f "$MEMSYS3_ROOT/memory/project-status.yaml" ]; then
+  echo "✅ memsys3 encontrado: $MEMSYS3_ROOT"
+  ls "$MEMSYS3_ROOT/memory/full/sessions.yaml" && echo "✅ sessions.yaml OK" || echo "❌ sessions.yaml no encontrado"
 else
-  echo "✅ memsys3 encontrado en: $MEMSYS"
-  ls "$MEMSYS/memory/full/sessions.yaml" && echo "✅ sessions.yaml OK" || echo "❌ sessions.yaml no encontrado"
+  echo "⚠️ memsys3/ no encontrado en $(pwd)"
+  CANDIDATES=$(find . -maxdepth 4 -path "*/memsys3/memory/project-status.yaml" 2>/dev/null | sed 's|/memory/project-status.yaml$||')
+  COUNT=$(echo "$CANDIDATES" | grep -c . 2>/dev/null || echo 0)
+  if [ "$COUNT" -eq 1 ]; then
+    MEMSYS3_ROOT="$(cd "$CANDIDATES" && pwd)"
+    echo "✅ memsys3 encontrado (único): $MEMSYS3_ROOT"
+  elif [ "$COUNT" -gt 1 ]; then
+    echo "⚠️ Múltiples memsys3 encontrados:"
+    echo "$CANDIDATES"
+    echo "Pregunta al usuario cuál usar."
+  else
+    echo "❌ No se encontró ningún memsys3. ¿Has desplegado memsys3? Ejecuta: @memsys3/prompts/deploy.md"
+  fi
 fi
 ```
 
-**Si el comando no devuelve ruta:** detén la ejecución, memsys3 no está desplegado.
+**Si no encuentra memsys3 o hay múltiples:** detente y pregunta al usuario.
 
-**⚠️ Importante:** Las variables bash NO persisten entre tool calls. Cada bloque de código redefine `MEMSYS` con este mismo `find`.
+**Usa `$MEMSYS3_ROOT` como base para TODAS las operaciones de este prompt.**
+
+**⚠️ Importante:** Las variables bash NO persisten entre tool calls. Cada bloque de código redefine `MEMSYS3_ROOT` con `"$(pwd)/memsys3"`.
 
 ### 1. Recopilar Evidencias Objetivas
 
@@ -97,37 +109,33 @@ Antes de documentar, determina la importancia arquitectónica de esta sesión:
 **IMPORTANTE: Rotación flexible según líneas totales**
 
 ```bash
-MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
-wc -l "$MEMSYS/memory/full/sessions.yaml"
+wc -l "$MEMSYS3_ROOT/memory/full/sessions.yaml"
 ```
 
 **Escenario A: 1800 < líneas < 2000** (Rotación LITE después de documentar)
 ```bash
-MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
 # 1. Documentar sesión normalmente en sessions.yaml (paso 4)
 # 2. DESPUÉS de documentar, si supera 1800 líneas:
-ls "$MEMSYS/memory/full/sessions_"*.yaml 2>/dev/null  # Encontrar próximo número
-cp "$MEMSYS/memory/full/sessions.yaml" "$MEMSYS/memory/full/sessions_N.yaml"  # Copiar completo
-wc -l "$MEMSYS/memory/full/sessions_N.yaml"  # Verificar (debe incluir sesión actual)
+ls "$MEMSYS3_ROOT/memory/full/sessions_"*.yaml 2>/dev/null  # Encontrar próximo número
+cp "$MEMSYS3_ROOT/memory/full/sessions.yaml" "$MEMSYS3_ROOT/memory/full/sessions_N.yaml"  # Copiar completo
+wc -l "$MEMSYS3_ROOT/memory/full/sessions_N.yaml"  # Verificar (debe incluir sesión actual)
 # 3. Crear nuevo sessions.yaml VACÍO (solo header YAML):
 # sessions:
 ```
 
 **Escenario B: líneas > 2000** (Rotación PRE-documentar)
 ```bash
-MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
 # 1. ANTES de documentar, rotar:
-ls "$MEMSYS/memory/full/sessions_"*.yaml 2>/dev/null  # Encontrar próximo número
-cp "$MEMSYS/memory/full/sessions.yaml" "$MEMSYS/memory/full/sessions_N.yaml"  # Copiar
-wc -l "$MEMSYS/memory/full/sessions_N.yaml"  # Verificar (sin sesión actual)
+ls "$MEMSYS3_ROOT/memory/full/sessions_"*.yaml 2>/dev/null  # Encontrar próximo número
+cp "$MEMSYS3_ROOT/memory/full/sessions.yaml" "$MEMSYS3_ROOT/memory/full/sessions_N.yaml"  # Copiar
+wc -l "$MEMSYS3_ROOT/memory/full/sessions_N.yaml"  # Verificar (sin sesión actual)
 # 2. Crear nuevo sessions.yaml vacío (solo header YAML)
 # 3. Documentar sesión actual en sessions.yaml NUEVO (desde cero)
 ```
 
 **adr.yaml (mismo proceso):**
 ```bash
-MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
-wc -l "$MEMSYS/memory/full/adr.yaml"
+wc -l "$MEMSYS3_ROOT/memory/full/adr.yaml"
 # Aplicar Escenario A o B según líneas
 ```
 
@@ -228,23 +236,16 @@ Esto garantiza que tras un `/compact` o reinicio puedas recuperar tu identidad l
 ### 5. Verificar estado de compile-context
 
 ```bash
-MEMSYS=$(find . -maxdepth 3 -name "memsys3" -type d 2>/dev/null | grep -v node_modules | head -1)
-ultima=$(grep "ultima_compilacion:" "$MEMSYS/memory/context.yaml" | head -1 | sed 's/.*"\(.*\)".*/\1/')
-sesiones_sin_compilar=$(grep "^  - id:" "$MEMSYS/memory/full/sessions.yaml" | awk -F'"' '{print $2}' | while read id; do
+ultima=$(grep "ultima_compilacion:" "$MEMSYS3_ROOT/memory/context.yaml" | head -1 | sed 's/.*"\(.*\)".*/\1/')
+sesiones_sin_compilar=$(grep "^  - id:" "$MEMSYS3_ROOT/memory/full/sessions.yaml" | awk -F'"' '{print $2}' | while read id; do
   fecha=$(echo "$id" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
   [ "$fecha" \> "$ultima" ] && echo "$id"
 done | wc -l)
 echo "Ultima compilacion: $ultima"
 echo "Sesiones sin compilar: $sesiones_sin_compilar"
-[ "$sesiones_sin_compilar" -ge 5 ] && echo "AVISO: 5+ sesiones sin compilar" || echo "OK"
 ```
 
-Si hay 5 o más sesiones sin compilar, avisar al usuario:
-
-```
-⚠️ context.yaml lleva X sesiones sin recompilar (ultima: YYYY-MM-DD)
-   En tu proxima sesion limpia considera ejecutar @memsys3/prompts/compile-context.md
-```
+**SIEMPRE informar al usuario** del estado de compilación en el resumen final (paso 6).
 
 ### 6. Informar al Usuario
 
@@ -256,6 +257,8 @@ Resumen breve de qué se ha documentado:
 ✅ [N] ADRs creadas (si las hay)
 ✅ memsys3/memory/project-status.yaml actualizado
 ✅ Rotación hecha (si hacía falta): sessions.yaml → sessions_N.yaml
+📊 context.yaml: [N] sesiones sin compilar (ultima: YYYY-MM-DD)
+   [Si N >= 5]: ⚠️ Recomendado ejecutar @memsys3/prompts/compile-context.md en una sesion nueva
 
 Highlights de la sesión:
 - [Feature principal implementada]
