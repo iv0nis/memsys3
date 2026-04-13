@@ -3,3 +3,37 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-03-27-exploracion-gentle-ai-backlog-meet-glosario"
+    data: "2026-03-27"
+    duracion: "~2.5h"
+    peso: "medio"
+    titulo: "Análisis comparativo gentle-ai + backlog exploración + reunión glosario conceptos"
+    highlights:
+      - "Análisis comparativo exhaustivo gentle-ai/Engram vs memsys3: arquitectura, tokens, trade-offs"
+      - "5 items backlog creados inspirados en análisis: EXPLORATION-001 (consulta historial bajo demanda), FEATURE-010 (checkpoint mid-session), FEATURE-011 (Main Agent proactivo), ISSUE-020 (protocolo post-compact), FEATURE-012 (glosario conceptos)"
+      - "Reunión 20260327_1 con Agent B (gitkigai): deliberación sobre parcelas, submodules, estructura mental → reenfocado a glosario de conceptos"
+      - "FEATURE-012 acordada en meet: glosario.yaml como índice de lookup bajo demanda en memory/full/"
+    que_hizo:
+      - "Investigación gentle-ai (Gentleman-Programming): configurador ecosistema multi-agente + Engram (MCP server SQLite). ~15K tokens system prompt base, agente decide qué guardar, progressive disclosure"
+      - "Identificadas 3 ideas accionables de Engram para memsys3: consulta bajo demanda, checkpoint mid-session, protocolo post-compact"
+      - "Feedback usuario: Main Agent debería sugerir proactivamente cuándo hacer mid/end session → FEATURE-011"
+      - "Reunión multi-agente 20260327_1: Agent A (memsys3) + Agent B (gitkigai), moderador Ivonis"
+      - "Agent B reenfocó discusión: no necesitamos mindsys/contenedor, necesitamos glosario de conceptos como índice buscable"
+      - "Acordado: glosario.yaml en memory/full/, formato punteros (nombre+ref+sesión), mantenimiento híbrido endSession con AskUserQuestion, NO cargado por Context Agent"
+    decisions:
+      - "Glosario como feature agnóstica de memsys3, no específica de gitkigai"
+      - "Glosario es lookup bajo demanda, NO se compila en context.yaml"
+      - "Mantenimiento híbrido: paso final de endSession propone conceptos, usuario confirma"
+      - "Parcelas son contenido específico de gitkigai, no pertenecen al core agnóstico de memsys3"
+    gotchas:
+      - tipus: "observacion"
+        problema: "gentle-ai inyecta ~15K tokens de system prompt base (protocolo Engram 3.5K + SDD 9K + persona 2.8K) — más que el contexto compilado de memsys3 (~3K)"
+        criticitat: "baja"
+      - tipus: "proceso"
+        problema: "Polling de meet timeout 3 veces seguidas — Agent B en WSL Ubuntu no tenía acceso inmediato al archivo en ruta Windows"
+        solucio: "Verificar conectividad entre agentes antes de lanzar polling"
+        criticitat: "media"
+    proximos_pasos:
+      - "Implementar FEATURE-012 (glosario conceptos) — short-term, acordado en meet"
+      - "Evaluar implementación FEATURE-010 (checkpoint mid-session) y FEATURE-011 (Main Agent proactivo)"
+      - "EXPLORATION-001 (query.md) requiere más exploración antes de implementar"
