@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-03-26"
-  actualizado_por: "Claude (Session 2026-03-26 FEATURE-009 operations log)"
-  fase: "Development v0.19.1"
-  memsys3_version: "v0.19.1"
+  ultima_actualizacion: "2026-03-27"
+  actualizado_por: "Claude (Session 2026-03-27 exploración gentle-ai + backlog + meet glosario)"
+  fase: "Development v0.19.2"
+  memsys3_version: "v0.19.2"
   memsys3_deployed: "2025-10-28"
 
 visio_general:
@@ -14,8 +14,8 @@ visio_general:
 
 estat_actual:
   fase: "Development v0.12.0"
-  ultima_feature: "Fix ISSUE-009: rutas relativas inseguras en endSession.md. PASO 0 checkpoint con MEMSYS=$(find...) + PASO 3 usa \$MEMSYS. Limpieza: eliminada firma Co-Authored-By de actualizar.md PASO 11. Release v0.11.2 + ISSUE-010/011 creados. ~1h peso medio"
-  siguiente_milestone: "Resolver ISSUE-010 (actualización automática estado backlog en endSession) + ISSUE-011 (simplificar pregunta .gitignore en deploy) + ISSUE-008 (sincronizar docs/ en templates) + Decidir propuesta Extended Thinking → ADR-017"
+  ultima_feature: "Análisis comparativo gentle-ai/Engram. 5 items backlog (EXPLORATION-001, FEATURE-010/011/012, ISSUE-020). Reunión 20260327_1 con gitkigai → FEATURE-012 glosario conceptos acordado. ~2.5h peso medio"
+  siguiente_milestone: "Implementar FEATURE-012 (glosario conceptos) + Evaluar FEATURE-010 (checkpoint mid-session) + FEATURE-011 (Main Agent proactivo)"
 
 features:
   context_agent:
@@ -113,6 +113,8 @@ decisions_clau:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historic_sessions:
+  - data: "2026-03-27"
+    resum: "Análisis comparativo gentle-ai/Engram vs memsys3. 5 items backlog: EXPLORATION-001, FEATURE-010/011/012, ISSUE-020. Reunión 20260327_1 con gitkigai → glosario conceptos (FEATURE-012) acordado como feature agnóstica. ~2.5h peso medio."
   - data: "2026-03-26"
     resum: "FEATURE-009: Sistema operations.log para trazabilidad (actualizar + compilar). Rotación estilo sessions. Integrado en actualizar.md, compile-context.md, deploy.md. Sincronizado templates. ~30min peso bajo."
   - data: "2026-03-22"
