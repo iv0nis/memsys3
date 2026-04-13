@@ -4,7 +4,7 @@
 
 - Actúa según las instrucciones en '@memsys3/agents/context-agent.yaml'
 - **IMPORTANTE: Trabaja en ESPAÑOL siempre**
-- Tu misión es compilar el contexto completo del proyecto desde `memsys3/memory/full/` en un archivo compacto `memsys3/memory/context.yaml` que el Main Agent pueda cargar eficientemente.
+- Tu misión es compilar el contexto completo del proyecto en un archivo compacto `memsys3/memory/context.yaml` que el Main Agent pueda cargar eficientemente.
 
 ## Paso 0: Identificar tu memsys3
 
@@ -35,39 +35,93 @@ fi
 
 ## Filosofía
 
-Tú tienes la **visión panorámica completa** del proyecto. Lee todo el histórico y decide con criterio inteligente:
+Tú tienes la **visión panorámica completa** del proyecto. Tu objetivo es **llenar tu context window de conocimiento útil** antes de sintetizar.
 
 **"¿Qué debe saber CUALQUIER agent descontextualizado para trabajar en este proyecto?"**
 
-## Inputs que debes procesar
+**Presupuesto de ingesta: ~150K tokens**
+Lee por tiers de prioridad hasta acercarte a ese límite. Si el proyecto es pequeño y solo llegas a 30-50K tokens con todo lo disponible, es completamente normal — el objetivo es leer TODO lo relevante, no fabricar contenido.
 
-### Archivos a leer
+## Tiers de Ingesta (por prioridad)
 
-Lee **TODOS** estos archivos completos:
+Lee en este orden. Estima tokens acumulados tras cada tier y para si superas ~150K.
 
-1. `@memsys3/memory/full/adr.yaml` - **Todas** las Architecture Decision Records
-2. `@memsys3/memory/full/sessions.yaml` - **Todo** el histórico de sesiones
-3. `@memsys3/memory/project-status.yaml` - Status actual del proyecto
-4. `@memsys3/backlog/README.md` - **Sistema de backlog** *(solo si existe)*
-5. Items de backlog referenciados en `pendientes_prioritarios` - **SOLO los referenciados** *(lectura selectiva)*
+### Tier 1 — OBLIGATORIO (memoria del proyecto)
+
+1. `memsys3/memory/project-status.yaml` — estado actual
+2. `memsys3/memory/full/adr.yaml` — todas las ADRs
+3. `memsys3/memory/full/sessions.yaml` — sesiones recientes
+4. Archivos rotados: `sessions_1.yaml`, `sessions_2.yaml`, ... — histórico completo
+
+```bash
+# Verificar archivos rotados disponibles
+ls "$MEMSYS3_ROOT/memory/full/sessions_"*.yaml 2>/dev/null || echo "Sin rotados"
+ls "$MEMSYS3_ROOT/memory/full/adr_"*.yaml 2>/dev/null || echo "Sin rotados ADR"
+```
+
+Lee TODOS los archivos rotados que existan, en orden (sessions_1, sessions_2, ...).
+
+### Tier 2 — README del proyecto
+
+5. `README.md` (raíz del proyecto) — identidad y visión general
+
+```bash
+ls README.md 2>/dev/null && echo "✅ README existe" || echo "❌ Sin README"
+```
+
+### Tier 3 — Backlog completo
+
+6. `memsys3/backlog/README.md` — sistema de backlog
+7. **Todos** los items del backlog (no solo los referenciados)
+
+```bash
+ls "$MEMSYS3_ROOT/backlog/"*.md 2>/dev/null | grep -v README || echo "Sin backlog"
+```
+
+### Tier 4 — Documentos contextuales adicionales
+
+Documentos extra referenciados por el proyecto. El Main Agent los añade aquí durante endSession cuando detecta docs importantes. El CA los lee en el orden listado y puede reordenarlos al final según relevancia percibida.
+
+```
+docs_contextuales:
+  # (vacío — el Main Agent irá añadiendo docs aquí)
+  # Formato: - path: ruta/al/archivo.md
+  #            descripcion: Para qué sirve
+  #            prioridad: 1-10 (CA puede reordenar)
+```
+
+### Tier 5 — Git log reciente
+
+```bash
+git log --oneline -30 2>/dev/null || echo "Sin git"
+git log --format="%ad %s" --date=short -20 2>/dev/null || echo "Sin git log"
+```
+
+## Estimación de tokens acumulados
+
+Tras cada tier, estima tokens leídos (aproximado: caracteres / 4):
+
+```bash
+# Ejemplo para calcular tamaño de archivos
+wc -c "$MEMSYS3_ROOT/memory/full/"*.yaml 2>/dev/null
+```
+
+Si al acabar Tier 1 ya estás cerca de 150K tokens (proyecto muy maduro con muchas rotaciones), los tiers siguientes son opcionales — usa tu criterio. En proyectos nuevos, lee todos los tiers disponibles.
 
 ## Output que debes generar
 
 Genera `@memsys3/memory/context.yaml` siguiendo `@memsys3/memory/templates/context-template.yaml`
 
-## Límite ÚNICO
+## Límites
 
-El `context.yaml` final debe tener **máximo 2000 líneas**.
+- **Input**: ~150K tokens de ingesta máxima (tiers 1-5)
+- **Output**: máximo 2000 líneas en context.yaml
 
-Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
-- Relevancia global
-- Impacto en múltiples componentes
-- Información no obvia
-- Contexto histórico crítico
+El único límite rígido del output es 2000 líneas. El resto son decisiones tuyas basadas en criterio inteligente (ADR-001).
 
 ## Criterio de Selección
 
-### Qué INCLUIR (ejemplos):
+### Qué INCLUIR:
 
 **ADRs:**
 - Decisiones con impacto global (afecta todo el proyecto)
@@ -92,116 +146,70 @@ Este es el ÚNICO límite rígido. El resto son decisiones tuyas basadas en:
 - Blockers conocidos
 - Features a medio implementar
 
-**Backlog (si existe):**
-- Resumen del sistema de backlog (README.md)
-- Conteo de items por tipo (X issues, Y features, etc.)
-- Detalles SOLO de items referenciados en pendientes_prioritarios
-- Items críticos de prioridad alta en estado "Abierto"
+**Backlog:**
+- Resumen del sistema (README.md)
+- Conteo de items por tipo
+- Items críticos (prioridad alta, estado Abierto/En Progreso)
+- Items referenciados en pendientes_prioritarios
 
-### Qué EXCLUIR (ejemplos):
+### Qué EXCLUIR:
 - Cambios cosméticos (colores, padding, typos)
 - ADRs deprecated u obsoletas
-- Sesiones muy antiguas (>6 meses sin relevancia)
-- Detalles de implementación que se ven en el código
+- Sesiones antiguas sin relevancia actual
 - Gotchas ya resueltos permanentemente
+- Items de backlog completados o cancelados
 
-**Del Backlog:**
-- Items con estado "Completado" o "Cancelado" (ya están en sessions/ADRs)
-- Items de prioridad baja sin referencias en pendientes
-- Exploraciones sin decisión clara
-- Detalles de implementación de SPECs (solo contexto general)
-- Items NO referenciados en project-status.yaml
+### Estrategia de Síntesis por Peso de Sesión
 
-### Estrategia de Síntesis Diferenciada por Peso
+**Sesiones peso ALTO:** Incluir casi completas (~90%). Preservar contexto, decisiones, alternativas, impacto.
 
-El Context Agent debe aplicar filtrado inteligente según el campo `peso:` de cada sesión:
+**Sesiones peso MEDIO:** Síntesis estándar (~60-70%). Highlights, decisiones clave, gotchas relevantes.
 
-**Sesiones peso ALTO (🔴):**
-- Incluir casi completas (~90% del contenido original)
-- Preservar: contexto completo, decisiones, alternativas consideradas, impacto
-- Omitir solo: detalles muy menores (typos corregidos, ajustes CSS puntuales)
-- Objetivo: Mantener riqueza de contexto arquitectónico
+**Sesiones peso BAJO:** Filtrar agresivamente (~40-50%). Solo highlights esenciales (2-3 bullets).
 
-**Sesiones peso MEDIO (🟡):**
-- Aplicar síntesis estándar (~60-70% del contenido original)
-- Preservar: highlights, features principales, decisiones clave, gotchas relevantes
-- Omitir: detalles de implementación, contexto extenso, alternativas descartadas triviales
-- Objetivo: Balance entre contexto y eficiencia
+**Priorización si hay que recortar output (>2000 líneas):**
+1. Sesiones ALTO recientes → casi completas
+2. Sesiones MEDIO recientes → síntesis estándar
+3. Sesiones BAJO → ultra-sintetizadas (1-3 líneas)
+4. Sesiones antiguas → decay temporal
 
-**Sesiones peso BAJO (🟢):**
-- Filtrar agresivamente (~40-50% del contenido original)
-- Preservar SOLO: highlights esenciales (2-3 bullets máximo)
-- Omitir: features_implementadas detalladas, problemas_resueltos triviales, notas adicionales
-- Objetivo: Máxima eficiencia, mínimo ruido
-
-**Priorización en caso de límite 2000 líneas:**
-1. Sesiones ALTO recientes (últimas 2-3) → incluir casi completas
-2. Sesiones MEDIO recientes (últimas 3-5) → síntesis estándar
-3. Sesiones BAJO → solo si hay espacio, ultra-sintetizadas (1-3 líneas)
-4. Sesiones antiguas: aplicar decay temporal (peso efectivo reduce con tiempo)
-
-**Retrocompatibilidad:**
-- Sesiones SIN campo `peso:` → asumir peso "medio" (comportamiento por defecto)
-- No fallar si el campo está ausente
-
-**Notas importantes:**
-- Los porcentajes son **orientativos** - usa criterio inteligente (ADR-001)
-- Context Agent puede IGNORAR peso si detecta inconsistencia flagrante
-- Documentar en `notes_compilacio` si se ha ajustado algún peso
+**Retrocompatibilidad:** Sesiones sin campo `peso:` → asumir "medio".
 
 ## Proceso de Compilación
 
-### Fase 1: Evaluación Inicial
+### Fase 1: Ingesta por Tiers
 
-1. **Lee** todos los inputs completos:
-   - `README.md` (raíz del proyecto)
-   - `memsys3/memory/full/adr.yaml`
-   - `memsys3/memory/full/sessions.yaml`
-   - `memsys3/memory/project-status.yaml`
+1. **Lee Tier 1** (obligatorio): project-status, adr.yaml, sessions.yaml + todos los rotados
+2. **Estima tokens** acumulados
+3. **Si < 150K → Lee Tier 2** (README.md)
+4. **Estima tokens** acumulados
+5. **Si < 150K → Lee Tier 3** (backlog completo)
+6. **Estima tokens** acumulados
+7. **Si < 150K → Lee Tier 4** (docs_contextuales si hay alguno listado)
+8. **Estima tokens** acumulados
+9. **Si < 150K → Lee Tier 5** (git log)
+10. **Documenta** qué tiers leíste y tokens estimados por tier
 
-2. **Lee backlog selectivamente** (si existe `memsys3/backlog/`):
+### Fase 2: Evaluación
 
-   a) **Verifica existencia del backlog:**
-   ```bash
-   ls memsys3/backlog/README.md 2>/dev/null && echo "✅ Backlog existe" || echo "❌ No hay backlog"
-   ```
+Con todo el conocimiento ingerido:
+1. **Evalúa** la relevancia de cada elemento
+2. **Aplica criterio inteligente** (ADR-001): ¿qué necesita saber un agent descontextualizado?
+3. **Decide** qué es imprescindible para el context.yaml
+4. **Planifica** el output antes de escribir
 
-   b) **Si existe, lee README.md del backlog:**
-   - Lee `memsys3/backlog/README.md` completo
-   - Entiende el sistema de códigos (ISSUE, FEATURE, SPEC, etc.)
+### Fase 3: Compilación Normal (input < 150K tokens)
 
-   c) **Cuenta items por tipo:**
-   ```bash
-   ls memsys3/backlog/*.md | grep -v README | wc -l
-   # Contar por prefijo: ISSUE-*, FEATURE-*, IMPROVEMENT-*, etc.
-   ```
+1. **Sintetiza** manteniendo lo crítico
+2. **Genera** context.yaml siguiendo el template
+3. **Comprueba** que no supera 2000 líneas
+4. **Añade notas** a `notas_compilacion` explicando criterios y tiers leídos
 
-   d) **Lee SOLO items referenciados en pendientes:**
-   - Busca en `project-status.yaml: pendientes_prioritarios`
-   - Si menciona "FEATURE-002", "ISSUE-005", etc. → lee esos archivos específicos
-   - **NO leas todos los items** del backlog, solo los referenciados
+### Fase 4: Actualizar docs_contextuales (si procede)
 
-   e) **Si no hay backlog:**
-   - Continúa sin problema (backlog es opcional)
-   - El context.yaml NO tendrá sección backlog
+Si durante la ingesta has detectado que el orden de `docs_contextuales` no es óptimo, o que hay documentos que deberían añadirse/quitarse, **actualiza la sección `docs_contextuales`** directamente en este archivo (`compile-context.md`).
 
-3. **Estima tokens totales** (aproximado: caracteres / 4)
-   - Incluye tokens del backlog/README.md + items referenciados
-
-4. **Decide estrategia:**
-   - Si < 150K tokens → Proceso normal (continúa a Fase 2)
-   - Si > 150K tokens → Archivado necesario (continúa a Plan de Contingencia)
-
-### Fase 2: Compilación Normal (< 150K tokens)
-
-1. **Evalúa** la relevancia de cada elemento con el criterio de selección
-   - Para sesiones: aplicar estrategia de síntesis diferenciada por peso
-   - Para ADRs: criterio estándar (impacto global, no obvia)
-2. **Decide** qué es imprescindible para un agent descontextualizado
-3. **Sintetiza** manteniendo solo lo crítico
-4. **Genera** context.yaml siguiendo el template
-5. **Comprueba** que no supera 2000 líneas
-6. **Añade notas** a `notes_compilacio` explicando tus criterios (incluir si ajustaste algún peso)
+Esto permite que futuras compilaciones se beneficien de tu criterio sobre qué es más relevante leer primero.
 
 ### Plan de Contingencia (> 150K tokens)
 
@@ -385,26 +393,3 @@ operations:
 
 **COMIENZA AHORA LA COMPILACIÓN leyendo todos los archivos y aplicando tu criterio para generar `context.yaml`.**
 
----
-
-## 📋 Resumen del Flujo Completo
-
-**PROCESO OPTIMIZADO (aprovecha 200K tokens):**
-
-```
-1. Fase 1: Evaluación Inicial
-   └─> Leer adr.yaml, sessions.yaml, project-status.yaml
-   └─> Leer backlog selectivamente (si existe):
-       • backlog/README.md (sistema completo)
-       • Contar items por tipo
-       • Leer SOLO items referenciados en pendientes_prioritarios
-   └─> Estimar tokens totales (incluir backlog)
-   └─> Decidir estrategia (normal vs contingencia)
-
-2. Fase 2: Compilación Normal
-   └─> Aplicar criterio de selección
-   └─> Generar context.yaml (máx 2000 líneas)
-   └─> Añadir notas de compilación
-```
-
----

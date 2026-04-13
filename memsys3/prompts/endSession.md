@@ -222,7 +222,25 @@ Si creas ADR:
 - `historic_sessions`: Añadir entrada resumida
 - `pendientes_prioritarios`: Actualizar según próximos pasos
 
-### 4.5. Persistir agent_id (si aplica)
+### 4.5. Referenciar documentos importantes (si aplica)
+
+Si durante esta sesión has creado o detectado documentos que el Context Agent debería leer en futuras compilaciones (docs técnicos, guías, referencias importantes en `memsys3/docs/` u otras rutas), añádelos a la sección `docs_contextuales` de `memsys3/prompts/compile-context.md`.
+
+**Criterio para añadir un doc:**
+- Contiene decisiones o contexto que NO está en sessions/ADRs
+- Es relevante para cualquier agent que empiece a trabajar en el proyecto
+- No es efímero (no es un log de sesión, no es código)
+
+**Formato a añadir en compile-context.md** (sección `docs_contextuales`):
+```
+  - path: memsys3/docs/mi-documento.md
+    descripcion: Qué contiene y por qué es relevante
+    prioridad: 5  # 1=máxima, 10=mínima (CA puede reordenar)
+```
+
+Si no hay docs nuevos relevantes, omite este paso.
+
+### 4.7. Persistir agent_id (si aplica)
 
 Si tienes un `agent_id` asignado en esta sesión (ej: "Agent B", "Agent A"), verifica que esté guardado:
 
