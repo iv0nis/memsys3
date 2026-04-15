@@ -209,6 +209,47 @@ git ls-remote --tags https://github.com/iv0nis/memsys3 | tail -5
 
 ---
 
+## Paso 2.5: Elegir Modo de Actualización
+
+Usa `AskUserQuestion` para preguntar al usuario:
+
+```
+AskUserQuestion(
+  question: "¿Qué modo de actualización prefieres?",
+  header: "Modo",
+  options: [
+    { label: "Rápida (Recomendado)", description: "Usa git diff para detectar cambios. Eficiente en tokens." },
+    { label: "Extendida", description: "Lanza un subagente que se contextualiza con el memsys3 de desarrollo (lee sessions, ADRs, context.yaml del repo) para entender QUÉ cambió y POR QUÉ. Consume más tokens pero da mejor comprensión de los cambios." }
+  ]
+)
+```
+
+**Si el usuario elige "Extendida":**
+
+Lanza un subagente (Agent tool) con este prompt:
+
+```
+Carga el contexto del proyecto memsys3 desde el repo clonado en memsys3_update_temp/:
+
+1. Lee memsys3_update_temp/memsys3/prompts/newSession.md y sigue sus instrucciones,
+   pero usando memsys3_update_temp/memsys3/ como raíz (en lugar de ./memsys3/)
+2. Una vez contextualizado, analiza qué cambió entre [VERSION_ACTUAL] y [VERSION_NUEVA]:
+   - git log --oneline [VERSION_ACTUAL]..[VERSION_NUEVA] en memsys3_update_temp/
+   - Cruza los commits con las sesiones documentadas en sessions.yaml
+   - Identifica: features nuevas, breaking changes, archivos eliminados, decisiones arquitectónicas
+3. Devuelve un informe estructurado:
+   - Cambios críticos que afectan al proyecto del usuario
+   - Breaking changes y cómo mitigarlos
+   - Archivos nuevos/eliminados/modificados con contexto de por qué
+   - Recomendaciones para la actualización
+```
+
+Espera el resultado del subagente y úsalo para guiar los pasos siguientes con mejor comprensión.
+
+**Si el usuario elige "Rápida":** Continúa directamente con Paso 3.
+
+---
+
 ## Paso 3: Clonar Nueva Versión Temporalmente
 
 **IMPORTANTE:** NO borres nada aún, solo clona para comparar.
