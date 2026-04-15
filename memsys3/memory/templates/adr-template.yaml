@@ -1,3 +1,4 @@
+# version: 0.1.0
 # Architecture Decision Records (ADR) Template
 # Formato YAML para mejor eficiencia de tokens y procesamiento por el CA
 
@@ -9,7 +10,7 @@
 
 adrs:
   - id: "001"
-    titulo: "[Títol de la Decisió]"
+    titulo: "[Título de la Decisión]"
     data: "YYYY-MM-DD"
     estado: accepted  # accepted | deprecated | superseded_by
     area: "[frontend|backend|infrastructure|process]"
@@ -24,27 +25,27 @@ adrs:
       ¿Qué decidimos hacer? Sé claro y conciso.
 
     alternatives:
-      - nombre: "[Nom Alternativa A]"
+      - nombre: "[Nombre Alternativa A]"
         pros:
           - "[Pro 1]"
           - "[Pro 2]"
         contras:
           - "[Contra 1]"
           - "[Contra 2]"
-        per_que_descartada: "[MOTIU]"
+        por_que_descartada: "[MOTIVO]"
 
-      - nombre: "[Nom Alternativa B]"
+      - nombre: "[Nombre Alternativa B]"
         pros:
           - "[Pro 1]"
         contras:
           - "[Contra 1]"
-        per_que_descartada: "[MOTIU]"
+        por_que_descartada: "[MOTIVO]"
 
-    consequencies:
-      positives:
-        - "[Benefici 1]"
-        - "[Benefici 2]"
-      negatives:
+    consecuencias:
+      positivas:
+        - "[Beneficio 1]"
+        - "[Beneficio 2]"
+      negativas:
         - "[Costo/limitación 1]"
         - "[Costo/limitación 2]"
       impacto: "[Qué componentes/servicios se ven afectados]"
@@ -61,25 +62,25 @@ adrs:
       [CONTEXT]
 
     decision: |
-      [DECISIÓ]
+      [DECISIÓN]
 
     alternatives:
       - nombre: "[Alternativa]"
         pros: []
         contras: []
-        per_que_descartada: "[MOTIU]"
+        por_que_descartada: "[MOTIVO]"
 
-    consequencies:
-      positives: []
-      negatives: []
-      impacto: "[IMPACTE]"
+    consecuencias:
+      positivas: []
+      negativas: []
+      impacto: "[IMPACTO]"
 
 # Índice rápido para encontrar ADRs
 # Actualiza esta lista manualmente
 index:
   - id: "001"
-    titulo: "[Títol]"
+    titulo: "[Título]"
     estado: accepted
   - id: "002"
-    titulo: "[Títol]"
+    titulo: "[Título]"
     estado: accepted

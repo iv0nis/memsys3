@@ -1,51 +1,54 @@
+# version: 0.1.0
 # Project Status Template
 # Template agnóstico para documentar el estado de cualquier proyecto
 # Copia este archivo y rellena los campos marcados con [RELLENAR]
 
 metadata:
-  ultima_actualizacion: "[DATA]"  # Ejemplo: 2025-10-23
-  actualizado_por: "[NOM]"  # Quién ha hecho la última actualización
+  ultima_actualizacion: "[FECHA]"  # Ejemplo: 2025-10-23
+  actualizado_por: "[NOMBRE]"  # Quién ha hecho la última actualización
   fase: "[FASE]"  # Ejemplos: Planificación, MVP, Beta, Producción, Mantenimiento
+  memsys3_version: "[VERSION]"  # Versión de memsys3 desplegada (se rellena durante deployment)
+  memsys3_deployed: "[FECHA]"  # Fecha de deployment de memsys3 (se rellena durante deployment)
 
-visio_general:
-  que_es: "[DESCRIPCIÓ 1 LÍNIA]"  # Qué hace el proyecto en una frase
-  objetivo: "[OBJECTIU PRINCIPAL]"  # Qué quiere conseguir
-  client: "[CLIENT/STAKEHOLDER]"  # Opcional, si aplica
+vision_general:
+  que_es: "[DESCRIPCION 1 LINEA]"  # Qué hace el proyecto en una frase
+  objetivo: "[OBJETIVO PRINCIPAL]"  # Qué quiere conseguir
+  cliente: "[CLIENTE/STAKEHOLDER]"  # Opcional, si aplica
 
-estat_actual:
+estado_actual:
   fase: "[FASE ACTUAL]"  # Dónde está el proyecto ahora
   ultima_feature: "[ÚLTIMA FEATURE IMPLEMENTADA]"  # Qué se ha hecho recientemente
-  siguiente_milestone: "[PRÒXIM OBJECTIU]"  # Hacia dónde vamos
+  siguiente_milestone: "[PROXIMO OBJETIVO]"  # Hacia dónde vamos
 
 # Define aquí cada feature/módulo del proyecto
 # Puedes añadir tantas features como necesites siguiendo este esquema:
 features:
-  feature_exemple_1:  # ID único de la feature (kebab-case)
-    nombre: "[NOM FEATURE]"  # Nombre visual de la feature
+  feature_ejemplo_1:  # ID único de la feature (kebab-case)
+    nombre: "[NOMBRE FEATURE]"  # Nombre visual de la feature
     url: "[URL]"  # URL de producción o staging, si aplica
     estado: "[operativo|desarrollo|pendiente|obsoleto]"
-    descripcion: "[DESCRIPCIÓ BREU]"  # Qué hace esta feature
-    funcionalitats:  # Lista de capacidatos principales
-      - "[FUNCIONALITAT 1]"
-      - "[FUNCIONALITAT 2]"
-    notes: "[NOTES ADDICIONALS]"  # Opcional
+    descripcion: "[DESCRIPCION BREVE]"  # Qué hace esta feature
+    funcionalidades:  # Lista de capacidades principales
+      - "[FUNCIONALIDAD 1]"
+      - "[FUNCIONALIDAD 2]"
+    notas: "[NOTAS ADICIONALES]"  # Opcional
 
-  feature_exemple_2:
-    nombre: "[NOM FEATURE]"
+  feature_ejemplo_2:
+    nombre: "[NOMBRE FEATURE]"
     url: "[URL]"
-    estado: "[ESTAT]"
-    descripcion: "[DESCRIPCIÓ]"
-    funcionalitats:
-      - "[FUNCIONALITAT 1]"
+    estado: "[ESTADO]"
+    descripcion: "[DESCRIPCION]"
+    funcionalidades:
+      - "[FUNCIONALIDAD 1]"
 
   # Añade más features aquí siguiendo el mismo patrón
 
-stack_tecnologic:
+stack_tecnologico:
   frontend:
-    framework: "[FRAMEWORK + VERSIÓ]"  # Ejemplos: React 18, Vue 3, Astro 5, Next.js 14
-    tipus: "[TIPUS]"  # Ejemplos: SPA, SSG, SSR, MPA
+    framework: "[FRAMEWORK + VERSION]"  # Ejemplos: React 18, Vue 3, Astro 5, Next.js 14
+    tipo: "[TIPO]"  # Ejemplos: SPA, SSG, SSR, MPA
     styling: "[SISTEMA CSS]"  # Ejemplos: Tailwind, Styled Components, CSS Modules
-    patrons: "[PATRONS PRINCIPALS]"  # Opcional: patrones de arquitectura utilizados
+    patrones: "[PATRONES PRINCIPALES]"  # Opcional: patrones de arquitectura utilizados
 
   backend:  # Opcional si no hay backend
     runtime: "[RUNTIME]"  # Ejemplos: Node.js, Python, Go, .NET
@@ -53,9 +56,9 @@ stack_tecnologic:
     database: "[DATABASE]"  # Opcional: PostgreSQL, MongoDB, etc.
     auth: "[SISTEMA AUTH]"  # Opcional: JWT, OAuth, etc.
 
-  llibreries_clau:  # Opcional: librerías importantes a destacar
-    - nombre: "[NOM LLIBRERIA]"
-      us: "[PER QUÈ S'USA]"
+  librerias_clave:  # Opcional: librerías importantes a destacar
+    - nombre: "[NOMBRE LIBRERIA]"
+      uso: "[PARA QUE SE USA]"
 
   deploy:
     platform: "[PLATFORM]"  # Ejemplos: Vercel, Netlify, AWS, Railway
@@ -66,35 +69,35 @@ stack_tecnologic:
 
 # URLs principales del proyecto
 urls:
-  produccio: "[URL_PRODUCCIÓ]"  # URL principal
+  produccion: "[URL_PRODUCCION]"  # URL principal
   staging: "[URL_STAGING]"  # Opcional
   # Añade más URLs según necesidad
 
 # Tareas pendientes ordenadas por prioridad
 pendientes_prioritarios:
-  - prioritat: 1
-    tasca: "[TASCA MÉS IMPORTANT]"
-    detall: "[DETALLS O CONTEXT]"  # Opcional
+  - prioridad: 1
+    tarea: "[TAREA MAS IMPORTANTE]"
+    detalle: "[DETALLES O CONTEXTO]"  # Opcional
 
-  - prioritat: 2
-    tasca: "[SEGONA TASCA]"
-    detall: "[DETALLS]"
+  - prioridad: 2
+    tarea: "[SEGUNDA TAREA]"
+    detalle: "[DETALLES]"
 
   # Añade más tareas según necesidad
   # Mantén siempre las top 5-7 más importantes
 
 # Decisiones técnicas importantes que hay que recordar
 # Documenta el "por qué" de decisiones no obvias
-decisions_clau:
-  decisio_exemple_1:  # ID de la decisión
-    decision: "[QUÈ ES VA DECIDIR]"  # La decisión tomada
-    motivo: "[PER QUÈ]"  # Razonamiento detrás de la decisión
-    alternatives_considerades: "[ALTERNATIVES]"  # Opcional
-    impacto: "[IMPACTE EN EL PROJECTE]"  # Opcional
+decisiones_clave:
+  decision_ejemplo_1:  # ID de la decisión
+    decision: "[QUE SE DECIDIO]"  # La decisión tomada
+    motivo: "[POR QUE]"  # Razonamiento detrás de la decisión
+    alternativas_consideradas: "[ALTERNATIVAS]"  # Opcional
+    impacto: "[IMPACTO EN EL PROYECTO]"  # Opcional
 
-  decisio_exemple_2:
-    decision: "[DECISIÓ]"
-    motivo: "[MOTIU]"
+  decision_ejemplo_2:
+    decision: "[DECISION]"
+    motivo: "[MOTIVO]"
 
   # Añade más decisiones importantes aquí
 
@@ -104,36 +107,36 @@ decisions_clau:
 # Ver memory/templates/sessions-template.yaml para detalles
 
 # Convenciones de código del proyecto
-convencions_codi:
+convenciones_codigo:
   idioma:
-    interficie: "[IDIOMA UI]"  # Catalán, Español, Inglés, etc.
+    interfaz: "[IDIOMA UI]"  # Catalán, Español, Inglés, etc.
     variables: "[IDIOMA VARIABLES]"  # Mismo o diferente
-    comentaris: "[IDIOMA COMENTARIS]"
+    comentarios: "[IDIOMA COMENTARIOS]"
 
   naming:
-    "[llenguatge_1]": "[CONVENCIÓ]"  # Ejemplo: javascript: camelCase
-    "[llenguatge_2]": "[CONVENCIÓ]"  # Ejemplo: python: snake_case
+    "[lenguaje_1]": "[CONVENCION]"  # Ejemplo: javascript: camelCase
+    "[lenguaje_2]": "[CONVENCION]"  # Ejemplo: python: snake_case
 
   estructura:  # Reglas de organización de código
     - "[REGLA 1]"
     - "[REGLA 2]"
 
 # Comandos útiles para trabajar con el proyecto
-comandos_utils:
-  install: "[COMANDA INSTALL]"  # Ejemplo: npm install, pip install -r requirements.txt
-  dev: "[COMANDA DEV]"  # Ejemplo: npm run dev, python manage.py runserver
-  build: "[COMANDA BUILD]"  # Ejemplo: npm run build
-  deploy: "[COMANDA DEPLOY]"  # Ejemplo: npx vercel --prod
-  test: "[COMANDA TEST]"  # Ejemplo: npm test, pytest
-  lint: "[COMANDA LINT]"  # Ejemplo: npm run lint
+comandos_utiles:
+  install: "[COMANDO INSTALL]"  # Ejemplo: npm install, pip install -r requirements.txt
+  dev: "[COMANDO DEV]"  # Ejemplo: npm run dev, python manage.py runserver
+  build: "[COMANDO BUILD]"  # Ejemplo: npm run build
+  deploy: "[COMANDO DEPLOY]"  # Ejemplo: npx vercel --prod
+  test: "[COMANDO TEST]"  # Ejemplo: npm test, pytest
+  lint: "[COMANDO LINT]"  # Ejemplo: npm run lint
   # Añade más comandos según necesidad
 
 # Histórico de sesiones/sprints importantes
 # Añade una entrada para cada sesión de trabajo significativa
-historic_sessions:
-  - data: "[YYYY-MM-DD]"
-    duracion: "[DURADA]"  # Opcional: 2h, 1 día, etc.
-    objetivo: "[OBJECTIU SESSIÓ]"  # Qué se quería conseguir
+historico_sesiones:
+  - fecha: "[YYYY-MM-DD]"
+    duracion: "[DURACION]"  # Opcional: 2h, 1 día, etc.
+    objetivo: "[OBJETIVO SESION]"  # Qué se quería conseguir
     features_implementadas:
       - "[FEATURE 1]"
       - "[FEATURE 2]"
@@ -141,8 +144,8 @@ historic_sessions:
       - "[PROBLEMA 1]"
       - "[PROBLEMA 2]"
     decisiones_tomadas:
-      - "[DECISIÓ 1]"
-      - "[DECISIÓ 2]"
-    notes: "[NOTES ADDICIONALS]"  # Opcional
+      - "[DECISION 1]"
+      - "[DECISION 2]"
+    notas: "[NOTAS ADICIONALES]"  # Opcional
 
   # Añade más sesiones aquí manteniendo las más recientes al principio

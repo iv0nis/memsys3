@@ -191,7 +191,7 @@ new_string: "sessions:
 - **Importante**: `memory/history/` es SOLO para archivado del Plan de Contingencia (cuando full/ supera 150K tokens), NO para sesiones normales
 - **IMPORTANTE - Gotchas**: Si has encontrado errores críticos, warnings o traps:
   - Documentarlos en el campo `gotchas:` de la sesión
-  - Incluir: `tipus`, `problema`, `solucio`, `criticitat` (alta|media|baja)
+  - Incluir: `tipo`, `problema`, `solucion`, `criticidad` (alta|media|baja)
   - Solo gotchas relevantes (errores que rompen, contra-intuitivos, recurrentes)
   - Context-Agent extraerá los top 5 más críticos de TODAS las sesiones
 
@@ -215,11 +215,11 @@ Si creas ADR:
 3. Linkear ADR desde sesión (campo `adr_relacionada`)
 
 **C. Actualizar `memsys3/memory/project-status.yaml`:**
-- `metadata.ultima_actualitzacio`: Fecha de hoy
-- `metadata.actualitzat_per`: "Claude (Session [Título])"
-- `estat_actual.ultima_feature`: Si has completado feature
-- `features`: Cambiar `estat: operatiu` si se ha completado
-- `historic_sessions`: Añadir entrada resumida
+- `metadata.ultima_actualizacion`: Fecha de hoy
+- `metadata.actualizado_por`: "Claude (Session [Título])"
+- `estado_actual.ultima_feature`: Si has completado feature
+- `features`: Cambiar `estado: operativo` si se ha completado
+- `historico_sesiones`: Añadir entrada resumida
 - `pendientes_prioritarios`: Actualizar según próximos pasos
 
 ### 4.5. Referenciar documentos importantes (si aplica)
@@ -297,3 +297,4 @@ Próximos pasos: [Top 2-3 tareas pendientes]
 ---
 
 **Comienza ahora la documentación de la sesión actual.**
+<!-- version: 0.1.0 -->
