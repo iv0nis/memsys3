@@ -8,39 +8,39 @@ objetivo: Ingerir hasta ~150K tokens de conocimiento del proyecto y sintetizarlo
 # INPUTS - QUÉ LEER
 # ============================================
 inputs:
-  obligatoris:
+  obligatorios:
     - path: memsys3/memory/project-status.yaml
       descripcion: Estado actual del proyecto con features, stack, URLs
-      accio: Leer completo y extraer info clave
+      accion: Leer completo y extraer info clave
 
     - path: memsys3/memory/full/adr.yaml
       descripcion: Todas las Architecture Decision Records históricas
-      accio: Filtrar según criterios y seleccionar las más relevantes
+      accion: Filtrar según criterios y seleccionar las más relevantes
 
     - path: memsys3/memory/full/sessions.yaml
       descripcion: Histórico completo de sesiones de trabajo
-      accio: Extraer y sintetizar última sesión
+      accion: Extraer y sintetizar última sesión
 
-  opcionals:
+  opcionales:
     - path: README.md
       descripcion: README principal del proyecto (en raíz del proyecto) — Tier 2
-      accio: Leer completo si existe. Identidad y visión general del proyecto.
+      accion: Leer completo si existe. Identidad y visión general del proyecto.
 
     - path: memsys3/backlog/
       descripcion: Sistema de backlog completo — Tier 3
-      accio: Leer README.md + todos los items si existe
+      accion: Leer README.md + todos los items si existe
 
     - path: docs_contextuales
       descripcion: Documentos extra referenciados en compile-context.md — Tier 4
-      accio: Leer en orden de prioridad listado en compile-context.md
+      accion: Leer en orden de prioridad listado en compile-context.md
 
     - path: git log
       descripcion: Historial de commits reciente — Tier 5
-      accio: git log --oneline -30 para entender evolución reciente
+      accion: git log --oneline -30 para entender evolución reciente
 
     - path: memsys3/memory/templates/
       descripcion: Templates para referencia de estructura
-      accio: Usar context-template.yaml como base para output
+      accion: Usar context-template.yaml como base para output
 
 # ============================================
 # OUTPUT - QUÉ GENERAR
@@ -48,7 +48,7 @@ inputs:
 output:
   path: memsys3/memory/context.yaml
   format: YAML
-  max_linies: 2000
+  max_lineas: 2000
   base_template: memsys3/memory/templates/context-template.yaml
   estructura:
     - metadata
@@ -57,11 +57,11 @@ output:
     - features
     - stack
     - urls
-    - adrs (filtrades)
-    - ultima_sessio (sintetitzada)
-    - gotchas (crítics)
-    - pendientes (top prioritaris)
-    - notes_compilacio
+    - adrs (filtradas)
+    - ultima_sesion (sintetizada)
+    - gotchas (criticos)
+    - pendientes (top prioritarios)
+    - notas_compilacion
 
 # ============================================
 # LÍMITES - ÚNICO LÍMITE RÍGIDO
@@ -90,70 +90,70 @@ limits:
 # ============================================
 # INSTRUCCIONES DE COMPILACIÓN - PASO A PASO
 # ============================================
-instruccions:
-  pas_1_ingesta_tier1:
+instrucciones:
+  paso_1_ingesta_tier1:
     descripcion: "OBLIGATORIO — memoria del proyecto"
-    accions:
+    acciones:
       - Carga memsys3/memory/project-status.yaml completo
       - Carga memsys3/memory/full/adr.yaml completo
       - Carga memsys3/memory/full/sessions.yaml completo
       - Detecta archivos rotados (sessions_1.yaml, sessions_2.yaml, adr_1.yaml, ...) y léelos todos
       - Estima tokens acumulados (caracteres / 4)
 
-  pas_2_ingesta_tier2:
+  paso_2_ingesta_tier2:
     descripcion: "README del proyecto"
     condicion: "Si tokens acumulados < 150K"
-    accions:
+    acciones:
       - Carga README.md (raíz del proyecto) si existe
       - Estima tokens acumulados
 
-  pas_3_ingesta_tier3:
+  paso_3_ingesta_tier3:
     descripcion: "Backlog completo"
     condicion: "Si tokens acumulados < 150K"
-    accions:
+    acciones:
       - Carga memsys3/backlog/README.md si existe
       - Carga TODOS los items del backlog (no solo los referenciados)
       - Estima tokens acumulados
 
-  pas_4_ingesta_tier4:
+  paso_4_ingesta_tier4:
     descripcion: "Documentos contextuales adicionales"
     condicion: "Si tokens acumulados < 150K y hay docs listados en compile-context.md"
-    accions:
+    acciones:
       - Lee docs_contextuales de compile-context.md en orden de prioridad
       - Estima tokens acumulados
 
-  pas_5_ingesta_tier5:
+  paso_5_ingesta_tier5:
     descripcion: "Git log reciente"
     condicion: "Si tokens acumulados < 150K"
-    accions:
+    acciones:
       - Ejecuta git log --oneline -30
       - Ejecuta git log --format="%ad %s" --date=short -20
 
-  pas_6_evaluar:
+  paso_6_evaluar:
     - Con todo el conocimiento ingerido, evalúa relevancia de cada elemento
     - Aplica criterio inteligente (ADR-001): ¿qué necesita saber un agent descontextualizado?
     - Prioriza por: peso de sesión + recencia + impacto global
 
-  pas_7_sintetizar_sesiones:
+  paso_7_sintetizar_sesiones:
     - Aplica síntesis diferenciada según peso (alto/medio/bajo)
     - Sesiones peso ALTO: ~90% del contenido
     - Sesiones peso MEDIO: ~60-70%
     - Sesiones peso BAJO: ~40-50%, solo highlights
     - Sesiones sin peso: tratar como "medio"
 
-  pas_8_generar_output:
+  paso_8_generar_output:
     - Usar memsys3/memory/templates/context-template.yaml como base
     - Rellenar con datos sintetizados
     - Añadir metadata: compilado_por, ultima_compilacion, version_context
     - Añadir notas_compilacion con tiers leídos, tokens estimados por tier, criterios
 
-  pas_9_validar:
+  paso_9_validar:
     - Contar líneas totales del context.yaml generado
     - Si > 2000 líneas: sintetizar más (recortar sesiones bajo, condensar ADRs menores)
     - Si < 500 líneas con proyecto maduro: revisar si falta info crítica
     - Escribir en memsys3/memory/context.yaml
 
-  pas_10_actualizar_docs_contextuales:
+  paso_10_actualizar_docs_contextuales:
     - Si detectaste que el orden de docs_contextuales no es óptimo, actualízalo en compile-context.md
     - Si hay documentos relevantes descubiertos durante ingesta que deberían añadirse, añádelos
     - Esto mejora la calidad de futuras compilaciones
@@ -161,16 +161,16 @@ instruccions:
 # ============================================
 # REGLAS IMPORTANTES
 # ============================================
-regles:
-  obligatories:
+reglas:
+  obligatorias:
     - NO inventar información que no existe
     - NO modificar full/ - solo lectura
     - NO borrar context anterior sin leerlo primero
-    - SÍ documentar qué has filtrado en notes_compilacio
+    - SÍ documentar qué has filtrado en notas_compilacion
     - SÍ mantener formato YAML estricto
     - SÍ actualizar timestamp y versión
 
-  qualitat:
+  calidad:
     - El CA debe LLENARSE de conocimiento antes de sintetizar (hasta ~150K tokens)
     - Leer todos los tiers disponibles antes de decidir qué incluir
     - Priorizar exhaustividad en ingesta, criterio inteligente en síntesis
@@ -180,65 +180,76 @@ regles:
 # ============================================
 # EJEMPLOS DE BUEN/MAL FILTRADO
 # ============================================
-exemples:
-  adr_massa_especifica:
-    NO_incloure: "Utilizar padding-left: 15px en el botón de ejemplo"
+ejemplos:
+  adr_demasiado_especifica:
+    NO_incluir: "Utilizar padding-left: 15px en el botón de ejemplo"
     motivo: Demasiado específico, no afecta arquitectura global
 
-  adr_rellevant:
-    SI_incloure:
+  adr_relevante:
+    SI_incluir:
       titulo: "jsPDF con texto real vs html2canvas"
       decision: "Usar jsPDF con texto real"
       motivo: "html2canvas genera imágenes pixeladas"
       impacto: "Todos los PDFs son seleccionables y profesionales"
 
-  sessio_massa_detallada:
-    NO_incloure:
+  sesion_demasiado_detallada:
+    NO_incluir:
       - "Cambiado color botón #fff → #f0f0f0"
       - "Arreglado typo línea 234"
       - "Actualizado README con link"
     motivo: Detalles menores sin impacto
 
-  sessio_ben_sintetitzada:
-    SI_incloure:
+  sesion_bien_sintetizada:
+    SI_incluir:
       - "Implementado sistema de exportación de documentos"
       - "Resuelto: Documentos eran imágenes → ahora texto real seleccionable"
       - "Decisión: Librería X vs Y para mejor calidad"
 
-  gotcha_no_critic:
-    NO_incloure: "El botón no tiene focus state"
+  gotcha_no_critico:
+    NO_incluir: "El botón no tiene focus state"
     motivo: No rompe el proyecto
 
-  gotcha_critic:
-    SI_incloure:
+  gotcha_critico:
+    SI_incluir:
       id: "vercel_auth"
       problema: "Vercel activa Deployment Protection por defecto"
       solucion: "Desactivar en Settings > Deployment Protection"
 
 # ============================================
-# INVOCACIÓ
+# INVOCACION
 # ============================================
-com_executar:
+como_ejecutar:
   via_prompt: "@memsys3/prompts/compile-context.md"
   via_slash: "/compile-context"
   manual: "Carga este archivo y sigue las instrucciones paso a paso"
 
-frequencia:
-  executar_quan:
+frecuencia:
+  ejecutar_cuando:
     - Sesión grande completada (>2h trabajo)
     - 3+ ADRs nuevas añadidas
     - full/sessions.md tiene >10 sesiones
     - context.yaml tiene >1 semana
 
-  NO_executar_quan:
+  NO_ejecutar_cuando:
     - Cambio menor de código
     - Fixes o typos
     - context.yaml actualizado recientemente
 
 # ============================================
+# RESTRICCIONES
+# ============================================
+restricciones:
+  infraestructura_memsys3:
+    regla: "NO modificar archivos de infraestructura memsys3 (prompts/, agents/, memory/templates/) — solo leer"
+    motivo: "La infraestructura solo se actualiza mediante /actualizar-memsys3. Los archivos tienen file_version independiente."
+    excepcion: "memory/context.yaml es el OUTPUT del CA y SÍ se genera/sobrescribe normalmente"
+
+# ============================================
 # METADATA
 # ============================================
-versio: "2.0"
-creat: "2025-10-23"
-ultim_update: "2026-04-13"
+version: "2.0"
+creado: "2025-10-23"
+ultima_actualizacion: "2026-04-13"
 responsable: "System Design"
+
+file_version: "0.1.0"

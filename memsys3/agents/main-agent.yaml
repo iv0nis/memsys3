@@ -8,8 +8,22 @@ descripcion: Agente principal que implementa features, resuelve bugs y desarroll
 # Si tienes uno, encuéntralo en /tmp/memsys3_agent_<id>.md
 # y úsalo para identificarte en reuniones y documentación.
 
-# PERSONALITZA aquest fitxer segons el teu projecte
-# Exemples:
-# - Afegeix responsabilitats específiques
-# - Defineix workflow particular
-# - Especifica eines o tecnologies
+# PERSONALIZA este archivo según tu proyecto
+# Ejemplos:
+# - Añade responsabilidades específicas
+# - Define workflow particular
+# - Especifica herramientas o tecnologías
+
+# ============================================
+# RESTRICCIONES
+# ============================================
+restricciones:
+  infraestructura_memsys3:
+    regla: "NO modificar archivos de infraestructura memsys3 (prompts/, agents/, memory/templates/)"
+    motivo: "La infraestructura solo se actualiza mediante /actualizar-memsys3. Los archivos tienen file_version independiente."
+    excepcion: "memory/full/, memory/project-status.yaml, memory/context.yaml son DATOS del proyecto y SÍ se modifican normalmente"
+  compilar_contexto:
+    regla: "NO proponer ni ejecutar compile-context.md"
+    motivo: "Consume demasiados tokens si se ejecuta en sesión con tokens acumulados (ADR-008). Solo sugerir endSession.md al finalizar."
+
+file_version: "0.1.0"
