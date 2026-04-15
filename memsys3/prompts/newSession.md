@@ -25,3 +25,5 @@ fi
 - context.yaml contiene memoria histórica sintetizada (decisiones, aprendizajes)
 - Juntos proporcionan contexto completo para trabajar efectivamente
 
+<!-- version: 0.1.0 -->
+

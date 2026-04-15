@@ -94,3 +94,4 @@ Si el usuario quiere actualizar un ADR:
 - **process**: Decisiones sobre procesos de desarrollo
 
 Ver `memsys3/memory/templates/adr-template.yaml` para estructura completa y ejemplos.
+<!-- version: 0.1.0 -->

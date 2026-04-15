@@ -439,3 +439,4 @@ Máximo 3-5 emojis por sección. Para categorización, no decoración.
 **Versión:** 2.0
 **Sistema:** memsys3
 **Reemplaza:** meet-coord.md (v1.0) + meet-research.md
+<!-- version: 0.1.0 -->

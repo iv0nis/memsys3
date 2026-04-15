@@ -68,3 +68,4 @@ Confirmar con el usuario antes de eliminar:
 - Solo verificado en Linux/WSL
 - macOS: misma estructura esperada (no verificado)
 - Windows nativo: convención de hash desconocida
+<!-- version: 0.1.0 -->

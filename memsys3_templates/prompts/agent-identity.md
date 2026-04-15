@@ -11,3 +11,4 @@ echo "Agent X" > ~/.claude/memsys3_agent_id
 > En Windows nativo usa `%USERPROFILE%\.claude\memsys3_agent_id`.
 
 Usa este ID para identificarte en reuniones, documentación y comunicación con el moderador.
+<!-- version: 0.1.0 -->
