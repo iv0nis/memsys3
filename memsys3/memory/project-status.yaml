@@ -1,8 +1,8 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-04-13"
-  actualizado_por: "Claude (Session 2026-04-13 Context Agent ingesta tiers)"
+  ultima_actualizacion: "2026-04-15"
+  actualizado_por: "Claude (Session 2026-04-15 file_version + viz archivada + catalan erradicado)"
   fase: "Development v0.20.0"
   memsys3_version: "v0.20.0"
   memsys3_deployed: "2025-10-28"
@@ -15,8 +15,8 @@ vision_general:
 
 estado_actual:
   fase: "Development v0.12.0"
-  ultima_feature: "Context Agent rediseñado: sistema ingesta 5 tiers hasta 150K tokens, eliminados límites arbitrarios, docs_contextuales ciclo virtuoso. v0.19.2. ~1.5h peso medio"
-  siguiente_milestone: "Validar compile-context con nuevo sistema tiers + Implementar FEATURE-012 (glosario conceptos)"
+  ultima_feature: "Sistema file_version independiente por archivo (0.Y.Z), restricciones infraestructura en agents, viz archivada, catalán erradicado, modo actualización extendida. v0.20.0. ~3h peso alto"
+  siguiente_milestone: "Compilar context.yaml + Formalizar workflow sincronización dog-fooding + FEATURE-012 (glosario conceptos)"
 
 features:
   context_agent:
@@ -40,9 +40,9 @@ features:
     descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas) - Archivado en memsys3/docs/archivo/viz/"
 
   prompts:
-    nombre: "Prompts Reutilitzables"
+    nombre: "Prompts Reutilizables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, adr, backlog, github - TODOS con rutas memsys3/"
+    descripcion: "newSession, endSession, compile-context, deploy, actualizar, actualizar_cat, adr, backlog, github - TODOS con rutas memsys3/"
 
   documentacion:
     nombre: "Sistema de Documentación Multi-nivel"
@@ -68,6 +68,16 @@ features:
     nombre: "Sistema Reuniones Colaborativas"
     estado: "operativo"
     descripcion: "Metodología formal debugging multi-agente. Prompt reunion.md (905 líneas) workflow 6 fases + memsys3/docs/reunion/README.md (836 líneas). Filosofía 5 principios (transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto). Reuniones en memsys3/docs/reunion/DDMMYY_N.md, sessions.yaml solo referencia. Context Agent carga selectivamente. Escalable 50+ reuniones. Ejemplos: ISSUE-007 (300126_1.md 446 líneas), firmas commits (030226_1.md 740 líneas)"
+
+  sistema_file_version:
+    nombre: "Sistema file_version por archivo"
+    estado: "operativo"
+    descripcion: "Cada archivo de infraestructura memsys3 tiene versión independiente (0.Y.Z). Solo se bumpa con /actualizar-memsys3. 21 archivos versionados."
+
+  restricciones_infraestructura:
+    nombre: "Restricciones infraestructura en agents"
+    estado: "operativo"
+    descripcion: "MA y CA no modifican archivos de infraestructura (prompts/, agents/, memory/templates/). Solo /actualizar-memsys3 lo hace."
 
 stack_tecnologico:
   database: "Ninguno (YAML files)"
@@ -112,6 +122,8 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-04-15"
+    resumen: "Sistema file_version independiente por archivo (0.Y.Z, 21 archivos). Restricciones infraestructura en agents. Viz archivada. Catalán erradicado (~60 campos). Modo actualización extendida con subagente. v0.20.0. ~3h peso alto."
   - fecha: "2026-04-13"
     resumen: "Context Agent rediseñado: ingesta por tiers (5 niveles, ~150K tokens presupuesto). Eliminados límites arbitrarios context-agent.yaml. docs_contextuales para ciclo virtuoso MA↔CA. v0.19.2. ~1.5h peso medio."
   - fecha: "2026-03-27"
