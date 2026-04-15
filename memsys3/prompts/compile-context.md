@@ -255,7 +255,7 @@ Cuando el contexto total supera 150K tokens, hay que archivar entries irrelevant
 
 6. **Continuar con Fase 2** (compilación normal)
 
-7. **Documentar en notes_compilacio:**
+7. **Documentar en notas_compilacion:**
    - Cuántas sesiones archivadas
    - Cuántas ADRs archivadas
    - Tokens antes y después del archivado
@@ -283,7 +283,7 @@ Usa tu criterio para mantener lo esencial.
 - **Puedes archivar** a `memsys3/memory/history/` si superas 150K tokens (Plan de Contingencia)
 - **SÍ puedes borrar** de `memsys3/memory/full/` después de archivar a `history/`
 - **SÍ actualiza** el timestamp y versión de compilación
-- **SÍ documenta** los criterios usados en notes_compilacio (incluyendo archivado si procede)
+- **SÍ documenta** los criterios usados en notas_compilacion (incluyendo archivado si procede)
 - **Confía en tu criterio** - tú tienes la visión completa, los DevAgents no
 
 ## Ejemplos de Buen Criterio
@@ -291,25 +291,25 @@ Usa tu criterio para mantener lo esencial.
 ### ADR a INCLUIR:
 ```yaml
 id: "003"
-decisio: "jsPDF con texto real en lugar de html2canvas para PDFs"
-motiu: "html2canvas genera imágenes pixeladas y no seleccionables"
-impacte: "Todos los PDFs del proyecto son profesionales y accesibles"
+decision: "jsPDF con texto real en lugar de html2canvas para PDFs"
+motivo: "html2canvas genera imágenes pixeladas y no seleccionables"
+impacto: "Todos los PDFs del proyecto son profesionales y accesibles"
 ```
 **¿Por qué?** Decisión arquitectónica que afecta TODOS los PDFs del proyecto.
 
 ### ADR a EXCLUIR:
 ```yaml
 id: "042"
-decisio: "Utilizar padding-left: 15px en el botón de submit"
-motiu: "Mejor alineación visual"
-impacte: "Botón mejor alineado"
+decision: "Utilizar padding-left: 15px en el botón de submit"
+motivo: "Mejor alineación visual"
+impacto: "Botón mejor alineado"
 ```
 **¿Por qué?** Detalle cosmético sin impacto arquitectónico.
 
 ### Sesión a SINTETIZAR:
 ```yaml
 # Original (demasiado detalle):
-features_implementades:
+features_implementadas:
   - Cambiado color del header de #fff a #f0f0f0
   - Actualizado font-size de 14px a 16px
   - Fixeado typo "descripcion" → "descripción"
@@ -317,7 +317,7 @@ features_implementades:
   - Refactorizado nombre variable i→index
 
 # Sintetizado (esencial):
-features_implementades:
+features_implementadas:
   - Mejoras UI en header y footer
 ```
 
@@ -393,3 +393,4 @@ operations:
 
 **COMIENZA AHORA LA COMPILACIÓN leyendo todos los archivos y aplicando tu criterio para generar `context.yaml`.**
 
+<!-- version: 0.1.0 -->

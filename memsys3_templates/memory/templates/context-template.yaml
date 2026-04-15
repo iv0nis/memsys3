@@ -1,3 +1,4 @@
+# version: 0.1.0
 # Context Template
 # Este es el archivo que carga DevAI para entender el proyecto
 # Es compilado por el Context Agent (CA) desde memory/full/
@@ -9,59 +10,59 @@
 metadata:
   compilado_por: "Context Agent"
   ultima_compilacion: "[TIMESTAMP]"
-  version_context: "[NUMERO_VERSIO]"
+  version_context: "[NUMERO_VERSION]"
 
 # ============================================
 # PROJECT INFO
 # ============================================
 project:
-  nombre: "[NOM_PROJECTE]"
-  descripcion: "[DESCRIPCIÓ_1_LÍNIA]"
+  nombre: "[NOMBRE_PROYECTO]"
+  descripcion: "[DESCRIPCIÓN_1_LÍNEA]"
   fase: "[FASE_ACTUAL]"
   ultima_feature: "[ÚLTIMA_FEATURE]"
-  siguiente_milestone: "[PRÒXIM_MILESTONE]"
+  siguiente_milestone: "[PRÓXIMO_MILESTONE]"
 
 # ============================================
-# FEATURES OPERATIVES
+# FEATURES OPERATIVAS
 # ============================================
 features:
   feature_1:
-    nombre: "[NOM]"
+    nombre: "[NOMBRE]"
     url: "[URL]"
     estado: "[operativo|desarrollo|pendiente]"
-    descripcion: "[DESCRIPCIÓ_BREU]"
+    descripcion: "[DESCRIPCIÓN_BREVE]"
 
   # CA añade tantas features como sea necesario
 
 # ============================================
-# STACK TECNOLÒGIC
+# STACK TECNOLÓGICO
 # ============================================
 stack:
-  frontend: "[FRAMEWORK + VERSIÓ]"
+  frontend: "[FRAMEWORK + VERSIÓN]"
   backend: "[RUNTIME + FRAMEWORK]"
-  database: "[DATABASE si n'hi ha]"
+  database: "[DATABASE si hay]"
   deploy: "[PLATFORM]"
   # Solo lo esencial del stack
 
 # ============================================
-# URLS PRINCIPALS
+# URLS PRINCIPALES
 # ============================================
 urls:
   production: "[URL_PRINCIPAL]"
-  staging: "[URL_STAGING si n'hi ha]"
+  staging: "[URL_STAGING si hay]"
   # CA añade URLs relevantes
 
 # ============================================
 # ADRs RELEVANTES
-# CA selecciona con criterioo inteligente según impacto global
-# NO hay límite fijo, solo criterioo y 2000 líneas totales
+# CA selecciona con criterio inteligente según impacto global
+# NO hay límite fijo, solo criterio y 2000 líneas totales
 # ============================================
 adrs:
   - id: "001"
-    titulo: "[TÍTOL_ADR]"
-    decision: "[QUÈ ES VA DECIDIR]"
-    motivo: "[PER QUÈ]"
-    impacto: "[IMPACTE_GLOBAL]"
+    titulo: "[TÍTULO_ADR]"
+    decision: "[QUÉ SE DECIDIÓ]"
+    motivo: "[POR QUÉ]"
+    impacto: "[IMPACTO_GLOBAL]"
 
   # CA añade más ADRs según relevancia
   # Decisiones con impacto global, no obvias, arquitectónicas
@@ -73,28 +74,28 @@ adrs:
 ultima_sesion:
   data: "[YYYY-MM-DD]"
   duracion: "[~Xh]"
-  que_es_va_fer:
+  que_se_hizo:
     - "[FEATURE_PRINCIPAL_IMPLEMENTADA]"
-    - "[PROBLEMA_SIGNIFICATIU_RESOLT]"
-    - "[REFACTORING_IMPORTANT]"
-  decisions:
-    - "[DECISIÓ_TÈCNICA_PRESA]"
-    - "[TRADE-OFF_ACCEPTAT]"
+    - "[PROBLEMA_SIGNIFICATIVO_RESUELTO]"
+    - "[REFACTORING_IMPORTANTE]"
+  decisiones:
+    - "[DECISIÓN_TÉCNICA_TOMADA]"
+    - "[TRADE-OFF_ACEPTADO]"
   proximos_pasos:
-    - "[TASCA_PENDENT_IMPORTANT]"
-    - "[BLOCKER_CONEGUT]"
+    - "[TAREA_PENDIENTE_IMPORTANTE]"
+    - "[BLOCKER_CONOCIDO]"
 
 # Si hay múltiples sesiones recientes relevantes, CA puede añadir más
 
 # ============================================
 # GOTCHAS CRÍTICOS
 # Errores/configuraciones que rompen el proyecto si no se conocen
-# CA filtra con criterioo: solo imprescindibles
+# CA filtra con criterio: solo imprescindibles
 # ============================================
 gotchas:
-  - id: "[ID_DESCRIPTIU]"
-    problema: "[PROBLEMA_CRÍTIC]"
-    solucio: "[COM_RESOLDRE]"
+  - id: "[ID_DESCRIPTIVO]"
+    problema: "[PROBLEMA_CRÍTICO]"
+    solucion: "[CÓMO_RESOLVER]"
 
   # CA añade solo gotchas activos y críticos
   # Contra-intuitivos, que rompen desarrollo, repetitivos
@@ -105,13 +106,13 @@ gotchas:
 # CA prioriza según project-status y contexto reciente
 # ============================================
 pendientes:
-  - prioritat: 1
-    tasca: "[TASCA_MÉS_CRÍTICA]"
-    detall: "[PER_QUÈ_ÉS_IMPORTANT]"
+  - prioridad: 1
+    tarea: "[TAREA_MÁS_CRÍTICA]"
+    detalle: "[POR_QUÉ_ES_IMPORTANTE]"
 
-  - prioritat: 2
-    tasca: "[SEGONA_PRIORITAT]"
-    detall: "[CONTEXT_ADDICIONAL]"
+  - prioridad: 2
+    tarea: "[SEGUNDA_PRIORIDAD]"
+    detalle: "[CONTEXTO_ADICIONAL]"
 
   # CA añade según prioridad real, no límite fijo
 
@@ -150,10 +151,10 @@ backlog:
 # Transparencia del proceso de compilación
 # ============================================
 notas_compilacion:
-  adrs_totals: "[N total a memory/full/adr.yaml]"
-  adrs_incluidas: "[M seleccionades per context]"
-  sesiones_totales: "[X total a memory/full/sessions.yaml]"
-  sesiones_incluidas: "[Y sintetitzades en context]"
+  adrs_totales: "[N total en memory/full/adr.yaml]"
+  adrs_incluidas: "[M seleccionadas para context]"
+  sesiones_totales: "[X total en memory/full/sessions.yaml]"
+  sesiones_incluidas: "[Y sintetizadas en context]"
   sesiones_por_peso:
     alto: "[N sesiones peso alto incluidas]"
     medio: "[M sesiones peso medio incluidas]"
@@ -163,10 +164,10 @@ notas_compilacion:
   backlog_items_totales: "[N items totales en backlog/ si existe]"
   backlog_items_incluidos: "[M items incluidos en context (referenciados o críticos)]"
   justificacion_backlog: "[Por qué se incluyeron estos items: referenciados en pendientes, prioridad alta, etc.]"
-  tokens_iniciales: "[Tokens llegits de full/]"
-  tokens_finales: "[Tokens del context.yaml generat]"
-  archivamiento: "[Si se ha activado Plan Contingencia: sessions/ADRs archivadas a history/]"
-  criterioos_filtraje: "[Criteris inteligentes usados: impacte global, rellevància actual, etc.]"
+  tokens_iniciales: "[Tokens leídos de full/]"
+  tokens_finales: "[Tokens del context.yaml generado]"
+  archivamiento: "[Si se ha activado Plan Contingencia: sessions/ADRs archivadas en history/]"
+  criterios_filtraje: "[Criterios inteligentes usados: impacto global, relevancia actual, etc.]"
   lineas_totales: "[~X líneas de 2000 máximo]"
 
 # ============================================

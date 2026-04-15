@@ -1,22 +1,23 @@
+# version: 0.1.0
 # Sessions Log Template (YAML)
 # Histórico de todas las sesiones de trabajo significativas
 # Formato cronológico inverso (más reciente primero)
 
 sessions:
   - id: "YYYY-MM-DD"
-    titulo: "[Títol Descriptiu de la Sessió]"
+    titulo: "[Título Descriptivo de la Sesión]"
     data: "YYYY-MM-DD"
-    duracion: "[Xh o X dies]"
+    duracion: "[Xh o X días]"
     peso: "medio"  # bajo|medio|alto - Importancia arquitectónica (🟢🟡🔴)
-    participantes: ["Nom/Agent"]
-    objetivo: "[Què es volia aconseguir en aquesta sessió]"
+    participantes: ["Nombre/Agent"]
+    objetivo: "[Qué se quería conseguir en esta sesión]"
 
     features_implementadas:
       - nombre: "[Feature 1]"
         descripcion: "Descripción breve de lo que se ha hecho"
       - nombre: "[Feature 2]"
         descripcion: "Descripción breve"
-      - nombre: "[Tasca 3]"
+      - nombre: "[Tarea 3]"
         descripcion: "Descripción breve"
 
     problemas_resueltos:
@@ -26,23 +27,23 @@ sessions:
         solucion: "[Cómo se resolvió]"
 
     decisiones_tomadas:
-      - decision: "[Decisió 1]"
+      - decision: "[Decisión 1]"
         justificacion: "Breve justificación"
         adr_relacionada: null  # Si es decisión arquitectónica importante, ID del ADR
-      - decision: "[Decisió 2]"
+      - decision: "[Decisión 2]"
         justificacion: "Breve justificación"
         adr_relacionada: null
 
     tecnologias_agregadas:
-      - nombre: "[Llibreria 1]"
+      - nombre: "[Librería 1]"
         motivo: "Por qué se ha añadido"
       - nombre: "[Tool 2]"
         motivo: "Propósito"
 
     deployments:
-      - servei: "[Servei 1]"
+      - servicio: "[Servicio 1]"
         url: "https://..."
-      - servei: "[Servei 2]"
+      - servicio: "[Servicio 2]"
         url: "https://..."
 
     gotchas:
@@ -50,10 +51,10 @@ sessions:
         problema: "[Descripción del problema o trampa encontrada]"
         solucion: "[Cómo resolverlo o evitarlo]"
         criticidad: "[alta|media|baja]"
-      - tipo: "[TIPUS]"
+      - tipo: "[TIPO]"
         problema: "[PROBLEMA]"
-        solucion: "[SOLUCIÓ]"
-        criticidad: "[CRITICITAT]"
+        solucion: "[SOLUCIÓN]"
+        criticidad: "[CRITICIDAD]"
 
     proximos_pasos:
       - "[Tarea pendiente 1]"
@@ -68,9 +69,9 @@ sessions:
 # INSTRUCCIONES DE USO
 # ============================================
 
-instruccions:
-  ordre: "Añade nuevas sesiones al PRINCIPIO del array (orden inverso cronológico)"
-  concisio: "Sé conciso pero completo - detalles suficientes para entender contexto"
+instrucciones:
+  orden: "Añade nuevas sesiones al PRINCIPIO del array (orden inverso cronológico)"
+  concision: "Sé conciso pero completo - detalles suficientes para entender contexto"
   adr_links: "Linkea ADRs (campo adr_relacionada) si se toman decisiones arquitectónicas"
   peso_sesion: "Evalúa peso (bajo/medio/alto) ANTES de documentar - ajusta densidad según importancia"
   consistencia: "Usa siempre el mismo formato para facilitar parsing del Context Agent"
@@ -79,16 +80,16 @@ instruccions:
 # EJEMPLOS DE BUENA DOCUMENTACIÓN
 # ============================================
 
-exemples:
-  bo: |
+ejemplos:
+  bueno: |
     features_implementadas:
-      - nombre: "Exportació PDF professional"
+      - nombre: "Exportación PDF profesional"
         descripcion: |
           Cambiado de html2canvas a jsPDF para mejor calidad
           Formato A4 con márgenes 20mm
           10 cláusulas legales LAU incluidas
 
-  massa_detallat: |
+  demasiado_detallado: |
     # EVITAR esto:
     features_implementadas:
       - nombre: "Cambiado padding del botón"
@@ -98,13 +99,13 @@ exemples:
       - nombre: "Arreglado typo"
         descripcion: "descipcion → descripcion en línea 234"
 
-  massa_vague: |
+  demasiado_vago: |
     # EVITAR esto:
     features_implementadas:
       - nombre: "Mejorado sistema de procesamiento"
         descripcion: "Arreglados bugs"
 
-  gotchas_bons: |
+  gotchas_buenos: |
     # ASÍ SÍ - Gotchas críticos y útiles:
     gotchas:
       - tipo: "error"
@@ -117,7 +118,7 @@ exemples:
         solucion: "Desactivar en Settings > Deployment Protection"
         criticidad: "media"
 
-  gotchas_dolents: |
+  gotchas_malos: |
     # EVITAR esto - No son gotchas críticos:
     gotchas:
       - tipo: "gotcha"
