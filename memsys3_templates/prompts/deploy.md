@@ -44,7 +44,6 @@ Copia TODA la estructura de memsys3_templates/ al directorio memsys3/ del proyec
 mkdir -p memsys3/memory/full
 mkdir -p memsys3/memory/templates
 mkdir -p memsys3/memory/history
-mkdir -p memsys3/viz
 mkdir -p memsys3/prompts
 mkdir -p memsys3/agents
 
@@ -53,9 +52,6 @@ touch memsys3/memory/history/.gitkeep
 
 # Copiar templates
 cp memsys3_temp/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
-
-# Copiar visualizador
-cp -r memsys3_temp/memsys3_templates/viz/* memsys3/viz/
 
 # Copiar prompts
 cp memsys3_temp/memsys3_templates/prompts/*.md memsys3/prompts/
@@ -135,25 +131,25 @@ Con la info recopilada, crea `memsys3/memory/project-status.yaml`:
 # Project Status - [NOMBRE_PROYECTO]
 
 metadata:
-  ultima_actualitzacio: "[DATA_AVUI]"
-  actualitzat_per: "Claude (Initial Deployment)"
+  ultima_actualizacion: "[FECHA_HOY]"
+  actualizado_por: "Claude (Initial Deployment)"
   fase: "[FASE]"
   memsys3_version: "[MEMSYS3_VERSION obtenida en Paso 4]"
-  memsys3_deployed: "[DATA_AVUI]"
+  memsys3_deployed: "[FECHA_HOY]"
 
-visio_general:
-  que_es: "[DESCRIPCIO_1_LINIA]"
-  objectiu: "[OBJECTIU_PRINCIPAL]"
-  client: "[CLIENT_O_STAKEHOLDER_SI_APLICA]"
+vision_general:
+  que_es: "[DESCRIPCION_1_LINEA]"
+  objetivo: "[OBJETIVO_PRINCIPAL]"
+  cliente: "[CLIENTE_O_STAKEHOLDER_SI_APLICA]"
 
-estat_actual:
+estado_actual:
   fase: "[FASE_ACTUAL]"
   ultima_feature: "Deployment inicial de memsys3"
-  seguent_milestone: "[PROPER_OBJECTIU]"
+  siguiente_milestone: "[PROXIMO_OBJETIVO]"
 
 features: {}
 
-stack_tecnologic:
+stack_tecnologico:
   frontend:
     framework: "[FRAMEWORK]"
     # Añade campos según respuesta usuario
@@ -172,9 +168,9 @@ pendientes_prioritarios:
   # Si user ha mencionado tareas, añádelas
   # De lo contrario deja vacío
 
-decisions_clau: {}
-convencions_codi: {}
-historic_sessions: []
+decisiones_clave: {}
+convenciones_codigo: {}
+historico_sesiones: []
 ```
 
 ### Paso 6: Personalizar prompts/newSession.md
@@ -277,7 +273,6 @@ Estructura creada:
 - memsys3/memory/full/ (adr.yaml, sessions.yaml, operations.log inicializados)
 - memsys3/memory/templates/ (guías permanentes)
 - memsys3/memory/history/ (para Plan Contingencia)
-- memsys3/viz/ (visualizador web)
 - memsys3/prompts/ (newSession, endSession, compile-context, etc.)
 - memsys3/agents/ (main-agent, context-agent)
 
@@ -287,8 +282,7 @@ Archivos personalizados:
 
 Próximos pasos:
 1. Compila context inicial: @memsys3/prompts/compile-context.md
-2. Visualiza la memoria: @memsys3/prompts/mind.md
-3. Comienza a trabajar con sesiones: @memsys3/prompts/newSession.md
+2. Comienza a trabajar con sesiones: @memsys3/prompts/newSession.md
 
 Escalabilidad automática:
 📈 Rotación automática: >1800 líneas → sessions_N.yaml, adr_N.yaml
@@ -320,3 +314,4 @@ Escalabilidad automática:
 ---
 
 **Deployment completado. El sistema está listo para usar.**
+<!-- version: 0.1.0 -->

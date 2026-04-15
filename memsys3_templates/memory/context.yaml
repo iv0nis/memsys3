@@ -37,15 +37,10 @@ features:
     estado: "operativo"
     descripcion: "Archivado inteligente a history/ cuando >150K tokens"
 
-  visualizador:
-    nombre: "Memory Visualizer"
-    estado: "operativo"
-    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas) - Ubicado en memsys3/viz/"
-
   prompts:
     nombre: "Prompts Reutilizables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas @memsys3/"
+    descripcion: "newSession, endSession, compile-context, deploy - TODOS con rutas @memsys3/"
 
   documentacion:
     nombre: "Sistema de Documentación Multi-nivel"
@@ -56,8 +51,6 @@ features:
 # STACK TECNOLÓGICO
 # ============================================
 stack:
-  frontend: "HTML/CSS/JS (visualizador)"
-  backend: "Python 3.x (servidor visualizador)"
   database: "Ninguna (YAML files)"
   deploy: "GitHub + clonado local"
   lenguaje_docs: "YAML + Markdown"

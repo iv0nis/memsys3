@@ -39,8 +39,8 @@ features:
 
   visualizador:
     nombre: "Memory Visualizer"
-    estado: "operativo"
-    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas)"
+    estado: "archivado"
+    descripcion: "Dashboard web - Archivado en memsys3/docs/archivo/viz/ (feature futura)"
 
   prompts_reutilizables:
     nombre: "Prompts Reutilizables"
@@ -96,8 +96,6 @@ features:
 # STACK TECNOLÓGICO
 # ============================================
 stack:
-  frontend: "HTML/CSS/JS (visualizador)"
-  backend: "Python 3.x (servidor visualizador)"
   database: "Ninguno (YAML files)"
   deploy: "GitHub + clonado local"
   lenguaje_docs: "YAML + Markdown"

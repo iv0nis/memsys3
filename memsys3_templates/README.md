@@ -20,7 +20,6 @@ Cuando trabajas con AI agents en proyectos:
 - ✅ **Context compilado**: Un único archivo (~2500-3000 tokens) con el contexto esencial
 - ✅ **Documentación estructurada**: ADRs, sessions, project status
 - ✅ **Context Agent**: Filtra automáticamente la información relevante con criterio inteligente
-- ✅ **Visualizador web**: Dashboard para ver la "mente" de los agents
 - ✅ **Prompts reutilizables**: Para iniciar/terminar sesiones y compilar contexto
 - ✅ **Rotación automática**: Escala cuando supera límites (>1800 líneas)
 - ✅ **Plan de contingencia**: Archivado inteligente (>150K tokens)
@@ -74,26 +73,6 @@ El Context Agent:
 - Genera `memory/context.yaml` compacto (máx 2000 líneas)
 - Aplica Plan de Contingencia si supera 150K tokens
 
-### Visualizar la "Mente" del Agent
-
-Para ver el dashboard visual:
-
-```bash
-@memsys3/prompts/mind.md
-```
-
-O manualmente:
-```bash
-cd memsys3/viz
-python3 serve.py
-```
-
-Abre http://localhost:8080 y verás:
-- 🤖 **Agent View**: Context compilado
-- 📚 **Full History**: ADRs y sessions completas
-- 📊 **Project Status**: Estado del proyecto
-- 📈 **Stats**: Métricas de compilación
-
 ## 📁 Estructura
 
 ```
@@ -115,18 +94,13 @@ memsys3/
 │   │   ├── context-template.yaml
 │   │   ├── project-status-template.yaml
 │   │   └── sessions-template.yaml
-│   ├── history/                    # Archivos archivados (NO se leen)
-│   │   └── (datos antiguos cuando >150K tokens)
-│   └── viz/                        # Visualizador web
-│       ├── serve.py
-│       ├── index.html
-│       ├── style.css
-│       └── viewer.js
+│   └── history/                    # Archivos archivados (NO se leen)
+│       └── (datos antiguos cuando >150K tokens)
 └── prompts/
     ├── newSession.md              # Cargar contexto al iniciar
     ├── endSession.md              # Documentar sesión
     ├── compile-context.md         # Compilar contexto (Context Agent)
-    └── mind.md                    # Abrir visualizador
+    └── compile-context.md         # Compilar contexto (Context Agent)
 ```
 
 ## 🔄 Workflow
@@ -197,7 +171,6 @@ Ver **[memory/README.md](memory/README.md)** para:
 
 ## 🛠 Requisitos
 
-- Python 3.x (para el visualizador web)
 - AI agent compatible con prompts markdown
 
 ## 💡 Tips
@@ -216,7 +189,7 @@ Ver **[memory/README.md](memory/README.md)** para:
 - Documenta decisiones arquitectónicas importantes como ADRs
 - Usa `endSession.md` al finalizar cada sesión significativa
 - Compila contexto en nueva instancia limpia cuando sea necesario
-- Visualiza la "mente" con `mind.md` para entender qué saben los agents
+- Revisa `memory/context.yaml` para entender qué saben los agents
 
 ## 🔧 Personalización
 

@@ -23,9 +23,6 @@ cp -r memsys3/ /path/to/nuevo/proyecto/
 # 4. Compila el contexto cuando sea necesario
 # Ejecuta: @memsys3/prompts/compile-context.md
 
-# 5. Visualiza la "mente" de los agentes
-cd memsys3/viz
-python serve.py
 ```
 
 ## 📁 Estructura
@@ -36,13 +33,6 @@ memsys3/
 │   ├── context.yaml                    # ← DevAI carga esto (compilado)
 │   ├── project-status.yaml             # ← Estado actual del proyecto
 │   ├── README.md                       # ← Este archivo
-│   │
-│   ├── viz/                            # ← Visualizador web
-│   │   ├── serve.py                    # Servidor mínimo
-│   │   ├── index.html                  # Dashboard
-│   │   ├── style.css                   # Estilos
-│   │   ├── viewer.js                   # Renderizador
-│   │   └── README.md                   # Instrucciones
 │   │
 │   ├── full/                           # ← Documentación completa (input CA)
 │   │   ├── adr.yaml                    # Todas las ADRs históricas
@@ -59,7 +49,7 @@ memsys3/
 │
 └── prompts/
     ├── compile-context.md              # Prompt para ejecutar Context Agent
-    └── mind.md                         # Slash command /mind para visualizador
+    └── compile-context.md              # Prompt para ejecutar Context Agent
 ```
 
 ## 🔄 Workflow
@@ -266,31 +256,9 @@ R: Normal después de meses. El CA solo toma la última sesión para `memsys3/me
 
 Interfaz visual para ver la "mente" de los agentes.
 
-**Ejecutar:**
-```bash
-# Opción 1: Slash command
-/mind
-
-# Opción 2: Prompt directo
-@memsys3/prompts/mind.md
-
-# Opción 3: Manual
-cd memsys3/viz
-python serve.py
-```
-
-**Pestañas disponibles:**
-- 🤖 **Agent View**: Lo que ve DevAI (contexto compilado)
-- 📚 **Full History**: Todo el histórico de ADRs y sesiones
-- 📊 **Project Status**: Estado completo del proyecto
-- 📈 **Stats**: Métricas de compilación
-
-**Uso:** Ideal para hacer revisiones visuales del contexto, detectar gaps, o presentar el estado del proyecto.
-
-**Documentación completa:** Ver `memsys3/viz/README.md`
-
 ---
 
 **Creado**: 2025-10-23
 **Versión**: 1.0
 **Mantenedores**: Sistema automatizado + humanos
+<!-- version: 0.1.0 -->

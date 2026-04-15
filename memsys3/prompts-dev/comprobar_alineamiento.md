@@ -50,7 +50,6 @@ Ambos deben tener estructura similar:
 - `prompts/`
 - `memory/templates/`
 - `agents/`
-- `viz/`
 
 ### PASO 2: Identificar Archivos Agnósticos
 
@@ -62,7 +61,6 @@ Ambos deben tener estructura similar:
 - `prompts/compile-context.md`
 - `prompts/deploy.md`
 - `prompts/actualizar.md`
-- `prompts/mind.md`
 - `prompts/backlog.md`
 - `prompts/github.md`
 
@@ -76,17 +74,10 @@ Ambos deben tener estructura similar:
 - `agents/main-agent.yaml`
 - `agents/context-agent.yaml`
 
-**Visualizador (4 archivos):**
-- `viz/index.html`
-- `viz/viewer.js`
-- `viz/styles.css`
-- `viz/serve.py`
-
-**Documentación sistema (2 archivos):**
+**Documentación sistema (1 archivo):**
 - `memory/README.md`
-- `viz/README.md`
 
-**Total:** 20 archivos agnósticos distribuibles
+**Total:** 15 archivos agnósticos distribuibles
 
 ### PASO 3: Comparar Archivos (Diff Completo)
 
@@ -107,7 +98,7 @@ echo "=== VERIFICANDO ALINEAMIENTO memsys3/ ↔ memsys3_templates/ ==="
 echo ""
 
 # Prompts
-for file in newSession.md endSession.md compile-context.md deploy.md actualizar.md mind.md backlog.md github.md; do
+for file in newSession.md endSession.md compile-context.md deploy.md actualizar.md backlog.md github.md; do
   echo "Comparando prompts/$file..."
   diff memsys3/prompts/$file memsys3_templates/prompts/$file > /dev/null 2>&1
   if [ $? -eq 0 ]; then
@@ -146,18 +137,6 @@ done
 echo ""
 
 # Visualizador
-for file in index.html viewer.js styles.css serve.py README.md; do
-  echo "Comparando viz/$file..."
-  diff memsys3/viz/$file memsys3_templates/viz/$file > /dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    echo "✅ viz/$file - SINCRONIZADO"
-  else
-    echo "❌ viz/$file - DESINCRONIZADO"
-  fi
-done
-
-echo ""
-
 # Documentación
 echo "Comparando memory/README.md..."
 diff memsys3/memory/README.md memsys3_templates/memory/README.md > /dev/null 2>&1
