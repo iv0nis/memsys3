@@ -3,6 +3,61 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-04-15-file-version-viz-archivada-catalan-erradicado"
+    fecha: "2026-04-15"
+    duracion: "~3h"
+    peso: "alto"
+    titulo: "Sistema file_version + viz archivada + catalán erradicado + modo actualización extendida"
+    highlights:
+      - "Sistema file_version independiente por archivo (0.Y.Z) en 21 archivos de infraestructura"
+      - "Viz archivada en docs/archivo/viz/, mind.md eliminado, referencias limpiadas en ~16 archivos"
+      - "Catalán erradicado: ~60 campos corregidos en project-status, deploy, templates YAML, endSession, compile-context, agents"
+      - "Restricciones infraestructura en main-agent.yaml y context-agent.yaml (MA/CA no modifican prompts/agents/templates)"
+      - "Modo actualización extendida: subagente se contextualiza con memsys3 desarrollo vía newSession.md del repo clonado"
+      - "Registro file_version en actualizar.md (Paso 14 + operations.log)"
+      - "Release v0.20.0 tagueada y pusheada"
+
+    features_implementadas:
+      - nombre: "Sistema file_version"
+        descripcion: "Cada archivo de infraestructura memsys3 tiene versión independiente (0.Y.Z). .md usa <!-- version: 0.1.0 -->, .yaml agents usa file_version field, .yaml templates usa # version comment. Solo se bumpa con /actualizar-memsys3."
+      - nombre: "Restricciones infraestructura en agents"
+        descripcion: "main-agent.yaml: NO modificar prompts/agents/templates, NO proponer compile-context (ADR-008). context-agent.yaml: infraestructura solo lectura. Excepciones: memory/full/ y memory/project-status.yaml son datos."
+      - nombre: "Modo actualización extendida"
+        descripcion: "Paso 2.5 en actualizar.md: usuario elige rápida (git diff) o extendida (subagente carga newSession del repo clonado, se contextualiza con sessions/ADRs/context.yaml, devuelve informe con contexto). Consume más tokens pero da comprensión profunda de los cambios."
+      - nombre: "Registro file_version en actualizar.md"
+        descripcion: "Paso 14: tras actualizar, registrar archivos_actualizados con file_version en operations.log. El file_version viaja con el archivo desde el repo."
+
+    problemas_resueltos:
+      - problema: "Catalán residual masivo en templates, prompts y agents"
+        solucion: "Barrido exhaustivo: project-status-template (~15 keys), sessions-template (~17 items), adr-template (~10), context-template (~25), endSession (~5 campos), compile-context (~6), context-agent.yaml (~38 keys), deploy.md template. Sincronizado templates ↔ dog-fooding."
+      - problema: "Viz obsoleta ocupando espacio en producto distribuido"
+        solucion: "Archivada en memsys3/docs/archivo/viz/. Eliminada de memsys3_templates/ y memsys3/. mind.md eliminado. Referencias limpiadas en README (raíz + templates), deploy.md, actualizar.md, reference.md, memory/README.md, context.yaml, project-status.yaml, comprobar_alineamiento.md."
+      - problema: "version_context en context.yaml copiaba versión global de memsys3"
+        solucion: "Aclarado: context.yaml es archivo generado (compilado), su versión refleja la fecha de compilación, no la versión de memsys3. No necesita file_version."
+
+    decisiones_tomadas:
+      - decision: "file_version formato 0.Y.Z con X alineado a memsys3"
+        justificacion: "X=0 durante desarrollo, día del lanzamiento todo pasa a 1.0.0. Y=cambio funcional, Z=fix. Visualmente 0.4.3 te dice era v0 de memsys3."
+      - decision: "Versión en última línea de .md como comentario HTML"
+        justificacion: "No interfiere con instrucciones, agente no lo ejecuta, viaja con el archivo. Metadata en frontmatter .md es raro para prompts."
+      - decision: "Viz archivada, no eliminada"
+        justificacion: "Feature obsoleta pero posible uso futuro. Sale de producción (memsys3_templates/) pero se conserva en docs/archivo/viz/."
+      - decision: "Registro actualizaciones en operations.log, no en sessions.yaml"
+        justificacion: "sessions.yaml dedicado a sesiones de trabajo. operations.log ya existe para trazabilidad de actualizaciones y compilaciones."
+      - decision: "Modo actualización extendida con subagente"
+        justificacion: "El subagente se contextualiza con memsys3 de desarrollo (sessions, ADRs, context) y entiende los cambios con contexto del desarrollador, no solo como diff ciego. Opcional para ahorrar tokens."
+
+    gotchas:
+      - tipo: "catalán residual"
+        problema: "Tras la traducción masiva de nov 2025, seguían existiendo ~60 campos catalanes en templates YAML, project-status, deploy.md, endSession, compile-context y agents. El barrido original no cubrió keys internos de templates ni ejemplos embebidos en prompts."
+        solucion: "Búsqueda exhaustiva con grep de caracteres catalanes [àèéíòóúïü] + palabras clave (estat, visio, decisio, etc). Corrección archivo por archivo + sincronización templates ↔ dog-fooding."
+        criticidad: "media"
+
+    proximos_pasos:
+      - "Compilar context.yaml (última compilación: 2026-03-08, >5 sesiones sin compilar)"
+      - "Formalizar workflow sincronización dog-fooding como diferente a /actualizar-memsys3"
+      - "Evaluar si CA debe contextualizarse antes de actualizar (punto 5 pendiente)"
+      - "Implementar FEATURE-012 (glosario conceptos)"
   - id: "2026-04-13-context-agent-ingesta-tiers"
     data: "2026-04-13"
     duracion: "~1.5h"
