@@ -3,6 +3,32 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-04-13-context-agent-ingesta-tiers"
+    data: "2026-04-13"
+    duracion: "~1.5h"
+    peso: medio
+    titulo: "Context Agent: sistema de ingesta por tiers hasta 150K tokens"
+    highlights:
+      - "Rediseño CA para maximizar ingesta de conocimiento antes de sintetizar (problema: CA se quedaba en ~30K tokens cuando podía llegar a 150K)"
+      - "Sistema de 5 tiers de prioridad con presupuesto ~150K tokens explícito"
+      - "Eliminados límites arbitrarios por sección en context-agent.yaml (max 7 ADRs, 150 chars/gotcha, etc.)"
+      - "Nuevo mecanismo docs_contextuales: ciclo virtuoso Main Agent → CA → Main Agent"
+      - "Release v0.19.2 publicada"
+    features_implementadas:
+      - "compile-context.md reescrito con Tier 1 (memory/full + rotados obligatorio), Tier 2 (README), Tier 3 (backlog completo), Tier 4 (docs_contextuales editables), Tier 5 (git log)"
+      - "context-agent.yaml v2.0: único límite rígido 2000 líneas output, guías orientativas por peso en lugar de límites rígidos por sección"
+      - "endSession.md paso 4.5: Main Agent referencia docs importantes en docs_contextuales de compile-context.md"
+      - "Tier 3 lee backlog completo (antes solo items referenciados en pendientes)"
+      - "CA puede reordenar docs_contextuales tras compilar para afinar prioridades futuras"
+    decisions:
+      - "Presupuesto fijo 150K tokens sin detección de modelo: simplicidad sobre adaptabilidad"
+      - "docs_contextuales arranca vacío — Main Agent y CA lo van llenando con el tiempo"
+      - "Tier 1 incluye explícitamente archivos rotados (sessions_1.yaml, sessions_2.yaml, etc.) — antes no se leían sistemáticamente"
+    proximos_pasos:
+      - "Ejecutar compile-context en sesión nueva para validar el nuevo sistema de tiers"
+      - "Implementar FEATURE-012 (glosario conceptos)"
+      - "Evaluar FEATURE-010 (checkpoint mid-session) y FEATURE-011 (Main Agent proactivo)"
+
   - id: "2026-03-27-exploracion-gentle-ai-backlog-meet-glosario"
     data: "2026-03-27"
     duracion: "~2.5h"
