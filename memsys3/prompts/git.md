@@ -168,3 +168,4 @@ git log -1 --oneline
 - **SemVer:** Mantener formato v0.X.Y (3 números) estándar
 - **No llegar a v1.0.0** hasta considerar el sistema "estable completo"
 - **Solo local:** Este prompt NO hace push. Para subir a remoto, usa `@memsys3/prompts/github.md`
+<!-- version: 0.1.0 -->

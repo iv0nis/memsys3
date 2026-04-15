@@ -184,3 +184,4 @@ echo "  /actualizar-memsys3  - Actualizar memsys3 existente"
 ---
 
 **Instalación completada.** Los comandos globales están listos para usar en cualquier proyecto.
+<!-- version: 0.1.0 -->

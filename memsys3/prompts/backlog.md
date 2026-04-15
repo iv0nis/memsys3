@@ -84,3 +84,4 @@ Si el usuario quiere actualizar un item:
 - **EXPLORATION-XXX**: Investigación sin solución clara
 
 Ver `memsys3/backlog/README.md` para workflow completo y estructura de documentos.
+<!-- version: 0.1.0 -->
