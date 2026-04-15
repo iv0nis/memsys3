@@ -19,7 +19,7 @@ Cuando trabajas con AI agents en proyectos grandes:
 - ✅ Sistema de documentación estructurado (ADRs, sessions, status)
 - ✅ Context Agent que filtra automáticamente la información relevante
 - ✅ Visualizador web para ver la "mente" de los agents
-- ✅ Prompts reutilizables (newSession, endSession, compile-context, mind, deploy, actualizar, adr, backlog, github)
+- ✅ Prompts reutilizables (newSession, endSession, compile-context, deploy, actualizar, adr, backlog, github)
 - ✅ Sistema de rotación automática cuando supera límites (>1800 líneas)
 - ✅ Plan de contingencia con archivado inteligente (>150K tokens)
 - ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes (con detección estructura antigua)
@@ -59,10 +59,7 @@ Una vez desplegado:
 # 1. Compila el contexto inicial
 @memsys3/prompts/compile-context.md
 
-# 2. Visualiza la "mente" de los agents
-@memsys3/prompts/mind.md
-
-# 3. Comienza a trabajar
+# 2. Comienza a trabajar
 @memsys3/prompts/newSession.md
 ```
 
@@ -83,11 +80,6 @@ Una vez desplegado en tu proyecto, usa estos prompts:
 **Recompilar contexto:**
 ```bash
 @memsys3/prompts/compile-context.md
-```
-
-**Ver la "mente" del agent:**
-```bash
-@memsys3/prompts/mind.md
 ```
 
 ## 📁 Estructura del Repositorio
@@ -112,17 +104,10 @@ memsys3/                          # Repositorio GitHub
 │   │       ├── context-template.yaml
 │   │       ├── project-status-template.yaml
 │   │       └── sessions-template.yaml
-│   ├── viz/                  # Visualizador web
-│   │   ├── serve.py
-│   │   ├── index.html
-│   │   ├── style.css
-│   │   ├── viewer.js
-│   │   └── README.md
 │   └── prompts/
 │       ├── newSession.md      # Template de prompt para iniciar sesión
 │       ├── endSession.md      # Template de prompt para documentar
 │       ├── compile-context.md # Template de prompt del Context Agent
-│       ├── mind.md           # Template de prompt para visualizador
 │       ├── deploy.md         # Guía de deployment inicial
 │       ├── actualizar.md      # Guía de actualización segura de memsys3
 │       ├── adr.md            # Template para gestionar ADRs
@@ -149,21 +134,6 @@ memsys3/                          # Repositorio GitHub
 - Carga `@memsys3/prompts/newSession.md`
 - Desarrolla con contexto completo
 - Documenta al acabar con `@memsys3/prompts/endSession.md`
-
-## 🎨 Visualizador Web
-
-Interfaz visual para ver la "mente" de los agents:
-
-```bash
-cd memsys3/viz
-python3 serve.py
-```
-
-**Pestañas:**
-- 🤖 **Agent View**: Context compilado que ve el DevAI
-- 📚 **Full History**: Todas las ADRs y sessions
-- 📊 **Project Status**: Estado completo del proyecto
-- 📈 **Stats**: Métricas de compilación
 
 ## 🚀 Features Principales
 
@@ -220,8 +190,6 @@ python3 serve.py
 
 ## 🛠 Stack Tecnológico
 
-- **Frontend**: HTML/CSS/JS (visualizador web)
-- **Backend**: Python 3.x (servidor visualizador)
 - **Database**: Ninguno (YAML files como almacenamiento)
 - **Deploy**: GitHub + clonado local
 - **Lenguaje Docs**: YAML + Markdown
@@ -245,7 +213,6 @@ Para actualizar memsys3 en un proyecto que ya lo tiene desplegado, ver la guía 
 
 ## 🛠 Requisitos
 
-- Python 3.x (para el visualizador web)
 - **Cualquier modelo de IA** compatible con prompts markdown (Claude, Gemini, Codex, etc.)
 - Git (opcional, para versionado)
 
@@ -271,7 +238,7 @@ Al crear nuevos archivos, pregúntate: **"¿Tiene sentido esto en CUALQUIER proy
 
 **Práctica recomendada:**
 
-Al finalizar sesiones donde modificaste archivos agnósticos (prompts, agents, viz, templates), ejecutar `@prompts/comprobar_alineamiento.md` ANTES de endSession para verificar sincronización dog-fooding ↔ templates.
+Al finalizar sesiones donde modificaste archivos agnósticos (prompts, agents, templates), ejecutar `@prompts/comprobar_alineamiento.md` ANTES de endSession para verificar sincronización dog-fooding ↔ templates.
 
 ## 🤝 Contribuciones
 

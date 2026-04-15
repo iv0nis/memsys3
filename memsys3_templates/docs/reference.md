@@ -112,23 +112,6 @@ Asignar con `@memsys3/prompts/agent-identity.md`.
 
 ---
 
-## Visualizador Web
-
-Dashboard web para visualizar la memoria. Sin dependencias externas.
-
-**Arrancar:** `cd memsys3/viz && python3 serve.py` → `http://localhost:8080`
-
-| Pestaña | Contenido |
-|---------|-----------|
-| Agent View | `context.yaml` |
-| Full History | `adr.yaml` + `sessions.yaml` |
-| Project Status | `project-status.yaml` |
-| Stats | Métricas de compilación |
-
-Archivos: `serve.py`, `index.html`, `viewer.js`, `style.css` (dark theme).
-
----
-
 ## Deployment y Actualización
 
 ### Instalación inicial
@@ -206,3 +189,4 @@ Muestra modelo y uso de contexto en la línea de estado. Se configura en `~/.cla
 `@memsys3/prompts/commands.md` instala en `~/.claude/commands/`:
 - `/deploy-memsys3` — deployment inicial
 - `/actualizar-memsys3` — actualización
+<!-- version: 0.1.0 -->

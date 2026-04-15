@@ -31,24 +31,17 @@ features:
     estado: "operativo"
     descripcion: "Archivado inteligente a history/ cuando >150K tokens"
 
-  visualitzador:
-    nombre: "Memory Visualizer"
-    estado: "operativo"
-    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas)"
-
   prompts:
-    nombre: "Prompts Reutilitzables"
+    nombre: "Prompts Reutilizables"
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, mind, deploy - TODOS con rutas memsys3/"
+    descripcion: "newSession, endSession, compile-context, deploy - TODOS con rutas memsys3/"
 
-  documentacio:
+  documentacion:
     nombre: "Sistema de Documentación Multi-nivel"
     estado: "operativo"
     descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
 
-stack_tecnologic:
-  frontend: "HTML/CSS/JS (visualizador)"
-  backend: "Python 3.x (servidor visualizador)"
+stack_tecnologico:
   database: "Ninguno (YAML files)"
   deploy: "GitHub + clonado local"
   lenguaje_docs: "YAML + Markdown"
@@ -57,25 +50,25 @@ urls:
   repository: "https://github.com/iv0nis/memsys3"
 
 pendientes_prioritarios:
-  - prioritat: 1
-    tasca: "Evaluar implementación IMPROVEMENT-001 (contexto docs críticos)"
-    detall: "Decidir opción A (leer README), B (sección sistema:), híbrido, o aplazar. Alta prioridad para nuevas instancias tengan contexto fundamental."
+  - prioridad: 1
+    tarea: "Evaluar implementación IMPROVEMENT-001 (contexto docs críticos)"
+    detalle: "Decidir opción A (leer README), B (sección sistema:), híbrido, o aplazar. Alta prioridad para nuevas instancias tengan contexto fundamental."
 
-  - prioritat: 2
-    tasca: "Probar deployment completo en proyecto UOC"
-    detall: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar)"
+  - prioridad: 2
+    tarea: "Probar deployment completo en proyecto UOC"
+    detalle: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar)"
 
-  - prioritat: 3
-    tasca: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
-    detall: "Quick win: agregar checklist en DEVELOPMENT.md de qué sincronizar en cada tipo de cambio (versión, estructura, etc.)"
+  - prioridad: 3
+    tarea: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
+    detalle: "Quick win: agregar checklist en DEVELOPMENT.md de qué sincronizar en cada tipo de cambio (versión, estructura, etc.)"
 
-  - prioritat: 4
-    tasca: "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
-    detall: "Separar desarrollo interno de distribución pública según decisión ADR-009"
+  - prioridad: 4
+    tarea: "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
+    detalle: "Separar desarrollo interno de distribución pública según decisión ADR-009"
 
-  - prioritat: 5
-    tasca: "Validar rotación automática en proyecto real"
-    detall: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
+  - prioridad: 5
+    tarea: "Validar rotación automática en proyecto real"
+    detalle: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
 
 decisions_clau:
   filosofia: "Criterio inteligente del CA, NO límites arbitrarios"

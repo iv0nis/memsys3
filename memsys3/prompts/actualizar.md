@@ -259,7 +259,6 @@ Estos son parte del "motor" de memsys3, se pueden sobrescribir:
 **Prompts:**
 - `memsys3/prompts/compile-context.md`
 - `memsys3/prompts/endSession.md`
-- `memsys3/prompts/mind.md`
 - `memsys3/prompts/github.md`
 - `memsys3/prompts/deploy.md`
 - `memsys3/prompts/actualizar.md` ← (este mismo archivo)
@@ -272,12 +271,6 @@ Estos son parte del "motor" de memsys3, se pueden sobrescribir:
 **Agents:**
 - `memsys3/agents/context-agent.yaml`
 
-**Visualizador:**
-- `memsys3/viz/index.html`
-- `memsys3/viz/viewer.js`
-- `memsys3/viz/styles.css`
-- `memsys3/viz/serve.py`
-
 **Templates:**
 - `memsys3/memory/templates/adr-template.yaml`
 - `memsys3/memory/templates/sessions-template.yaml`
@@ -286,7 +279,6 @@ Estos son parte del "motor" de memsys3, se pueden sobrescribir:
 
 **Documentación del sistema:**
 - `memsys3/memory/README.md`
-- `memsys3/viz/README.md`
 
 ### 🔍 REVISAR MANUALMENTE (puede haber personalizaciones)
 
@@ -345,7 +337,7 @@ cp -r memsys3/docs/backups/memsys3_backup_$TIMESTAMP memsys3_restored
 echo "=== Detectando archivos custom del proyecto ==="
 echo "MEMSYS3_ROOT=$MEMSYS3_ROOT"
 
-for dir in prompts agents docs viz; do
+for dir in prompts agents docs; do
   if [ -d "$MEMSYS3_ROOT/$dir" ]; then
     find "$MEMSYS3_ROOT/$dir" -type f | while read f; do
       relative="${f#$MEMSYS3_ROOT/}"
@@ -378,7 +370,7 @@ echo "=== Fin detección ==="
 
 ```bash
 # Crear directorios necesarios (siempre, antes de copiar nada)
-mkdir -p "$MEMSYS3_ROOT/docs" "$MEMSYS3_ROOT/docs/backups" "$MEMSYS3_ROOT/prompts" "$MEMSYS3_ROOT/agents" "$MEMSYS3_ROOT/memory/templates" "$MEMSYS3_ROOT/viz"
+mkdir -p "$MEMSYS3_ROOT/docs" "$MEMSYS3_ROOT/docs/backups" "$MEMSYS3_ROOT/prompts" "$MEMSYS3_ROOT/agents" "$MEMSYS3_ROOT/memory/templates"
 
 # Crear backlog/ si no existe
 if [ ! -f "$MEMSYS3_ROOT/backlog/README.md" ]; then
@@ -415,7 +407,6 @@ Archivos a borrar (D): Y
   - `memsys3_templates/prompts/X` → `memsys3/prompts/X`
   - `memsys3_templates/docs/X` → `memsys3/docs/X`
   - `memsys3_templates/agents/X` → `memsys3/agents/X`
-  - `memsys3_templates/viz/X` → `memsys3/viz/X`
   - `memsys3_templates/memory/X` → `memsys3/memory/X`
   - **Excepto** `newSession.md` y `main-agent.yaml` → ver pasos 6.2 y 6.3
 - **D (eliminado):** borra el archivo correspondiente en `memsys3/`
@@ -489,26 +480,7 @@ diff "$MEMSYS3_ROOT/agents/main-agent.yaml" memsys3_update_temp/memsys3_template
 cp memsys3_update_temp/memsys3_templates/memory/templates/*.yaml "$MEMSYS3_ROOT/memory/templates/"
 ```
 
-### 6.5 Actualizar Visualizador
-
-**IMPORTANTE:** Verificar ubicación según versión.
-
-**Si tienes memsys3/memory/viz/ (versión antigua):**
-```bash
-# Mover a raíz (nueva ubicación según ADR-009)
-mkdir -p "$MEMSYS3_ROOT/viz"
-cp memsys3_update_temp/memsys3_templates/viz/* "$MEMSYS3_ROOT/viz/"
-
-# Opcional: borrar ubicación antigua (después de verificar que funciona)
-# rm -rf "$MEMSYS3_ROOT/memory/viz/"
-```
-
-**Si ya tienes memsys3/viz/ (versión nueva):**
-```bash
-cp memsys3_update_temp/memsys3_templates/viz/* "$MEMSYS3_ROOT/viz/"
-```
-
-### 6.6 Crear history/ si no existe
+### 6.5 Crear history/ si no existe
 
 ```bash
 # Crear directorio para Plan de Contingencia (si no existe)
@@ -520,7 +492,6 @@ touch "$MEMSYS3_ROOT/memory/history/.gitkeep"
 
 ```bash
 cp memsys3_update_temp/memsys3_templates/memory/README.md "$MEMSYS3_ROOT/memory/"
-cp memsys3_update_temp/memsys3_templates/viz/README.md "$MEMSYS3_ROOT/viz/" 2>/dev/null || true
 ```
 
 ---
@@ -583,15 +554,6 @@ Ejecuta en una **NUEVA INSTANCIA** (para no saturar tokens):
 - ✅ context.yaml tiene < 2000 líneas
 - ✅ notas_compilacion documenta el proceso
 
-### 9.2 Verificar Visualizador
-
-```bash
-@memsys3/prompts/mind.md
-```
-
-**Verifica:**
-- ✅ Servidor arranca sin errores
-- ✅ Dashboard se ve correctamente en http://localhost:8000
 - ✅ Las 4 pestañas funcionan (Overview, ADRs, Sessions, Gotchas)
 
 ### 9.3 Probar newSession
@@ -746,12 +708,6 @@ rm -rf memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 2. Añade campos faltantes manualmente (siguiendo estructura del template)
 3. NO copies todo el template (perderías datos del proyecto)
 
-### Problema: "viz/ no se encuentra"
-
-**Causa:** Versión antigua con viz en `memory/viz/` vs nueva ubicación `viz/`
-
-**Solución:** Ver Paso 6.5 (mover de memory/viz/ a viz/)
-
 ### Problema: "Conflicto en newSession.md - personalizaciones vs mejoras"
 
 **Solución:**
@@ -771,22 +727,59 @@ rm -rf memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 
 ---
 
+## Paso 14: Actualizar file_version de archivos tocados
+
+Cada archivo de infraestructura memsys3 tiene un `file_version` (formato `0.Y.Z`):
+- Archivos `.md`: última línea `<!-- version: X.Y.Z -->`
+- Archivos `.yaml` en agents/: campo `file_version: "X.Y.Z"`
+- Archivos `.yaml` en memory/templates/: primera línea `# version: X.Y.Z`
+
+**Para cada archivo copiado/modificado en los pasos anteriores:**
+
+1. Lee el `file_version` del archivo nuevo (del repo clonado)
+2. Ese ES el file_version correcto — ya viene actualizado desde el repo
+3. No necesitas hacer nada extra: el file_version viaja con el archivo
+
+**Registrar en operations.log:**
+
+Usa **Edit tool** para añadir al PRINCIPIO del array `operations:` en `$MEMSYS3_ROOT/memory/full/operations.log`:
+
+```yaml
+operations:
+  - timestamp: "[YYYY-MM-DDTHH:MM:SS]"
+    operacion: "actualizar"
+    version_anterior: "[VERSION_ACTUAL]"
+    version_nueva: "[VERSION_NUEVA]"
+    resultado: "ok"
+    archivos_actualizados:
+      - archivo: "prompts/compile-context.md"
+        file_version: "0.2.0"
+      - archivo: "agents/context-agent.yaml"
+        file_version: "0.1.0"
+      # ... (listar todos los archivos tocados con su file_version)
+    resumen: "Actualización memsys3 [VERSION_ACTUAL] → [VERSION_NUEVA]. [N] archivos actualizados."
+```
+
+> **Nota:** Esta entrada complementa la del Paso 11. Si ya escribiste la entrada del Paso 11, **amplíala** añadiendo el campo `archivos_actualizados` con los file_version. No dupliques entradas — una sola entrada por operación de actualización.
+
+---
+
 ## 📊 Checklist Final
 
 Antes de dar por terminada la actualización, verifica:
 
 - [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
-- [ ] Archivos del sistema actualizados (prompts, agents, templates, viz)
+- [ ] Archivos del sistema actualizados (prompts, agents, templates)
 - [ ] `docs/` copiada (`ls memsys3/docs/reference.md`)
 - [ ] `backlog/` existe (`ls memsys3/backlog/`)
 - [ ] history/ creado (si no existía)
 - [ ] Versión actualizada en `project-status.yaml` metadata (`grep memsys3_version memsys3/memory/project-status.yaml` muestra versión nueva)
 - [ ] Clone temporal borrado (memsys3_update_temp)
 - [ ] compile-context.md ejecutado exitosamente
-- [ ] Visualizador funciona (mind.md)
 - [ ] newSession.md funciona (nueva instancia)
 - [ ] Actualización documentada en sessions.yaml
 - [ ] Operación registrada en `memsys3/memory/full/operations.log`
+- [ ] `archivos_actualizados` con `file_version` registrados en operations.log (Paso 14)
 - [ ] (Opcional) Commit creado
 - [ ] Backup borrado (después de 1-2 sesiones de validación)
 
@@ -803,3 +796,4 @@ Antes de dar por terminada la actualización, verifica:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
+<!-- version: 0.1.0 -->

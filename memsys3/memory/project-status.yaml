@@ -1,49 +1,50 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-03-27"
-  actualizado_por: "Claude (Session 2026-03-27 exploración gentle-ai + backlog + meet glosario)"
-  fase: "Development v0.19.2"
-  memsys3_version: "v0.19.2"
+  ultima_actualizacion: "2026-04-13"
+  actualizado_por: "Claude (Session 2026-04-13 Context Agent ingesta tiers)"
+  fase: "Development v0.20.0"
+  memsys3_version: "v0.20.0"
   memsys3_deployed: "2025-10-28"
+  file_version: "0.1.0"
 
-visio_general:
+vision_general:
   que_es: "Sistema de gestión de contexto para AI Development Agents"
   objetivo: "Optimizar consumo de tokens proporcionando contexto compacto y relevante"
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
-estat_actual:
+estado_actual:
   fase: "Development v0.12.0"
-  ultima_feature: "Análisis comparativo gentle-ai/Engram. 5 items backlog (EXPLORATION-001, FEATURE-010/011/012, ISSUE-020). Reunión 20260327_1 con gitkigai → FEATURE-012 glosario conceptos acordado. ~2.5h peso medio"
-  siguiente_milestone: "Implementar FEATURE-012 (glosario conceptos) + Evaluar FEATURE-010 (checkpoint mid-session) + FEATURE-011 (Main Agent proactivo)"
+  ultima_feature: "Context Agent rediseñado: sistema ingesta 5 tiers hasta 150K tokens, eliminados límites arbitrarios, docs_contextuales ciclo virtuoso. v0.19.2. ~1.5h peso medio"
+  siguiente_milestone: "Validar compile-context con nuevo sistema tiers + Implementar FEATURE-012 (glosario conceptos)"
 
 features:
   context_agent:
     nombre: "Context Agent"
     estado: "operativo"
-    descripcion: "Agente que compila contexto completo con criterioo inteligente (máx 2000 líneas)"
+    descripcion: "Agente que compila contexto completo con criterio inteligente (máx 2000 líneas)"
 
-  rotacio_automatica:
+  rotacion_automatica:
     nombre: "Rotació Automàtica"
     estado: "operativo"
     descripcion: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
 
-  pla_contingencia:
+  plan_contingencia:
     nombre: "Plan de Contingencia"
     estado: "operativo"
     descripcion: "Archivado inteligente a history/ cuando >150K tokens"
 
-  visualitzador:
+  visualizador:
     nombre: "Memory Visualizer"
-    estado: "operativo"
-    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas)"
+    estado: "archivado"
+    descripcion: "Dashboard web para ver la 'mente' de los agentes (4 pestañas) - Archivado en memsys3/docs/archivo/viz/"
 
   prompts:
     nombre: "Prompts Reutilitzables"
     estado: "operativo"
     descripcion: "newSession, endSession, compile-context, mind, deploy, actualizar, actualizar_cat, adr, backlog, github - TODOS con rutas memsys3/"
 
-  documentacio:
+  documentacion:
     nombre: "Sistema de Documentación Multi-nivel"
     estado: "operativo"
     descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
@@ -68,9 +69,7 @@ features:
     estado: "operativo"
     descripcion: "Metodología formal debugging multi-agente. Prompt reunion.md (905 líneas) workflow 6 fases + memsys3/docs/reunion/README.md (836 líneas). Filosofía 5 principios (transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto). Reuniones en memsys3/docs/reunion/DDMMYY_N.md, sessions.yaml solo referencia. Context Agent carga selectivamente. Escalable 50+ reuniones. Ejemplos: ISSUE-007 (300126_1.md 446 líneas), firmas commits (030226_1.md 740 líneas)"
 
-stack_tecnologic:
-  frontend: "HTML/CSS/JS (visualizador)"
-  backend: "Python 3.x (servidor visualizador)"
+stack_tecnologico:
   database: "Ninguno (YAML files)"
   deploy: "GitHub + clonado local"
   lenguaje_docs: "YAML + Markdown"
@@ -79,27 +78,27 @@ urls:
   repository: "https://github.com/iv0nis/memsys3"
 
 pendientes_prioritarios:
-  - prioritat: 1
-    tasca: "Testear deployment con consulta .gitignore en nuevo proyecto"
-    detall: "Validar que PASO 8 funciona correctamente con warning @ mentions y usuario puede elegir Opción A o B"
+  - prioridad: 1
+    tarea: "Testear deployment con consulta .gitignore en nuevo proyecto"
+    detalle: "Validar que PASO 8 funciona correctamente con warning @ mentions y usuario puede elegir Opción A o B"
 
-  - prioritat: 2
-    tasca: "Testear actualizar_cat.md en futuras sincronizaciones"
-    detall: "Cuando haya nuevos cambios en master, validar que actualizar_cat.md sincroniza y traduce correctamente a branch catalan"
+  - prioridad: 2
+    tarea: "Testear actualizar_cat.md en futuras sincronizaciones"
+    detalle: "Cuando haya nuevos cambios en master, validar que actualizar_cat.md sincroniza y traduce correctamente a branch catalan"
 
-  - prioritat: 3
-    tasca: "✅ COMPLETADO: Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
-    detall: "Validado exitosamente en proyecto UOC (fundamentos-programacion). Actualización v0.6.1→v0.8.1 funcionó perfectamente. Merge inteligente validado. Gotcha confirmaciones Bash documentado. Pendiente: validaciones finales (compile-context, visualizador, uso real)."
+  - prioridad: 3
+    tarea: "✅ COMPLETADO: Testear actualizar.md en proyecto con estructura correcta (Escenario C)"
+    detalle: "Validado exitosamente en proyecto UOC (fundamentos-programacion). Actualización v0.6.1→v0.8.1 funcionó perfectamente. Merge inteligente validado. Gotcha confirmaciones Bash documentado. Pendiente: validaciones finales (compile-context, visualizador, uso real)."
 
-  - prioritat: 4
-    tasca: "Validar compile-context.md con creación automática de README"
-    detall: "Ejecutar compile-context en deCastro (sin README), probar Opción A (crear automáticamente desde project-status.yaml)"
+  - prioridad: 4
+    tarea: "Validar compile-context.md con creación automática de README"
+    detalle: "Ejecutar compile-context en deCastro (sin README), probar Opción A (crear automáticamente desde project-status.yaml)"
 
-  - prioritat: 5
-    tasca: "IMPROVEMENT-001 PARCIALMENTE RESUELTO - Evaluar siguiente fase"
-    detall: "README ya incluido en contexto (opcional). Evaluar si agregar DEVELOPMENT.md, UPDATE.md según necesidad"
+  - prioridad: 5
+    tarea: "IMPROVEMENT-001 PARCIALMENTE RESUELTO - Evaluar siguiente fase"
+    detalle: "README ya incluido en contexto (opcional). Evaluar si agregar DEVELOPMENT.md, UPDATE.md según necesidad"
 
-decisions_clau:
+decisiones_clave:
   filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
   escalabilidad: "Rotación + archivado automático"
   preservacio: "Datos SIEMPRE preservados (history/, sessions_N.yaml, adr_N.yaml)"
@@ -112,108 +111,110 @@ decisions_clau:
   backlog: "Sistema unificado: memsys3/backlog/ (dog-fooding con items reales) + memsys3_templates/backlog/ (distribuible, solo README). memsys3/docs/backlog/ ELIMINADO."
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
-historic_sessions:
-  - data: "2026-03-27"
-    resum: "Análisis comparativo gentle-ai/Engram vs memsys3. 5 items backlog: EXPLORATION-001, FEATURE-010/011/012, ISSUE-020. Reunión 20260327_1 con gitkigai → glosario conceptos (FEATURE-012) acordado como feature agnóstica. ~2.5h peso medio."
-  - data: "2026-03-26"
-    resum: "FEATURE-009: Sistema operations.log para trazabilidad (actualizar + compilar). Rotación estilo sessions. Integrado en actualizar.md, compile-context.md, deploy.md. Sincronizado templates. ~30min peso bajo."
-  - data: "2026-03-22"
-    resum: "Fix actualizar.md: preservar archivos custom (ISSUE-018) + MEMSYS3_ROOT monorepos (ISSUE-019). Reunión 20260322_1 con gitkigai (10 iteraciones). 8 cambios en 6 prompts templates. ~2.5h peso alto."
-  - data: "2026-03-22"
-    resum: "Nuevo prompt git.md (tracking local sin push, separado de github.md). ~15min peso bajo."
-  - data: "2026-03-14"
-    resum: "ISSUE-017: agent_id persistencia cross-platform (~/.claude/ en lugar de /tmp/). github.md: AskUserQuestion para confirmar version de tag. v0.18.3. ~1.5h peso medio."
-  - data: "2026-03-11"
-    resum: "deploy.md: gitignore incluir por defecto + briefing AskUserQuestion dos fases. IMPROVEMENT-008: deploy agnostico multi-agente. v0.18.2. ~30min peso bajo."
-  - data: "2026-03-08"
-    resum: "migrate.md (guia migracion historial Claude Code). Reunion 20260308_2 con gitkigai. Limpieza meet-coord/meet-research. Sincronizado meet.md. Releases v0.12.1 y v0.18.0. ~2h peso medio."
-  - data: "2026-03-08"
-    resum: "Intento compilación context.yaml revertido (viola ADR-008: ~100K tokens usados, sesgo sesión). Fix config Read tool: CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS=60000. context.yaml restaurado a v0.11.0. ~1.5h peso bajo."
-  - data: "2026-02-17"
-    resum: "Release v0.11.2 + Fix ISSUE-009 (rutas inseguras endSession: PASO 0 checkpoint MEMSYS + \$MEMSYS en PASO 3) + Limpieza firma actualizar.md + ISSUE-010/011 creados. ~1h peso medio."
-  - data: "2026-02-06"
-    resum: "Deployment Testing Real - BusinessHub: Primera validación completa deployment en proyecto externo. Workflow /deploy-memsys3 end-to-end exitoso. Briefing 7 preguntas + personalización + compile-context inicial v0.1.0 (140L). Gotcha: newSession.md sin instrucción idioma español → otra instancia habló inglés. Deployment exitoso hub empresarial BusinessHub (Next.js+Node.js+Python). ~1h peso medio."
-  - data: "2026-02-04"
-    resum: "Compilación context.yaml v0.11.0 (467L, reducción 96% tokens). Propuesta Extended Thinking (-34% tokens, +5% calidad). Refactor: docs/ → memsys3/docs/ (14 archivos). ISSUE-008 + specs/ creados. Análisis consolidado (369L). Git: v0.11.1 tagged. Usuario acepta trade-off. ~4h peso alto."
-  - data: "2026-02-03"
-    resum: "Sistema Reuniones Colaborativas + Fix Firmas: Implementado sistema completo debugging multi-agente (reunion.md 905L + README.md 836L). Metodología 6 fases formales. Filosofía 5 principios. Fix github.md: defensa 4 capas firmas Co-Authored-By (warning prominente + recordatorio crítico + verificación grep). Basado reunión 030226_1.md análisis forense. Reuniones memsys3/docs/reunion/ (sessions referencia NO duplica). Context Agent selectivo. Sincronización templates. ~2.5h, peso alto."
-  - data: "2025-12-30"
-    resum: "Bug Fix ISSUE-005 + ADR-016: Resuelto bug crítico actualizar.md (3 prompts faltantes: adr.md, backlog.md, commands.md) reportado por usuario tras actualización Taller Colomer v0.6.1→v0.8.1. Investigación completa + confirmación con instancia que hizo actualización. Fix manual aplicado (Opción A). ADR-016 documenta principio fundamental: memsys3 agnóstico modelo IA, commands opcional Claude-específico. Arquitectura fuente verdad clara: templates→prompts→commands. Documentación actualizada (commands.md warning, README compatibilidad agnóstica). ISSUE-006 (backups .gitignore alta prioridad) + FEATURE-004 (detectar prompts/agents media prioridad) documentados. Índice ADRs: 16 totales. ~2.5h, calidad 9/10 (bug fix crítico + decisión arquitectónica fundamental)."
-  - data: "2025-12-17"
-    resum: "ADR-015 + IMPROVEMENT-006: Unificación terminológica 'Main Agent' como nomenclatura estándar. Feedback de compilación detectó inconsistencias (Development Agent vs Main Agent vs DevAI). Usuario aclaró: Main Agent = agente principal, Development Agent = especialista futuro. ADR-015 documenta decisión completa (alternatives, consequences). IMPROVEMENT-006 trackea depuración sistemática 8+ ubicaciones. Correcciones inmediatas: 4 archivos (compile-context.md x2, main-agent.yaml x2). Índice ADRs: 15 totales. Cambio cosmético pero conceptualmente importante para escalabilidad. ~30min, calidad 9/10 (pendiente depuración completa)."
-  - data: "2025-12-15"
-    resum: "Testing /actualizar-memsys3 - Primera Ejecución Real (Proyecto UOC). Actualización exitosa v0.6.1→v0.8.1 en proyecto fundamentos-programacion. Trackeo exhaustivo PASO 0-11. Claude saltó PASO 4 → usuario corrigió → Claude volvió atrás correctamente. Directorio temporal residual detectado y limpiado. Merge inteligente newSession.md EXITOSO: conservadas personalizaciones (español, saludo, estructura) + integradas mejoras v0.8.1 (README.md, notas). Validado principio diferencial memsys3: merge contextual LLM vs sobrescritura tradicional. Gotcha documentado: launchers requieren confirmación Bash manual (útil para seguridad). 22 archivos actualizados. Backup creado. Validaciones preliminares OK. Pendiente: compile-context + visualizador + uso real. ~2h, calidad 10/10 (validación exitosa del sistema de actualización inteligente)."
-  - data: "2025-12-14"
-    resum: "Sistema comandos globales auto-actualizantes + Prompt instalador commands.md. Creado /actualizar-memsys3 comando global (804 bytes, patrón clone). Análisis comparativo deploy (curl) vs actualizar (clone). Justificación launcher pattern: dependencias unificadas (git), @ mentions nativo, futuro-proof. Actualizado /deploy-memsys3 a patrón clone (836 bytes, consistencia). Usuario propone commands.md: prompt detecta/instala/verifica comandos globales automáticamente. Análisis brechas: permisos, SO, sobrescritura. Creado commands.md (memsys3_templates + memsys3). ADR-014 documentada: launcher pattern + instalador automático. Índice adr.yaml actualizado (12 ADRs). Validación /actualizar-memsys3 PENDIENTE mañana (proyecto UOC). ~1h, calidad 9/10 (pendiente testing real)."
-  - data: "2025-12-14"
-    resum: "Release v0.8.1 ejecutada. Sesión corta (~15min) aplicando workflow github.md mejorado. Análisis cambios desde v0.8.0: documentación completada sesión 2025-12-11, archivos auxiliares (CLAUDE.md, ms3.md). Propuesta v0.8.1 patch vs solo commit. Usuario eligió patch. Bump versión, 2 commits (chore bump + docs completar), tag metadata rica, push exitoso. Verificación GitHub correcta. Primera release usando sistema versionado completo end-to-end."
-  - data: "2025-12-11"
-    resum: "Sistema gestión ADRs + Versionado automático + Release v0.8.0. BLOQUE 1: Prompt adr.md creado (consistencia con backlog). ADR-013 documentada. BLOQUE 2: Resuelto ISSUE-002 (v1.9→v0.8.0, git tags = fuente verdad). github.md reescrito completamente: workflow semi-automático, siempre propone tag con justificación, metadata rica. Primera release con nuevo sistema: análisis 2 sesiones, propuesta v0.8.0 minor, 3 commits, tag exitoso. Corrección README: sin versión explícita (enlaza releases). Meta-aprendizaje crítico: actualizar.md DEPENDE de git tags (git log/diff). Sistema versionado ahora robusto y claro. ~3h, calidad 10/10."
-  - data: "2025-12-09"
-    resum: "Comando global /deploy-memsys3 creado, testeado y validado exitosamente. Usuario propone crear ~/.claude/commands/deploy-memsys3.md para ejecutar desde cualquier proyecto. Investigación completa: prompts globales, WebFetch vs curl, análisis deploy.md standalone. Bug encontrado: Write tool genera path /home/xevivim/ (usuario inexistente) al expandir ~. Workaround: mkdir bash + cat heredoc con $HOME explícito. Comando global creado (780 bytes), testeado en 'Agente de Vida 2025' → deployment 10/10 perfecto (8 prompts, 2 agents, 4 templates, viz, personalización correcta, limpieza OK). Feature operativa y lista para distribuir. Ciclo completo: Idea → Investigación → Implementación → Testing → Validación. ~2h."
-  - data: "2025-12-03"
-    resum: "IMPROVEMENT-004 completado + Sistema rotación flexible documentado. README lectura directa en newSession (Separation of Concerns). compile-context sin PASO 7 (-260 líneas). ADR-012 creado. Primera rotación real ejecutada (sessions_1.yaml, 1849 líneas). Sistema rotación mejorado: flexible 1800-2000 (post-documentar LITE) vs >2000 (pre-documentar). endSession.md + ADR-002 actualizados con 2 escenarios. Resuelto conflicto IMPROVEMENT-001 vs 004. 13 archivos (+445/-2515 líneas). ~3h."
-  - data: "2025-12-01"
-    resum: "Compilación context.yaml v1.9 exitosa (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas). Análisis profundo README automático (PASO 7, 10 categorías): 8 discrepancias detectadas y corregidas. README actualizado v1.9 (versión, features recientes, Stack Tecnológico, warning @ mentions). Sincronización metadata: context.yaml ↔ README.md ↔ project-status.yaml. IMPROVEMENT-003 creado: planning Opción A mejorada para sincronización automática metadata en github.md (separar memsys3_version manual vs memsys3_commit/memsys3_last_push auto). Movido actualizar_cat.md a /prompts/ (ADR-011). ~2h."
-  - data: "2025-11-17"
-    resum: "Sesión planning/ideación (~15min). Observación: algunos prompts pueden requerir contexto específico diferente al general (newSession.md carga context.yaml completo, pero compile-context no necesita newSession, endSession podría no necesitar todo). IMPROVEMENT-002 creado en backlog con 4 opciones analizadas. No implementación, solo identificación mejora potencial. Prioridad Media. Development v1.9."
-  - data: "2025-11-14"
-    resum: "MEJORA CRÍTICA Context Agent: Análisis profundo README automático (PASO 7 obligatorio) + Integración backlog selectiva. compile-context.md: +309 líneas (10 categorías exhaustivas A-J con evidencia, reporte estructurado, aprovecha 200K tokens sin releer). context-template.yaml: +34 líneas (nueva sección backlog). Lectura selectiva: backlog/README.md + items referenciados en pendientes. Criterios inclusión/exclusión definidos. Confusión README pokerezza vs memsys3 detectada/corregida. Meta-aprendizaje: CA debe aprovechar contexto en mismo flujo compilación. Development v1.9."
-  - data: "2025-11-14"
-    resum: "Feature Backlog convertido dog-fooding → distribuible. README agnóstico (315 líneas) con 3 ejemplos. Prompt backlog.md mejorado (38 líneas, 3 operaciones). Desplegado en 4 ubicaciones. Migración completa: 3 items movidos memsys3/docs/backlog/ → memsys3/backlog/, memsys3/docs/backlog/ ELIMINADO. Prompt actualizado rutas correctas. Sistema unificado. Development v1.8."
-  - data: "2025-11-13"
-    resum: "Fix endSession.md: agregado warning explícito NO crear archivos en memory/history/ (solo Plan Contingencia >150K tokens). Detectado en tallersColomer donde agentes creaban session-*.yaml incorrectamente. Limpieza tallersColomer (3 archivos → history_backup/). Gotcha criticidad media documentado. Commit 3107efe. 2 archivos modificados."
-  - data: "2025-11-13"
-    resum: "Fix deploy.md PASO 8: warning @ mentions NO funcionan con archivos ignorados + workaround (instrucciones directas). ADR-010 UPDATE 2025-11-13. Prompt actualizar_cat.md creado (650 líneas, workflow 8 pasos, tabla 60+ traducciones). Sincronización completa memsys3_CAT: 20 archivos traducidos, branch catalan GitHub (commit 19e886c). Migración estructura antigua → nueva (95 archivos, +2743/-7592 líneas). 9 archivos modificados. Development v1.7."
-  - data: "2025-11-12"
-    resum: "Deployment tallersColomer exitoso (memsys3 v0.6.1, proyecto Next.js+FastAPI+Supabase). Mejora deploy.md: PASO 8 agregado consulta .gitignore (Opción A excluir recomendado, Opción B incluir). ADR-010 creado documentando decisión. 3 archivos modificados, +236 líneas. Development v1.6."
-  - data: "2025-11-12"
-    resum: "FEATURE-002 implementado completamente: actualizar.md (551 líneas) con detección estructura antigua (PASO 0). README opcional en Context Agent. Testing real en deCastro (v1.0 → v0.5.0, migración 134+320+222 líneas). compile-context pregunta crear README automático. 3 gotchas críticos documentados. 7 archivos modificados, 335+551 líneas agregadas."
-  - data: "2025-11-12"
-    resum: "Deployment exitoso en Soluzzia (primer proyecto real). Context Agent lee README.md (input obligatorio, máx 300 líneas). Sistema tracking versiones memsys3 (memsys3_version, memsys3_deployed). Verificación post-compilación de README. FEATURE-002 backlog (prompt actualizar.md). 9 archivos modificados, 254 líneas agregadas. IMPROVEMENT-001 parcialmente resuelto."
-  - data: "2025-11-03"
-    resum: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración memsys3/docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
-  - data: "2025-11-02"
+historico_sesiones:
+  - fecha: "2026-04-13"
+    resumen: "Context Agent rediseñado: ingesta por tiers (5 niveles, ~150K tokens presupuesto). Eliminados límites arbitrarios context-agent.yaml. docs_contextuales para ciclo virtuoso MA↔CA. v0.19.2. ~1.5h peso medio."
+  - fecha: "2026-03-27"
+    resumen: "Análisis comparativo gentle-ai/Engram vs memsys3. 5 items backlog: EXPLORATION-001, FEATURE-010/011/012, ISSUE-020. Reunión 20260327_1 con gitkigai → glosario conceptos (FEATURE-012) acordado como feature agnóstica. ~2.5h peso medio."
+  - fecha: "2026-03-26"
+    resumen: "FEATURE-009: Sistema operations.log para trazabilidad (actualizar + compilar). Rotación estilo sessions. Integrado en actualizar.md, compile-context.md, deploy.md. Sincronizado templates. ~30min peso bajo."
+  - fecha: "2026-03-22"
+    resumen: "Fix actualizar.md: preservar archivos custom (ISSUE-018) + MEMSYS3_ROOT monorepos (ISSUE-019). Reunión 20260322_1 con gitkigai (10 iteraciones). 8 cambios en 6 prompts templates. ~2.5h peso alto."
+  - fecha: "2026-03-22"
+    resumen: "Nuevo prompt git.md (tracking local sin push, separado de github.md). ~15min peso bajo."
+  - fecha: "2026-03-14"
+    resumen: "ISSUE-017: agent_id persistencia cross-platform (~/.claude/ en lugar de /tmp/). github.md: AskUserQuestion para confirmar version de tag. v0.18.3. ~1.5h peso medio."
+  - fecha: "2026-03-11"
+    resumen: "deploy.md: gitignore incluir por defecto + briefing AskUserQuestion dos fases. IMPROVEMENT-008: deploy agnostico multi-agente. v0.18.2. ~30min peso bajo."
+  - fecha: "2026-03-08"
+    resumen: "migrate.md (guia migracion historial Claude Code). Reunion 20260308_2 con gitkigai. Limpieza meet-coord/meet-research. Sincronizado meet.md. Releases v0.12.1 y v0.18.0. ~2h peso medio."
+  - fecha: "2026-03-08"
+    resumen: "Intento compilación context.yaml revertido (viola ADR-008: ~100K tokens usados, sesgo sesión). Fix config Read tool: CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS=60000. context.yaml restaurado a v0.11.0. ~1.5h peso bajo."
+  - fecha: "2026-02-17"
+    resumen: "Release v0.11.2 + Fix ISSUE-009 (rutas inseguras endSession: PASO 0 checkpoint MEMSYS + \$MEMSYS en PASO 3) + Limpieza firma actualizar.md + ISSUE-010/011 creados. ~1h peso medio."
+  - fecha: "2026-02-06"
+    resumen: "Deployment Testing Real - BusinessHub: Primera validación completa deployment en proyecto externo. Workflow /deploy-memsys3 end-to-end exitoso. Briefing 7 preguntas + personalización + compile-context inicial v0.1.0 (140L). Gotcha: newSession.md sin instrucción idioma español → otra instancia habló inglés. Deployment exitoso hub empresarial BusinessHub (Next.js+Node.js+Python). ~1h peso medio."
+  - fecha: "2026-02-04"
+    resumen: "Compilación context.yaml v0.11.0 (467L, reducción 96% tokens). Propuesta Extended Thinking (-34% tokens, +5% calidad). Refactor: docs/ → memsys3/docs/ (14 archivos). ISSUE-008 + specs/ creados. Análisis consolidado (369L). Git: v0.11.1 tagged. Usuario acepta trade-off. ~4h peso alto."
+  - fecha: "2026-02-03"
+    resumen: "Sistema Reuniones Colaborativas + Fix Firmas: Implementado sistema completo debugging multi-agente (reunion.md 905L + README.md 836L). Metodología 6 fases formales. Filosofía 5 principios. Fix github.md: defensa 4 capas firmas Co-Authored-By (warning prominente + recordatorio crítico + verificación grep). Basado reunión 030226_1.md análisis forense. Reuniones memsys3/docs/reunion/ (sessions referencia NO duplica). Context Agent selectivo. Sincronización templates. ~2.5h, peso alto."
+  - fecha: "2025-12-30"
+    resumen: "Bug Fix ISSUE-005 + ADR-016: Resuelto bug crítico actualizar.md (3 prompts faltantes: adr.md, backlog.md, commands.md) reportado por usuario tras actualización Taller Colomer v0.6.1→v0.8.1. Investigación completa + confirmación con instancia que hizo actualización. Fix manual aplicado (Opción A). ADR-016 documenta principio fundamental: memsys3 agnóstico modelo IA, commands opcional Claude-específico. Arquitectura fuente verdad clara: templates→prompts→commands. Documentación actualizada (commands.md warning, README compatibilidad agnóstica). ISSUE-006 (backups .gitignore alta prioridad) + FEATURE-004 (detectar prompts/agents media prioridad) documentados. Índice ADRs: 16 totales. ~2.5h, calidad 9/10 (bug fix crítico + decisión arquitectónica fundamental)."
+  - fecha: "2025-12-17"
+    resumen: "ADR-015 + IMPROVEMENT-006: Unificación terminológica 'Main Agent' como nomenclatura estándar. Feedback de compilación detectó inconsistencias (Development Agent vs Main Agent vs DevAI). Usuario aclaró: Main Agent = agente principal, Development Agent = especialista futuro. ADR-015 documenta decisión completa (alternatives, consequences). IMPROVEMENT-006 trackea depuración sistemática 8+ ubicaciones. Correcciones inmediatas: 4 archivos (compile-context.md x2, main-agent.yaml x2). Índice ADRs: 15 totales. Cambio cosmético pero conceptualmente importante para escalabilidad. ~30min, calidad 9/10 (pendiente depuración completa)."
+  - fecha: "2025-12-15"
+    resumen: "Testing /actualizar-memsys3 - Primera Ejecución Real (Proyecto UOC). Actualización exitosa v0.6.1→v0.8.1 en proyecto fundamentos-programacion. Trackeo exhaustivo PASO 0-11. Claude saltó PASO 4 → usuario corrigió → Claude volvió atrás correctamente. Directorio temporal residual detectado y limpiado. Merge inteligente newSession.md EXITOSO: conservadas personalizaciones (español, saludo, estructura) + integradas mejoras v0.8.1 (README.md, notas). Validado principio diferencial memsys3: merge contextual LLM vs sobrescritura tradicional. Gotcha documentado: launchers requieren confirmación Bash manual (útil para seguridad). 22 archivos actualizados. Backup creado. Validaciones preliminares OK. Pendiente: compile-context + visualizador + uso real. ~2h, calidad 10/10 (validación exitosa del sistema de actualización inteligente)."
+  - fecha: "2025-12-14"
+    resumen: "Sistema comandos globales auto-actualizantes + Prompt instalador commands.md. Creado /actualizar-memsys3 comando global (804 bytes, patrón clone). Análisis comparativo deploy (curl) vs actualizar (clone). Justificación launcher pattern: dependencias unificadas (git), @ mentions nativo, futuro-proof. Actualizado /deploy-memsys3 a patrón clone (836 bytes, consistencia). Usuario propone commands.md: prompt detecta/instala/verifica comandos globales automáticamente. Análisis brechas: permisos, SO, sobrescritura. Creado commands.md (memsys3_templates + memsys3). ADR-014 documentada: launcher pattern + instalador automático. Índice adr.yaml actualizado (12 ADRs). Validación /actualizar-memsys3 PENDIENTE mañana (proyecto UOC). ~1h, calidad 9/10 (pendiente testing real)."
+  - fecha: "2025-12-14"
+    resumen: "Release v0.8.1 ejecutada. Sesión corta (~15min) aplicando workflow github.md mejorado. Análisis cambios desde v0.8.0: documentación completada sesión 2025-12-11, archivos auxiliares (CLAUDE.md, ms3.md). Propuesta v0.8.1 patch vs solo commit. Usuario eligió patch. Bump versión, 2 commits (chore bump + docs completar), tag metadata rica, push exitoso. Verificación GitHub correcta. Primera release usando sistema versionado completo end-to-end."
+  - fecha: "2025-12-11"
+    resumen: "Sistema gestión ADRs + Versionado automático + Release v0.8.0. BLOQUE 1: Prompt adr.md creado (consistencia con backlog). ADR-013 documentada. BLOQUE 2: Resuelto ISSUE-002 (v1.9→v0.8.0, git tags = fuente verdad). github.md reescrito completamente: workflow semi-automático, siempre propone tag con justificación, metadata rica. Primera release con nuevo sistema: análisis 2 sesiones, propuesta v0.8.0 minor, 3 commits, tag exitoso. Corrección README: sin versión explícita (enlaza releases). Meta-aprendizaje crítico: actualizar.md DEPENDE de git tags (git log/diff). Sistema versionado ahora robusto y claro. ~3h, calidad 10/10."
+  - fecha: "2025-12-09"
+    resumen: "Comando global /deploy-memsys3 creado, testeado y validado exitosamente. Usuario propone crear ~/.claude/commands/deploy-memsys3.md para ejecutar desde cualquier proyecto. Investigación completa: prompts globales, WebFetch vs curl, análisis deploy.md standalone. Bug encontrado: Write tool genera path /home/xevivim/ (usuario inexistente) al expandir ~. Workaround: mkdir bash + cat heredoc con $HOME explícito. Comando global creado (780 bytes), testeado en 'Agente de Vida 2025' → deployment 10/10 perfecto (8 prompts, 2 agents, 4 templates, viz, personalización correcta, limpieza OK). Feature operativa y lista para distribuir. Ciclo completo: Idea → Investigación → Implementación → Testing → Validación. ~2h."
+  - fecha: "2025-12-03"
+    resumen: "IMPROVEMENT-004 completado + Sistema rotación flexible documentado. README lectura directa en newSession (Separation of Concerns). compile-context sin PASO 7 (-260 líneas). ADR-012 creado. Primera rotación real ejecutada (sessions_1.yaml, 1849 líneas). Sistema rotación mejorado: flexible 1800-2000 (post-documentar LITE) vs >2000 (pre-documentar). endSession.md + ADR-002 actualizados con 2 escenarios. Resuelto conflicto IMPROVEMENT-001 vs 004. 13 archivos (+445/-2515 líneas). ~3h."
+  - fecha: "2025-12-01"
+    resumen: "Compilación context.yaml v1.9 exitosa (403 líneas, 8 ADRs, 4 sesiones, 5 gotchas). Análisis profundo README automático (PASO 7, 10 categorías): 8 discrepancias detectadas y corregidas. README actualizado v1.9 (versión, features recientes, Stack Tecnológico, warning @ mentions). Sincronización metadata: context.yaml ↔ README.md ↔ project-status.yaml. IMPROVEMENT-003 creado: planning Opción A mejorada para sincronización automática metadata en github.md (separar memsys3_version manual vs memsys3_commit/memsys3_last_push auto). Movido actualizar_cat.md a /prompts/ (ADR-011). ~2h."
+  - fecha: "2025-11-17"
+    resumen: "Sesión planning/ideación (~15min). Observación: algunos prompts pueden requerir contexto específico diferente al general (newSession.md carga context.yaml completo, pero compile-context no necesita newSession, endSession podría no necesitar todo). IMPROVEMENT-002 creado en backlog con 4 opciones analizadas. No implementación, solo identificación mejora potencial. Prioridad Media. Development v1.9."
+  - fecha: "2025-11-14"
+    resumen: "MEJORA CRÍTICA Context Agent: Análisis profundo README automático (PASO 7 obligatorio) + Integración backlog selectiva. compile-context.md: +309 líneas (10 categorías exhaustivas A-J con evidencia, reporte estructurado, aprovecha 200K tokens sin releer). context-template.yaml: +34 líneas (nueva sección backlog). Lectura selectiva: backlog/README.md + items referenciados en pendientes. Criterios inclusión/exclusión definidos. Confusión README pokerezza vs memsys3 detectada/corregida. Meta-aprendizaje: CA debe aprovechar contexto en mismo flujo compilación. Development v1.9."
+  - fecha: "2025-11-14"
+    resumen: "Feature Backlog convertido dog-fooding → distribuible. README agnóstico (315 líneas) con 3 ejemplos. Prompt backlog.md mejorado (38 líneas, 3 operaciones). Desplegado en 4 ubicaciones. Migración completa: 3 items movidos memsys3/docs/backlog/ → memsys3/backlog/, memsys3/docs/backlog/ ELIMINADO. Prompt actualizado rutas correctas. Sistema unificado. Development v1.8."
+  - fecha: "2025-11-13"
+    resumen: "Fix endSession.md: agregado warning explícito NO crear archivos en memory/history/ (solo Plan Contingencia >150K tokens). Detectado en tallersColomer donde agentes creaban session-*.yaml incorrectamente. Limpieza tallersColomer (3 archivos → history_backup/). Gotcha criticidad media documentado. Commit 3107efe. 2 archivos modificados."
+  - fecha: "2025-11-13"
+    resumen: "Fix deploy.md PASO 8: warning @ mentions NO funcionan con archivos ignorados + workaround (instrucciones directas). ADR-010 UPDATE 2025-11-13. Prompt actualizar_cat.md creado (650 líneas, workflow 8 pasos, tabla 60+ traducciones). Sincronización completa memsys3_CAT: 20 archivos traducidos, branch catalan GitHub (commit 19e886c). Migración estructura antigua → nueva (95 archivos, +2743/-7592 líneas). 9 archivos modificados. Development v1.7."
+  - fecha: "2025-11-12"
+    resumen: "Deployment tallersColomer exitoso (memsys3 v0.6.1, proyecto Next.js+FastAPI+Supabase). Mejora deploy.md: PASO 8 agregado consulta .gitignore (Opción A excluir recomendado, Opción B incluir). ADR-010 creado documentando decisión. 3 archivos modificados, +236 líneas. Development v1.6."
+  - fecha: "2025-11-12"
+    resumen: "FEATURE-002 implementado completamente: actualizar.md (551 líneas) con detección estructura antigua (PASO 0). README opcional en Context Agent. Testing real en deCastro (v1.0 → v0.5.0, migración 134+320+222 líneas). compile-context pregunta crear README automático. 3 gotchas críticos documentados. 7 archivos modificados, 335+551 líneas agregadas."
+  - fecha: "2025-11-12"
+    resumen: "Deployment exitoso en Soluzzia (primer proyecto real). Context Agent lee README.md (input obligatorio, máx 300 líneas). Sistema tracking versiones memsys3 (memsys3_version, memsys3_deployed). Verificación post-compilación de README. FEATURE-002 backlog (prompt actualizar.md). 9 archivos modificados, 254 líneas agregadas. IMPROVEMENT-001 parcialmente resuelto."
+  - fecha: "2025-11-03"
+    resumen: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración memsys3/docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
+  - fecha: "2025-11-02"
     duracion: "~2.5h"
     objetivo: "FASE 3 Correcciones - Valores Descriptivos YAML"
     highlights: "Corregido error crítico FASE 3: keys YAML traducidos OK pero valores descriptivos NO. Traducidas 101 instancias de ~40 palabras catalanas en 8 archivos YAML. Verificación exhaustiva: 0 catalán residual ✅. Commits: f60c8e0 (correcciones), 56c4901 (finales + docs). Gotcha crítico documentado: keys ≠ valores."
 
-  - data: "2025-11-02"
+  - fecha: "2025-11-02"
     duracion: "~2h"
     objetivo: "FASE 2 Traducción Completa + Corrección Errores Críticos"
     highlights: "FASE 2 completada: 5 archivos traducidos (deploy.md, endSession.md, serve.py, index.html, viewer.js), Corrección 2 errores críticos (archivos no copiados a templates, 20+ labels HTML sin traducir), 6 prompts copiados, 40 archivos modificados total, 0 catalán residual en templates ✅"
 
-  - data: "2025-11-02"
+  - fecha: "2025-11-02"
     duracion: "~4h"
     objetivo: "Traducción completa catalán → español"
     highlights: "FASE 1: 18 archivos YAML traducidos, Fixes: ADR-009 contenido multiline, FASE 2 parcial: 3 README.md traducidos, 21 archivos modificados, docs referencia YAML_FIELDS_NO_TRADUCIR.md creado"
 
-  - data: "2025-10-31"
+  - fecha: "2025-10-31"
     duracion: "~3h"
     objetivo: "Preparación deployment y corrección 9 bugs críticos"
     highlights: "viz/ a raíz, history/ creado, deploy.md reescrito con ADR-009, análisis exhaustivo 26 issues, resueltos 4 CRÍTICOS + 5 ALTOS, protección pérdida datos"
 
-  - data: "2025-10-31"
+  - fecha: "2025-10-31"
     duracion: "~2h"
     objetivo: "Implementación ADR-009 y corrección de inconsistencias"
     highlights: "8 features implementadas, 3 problemas resueltos, corrección CRÍTICA deploy.md, 9 archivos corregidos, sistema 100% alineado ADR-009"
 
-  - data: "2025-10-31"
+  - fecha: "2025-10-31"
     duracion: "~3h"
     objetivo: "Validación de deployment y filosofía de templates"
     highlights: "ADR-009 (templates permanentes + gotchas en sessions), actualizado DEVELOPMENT.md (+140 líneas), clarificada filosofía ms3t"
 
-  - data: "2025-10-29"
+  - fecha: "2025-10-29"
     duracion: "~2h"
     objetivo: "Limpieza completa del sistema de rutas"
     highlights: "Corrección sistemática rutas memsys3/, eliminación 6543 líneas residuos, validación compilación exitosa, v0.3.0"
 
-  - data: "2025-10-29"
+  - fecha: "2025-10-29"
     duracion: "~3-4h"
     objetivo: "Alineación completa: sistema de rutas unificado y separación de meta-niveles"
     highlights: "3 ADRs críticas, todas rutas actualizadas a memsys3/, 4 niveles documentación, restricción Main-Agent"
 
-  - data: "2025-10-28"
+  - fecha: "2025-10-28"
     duracion: "~8h"
     objetivo: "Creación inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
-    highlights: "Context Agent criterioo inteligente, rotación automática, Pla Contingencia, publicado a GitHub"
+    highlights: "Context Agent criterio inteligente, rotación automática, Plan Contingencia, publicado a GitHub"
