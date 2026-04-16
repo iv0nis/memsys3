@@ -6,7 +6,7 @@ sessions:
     titulo: "Verificación FASE 3, Correcciones Reales y Problema de Escalabilidad"
     data: "2025-11-03"
     duracion: "~4h"
-    participantes: ["Claude (Context Agent + Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Context Agent + Main Agent)", "User (ivonis)"]
     objetivo: "Verificar exhaustivamente FASE 3, corregir errores residuales (200+ líneas catalán), aplicar correcciones de auditoría, identificar problema crítico de escalabilidad del mantenimiento"
 
     features_implementadas:
@@ -96,7 +96,7 @@ sessions:
     titulo: "Corrección FASE 3 - Traducir Valores Descriptivos YAML (101 instancias)"
     data: "2025-11-02"
     duracion: "~2.5h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Corregir error crítico de FASE 3: keys YAML traducidos pero valores descriptivos NO traducidos (101 instancias de catalán residual)"
 
     features_implementadas:
@@ -147,7 +147,7 @@ sessions:
     titulo: "FASE 2 Traducción Completa + Corrección Errores Críticos"
     data: "2025-11-02"
     duracion: "~2h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Completar FASE 2 de traducción (archivos .md/.py/.html/.js) y corregir errores críticos de archivos no copiados a templates"
 
     features_implementadas:
@@ -206,7 +206,7 @@ sessions:
     titulo: "Traducción Completa Catalán → Español (FASE 1 + Fixes + FASE 2 Parcial)"
     data: "2025-11-02"
     duracion: "~4h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Traducir TODO el contenido en catalán del proyecto memsys3 a español para consistencia y profesionalidad del sistema"
 
     features_implementadas:
@@ -279,7 +279,7 @@ sessions:
     titulo: "Preparación Sistema para Deployment Real y Corrección de 9 Bugs Críticos"
     data: "2025-10-31"
     duracion: "~3h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Resolver blockers críticos para deployment, mover viz/ a raíz, crear history/, reescribir deploy.md con workflow ADR-009, y corregir 9 issues identificados por análisis exhaustivo"
 
     features_implementadas:
@@ -404,7 +404,7 @@ sessions:
     titulo: "Implementación ADR-009 y Corrección de Inconsistencias"
     data: "2025-10-31"
     duracion: "~2h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Implementar ADR-009 completamente (gotchas en sessions.yaml), corregir todas las inconsistencias detectadas (rutas, referencias obsoletas), y alinear 100% templates con instancia dog-fooding"
 
     features_implementadas:
@@ -484,7 +484,7 @@ sessions:
     titulo: "Validación de Deployment y Filosofía de Templates"
     data: "2025-10-31"
     duracion: "~3h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Validar protocolo de deployment en proyecto real, resolver confusiones sabre templates/ y gotchas, documentar filosofía completa del sistema"
 
     features_implementadas:
@@ -604,7 +604,7 @@ sessions:
     titulo: "Limpieza Completa del Sistema de Rutas"
     data: "2025-10-29"
     duracion: "~2h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Corregir y verificar todas las rutas del sistema para usar prefijo memsys3/ consistentemente, eliminar residuos y validar compilación"
 
     features_implementadas:
@@ -701,7 +701,7 @@ sessions:
     titulo: "Alineación Completa del Sistema - Meta-niveles y Rutas"
     data: "2025-10-29"
     duracion: "~3-4h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Alinear completamente la estructura del proyecto, clarificar meta-niveles de documentación y establecer sistema de rutas unificado"
 
     features_implementadas:
@@ -899,7 +899,7 @@ sessions:
     titulo: "Creació memsys3 v1.0 + Deploy System"
     data: "2025-10-28"
     duracion: "~8h"
-    participantes: ["Claude (Development Agent)", "User (ivonis)"]
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
     objetivo: "Crear sistema complet de gestió de context per AI agents i publicar-lo a GitHub"
 
     features_implementadas:

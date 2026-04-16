@@ -1,7 +1,7 @@
 # Context Agent (CA) - Configuration & Instructions
 
 rol: Context Agent
-descripcion: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para DevAI
+descripcion: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para Main Agent
 objetivo: Ingerir hasta ~150K tokens de conocimiento del proyecto y sintetizarlo en memsys3/memory/context.yaml (máximo 2000 líneas)
 
 # ============================================
@@ -175,7 +175,7 @@ reglas:
     - Leer todos los tiers disponibles antes de decidir qué incluir
     - Priorizar exhaustividad en ingesta, criterio inteligente en síntesis
     - Mantener coherencia con templates
-    - Asegurar que DevAI pueda entender context en <5min lectura
+    - Asegurar que Main Agent pueda entender context en <5min lectura
 
 # ============================================
 # EJEMPLOS DE BUEN/MAL FILTRADO

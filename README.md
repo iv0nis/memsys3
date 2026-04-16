@@ -1,34 +1,29 @@
 # memsys3 - Sistema de Memoria para Agentes de IA
 
-> Sistema replicable de gestión de contexto para optimizar el trabajo con AI Development Agents
+> Sistema replicable de gestión de contexto para optimizar el trabajo con AI Agents
 
-**memsys3** es un sistema de gestión de contexto diseñado para optimizar el consumo de tokens de los Development Agents proporcionándoles contexto compacto y relevante del proyecto.
+**memsys3** es una sola carpeta que se añade a tu proyecto y gestiona la memoria de tus AI agents entre sesiones.
 
-## 🎯 Problema que Resuelve
+## 🎯 Por qué memsys3
 
-Cuando trabajas con AI agents en proyectos grandes:
-- ❌ Los agents deben leer decenas de archivos de código para entender el proyecto
-- ❌ Cada sesión nueva consume miles de tokens repitiendo el mismo contexto
-- ❌ Decisiones y aprendizajes se pierden entre sesiones
-- ❌ No hay visibilidad de qué "sabe" el agent
+- **Una sola carpeta** — sin base de datos, sin servidor, sin dependencias. Copias `memsys3/` y funciona
+- **Agnóstico** — funciona con cualquier modelo de IA (Claude, Gemini, Codex, etc.)
+- **Workflow sencillo pero flexible** — 3 prompts para el día a día (empezar, trabajar, acabar)
+- **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas
+- **Deploy y actualización triviales** — un comando para instalar, un comando para actualizar
+- **Human in the loop** — tú decides cuándo empezar y acabar sesión, cuándo compilar contexto, cuándo actualizar. El sistema no hace nada sin ti
+- **Límites de contexto configurables** — diseñado respetando los límites reales de las herramientas (2K líneas, 25K tokens por lectura), con rotación y archivado automático cuando crece
 
-## ✨ Solución
+## ✨ Qué incluye
 
-**memsys3** proporciona:
-- ✅ Context compilado en un único archivo (~2500-3000 tokens)
-- ✅ Sistema de documentación estructurado (ADRs, sessions, status)
-- ✅ Context Agent que filtra automáticamente la información relevante
-- ✅ Visualizador web para ver la "mente" de los agents
-- ✅ Prompts reutilizables (newSession, endSession, compile-context, deploy, actualizar, adr, backlog, github)
-- ✅ Sistema de rotación automática cuando supera límites (>1800 líneas)
-- ✅ Plan de contingencia con archivado inteligente (>150K tokens)
-- ✅ Prompt actualizar.md para actualización segura de memsys3 en proyectos existentes (con detección estructura antigua)
-- ✅ README opcional: Context Agent acepta proyectos sin README o puede crear automáticamente
-- ✅ Consulta .gitignore durante deployment: pregunta si excluir memsys3/ de git (PASO 8, privacidad)
-- ✅ Sistema Backlog distribuible: memsys3/backlog/ con README agnóstico + prompt backlog.md (consultar, crear, actualizar)
-- ✅ Sistema ADRs gestionable: prompt adr.md para gestionar decisiones arquitectónicas (consultar, crear, actualizar)
-- ✅ Context Agent mejorado: análisis profundo README automático (PASO 7, 10 categorías) + integración backlog selectiva
-- ✅ Statusline personalizable para Claude Code: monitoreo de uso de contexto activo en tiempo real (tokens/porcentaje alineado con `/context`)
+- Context compilado en un único archivo (~3K tokens)
+- Sistema de documentación estructurado (ADRs, sessions, status)
+- Context Agent que sintetiza automáticamente la información relevante
+- Prompts reutilizables (newSession, endSession, compile-context, deploy, actualizar, adr, backlog, github)
+- Rotación automática cuando supera límites (>1800 líneas)
+- Plan de contingencia con archivado inteligente (>150K tokens)
+- Actualización segura en proyectos existentes (con detección de estructura antigua)
+- Sistema Backlog y ADRs gestionables con prompts dedicados
 
 ## ⚡ Quick Start
 
@@ -90,7 +85,7 @@ memsys3/                          # Repositorio GitHub
 ├── memsys3_templates/           # PRODUCTO FINAL (templates agnósticos)
 │   ├── README.md               # Documentación del sistema
 │   ├── agents/
-│   │   ├── main-agent.yaml    # Template del Development Agent
+│   │   ├── main-agent.yaml    # Template del Main Agent
 │   │   └── context-agent.yaml # Template del Context Agent
 │   ├── memory/
 │   │   ├── context.yaml        # Template de contexto (vacío)

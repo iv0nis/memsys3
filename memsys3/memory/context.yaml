@@ -1,5 +1,5 @@
 # Context - memsys3
-# Contexto compilado para AI Development Agents
+# Contexto compilado para AI Agents
 # NOTA: README.md se lee directamente en newSession.md (identidad actual del proyecto)
 #       context.yaml contiene solo memoria histórica (sessions, ADRs, gotchas)
 
@@ -13,7 +13,7 @@ metadata:
 # ============================================
 project:
   nombre: "memsys3"
-  descripcion: "Sistema de gestión de contexto para AI Development Agents - optimiza tokens proporcionando contexto compacto y relevante"
+  descripcion: "Sistema de gestión de contexto para AI Agents - optimiza tokens proporcionando contexto compacto y relevante"
   fase: "Development v0.18.0"
   ultima_feature: "Fixes críticos actualizar.md (bootstrap, git diff --name-status, docs consolidado) + sistema reuniones autónomas meet.md v2.0 + docs/ referencia técnica + sistema agent_id"
   siguiente_milestone: "Testear deployment con .gitignore + testear actualizar_cat.md + validar compile-context con README auto + resolver ISSUE-010/011"

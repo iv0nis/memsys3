@@ -1,28 +1,20 @@
 # memsys3 - Sistema de Memoria para Agentes de IA
 
-> Sistema de gestión de contexto para optimizar el trabajo con AI Development Agents
+> Sistema de gestión de contexto para optimizar el trabajo con AI Agents
 
 ## 🎯 ¿Qué es memsys3?
 
-**memsys3** es un sistema de gestión de contexto diseñado para optimizar el consumo de tokens de los AI Development Agents proporcionándoles contexto compacto y relevante del proyecto.
+**memsys3** es una sola carpeta que se añade a tu proyecto y gestiona la memoria de tus AI agents entre sesiones.
 
-## 💡 Problema que Resuelve
+## 💡 Por qué memsys3
 
-Cuando trabajas con AI agents en proyectos:
-- ❌ Los agents deben leer muchos archivos para entender el proyecto
-- ❌ Cada sesión nueva consume miles de tokens repitiendo el mismo contexto
-- ❌ Decisiones y aprendizajes se pierden entre sesiones
-- ❌ No hay visibilidad de qué "sabe" el agent
-
-## ✨ Solución
-
-**memsys3** proporciona:
-- ✅ **Context compilado**: Un único archivo (~2500-3000 tokens) con el contexto esencial
-- ✅ **Documentación estructurada**: ADRs, sessions, project status
-- ✅ **Context Agent**: Filtra automáticamente la información relevante con criterio inteligente
-- ✅ **Prompts reutilizables**: Para iniciar/terminar sesiones y compilar contexto
-- ✅ **Rotación automática**: Escala cuando supera límites (>1800 líneas)
-- ✅ **Plan de contingencia**: Archivado inteligente (>150K tokens)
+- **Una sola carpeta** — sin base de datos, sin servidor, sin dependencias. Copias `memsys3/` y funciona
+- **Agnóstico** — funciona con cualquier modelo de IA (Claude, Gemini, Codex, etc.)
+- **Workflow sencillo pero flexible** — 3 prompts para el día a día (empezar, trabajar, acabar)
+- **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas
+- **Deploy y actualización triviales** — un comando para instalar, un comando para actualizar
+- **Human in the loop** — tú decides cuándo empezar y acabar sesión, cuándo compilar contexto, cuándo actualizar. El sistema no hace nada sin ti
+- **Límites de contexto configurables** — diseñado respetando los límites reales de las herramientas (2K líneas, 25K tokens por lectura), con rotación y archivado automático cuando crece
 
 ## 🚀 Uso Diario
 
@@ -79,7 +71,7 @@ El Context Agent:
 memsys3/
 ├── README.md                       # Este archivo
 ├── agents/
-│   ├── main-agent.yaml            # Configuración del Development Agent
+│   ├── main-agent.yaml            # Configuración del Main Agent
 │   └── context-agent.yaml         # Configuración del Context Agent
 ├── memory/
 │   ├── context.yaml                # Context compilado (generado por CA)
@@ -105,7 +97,7 @@ memsys3/
 
 ## 🔄 Workflow
 
-### 1. Documentar (Developers + DevAI)
+### 1. Documentar (Developers + Main Agent)
 - Desarrolla features normalmente
 - Al final de sesión: `@memsys3/prompts/endSession.md`
 - Se documenta en `memory/full/sessions.yaml`
@@ -117,7 +109,7 @@ memsys3/
 - Aplica criterio inteligente
 - Genera `memory/context.yaml` compacto
 
-### 3. Desarrollar (DevAI)
+### 3. Desarrollar (Main Agent)
 - Nueva sesión: `@memsys3/prompts/newSession.md`
 - Carga contexto compilado
 - Desarrolla con visión completa del proyecto
@@ -195,7 +187,7 @@ Ver **[memory/README.md](memory/README.md)** para:
 
 Este sistema es altamente personalizable:
 
-- **agents/main-agent.yaml**: Personaliza comportamiento del Development Agent
+- **agents/main-agent.yaml**: Personaliza comportamiento del Main Agent
 - **memory/project-status.yaml**: Mantén actualizado el estado de tu proyecto
 - **memory/templates/**: Ajusta los templates según tus necesidades
 

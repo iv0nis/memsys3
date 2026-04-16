@@ -1,4 +1,4 @@
-# Main Development Agent (Template)
+# Main Agent (Template)
 
 rol: Main Agent
 descripcion: Agente principal que implementa features, resuelve bugs y desarrolla el proyecto utilizando el sistema Memory para mantener contexto entre sesiones

@@ -19,7 +19,7 @@ Se abrirá automáticamente en el navegador en `http://localhost:8080`
 ## 📊 ¿Qué muestra?
 
 ### 🤖 Agent View
-El contexto compilado que cargan los Development Agents:
+El contexto compilado que cargan los AI Agents:
 - Project info
 - Features operativas
 - ADRs relevantes (filtradas por el CA)

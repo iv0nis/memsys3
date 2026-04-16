@@ -1,5 +1,5 @@
 # Context Template
-# Este es el archivo que carga DevAI para entender el proyecto
+# Este es el archivo que carga el Main Agent para entender el proyecto
 # Es compilado por el Context Agent (CA) desde memory/full/
 # Límite ÚNICO: máximo 2000 líneas total
 
@@ -13,7 +13,7 @@ metadata:
 # ============================================
 project:
   nombre: "memsys3"
-  descripcion: "Sistema de gestión de contexto para AI Development Agents"
+  descripcion: "Sistema de gestión de contexto para AI Agents"
   fase: "Development v1.3"
   ultima_feature: "Sistema preparado para deployment: viz/ en raíz, history/ creado, deploy.md con ADR-009, 9 bugs críticos corregidos"
   siguiente_milestone: "Testing deployment real en proyecto UOC"
