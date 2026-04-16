@@ -1,9 +1,9 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-04-15"
-  actualizado_por: "Claude (Session 2026-04-15 file_version + viz archivada + catalan erradicado)"
-  fase: "Development v0.20.0"
+  ultima_actualizacion: "2026-04-16"
+  actualizado_por: "Claude (Session 2026-04-16 wiki + terminologia agnostica + README diferencial)"
+  fase: "Development v0.21.0"
   memsys3_version: "v0.21.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
@@ -14,9 +14,9 @@ vision_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estado_actual:
-  fase: "Development v0.12.0"
-  ultima_feature: "Sistema file_version independiente por archivo (0.Y.Z), restricciones infraestructura en agents, viz archivada, catalán erradicado, modo actualización extendida. v0.20.0. ~3h peso alto"
-  siguiente_milestone: "Compilar context.yaml + Formalizar workflow sincronización dog-fooding + FEATURE-012 (glosario conceptos)"
+  fase: "Development v0.21.0"
+  ultima_feature: "Wiki GitHub (4 paginas), terminologia agnostica (Development Agent erradicado, 15 archivos), README diferencial, fix restriccion dog-fooding, github.md AskUserQuestion obligatorio. v0.21.0. ~1.5h peso medio"
+  siguiente_milestone: "Compilar context.yaml (ultima: 2026-03-08) + FEATURE-012 (glosario conceptos)"
 
 features:
   context_agent:
@@ -122,6 +122,8 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-04-16"
+    resumen: "Wiki GitHub (4 paginas + sidebar). Terminologia agnostica: Development Agent/DevAI erradicado (15 archivos). README diferencial (propuesta de valor). Fix restriccion dog-fooding (deadlock). github.md AskUserQuestion obligatorio. v0.21.0. ~1.5h peso medio."
   - fecha: "2026-04-15"
     resumen: "Sistema file_version independiente por archivo (0.Y.Z, 21 archivos). Restricciones infraestructura en agents. Viz archivada. Catalán erradicado (~60 campos). Modo actualización extendida con subagente. v0.20.0. ~3h peso alto."
   - fecha: "2026-04-13"

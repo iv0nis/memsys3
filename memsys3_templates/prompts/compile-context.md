@@ -378,7 +378,7 @@ Usa **Edit tool** para añadir al PRINCIPIO del array `operations:`:
 operations:
   - timestamp: "[YYYY-MM-DDTHH:MM:SS]"
     operacion: "compilar"
-    version_context: "[versión del context.yaml generado]"
+    version_context: "[valor de memsys3_version en project-status.yaml]"
     resultado: "ok"
     resumen:
       lineas: [N]

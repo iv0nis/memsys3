@@ -3,6 +3,59 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-04-16-wiki-terminologia-agnostica-readme-diferencial"
+    titulo: "Wiki GitHub + terminologia agnostica + README diferencial + fix restriccion dog-fooding"
+    data: "2026-04-16"
+    duracion: "~1.5h"
+    peso: "medio"
+    participantes: ["Claude (Main Agent)", "User (ivonis)"]
+    objetivo: "Crear wiki GitHub para comunidad memsys3, corregir terminologia Development Agent, reescribir README con propuesta de valor diferencial"
+
+    highlights:
+      - "Wiki GitHub creada (4 paginas + sidebar): Home, Prompts Reference, Workflow, Agents"
+      - "Terminologia agnostica: Development Agent/DevAI erradicado de 15 archivos templates+docs"
+      - "README reescrito con propuesta de valor diferencial (una carpeta, agnostico, human in the loop, @ mentions, limites configurables)"
+      - "Fix critico: restriccion infraestructura quitada del main-agent dog-fooding (deadlock: nadie podia editar templates)"
+      - "github.md: warning obligatorio AskUserQuestion para confirmar tag"
+      - "IMPROVEMENT-006 (depurar terminologia) completado de facto"
+
+    features_implementadas:
+      - nombre: "Wiki GitHub"
+        descripcion: "Documentacion publica navegable con sidebar: Home (propuesta de valor), Prompts Reference (13 prompts organizados por categoria), Workflow (diagrama ciclo), Agents (Main Agent y Context Agent)"
+        archivos: ["github.com/iv0nis/memsys3/wiki (4 paginas + _Sidebar.md)"]
+
+    problemas_resueltos:
+      - problema: "Restriccion infraestructura en main-agent.yaml dog-fooding creaba deadlock"
+        solucion: "Quitada restriccion infraestructura_memsys3 del dog-fooding. Template la mantiene para proyectos destino"
+        impacto: "Main Agent puede modificar prompts/, agents/, templates/ en el propio repo de memsys3"
+      - problema: "Terminologia Development Agent/DevAI limitaba memsys3 a solo desarrollo"
+        solucion: "Erradicado de todos los templates y docs publicos (15 archivos). AI Agents o Main Agent segun contexto"
+        impacto: "memsys3 correctamente posicionado como agnostico de dominio"
+
+    decisions:
+      - decision: "README reescrito con enfoque diferencial en lugar de lista de features"
+        motivo: "Feedback comunidad (Aa Miarma): necesidad de documentacion accesible. Propuesta de valor: una carpeta, agnostico, human in the loop, @ mentions, limites configurables"
+      - decision: "Wiki GitHub en lugar de archivo docs/ en el repo"
+        motivo: "Navegable con sidebar como el ejemplo que mando el usuario, no ensucia el repo"
+      - decision: "No tocar historial (sessions, adr.yaml, IMPROVEMENT-006) al limpiar terminologia"
+        motivo: "Es registro historico de lo que paso, no documentacion publica"
+
+    gotchas:
+      - tipo: "comportamiento"
+        problema: "@ mentions dejan de funcionar hasta reiniciar Claude Code (exit + reentrar). Causa desconocida, posiblemente cache de indexacion"
+        solucion: "/exit y volver a entrar"
+        criticidad: "baja"
+      - tipo: "modelo"
+        problema: "LLM confunde 'por que no usas X' (pregunta) con 'usa X' (instruccion). Dos issues distintos: 1) no usar la tool, 2) no distinguir intencion"
+        solucion: "Issue 1 resuelto con warning prominente en github.md. Issue 2 es tema del modelo (Anthropic)"
+        criticidad: "media"
+
+    proximos_pasos:
+      - "Compilar context.yaml (ultima compilacion: 2026-03-08, muy desactualizado)"
+      - "Documentar sesion en endSession y hacer push"
+      - "Responder a Aa Miarma con link de la wiki"
+
+    version_tag: "v0.21.0"
   - id: "2026-04-15-file-version-viz-archivada-catalan-erradicado"
     fecha: "2026-04-15"
     duracion: "~3h"
