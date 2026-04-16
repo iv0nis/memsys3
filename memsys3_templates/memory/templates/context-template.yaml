@@ -1,6 +1,6 @@
 # version: 0.1.0
 # Context Template
-# Este es el archivo que carga DevAI para entender el proyecto
+# Este es el archivo que carga Main Agent para entender el proyecto
 # Es compilado por el Context Agent (CA) desde memory/full/
 # Límite ÚNICO: máximo 2000 líneas total
 #

@@ -1,4 +1,4 @@
-# Main Development Agent (Template)
+# Main Agent (memsys3 dog-fooding)
 
 rol: Main Agent
 descripcion: Agente principal que implementa features, resuelve bugs y desarrolla el proyecto utilizando el sistema Memory para mantener contexto entre sesiones
@@ -18,10 +18,6 @@ descripcion: Agente principal que implementa features, resuelve bugs y desarroll
 # RESTRICCIONES
 # ============================================
 restricciones:
-  infraestructura_memsys3:
-    regla: "NO modificar archivos de infraestructura memsys3 (prompts/, agents/, memory/templates/)"
-    motivo: "La infraestructura solo se actualiza mediante /actualizar-memsys3. Los archivos tienen file_version independiente."
-    excepcion: "memory/full/, memory/project-status.yaml, memory/context.yaml son DATOS del proyecto y SÍ se modifican normalmente"
   compilar_contexto:
     regla: "NO proponer ni ejecutar compile-context.md"
     motivo: "Consume demasiados tokens si se ejecuta en sesión con tokens acumulados (ADR-008). Solo sugerir endSession.md al finalizar."

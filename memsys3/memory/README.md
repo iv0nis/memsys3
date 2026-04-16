@@ -2,7 +2,7 @@
 
 > **Sistema replicable para gestionar el contexto de los AI agents de forma eficiente**
 
-Este sistema está diseñado para optimizar el consumo de tokens de los Development Agents (DevAI) proporcionándoles contexto compacto y relevante del proyecto.
+Este sistema está diseñado para optimizar el consumo de tokens de los AI Agents (Main Agent) proporcionándoles contexto compacto y relevante del proyecto.
 
 ## 🎯 Objetivo
 
@@ -30,7 +30,7 @@ cp -r memsys3/ /path/to/nuevo/proyecto/
 ```
 memsys3/
 ├── memory/
-│   ├── context.yaml                    # ← DevAI carga esto (compilado)
+│   ├── context.yaml                    # ← Main Agent carga esto (compilado)
 │   ├── project-status.yaml             # ← Estado actual del proyecto
 │   ├── README.md                       # ← Este archivo
 │   │
@@ -54,7 +54,7 @@ memsys3/
 
 ## 🔄 Workflow
 
-### 1. Documentar (Humans/DevAI)
+### 1. Documentar (Humans/Main Agent)
 
 Escribe en estos archivos durante el desarrollo:
 
@@ -91,9 +91,9 @@ El CA hará:
 - Filtrar con criterio inteligente (impacto global, relevancia)
 - Generar `memsys3/memory/context.yaml` (máximo 2000 líneas)
 
-### 3. Desarrollar (DevAI)
+### 3. Desarrollar (Main Agent)
 
-Los Development Agents solo deben:
+Los AI Agents solo deben:
 
 ```bash
 # Cargar context
@@ -227,7 +227,7 @@ Si el CA detecta >150K tokens totales:
 4. Ejecutas `@memsys3/prompts/compile-context.md`
 5. `memsys3/memory/context.yaml` se actualiza con info nueva
 
-### Ejemplo 2: DevAI Nuevo
+### Ejemplo 2: Main Agent Nuevo
 
 1. Nuevo agente carga `@memsys3/memory/context.yaml`
 2. En ~1500 tokens entiende:
@@ -246,7 +246,7 @@ R: Ejecuta `@memsys3/prompts/compile-context.md`
 **P: CA incluye demasiadas/pocas ADRs**
 R: Ajusta límites y criterios en `memsys3/prompts/compile-context.md`
 
-**P: DevAI dice que le falta contexto**
+**P: Main Agent dice que le falta contexto**
 R: Quizás necesita código específico. El CA solo da visión general, no sustituye leer código cuando es necesario.
 
 **P: memsys3/memory/full/sessions.yaml es inmenso**

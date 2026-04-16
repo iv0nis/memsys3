@@ -6,7 +6,7 @@ metadata:
   fase: "Development v1.3"
 
 visio_general:
-  que_es: "Sistema de gestión de contexto para AI Development Agents"
+  que_es: "Sistema de gestión de contexto para AI Agents"
   objetivo: "Optimizar consumo de tokens proporcionando contexto compacto y relevante"
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
