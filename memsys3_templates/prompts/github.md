@@ -8,6 +8,10 @@
 - No subas la versión más allá de la 0.x.x hasta que sea estable
 - Solo aumenta el minor si hay cambio relevante, en caso contrario aumenta el patch
 
+## ⚠️ IMPORTANTE: Obligatorio usar AskUserQuestion
+
+**SIEMPRE usa la tool `AskUserQuestion` para confirmar la versión del tag.** No escribas las opciones en texto plano — invoca la tool. El usuario debe poder seleccionar la opción interactivamente.
+
 ## ⚠️ IMPORTANTE: Commits SIN Firma
 
 **NUNCA añadas firma "Co-Authored-By: Claude" en commits.**
