@@ -10,7 +10,7 @@
 metadata:
   compilado_por: "Context Agent"
   ultima_compilacion: "[TIMESTAMP]"
-  version_context: "[NUMERO_VERSION]"
+  version_context: "[valor de memsys3_version en project-status.yaml]"
 
 # ============================================
 # PROJECT INFO
