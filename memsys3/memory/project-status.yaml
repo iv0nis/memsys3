@@ -1,8 +1,8 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-04-20"
-  actualizado_por: "Claude (Session 2026-04-20 ISSUE-021 auto-memory vs memsys3)"
+  ultima_actualizacion: "2026-05-05"
+  actualizado_por: "Claude (Session 2026-05-05 Release v0.21.1 + dominio memsys3.org)"
   fase: "Development v0.21.1"
   memsys3_version: "v0.21.1"
   memsys3_deployed: "2025-10-28"
@@ -15,8 +15,8 @@ vision_general:
 
 estado_actual:
   fase: "Development v0.21.1"
-  ultima_feature: "Wiki GitHub (4 paginas), terminologia agnostica (Development Agent erradicado, 15 archivos), README diferencial, fix restriccion dog-fooding, github.md AskUserQuestion obligatorio. v0.21.0. ~1.5h peso medio"
-  siguiente_milestone: "Compilar context.yaml (ultima: 2026-03-08) + FEATURE-012 (glosario conceptos)"
+  ultima_feature: "Release v0.21.1: restriccion operaciones_git en MA + 3 items backlog (ISSUE-021/022, EXPLORATION-003) + decision dominio memsys3.org canonico (.com redirect 301)"
+  siguiente_milestone: "Desplegar web memsys3.org + compilar context.yaml (ultima: 2026-03-08) + FEATURE-012 (glosario conceptos)"
 
 features:
   context_agent:
@@ -85,6 +85,7 @@ stack_tecnologico:
   lenguaje_docs: "YAML + Markdown"
 
 urls:
+  website: "https://memsys3.org"
   repository: "https://github.com/iv0nis/memsys3"
 
 pendientes_prioritarios:
@@ -122,6 +123,9 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-05-05"
+    resumen: "Release v0.21.1 ejecutada (workflow github.md validado: AskUserQuestion + sin firma + tag con metadata). Decision dominio: memsys3.org canonico + memsys3.com redirect 301 (cultura OSS). URL oficial propagada a README + project-status.yaml + context.yaml + wiki GitHub (Home + _Sidebar). Web aun no desplegada. ~30min peso bajo."
+
   - fecha: "2026-04-20"
     resumen: "ISSUE-021 (auto-memory Claude vs memsys3) + EXPLORATION-003 (READMEs modulares por carpeta). ISSUE-021: auto-memory rompe ADR-016, alcance real 9 archivos (feedback+project+user), no editable desde settings.json. 4 opciones, destaca D (MEMORY_memsys3.yaml). EXPLORATION-003: patrón lazy-loaded del usuario, extiende ADR-012 a READMEs anidados. ~45min peso medio."
 
