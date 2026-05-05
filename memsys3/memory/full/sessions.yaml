@@ -3,6 +3,26 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-05-release-v0211-dominio-memsys3-org"
+    titulo: "Release v0.21.1 + decisión dominio memsys3.org canónico"
+    data: "2026-05-05"
+    duracion: "~30min"
+    peso: "bajo"
+    highlights:
+      - "Release v0.21.1 ejecutada siguiendo workflow github.md (commit + tag + push, sin firma, AskUserQuestion para versión)"
+      - "Restricción operaciones_git en MA validada en uso real: prompt github.md cargado correctamente antes de operar git"
+      - "Decisión dominio: memsys3.org como canónico, memsys3.com con redirect 301 → consolidar SEO en .org (cultura OSS)"
+      - "URL oficial https://memsys3.org propagada: README.md + project-status.yaml (urls.website) + context.yaml (urls.website) + wiki GitHub (Home + _Sidebar)"
+      - "Web aún no desplegada (URL añadida proactivamente, usuario despliega placeholder en paralelo)"
+    decisions:
+      - "Dominio canónico: .org sobre .com. Razón: convención OSS (python.org, kernel.org, gnu.org). .com como red de seguridad anti-squatting + captura tráfico default"
+      - "Redirect 301 (no 302) desde .com → .org preservando path. Canonical tag en HTML del .org. Mismo path al redirigir para no perder SEO"
+      - "Templates (memsys3_templates/) NO reciben campo urls.website: son agnósticos por proyecto. Solo dog-fooding (memsys3/) lleva la URL real"
+    proximos_pasos:
+      - "Commit + push de cambios README/yaml/wiki (URL memsys3.org)"
+      - "Desplegar web en .org (aunque sea placeholder) para evitar enlace 404"
+      - "Configurar redirect 301 .com → .org una vez la web esté live"
+
   - id: "2026-04-20-issue-021-auto-memory-exploration-003-readmes-modulares"
     titulo: "ISSUE-021 auto-memory Claude vs memsys3 + EXPLORATION-003 READMEs modulares"
     data: "2026-04-20"
