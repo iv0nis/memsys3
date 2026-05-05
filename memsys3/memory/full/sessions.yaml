@@ -3,6 +3,25 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-04-20-issue-021-auto-memory-exploration-003-readmes-modulares"
+    titulo: "ISSUE-021 auto-memory Claude vs memsys3 + EXPLORATION-003 READMEs modulares"
+    data: "2026-04-20"
+    duracion: "~45min"
+    peso: "medio"
+    highlights:
+      - "ISSUE-021 creado: auto-memory de Claude Code (MEMORY.md + feedback_*/project_*/user_*.md) interfiere con memsys3 rompiendo ADR-016 (agnóstico) y human-in-the-loop"
+      - "Síntoma origen: agente usó 'Banyoles' como default silencioso en campo 'lugar' porque lo tenía en MEMORY.md sin contexto de uso"
+      - "4 opciones propuestas en ISSUE-021: A) desactivar auto-memory, B) instrucción en CLAUDE.md, C) prompt limpieza, D) MEMORY_memsys3.yaml estructurado (idea usuario, datos puros proyecto/usuario sin instrucciones)"
+      - "Hallazgo parte 2: auto-memory NO es editable desde settings.json, está inyectada por el harness de Claude Code. Alcance real: 9 archivos en caso gitkigai (4 feedback + 4 project + 1 user)"
+      - "Feedback (reglas de comportamiento) es problema separado de datos puros. TODO en ISSUE-021: decidir si abrir ISSUE propio cuando haya más patrones reales"
+      - "EXPLORATION-003 creado: READMEs modulares por carpeta como memoria lazy-loaded. Práctica del usuario en agente de productividad con buenos resultados. Extiende ADR-012 (README lectura directa) a READMEs anidados"
+    decisions:
+      - "No abrir ISSUE separado para reglas de comportamiento aún (opción 2 del usuario): solo TODO en ISSUE-021. Razón: falta info sobre dónde deben vivir (main-agent.yaml, prompt, archivo propio)"
+    proximos_pasos:
+      - "Valorar Opción D (MEMORY_memsys3.yaml): schema, integración deploy.md briefing, carga newSession.md"
+      - "EXPLORATION-003: recopilar ejemplo real del agente productividad del usuario, evaluar pilotaje"
+      - "Limpieza gitkigai recomendada al usuario: migrar 4 feedback_*.md a behavior-rules, borrar project_* y user_*"
+
   - id: "2026-04-16-wiki-terminologia-agnostica-readme-diferencial"
     titulo: "Wiki GitHub + terminologia agnostica + README diferencial + fix restriccion dog-fooding"
     data: "2026-04-16"

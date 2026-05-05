@@ -25,5 +25,8 @@ restricciones:
   compilar_contexto:
     regla: "NO proponer ni ejecutar compile-context.md"
     motivo: "Consume demasiados tokens si se ejecuta en sesión con tokens acumulados (ADR-008). Solo sugerir endSession.md al finalizar."
+  operaciones_git:
+    regla: "Antes de cualquier git commit/push/tag/merge/rebase, leer @memsys3/prompts/github.md"
+    motivo: "El comportamiento por defecto del agente añade firmas Co-Authored-By y otras convenciones que pueden violar la política del proyecto. github.md documenta las reglas obligatorias (sin firma, AskUserQuestion para tags, workflow de versiones, verificación post-commit). Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
 
-file_version: "0.1.0"
+file_version: "0.2.0"
