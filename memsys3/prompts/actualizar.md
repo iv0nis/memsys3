@@ -219,7 +219,7 @@ AskUserQuestion(
   header: "Modo",
   options: [
     { label: "Rápida (Recomendado)", description: "Usa git diff para detectar cambios. Eficiente en tokens." },
-    { label: "Extendida", description: "Lanza un subagente que se contextualiza con el memsys3 de desarrollo (lee sessions, ADRs, context.yaml del repo) para entender QUÉ cambió y POR QUÉ. Consume más tokens pero da mejor comprensión de los cambios." }
+    { label: "Extendida", description: "Lanza un subagente que se contextualiza con el memsys3 de desarrollo (lee sessions, ADRs, context.yaml del repo) para entender QUÉ cambió y POR QUÉ. Habilita evaluación contextualizada de deprecations y campos huérfanos en schema (ADR-019). Consume más tokens pero da mejor comprensión de los cambios." }
   ]
 )
 ```
@@ -515,11 +515,91 @@ diff "$MEMSYS3_ROOT/agents/main-agent.yaml" memsys3_update_temp/memsys3_template
 
 > **Nota:** Los archivos custom en `agents/` detectados en Paso 5.5 (ej: `dev-agent.yaml`) no se tocan.
 
-### 6.4 Actualizar Templates
+### 6.4 Actualizar Templates de schema (sustitución diferencial)
+
+**Implementa ADR-018 (sustitución diferencial) + ADR-019 (deprecation contextualizada).**
+
+`memory/templates/*-template.yaml` son templates de schema canónicos: el usuario NO los edita por contrato. Por eso usamos sustitución directa condicionada a comparación de `file_version` (no merge). Los datos vivos del usuario nunca se tocan aquí.
+
+**Lógica por cada template:**
 
 ```bash
-cp memsys3_update_temp/memsys3_templates/memory/templates/*.yaml "$MEMSYS3_ROOT/memory/templates/"
+# Helper para extraer file_version (cabecera "# version: X.Y.Z" en .yaml)
+extract_version() {
+  grep -E "^#\s*version:" "$1" 2>/dev/null | head -1 | sed -E 's/^#\s*version:\s*//' | tr -d '"'
+}
+
+# Comparar versiones (devuelve "gt", "eq", "lt")
+compare_versions() {
+  local v1="$1" v2="$2"
+  if [ "$v1" = "$v2" ]; then echo "eq"; return; fi
+  local sorted=$(printf "%s\n%s" "$v1" "$v2" | sort -V | head -1)
+  if [ "$sorted" = "$v1" ]; then echo "lt"; else echo "gt"; fi
+}
+
+for src in memsys3_update_temp/memsys3_templates/memory/templates/*.yaml; do
+  fname=$(basename "$src")
+  dst="$MEMSYS3_ROOT/memory/templates/$fname"
+  v_up=$(extract_version "$src")
+  v_dst=$(extract_version "$dst" 2>/dev/null)
+
+  if [ ! -f "$dst" ]; then
+    echo "🆕 $fname — no existe en destino, copiando (v=$v_up)"
+    cp "$src" "$dst"
+  elif [ -z "$v_dst" ]; then
+    echo "⚠️ $fname — destino sin file_version (legacy pre-ADR-017). Sustituyendo (v_up=$v_up)"
+    cp "$src" "$dst"
+  else
+    cmp=$(compare_versions "$v_up" "$v_dst")
+    case "$cmp" in
+      gt) echo "⬆️ $fname — upstream $v_up > destino $v_dst, sustituyendo"; cp "$src" "$dst" ;;
+      eq) echo "✅ $fname — versiones iguales ($v_up), no se toca" ;;
+      lt) echo "🚨 $fname — destino $v_dst > upstream $v_up. Estado anómalo." ;;
+    esac
+  fi
+done
 ```
+
+**Si aparece `🚨` (destino > upstream) en algún archivo:**
+Usa `AskUserQuestion` para cada caso:
+- "El template `<archivo>` tiene en tu proyecto la versión `<v_dst>`, mayor que upstream `<v_up>`. ¿Sobrescribir con upstream / preservar destino?"
+- Si sobrescribir → `cp "$src" "$dst"`. Si preservar → no tocar.
+
+### 6.4.5 Detección de campos deprecated y huérfanos (modo extendido)
+
+**SOLO en modo Extendido (Paso 2.5).** En modo Rápido, saltar este sub-paso y avisar al usuario que la evaluación contextualizada de schema requiere modo Extendido.
+
+**Implementa ADR-019.** Tras sustituir templates de schema, evalúa contextualmente si los campos del schema actual siguen siendo válidos para ESTE proyecto.
+
+**1. Detectar deprecations marcadas por upstream:**
+
+```bash
+# Buscar comentarios "# DEPRECATED v0.X.Y — motivo: <razón>" en templates upstream
+grep -rEn "^\s*#\s*DEPRECATED" "$MEMSYS3_ROOT/memory/templates/" || echo "(sin deprecations)"
+```
+
+Para cada `# DEPRECATED` encontrado:
+1. Identifica qué campo está deprecado (línea siguiente al comentario o campo asociado).
+2. Lee datos vivos relacionados (`memsys3/memory/project-status.yaml`, `memsys3/memory/full/sessions.yaml`, etc.) y verifica si el campo está en uso.
+3. Si está en uso → `AskUserQuestion`: "Campo `<X>` marcado deprecated por upstream. Motivo: `<razón>`. ¿Mantener / migrar a `<alternativa>` / eliminar de tus datos vivos?"
+4. Si no está en uso → solo informar al usuario, sin acción.
+
+**2. Detectar campos huérfanos en datos vivos:**
+
+Lee cada template de schema (`*-template.yaml`) y compara sus claves top-level con las del archivo operativo correspondiente:
+
+| Template upstream | Datos vivos a comparar |
+|---|---|
+| `project-status-template.yaml` | `memsys3/memory/project-status.yaml` |
+| `context-template.yaml` | `memsys3/memory/context.yaml` |
+| `adr-template.yaml` | `memsys3/memory/full/adr.yaml` |
+| `sessions-template.yaml` | `memsys3/memory/full/sessions.yaml` |
+
+Para cada clave top-level presente en datos vivos pero NO en template upstream:
+- Si la clave tiene contenido (no vacío) → `AskUserQuestion`: "Campo `<Y>` existe en tus datos pero no en el schema canónico. ¿Mantener (puede ser personalización legítima) / eliminar?"
+- Si está vacío → eliminar silenciosamente.
+
+**Importante:** Esta evaluación NUNCA elimina automáticamente. La filosofía memsys3 es human-in-the-loop: solo el usuario, contextualizado por el agente, decide qué es legítimo en su proyecto (ver ADR-019).
 
 ### 6.5 Crear history/ si no existe
 
@@ -837,4 +917,4 @@ Antes de dar por terminada la actualización, verifica:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->
