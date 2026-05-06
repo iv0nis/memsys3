@@ -1,132 +1,34 @@
-# Project Status - memsys3
+# version: 0.1.0
 
 metadata:
-  ultima_actualizacion: "2025-11-03"
-  actualizado_por: "Claude (Session: Verificación FASE 3 y Escalabilidad)"
-  fase: "Development v1.3"
+  ultima_actualizacion: ""
+  actualizado_por: ""
+  fase: ""
+  memsys3_version: ""
+  memsys3_deployed: ""
 
-visio_general:
-  que_es: "Sistema de gestión de contexto para AI Agents"
-  objetivo: "Optimizar consumo de tokens proporcionando contexto compacto y relevante"
-  client: "Open Source (GitHub: iv0nis/memsys3)"
+vision_general:
+  que_es: ""
+  objetivo: ""
+  cliente: ""
 
-estat_actual:
-  fase: "Development v1.3"
-  ultima_feature: "Sistema backlog creado (docs/backlog/) con 6 prefijos para organizar trabajo futuro: ISSUE-001 (escalabilidad mantenimiento) + IMPROVEMENT-001 (contexto docs críticos) + prompt backlog.md para crear items + aclaración docs/ en DEVELOPMENT.md"
-  siguiente_milestone: "Decidir implementación IMPROVEMENT-001 (contexto accesible) o ISSUE-001 Fase 1 (documentar puntos calientes)"
+estado_actual:
+  fase: ""
+  ultima_feature: ""
+  siguiente_milestone: ""
 
-features:
-  context_agent:
-    nombre: "Context Agent"
-    estado: "operativo"
-    descripcion: "Agente que compila contexto completo con criterioo inteligente (máx 2000 líneas)"
+features: {}
 
-  rotacio_automatica:
-    nombre: "Rotació Automàtica"
-    estado: "operativo"
-    descripcion: "Sistema de rotación sessions/ADRs cuando superan 1800 líneas"
+stack_tecnologico: {}
 
-  pla_contingencia:
-    nombre: "Plan de Contingencia"
-    estado: "operativo"
-    descripcion: "Archivado inteligente a history/ cuando >150K tokens"
+urls: {}
 
-  prompts:
-    nombre: "Prompts Reutilizables"
-    estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, deploy - TODOS con rutas memsys3/"
+pendientes_prioritarios: []
 
-  documentacion:
-    nombre: "Sistema de Documentación Multi-nivel"
-    estado: "operativo"
-    descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE"
+decisiones_clave: {}
 
-stack_tecnologico:
-  database: "Ninguno (YAML files)"
-  deploy: "GitHub + clonado local"
-  lenguaje_docs: "YAML + Markdown"
+convenciones_codigo: {}
 
-urls:
-  repository: "https://github.com/iv0nis/memsys3"
+comandos_utiles: {}
 
-pendientes_prioritarios:
-  - prioridad: 1
-    tarea: "Evaluar implementación IMPROVEMENT-001 (contexto docs críticos)"
-    detalle: "Decidir opción A (leer README), B (sección sistema:), híbrido, o aplazar. Alta prioridad para nuevas instancias tengan contexto fundamental."
-
-  - prioridad: 2
-    tarea: "Probar deployment completo en proyecto CLIENT_E"
-    detalle: "Ejecutar deployment en proyecto Ciencia de Datos usando nuevo protocolo (clone temporal, briefing, borrar)"
-
-  - prioridad: 3
-    tarea: "Considerar ISSUE-001 Fase 1 (documentar puntos calientes)"
-    detalle: "Quick win: agregar checklist en DEVELOPMENT.md de qué sincronizar en cada tipo de cambio (versión, estructura, etc.)"
-
-  - prioridad: 4
-    tarea: "Migrar repos: memsys3_dev (privado) vs memsys3 (público)"
-    detalle: "Separar desarrollo interno de distribución pública según decisión ADR-009"
-
-  - prioridad: 5
-    tarea: "Validar rotación automática en proyecto real"
-    detalle: "Comprobar que funciona cuando sessions.yaml supera 1800 líneas"
-
-decisions_clau:
-  filosofia: "Criterio inteligente del CA, NO límites arbitrarios"
-  escalabilidad: "Rotación + archivado automático"
-  preservacio: "Datos SIEMPRE preservados (history/, sessions_N.yaml, adr_N.yaml)"
-  rutas: "Sistema unificado memsys3/ para portabilidad y claridad"
-  documentacion: "Meta-niveles separados según audiencia"
-  workflow: "Main-Agent NO compila, solo sugiere endSession"
-  templates: "memory/templates/ son guías permanentes, NO se borran post-deployment"
-  gotchas: "Se documentan en sessions.yaml (contextualizados), NO en project-status"
-  deployment: "Clone temporal memsys3_temp, copiar, briefing con templates, borrar temp"
-  backlog: "docs/backlog/ organiza trabajo futuro con 6 prefijos, NO se distribuye (específico dev memsys3)"
-  notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
-
-historic_sessions:
-  - data: "2025-11-03"
-    resum: "Verificación FASE 3 (detectadas 200+ líneas catalán), correcciones reales (16 archivos), correcciones auditoría (3 fixes), archivado docs (6 archivados), sistema backlog creado (ISSUE-001 + IMPROVEMENT-001), aclaración docs/, prompt backlog.md. 10 commits. Sistema 100% español verificado, documentación 10/10."
-  - data: "2025-11-02"
-    duracion: "~2.5h"
-    objetivo: "FASE 3 Correcciones - Valores Descriptivos YAML"
-    highlights: "Corregido error crítico FASE 3: keys YAML traducidos OK pero valores descriptivos NO. Traducidas 101 instancias de ~40 palabras catalanas en 8 archivos YAML. Verificación exhaustiva: 0 catalán residual ✅. Commits: f60c8e0 (correcciones), 56c4901 (finales + docs). Gotcha crítico documentado: keys ≠ valores."
-
-  - data: "2025-11-02"
-    duracion: "~2h"
-    objetivo: "FASE 2 Traducción Completa + Corrección Errores Críticos"
-    highlights: "FASE 2 completada: 5 archivos traducidos (deploy.md, endSession.md, serve.py, index.html, viewer.js), Corrección 2 errores críticos (archivos no copiados a templates, 20+ labels HTML sin traducir), 6 prompts copiados, 40 archivos modificados total, 0 catalán residual en templates ✅"
-
-  - data: "2025-11-02"
-    duracion: "~4h"
-    objetivo: "Traducción completa catalán → español"
-    highlights: "FASE 1: 18 archivos YAML traducidos, Fixes: ADR-009 contenido multiline, FASE 2 parcial: 3 README.md traducidos, 21 archivos modificados, docs referencia YAML_FIELDS_NO_TRADUCIR.md creado"
-
-  - data: "2025-10-31"
-    duracion: "~3h"
-    objetivo: "Preparación deployment y corrección 9 bugs críticos"
-    highlights: "viz/ a raíz, history/ creado, deploy.md reescrito con ADR-009, análisis exhaustivo 26 issues, resueltos 4 CRÍTICOS + 5 ALTOS, protección pérdida datos"
-
-  - data: "2025-10-31"
-    duracion: "~2h"
-    objetivo: "Implementación ADR-009 y corrección de inconsistencias"
-    highlights: "8 features implementadas, 3 problemas resueltos, corrección CRÍTICA deploy.md, 9 archivos corregidos, sistema 100% alineado ADR-009"
-
-  - data: "2025-10-31"
-    duracion: "~3h"
-    objetivo: "Validación de deployment y filosofía de templates"
-    highlights: "ADR-009 (templates permanentes + gotchas en sessions), actualizado DEVELOPMENT.md (+140 líneas), clarificada filosofía ms3t"
-
-  - data: "2025-10-29"
-    duracion: "~2h"
-    objetivo: "Limpieza completa del sistema de rutas"
-    highlights: "Corrección sistemática rutas memsys3/, eliminación 6543 líneas residuos, validación compilación exitosa, v0.3.0"
-
-  - data: "2025-10-29"
-    duracion: "~3-4h"
-    objetivo: "Alineación completa: sistema de rutas unificado y separación de meta-niveles"
-    highlights: "3 ADRs críticas, todas rutas actualizadas a memsys3/, 4 niveles documentación, restricción Main-Agent"
-
-  - data: "2025-10-28"
-    duracion: "~8h"
-    objetivo: "Creación inicial de memsys3 v1.0 + deploy system + memsys3_dev/ dog-fooding"
-    highlights: "Context Agent criterioo inteligente, rotación automática, Pla Contingencia, publicado a GitHub"
+historico_sesiones: []

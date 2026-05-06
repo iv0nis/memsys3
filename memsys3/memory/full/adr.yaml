@@ -1085,6 +1085,281 @@ adrs:
 
       Este principio debe guiar futuras decisiones sobre features específicas de modelos.
 
+  - id: "017"
+    titulo: "Sistema file_version por archivo (versionado independiente de infraestructura)"
+    data: "2026-05-06"
+    estado: aceptado
+    area: "infrastructure"
+
+    context: |
+      Hasta v0.20.0, memsys3 versionaba globalmente con git tags (memsys3_version v0.X.Y).
+      Bastaba para trazar releases pero no permitía:
+      - Saber qué versión tiene un archivo individual en un proyecto desplegado
+      - Detectar archivos desactualizados durante /actualizar-memsys3 sin diff completo
+      - Trazabilidad fina cuando solo cambia un prompt o template
+      - Auditoría granular en operations.log
+
+    decision: |
+      Cada archivo de infraestructura memsys3 tiene su propio file_version (formato 0.Y.Z).
+
+      Ubicación según tipo:
+      - .md (prompts): última línea como `<!-- version: 0.1.0 -->`
+      - .yaml templates: primera línea como `# version: 0.1.0`
+      - .yaml agents: campo `file_version: "0.2.0"` al final
+
+      Bumping: solo con /actualizar-memsys3. Main Agent y Context Agent NO lo modifican.
+
+      Alcance: 21 archivos en prompts/, agents/, memory/templates/.
+      NO aplica a: datos vivos (project-status.yaml, full/*.yaml), context.yaml
+      (compilado, usa version_context), README.md (identidad).
+
+    alternatives:
+      - nombre: "Solo versionado global (status quo pre-v0.20.0)"
+        pros:
+          - "Simplicidad: un único número de versión"
+          - "Coherente con git tags"
+        contras:
+          - "No detecta qué archivos cambiaron sin diff"
+          - "Imposibilita trazabilidad fina"
+        por_que_descartada: "Insuficiente para audit y updates quirúrgicos"
+
+      - nombre: "Versionado por hash de contenido"
+        pros:
+          - "Automático, sin mantenimiento"
+        contras:
+          - "Cambia con cualquier whitespace/comment edit"
+          - "Sin semántica major/minor"
+          - "No comparable como mayor/menor"
+        por_que_descartada: "Sin semántica humana ni jerarquía comparable"
+
+      - nombre: "Semver completo X.Y.Z con X mayor"
+        pros:
+          - "Estándar conocido"
+        contras:
+          - "X mayor implica breaking change global, redundante con memsys3_version"
+          - "Confunde versionado de archivo con versionado de sistema"
+        por_que_descartada: "Formato 0.Y.Z reserva 0 como prefijo de archivo, evita confusión"
+
+    consecuencias:
+      positivas:
+        - "Trazabilidad fina por archivo en operations.log"
+        - "Habilita sustitución diferencial en actualizar.md (ADR-018)"
+        - "Audit trail por archivo y versión"
+        - "Hot-fixes individuales sin bump global de memsys3"
+      negativas:
+        - "Mantenimiento manual del bump al modificar archivos de infraestructura"
+        - "21 archivos a vigilar — riesgo de olvidar bump"
+        - "Tres ubicaciones distintas según tipo (incoherencia visual)"
+      impacto: |
+        Afecta prompts/, agents/, templates/.
+        actualizar.md depende para Paso 14 (registro en operations.log).
+        Main Agent y Context Agent con restricción explícita: no modifican file_version.
+
+    notes: |
+      Implementado en sesión 2026-04-15 (release v0.20.0).
+      context.yaml es excepción (compilado, su metadata.version_context refleja fecha
+      de compilación, no versión de memsys3).
+      Relacionado: ADR-018 (sustitución diferencial en actualizar.md) consume este sistema.
+
+  - id: "018"
+    titulo: "Sustitución diferencial de templates de schema en actualizar.md"
+    data: "2026-05-06"
+    estado: aceptado
+    area: "process"
+
+    context: |
+      actualizar.md debe actualizar archivos memsys3 en proyectos desplegados sin
+      perder personalización ni introducir conflictos.
+
+      En memsys3 hay tres clases de archivos según su contrato con el usuario:
+
+      1. Templates de schema (`memory/templates/*-template.yaml`):
+         fuente de verdad canónica del schema YAML. El usuario NO los edita por
+         contrato — son referencia para que el agente sepa rellenar correctamente
+         los archivos de datos vivos. Idénticos en todo deployment.
+
+      2. Personalizables (`prompts/*.md`, `agents/*.yaml`):
+         memsys3 es agnóstico de dominio (software, escritura, marketing, dirección).
+         Un proyecto puede necesitar adaptar newSession.md para cargar bibliografía,
+         o renombrar Main Agent a Editor Agent. Estos archivos PUEDEN editarse.
+
+      3. Datos vivos (`memory/project-status.yaml`, `memory/full/*`, `memory/context.yaml`):
+         contenido del usuario. Merge inteligente (lógica ya existente, ISSUE-018 sesión
+         2026-03-22).
+
+      Con file_version (ADR-017) podemos comparar versiones, pero la estrategia de
+      actualización debe respetar el contrato de cada clase. Sustitución directa solo
+      es segura donde el contrato garantiza que no hay edición local: clase 1.
+
+    decision: |
+      En actualizar.md, los templates de schema (`memory/templates/*-template.yaml`)
+      se actualizan por SUSTITUCIÓN DIRECTA condicionada a comparación de file_version:
+
+      Para cada template de schema:
+      1. Leer file_version del upstream (clone temporal del repo)
+      2. Leer file_version del archivo en el proyecto destino
+      3. Si upstream > destino → sobrescribir destino (sustitución directa, sin merge)
+      4. Si iguales → no tocar
+      5. Si destino > upstream → warning (estado anómalo, pedir confirmación al usuario)
+
+      Tras cada sustitución, registrar en operations.log: archivo, versión anterior,
+      versión nueva, timestamp.
+
+      ALCANCE ACOTADO: esta lógica aplica EXCLUSIVAMENTE a `memory/templates/`.
+      NO aplica a:
+      - prompts/, agents/ — personalizables, requieren estrategia distinta (ADR pendiente)
+      - datos vivos (project-status.yaml, full/*, context.yaml) — merge inteligente
+
+    alternatives:
+      - nombre: "Sustitución directa también en prompts/agents"
+        pros:
+          - "Lógica uniforme para toda la infraestructura"
+        contras:
+          - "Rompe personalización legítima de proyectos no-software"
+          - "Asume rigidez incompatible con la naturaleza agnóstica de memsys3"
+          - "Precedente ISSUE-018 (WORKSPACE_Y) demostró que usuarios sí personalizan"
+        por_que_descartada: "Viola el principio de memsys3 como andamio adaptable"
+
+      - nombre: "Merge en todo (incluyendo templates de schema)"
+        pros:
+          - "Robusto ante cualquier modificación inesperada"
+        contras:
+          - "Innecesario donde el contrato garantiza no-edición"
+          - "Genera falsos conflictos en archivos donde el origen sí es determinista"
+          - "Más complejidad y superficie de error"
+        por_que_descartada: "Aporta riesgo sin beneficio en archivos canónicos por contrato"
+
+      - nombre: "Comparación por hash en vez de file_version"
+        pros:
+          - "Detecta cualquier diferencia, no solo bumps semánticos"
+        contras:
+          - "Cambios cosméticos disparan sustitución innecesaria"
+          - "No comunica intención del cambio"
+        por_que_descartada: "file_version (ADR-017) ya es la fuente de verdad semántica"
+
+    consecuencias:
+      positivas:
+        - "Updates limpios y deterministas en templates de schema"
+        - "Cero conflictos de merge en archivos canónicos por contrato"
+        - "operations.log informa qué templates se actualizaron"
+        - "Detección de estados anómalos (destino > upstream)"
+        - "Respeta personalización en prompts/agents al no aplicarles la regla"
+      negativas:
+        - "actualizar.md tiene tres rutas según clase de archivo (más lógica)"
+        - "Si el usuario rompe el contrato y edita un template de schema, su edición se pierde"
+        - "Depende de mantener correctamente file_version (ADR-017)"
+        - "Estrategia para prompts/agents personalizables queda pendiente (ADR futuro)"
+      impacto: |
+        Afecta el flujo de actualizar.md exclusivamente para `memory/templates/`.
+        Los pasos para prompts/, agents/, y datos vivos se mantienen como están.
+        Asume el contrato: archivos en memory/templates/ son canónicos, no se editan
+        en el destino. Si el usuario necesita personalizar el schema, debe abrir issue
+        o ADR upstream.
+
+    notes: |
+      Consume el sistema file_version definido en ADR-017.
+      Caso "destino > upstream" debe pedir confirmación al usuario antes de sobrescribir
+      (puede indicar hot-fix local sin push o estado corrupto).
+      Registro en operations.log se hace en Paso 14 de actualizar.md.
+
+      Pendiente — ADRs futuros relacionados:
+      - Política de evolución de schema (deprecation de campos en templates) — ADR-019
+      - Estrategia de sustitución/merge para prompts y agents personalizables — ADR pendiente
+
+  - id: "019"
+    titulo: "Política de evolución de schema en templates (deprecation contextualizada)"
+    data: "2026-05-06"
+    estado: aceptado
+    area: "process"
+
+    context: |
+      Los templates de schema (`memory/templates/*-template.yaml`) definen la estructura
+      canónica. Cuando upstream elimina un campo, surge la pregunta: ¿debería ese campo
+      desaparecer también en proyectos que sí lo encuentran útil?
+
+      memsys3 es agnóstico de dominio. Un campo que upstream considera obsoleto en
+      el caso general puede seguir siendo útil en un proyecto específico (libro,
+      proyecto de marketing, investigación). Decidir centralmente desde upstream
+      contradice el principio: solo el usuario y el agente contextualizado conocen
+      su proyecto.
+
+      Necesitamos una política que comunique la intención de upstream sin imponerla.
+
+    decision: |
+      Política en dos fases con decisión contextualizada por el agente del proyecto:
+
+      FASE 1 — upstream marca deprecation con justificación
+      - Comentario en el template: `# DEPRECATED v0.Y+1.0 — motivo: <razón>`
+      - Campo sigue presente, sigue siendo válido en cualquier proyecto
+      - El motivo permite al agente del proyecto evaluar si aplica a su caso
+
+      FASE 2 — actualizar.md ejecuta evaluación contextualizada
+      - El agente que actualiza lee project-status.yaml, context.yaml y sessions
+        recientes para contextualizarse en el proyecto destino (modo extendido,
+        precedente sesión 2026-04-15)
+      - Para cada campo deprecated o huérfano detectado:
+          a) Verifica si el campo se usa en datos vivos del proyecto
+          b) Evalúa si el motivo de upstream aplica a este proyecto
+          c) Propone al usuario: mantener / migrar a otro campo / eliminar
+          d) Nunca decide solo — pregunta al usuario con su evaluación como guía
+
+      upstream NUNCA elimina automáticamente. El template puede vivir con campos
+      deprecated indefinidamente si proyectos legítimos los siguen usando.
+
+    alternatives:
+      - nombre: "Política rígida: deprecation → eliminación obligatoria"
+        pros:
+          - "Schema converge globalmente"
+          - "Mantenimiento simple upstream"
+        contras:
+          - "Decide centralmente sin contexto del proyecto"
+          - "Viola agnosticismo de memsys3"
+          - "Fuerza migración aunque el campo siga siendo útil"
+        por_que_descartada: "Contradice principio: solo el usuario conoce su proyecto"
+
+      - nombre: "Eliminación silenciosa sin deprecation"
+        pros:
+          - "Simplicidad"
+        contras:
+          - "Sin aviso al usuario"
+          - "Sin contexto del proyecto"
+          - "Viola human-in-the-loop"
+        por_que_descartada: "Rompe expectativas y elimina datos sin confirmar"
+
+      - nombre: "Tolerar huérfanos indefinidamente sin aviso"
+        pros:
+          - "Cero fricción"
+        contras:
+          - "Schema diverge sin que nadie lo sepa"
+          - "Usuario pierde oportunidad de evaluar"
+        por_que_descartada: "Falta visibilidad de intención de upstream"
+
+    consecuencias:
+      positivas:
+        - "Decisión de eliminar la toma quien conoce el proyecto"
+        - "upstream comunica intención sin imponerla"
+        - "Templates pueden conservar campos legacy si proyectos los justifican"
+        - "Agnosticismo respetado: no se asume rigidez del dominio software"
+        - "Human-in-the-loop preservado en cada paso"
+      negativas:
+        - "Templates pueden acumular campos deprecated indefinidamente"
+        - "actualizar.md requiere agente contextualizado (modo extendido)"
+        - "Más diálogo durante actualización (no automático)"
+      impacto: |
+        Afecta el flujo de actualizar.md: requiere lectura de contexto antes de
+        proponer eliminaciones. Mantenedores upstream solo marcan deprecation con
+        motivo, no fuerzan timeline.
+        Aplica solo a templates de schema (memory/templates/).
+
+    notes: |
+      Encaja con precedente del modo extendido en actualizar.md (sesión 2026-04-15):
+      subagente lee newSession.md para contextualizarse antes de proponer cambios.
+
+      "Motivo" en deprecated debería ser conciso pero accionable, ej:
+      "Reemplazado por campo X, ver ADR-NNN" o "Redundante con metadata.fase"
+
+      Relacionado: ADR-017 (file_version), ADR-018 (sustitución diferencial).
+
 # Índice rápido para encontrar ADRs
 index:
   - id: "001"
@@ -1128,4 +1403,13 @@ index:
     estado: aceptado
   - id: "016"
     titulo: "memsys3 agnóstico de modelo de IA + Commands como feature opcional Claude-específica"
+    estado: aceptado
+  - id: "017"
+    titulo: "Sistema file_version por archivo (versionado independiente de infraestructura)"
+    estado: aceptado
+  - id: "018"
+    titulo: "Sustitución diferencial de templates de schema en actualizar.md"
+    estado: aceptado
+  - id: "019"
+    titulo: "Política de evolución de schema en templates (deprecation contextualizada)"
     estado: aceptado
