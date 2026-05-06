@@ -1,10 +1,10 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-05-05"
-  actualizado_por: "Claude (Session 2026-05-05 Release v0.21.1 + dominio memsys3.org)"
-  fase: "Development v0.21.1"
-  memsys3_version: "v0.21.1"
+  ultima_actualizacion: "2026-05-06"
+  actualizado_por: "Claude (Session 2026-05-06 Release v0.22.0 + ADRs 017-019 + limpieza scaffolds memsys3_templates)"
+  fase: "Development v0.22.0"
+  memsys3_version: "v0.22.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
 
@@ -14,9 +14,9 @@ vision_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estado_actual:
-  fase: "Development v0.21.1"
-  ultima_feature: "Release v0.21.1: restriccion operaciones_git en MA + 3 items backlog (ISSUE-021/022, EXPLORATION-003) + decision dominio memsys3.org canonico (.com redirect 301)"
-  siguiente_milestone: "Desplegar web memsys3.org + compilar context.yaml (ultima: 2026-03-08) + FEATURE-012 (glosario conceptos)"
+  fase: "Development v0.22.0"
+  ultima_feature: "Release v0.22.0: ADRs 017-019 (file_version + sustitucion diferencial + deprecation contextualizada) + limpieza scaffolds memsys3_templates/memory/ (4 archivos vaciados a Modelo D) + nueva logica en actualizar.md Paso 6.4/6.4.5 + ISSUE-023 caso CLIENT_D resuelto"
+  siguiente_milestone: "Desplegar web memsys3.org + plan paralelo (auditoria scaffold completo + ADR prompts/agents personalizables) + FEATURE-012 (glosario conceptos)"
 
 features:
   context_agent:
