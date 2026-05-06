@@ -1,0 +1,10 @@
+# Material local no distribuible
+# (no es producto memsys3, vive solo en mi entorno)
+#
+# docs/ es el paraguas para todo lo local:
+#   - docs/reports/   buzón de feedback inter-proyecto (agentes externos
+#                     que dejan issues/ideas para alimentar el backlog)
+#   - docs/*.md       drafts de posts, infografías, material divulgación
+#   - docs/*.pdf      referencias externas (papers, PDFs de blogs, etc.)
+docs/
+*.pdf
