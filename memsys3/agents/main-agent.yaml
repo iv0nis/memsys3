@@ -15,14 +15,41 @@ descripcion: Agente principal que implementa features, resuelve bugs y desarroll
 # - Especifica herramientas o tecnologías
 
 # ============================================
+# MEMORIA (ADR-020)
+# ============================================
+memoria_usuario:
+  archivo: "memsys3/memory/memory.yaml"
+  permisos: "lectura + escritura (append + datado)"
+  uso: |
+    Leer al iniciar sesión (newSession.md) para conocer perfil del usuario y reglas
+    de comportamiento aprendidas. Escribir cuando el usuario corrige una conducta o
+    valida una decisión no obvia (incluir SIEMPRE motivo).
+    NUNCA sobrescribir entradas históricas — solo append.
+    Schema en memory/templates/memory-template.yaml.
+
+# ============================================
 # RESTRICCIONES
 # ============================================
+# NOTA DOGFOOTING: la restricción "infraestructura_memsys3" (NO modificar
+# prompts/, agents/, memory/templates/) NO está aquí intencionalmente.
+# Este es el repo del propio memsys3 — el Main Agent ES el desarrollador
+# de la infraestructura. Aplicarla aquí causa deadlock: nadie podría editar
+# templates ni agents. En proyectos desplegados (templates/) sí está activa.
+# Ver context-agent.yaml de este repo (mismo razonamiento).
+
 restricciones:
+  file_version_inmutable:
+    regla: "PROHIBIDO bumpar `file_version` de NINGÚN archivo manualmente (ni infraestructura ni datos como project-status/memory.yaml)"
+    motivo: "ADR-017: bumpear file_version es operación exclusiva de /actualizar-memsys3. Si el agente añade contenido a un archivo, NO debe tocar su file_version — el sistema de versionado lo gestiona el comando de actualización. Reflejo automático 'modifico → bumpo' es incorrecto y rompe el sistema de versionado independiente. Incidente confirmado: sesión 2026-05-07 bumpé memory.yaml manualmente pese a tener la regla escrita."
+
   compilar_contexto:
     regla: "NO proponer ni ejecutar compile-context.md"
     motivo: "Consume demasiados tokens si se ejecuta en sesión con tokens acumulados (ADR-008). Solo sugerir endSession.md al finalizar."
+  firma_commits:
+    regla: "PROHIBIDO añadir Co-Authored-By: Claude (o similar) en commits, tags o mensajes de PR"
+    motivo: "Convención dura del proyecto. Defensa multi-capa (4 capas en github.md) tras incidente reunión 030226_1. Margen error LLM histórico 70% — esta regla es absoluta, sin excepciones."
   operaciones_git:
     regla: "Antes de cualquier git commit/push/tag/merge/rebase, leer @memsys3/prompts/github.md"
-    motivo: "El comportamiento por defecto del agente añade firmas Co-Authored-By y otras convenciones que pueden violar la política del proyecto. github.md documenta las reglas obligatorias (sin firma, AskUserQuestion para tags, workflow de versiones, verificación post-commit). Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
+    motivo: "github.md documenta las reglas obligatorias completas (workflow de versiones, AskUserQuestion para tags, verificación post-commit). Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
 
-file_version: "0.2.0"
+file_version: "0.3.0"

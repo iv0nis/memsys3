@@ -72,6 +72,31 @@ Si el usuario quiere actualizar un item:
 2. Actualiza el campo correspondiente (Estado, Prioridad, etc.)
 3. Agrega información en la sección apropiada
 
+## 4. Documentar Item con Informe / Plan (ADR-021)
+
+Si el usuario quiere añadir documentación extendida a un item (típicamente un BLUEPRINT, FEATURE grande o item que se delegará a otra sesión):
+
+1. Pregunta qué quiere generar: `informe`, `plan`, o ambos
+2. Verifica que existe `memsys3/backlog/docs/` (créalo si no: `mkdir -p memsys3/backlog/docs`)
+3. Lee el item original y los templates relevantes:
+   - `memsys3/memory/templates/informe-template.md`
+   - `memsys3/memory/templates/plan-template.md`
+4. Crea el / los archivo/s:
+   - `memsys3/backlog/docs/informe_PREFIJO-NNN.md`
+   - `memsys3/backlog/docs/plan_PREFIJO-NNN.md`
+5. Rellena con la información disponible en sesión (contexto, hallazgos, decisiones). NO inventes — si no hay info, marca con `[PENDIENTE]` y notifica al usuario.
+6. **Actualiza el item original**: añade en sección `Referencias`:
+   ```
+   - **Informe:** `docs/informe_PREFIJO-NNN.md`
+   - **Plan:** `docs/plan_PREFIJO-NNN.md`
+   ```
+
+**Cuándo recomendar al usuario crear informe/plan:**
+- BLUEPRINT-XXX → siempre ambos
+- FEATURE/SPEC grande → ambos si se va a delegar ejecución
+- ISSUE con causa raíz no obvia → al menos informe
+- IMPROVEMENT pequeño, typo fix → no necesita docs
+
 ---
 
 ## Leyenda de Códigos
@@ -84,4 +109,4 @@ Si el usuario quiere actualizar un item:
 - **EXPLORATION-XXX**: Investigación sin solución clara
 
 Ver `memsys3/backlog/README.md` para workflow completo y estructura de documentos.
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->

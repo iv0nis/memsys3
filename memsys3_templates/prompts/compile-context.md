@@ -51,7 +51,8 @@ Lee en este orden. Estima tokens acumulados tras cada tier y para si superas ~15
 1. `memsys3/memory/project-status.yaml` — estado actual
 2. `memsys3/memory/full/adr.yaml` — todas las ADRs
 3. `memsys3/memory/full/sessions.yaml` — sesiones recientes
-4. Archivos rotados: `sessions_1.yaml`, `sessions_2.yaml`, ... — histórico completo
+4. `memsys3/memory/memory.yaml` — perfil usuario + feedback (ADR-020, **SOLO LECTURA**)
+5. Archivos rotados: `sessions_1.yaml`, `sessions_2.yaml`, ... — histórico completo
 
 ```bash
 # Verificar archivos rotados disponibles
@@ -77,6 +78,17 @@ ls README.md 2>/dev/null && echo "✅ README existe" || echo "❌ Sin README"
 ```bash
 ls "$MEMSYS3_ROOT/backlog/"*.md 2>/dev/null | grep -v README || echo "Sin backlog"
 ```
+
+**Regla `docs/` selectiva (ADR-021):**
+
+`memsys3/backlog/docs/informe_*.md` y `plan_*.md` son documentación extendida opcional. **NO se leen por defecto** (evita explosión de tokens — informes pueden ser largos).
+
+Lee un `informe_*` o `plan_*` SOLO si:
+- El item asociado está referenciado en `pendientes_prioritarios` de `project-status.yaml`, **Y**
+- El item es complejo (BLUEPRINT, FEATURE grande, ISSUE con causa raíz no obvia), **Y**
+- La síntesis del item corto NO basta para entender el estado (tras leerlo, sigues con dudas relevantes)
+
+Si lees un informe/plan, regístralo en `notas_compilacion.tier3_docs_leidos`.
 
 ### Tier 4 — Documentos contextuales adicionales
 
@@ -393,4 +405,4 @@ operations:
 
 **COMIENZA AHORA LA COMPILACIÓN leyendo todos los archivos y aplicando tu criterio para generar `context.yaml`.**
 
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->

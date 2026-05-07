@@ -419,6 +419,13 @@ if [ ! -f "$MEMSYS3_ROOT/backlog/README.md" ]; then
   echo "# Backlog" > "$MEMSYS3_ROOT/backlog/README.md"
   echo "backlog/ creado"
 fi
+
+# Crear backlog/docs/ si no existe (ADR-021: informe/plan opcionales)
+if [ ! -d "$MEMSYS3_ROOT/backlog/docs" ]; then
+  mkdir -p "$MEMSYS3_ROOT/backlog/docs"
+  touch "$MEMSYS3_ROOT/backlog/docs/.gitkeep"
+  echo "backlog/docs/ creado (ADR-021)"
+fi
 ```
 
 ### 6.1 Actualizar Prompts y Docs

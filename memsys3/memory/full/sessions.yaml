@@ -3,6 +3,256 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-07-cdc-adr020-memory-yaml-adr021-backlog-docs-blueprint001"
+    titulo: "Principio CDC + ADR-020 (memory.yaml agnóstica + bridge MEMORY.md) + ADR-021 (backlog docs anti-CDC) + BLUEPRINT-001 release v1.0"
+    data: "2026-05-07"
+    duracion: "~3h"
+    peso: "alto"
+    objetivo: "Cubrir gap de memoria de usuario/feedback agnóstica, formalizar patrón anti-CDC en backlog, abrir BLUEPRINT release v1.0 dog-foodeando el patrón."
+
+    highlights:
+      - "Articulado principio fundacional CDC (Casualidad de Contexto): lucidez agéntica generada por eventualidad del contexto de la sesión actual y NO por archivos canónicos. memsys3 ES solución a CDC — su propósito es propiciar lucidez agéntica sostenida garantizada, no fluctuante. Anotado como principio fundacional en memsys3/memory/memory.yaml dogfooding."
+      - "ADR-020 creada: memoria de usuario/feedback agnóstica (memsys3/memory/memory.yaml) con bridge opcional MEMORY.md para auto-memory de Claude Code. Cierra ISSUE-021 con Opción D. Schema flexible (usuario/feedback/referencias). Main Agent escribe append+datado, Context Agent solo lectura. Bridge graceful degradation (ADR-016)."
+      - "ADR-021 creada: backlog extendido con informe_*.md y plan_*.md opcionales en backlog/docs/ como solución anti-CDC. Items cortos generan CDC en items complejos cuando agente fresco los ejecuta — docs canónicos eliminan dependencia del azar. Templates en memory/templates/. Aplica a los 6 prefijos (incluido EXPLORATION)."
+      - "Implementación completa ADR-020: memory.yaml + memory-template.yaml en ambos sitios, integración en newSession (lectura), compile-context (Tier 1 lectura), main-agent.yaml (permiso escritura), context-agent.yaml (Tier 1 solo lectura + restricción no-escritura), deploy.md (Paso 9 bridge MEMORY.md opcional)."
+      - "Implementación completa ADR-021: informe-template.md + plan-template.md en ambos sitios, backlog/docs/ + .gitkeep, backlog/README.md actualizado con tabla cuándo crear docs por tipo de item, prompts/backlog.md añade 4ª operación 'documentar', deploy.md y actualizar.md crean backlog/docs/ en scaffold, compile-context.md regla anti-explosión Tier 3 (NO leer docs/ por defecto)."
+      - "BLUEPRINT-001-release-memsys3-v1 creado dog-foodeando el patrón ADR-021: item corto (85 líneas) + informe profundo (190 líneas, hallazgos por frente, alternativas, open questions) + plan ejecutable (290 líneas, 8 frentes con pasos/criterios/restricciones/riesgos). 7 frentes para release: principios canónicos, auditoría ADRs, scaffold completo, completitud templates, residualidad, dogfooding strategy, pulir deploy/actualizar."
+      - "Regla dura firma_commits añadida a main-agent.yaml (ambos sitios): PROHIBIDO Co-Authored-By: Claude. Defensa multi-capa adicional al recordatorio de github.md."
+      - "Nota dogfooting explícita en memsys3/agents/main-agent.yaml: 'la restricción infraestructura_memsys3 NO está aquí intencionalmente, este es el repo del propio memsys3, aplicarla causa deadlock'. Elimina ambigüedad para agente fresco."
+      - "Verificación lucidez file_version: la asimetría dogfooding/distribuido (dogfooding sin restricción, distribuido con restricción) está codificada en archivos canónicos main-agent.yaml de cada sitio, NO depende de CDC. Validado anti-CDC."
+      - "Hallazgos para BLUEPRINT-001: 10 principios memsys3 dispersos sin core canónico (frente 1 → PRINCIPLES.md), 5 brechas ADRs sospechosas (frente 2), leak IMPROVEMENT-008-*.md en memsys3_templates/backlog/ (frente 3), operations.log sin template (frente 4)."
+
+    decisions:
+      - tema: "Formato memory.yaml: .yaml vs .md"
+        decision: ".yaml (consistencia con resto de memory/: project-status, context, sessions, adr)"
+        motivo: "Romper consistencia por simetría visual con MEMORY.md de Claude no compensa coste de parsing/síntesis"
+        adr_relacionada: "ADR-020"
+
+      - tema: "Bridge MEMORY.md raíz: contenido vs solo puntero"
+        decision: "Solo puntero corto. MEMORY.md NO contiene memoria real, solo redirige a memsys3/memory/memory.yaml"
+        motivo: "Preserva 'una sola carpeta'. Memoria real vive dentro de memsys3/, MEMORY.md es bridge Claude-específico opt-in"
+        adr_relacionada: "ADR-020"
+
+      - tema: "Granularidad docs en backlog: por tipo de item vs siempre"
+        decision: "Opcionales con tabla por tipo (BLUEPRINT siempre, IMPROVEMENT pequeño nunca, EXPLORATION recomendado, etc.)"
+        motivo: "Coste proporcional al riesgo CDC. Items triviales no necesitan burocracia, items complejos sí"
+        adr_relacionada: "ADR-021"
+
+      - tema: "Ubicación docs: backlog/docs/ vs memsys3/docs/backlog_docs/"
+        decision: "backlog/docs/ (cohesión local con items)"
+        motivo: "Trabajar un item no requiere navegar a otra carpeta. Reduce riesgo de docs huérfanos"
+        adr_relacionada: "ADR-021"
+
+      - tema: "CA y backlog/docs/: lectura por defecto vs selectiva"
+        decision: "NO leer docs/ por defecto en Tier 3. Solo si item está en pendientes prioritarios + complejo + corto no basta"
+        motivo: "Informes pueden ser largos (cientos de líneas). Lectura por defecto explotaría tokens del CA"
+        adr_relacionada: "ADR-021"
+
+      - tema: "Regla firma commits: recordatorio vs regla dura"
+        decision: "Regla dura inline en main-agent.yaml (defensa adicional a github.md)"
+        motivo: "Recordatorio en github.md es lectura on-demand. Regla dura cargada en cada newSession reduce margen error"
+        adr_relacionada: "ADR-016 + memory.yaml feedback"
+
+    features_implementadas:
+      - "ADR-020: memoria de usuario/feedback agnóstica + bridge MEMORY.md opcional Claude"
+      - "ADR-021: backlog extendido con informe/plan opcionales (anti-CDC)"
+      - "Sistema memory.yaml: archivo + template + integración en agents y prompts"
+      - "Sistema backlog docs: 2 templates + actualización backlog.md + scaffold automático"
+      - "Bridge opcional MEMORY.md raíz para Claude Code (graceful degradation)"
+      - "Regla dura firma_commits en main-agent.yaml (ambos sitios)"
+      - "Nota dogfooting explícita en memsys3/agents/main-agent.yaml (anti-CDC)"
+      - "BLUEPRINT-001 + informe + plan: primer item dog-foodeando ADR-021"
+
+    archivos_modificados:
+      nuevos:
+        - "memsys3/memory/memory.yaml (con seed real dogfooding)"
+        - "memsys3_templates/memory/memory.yaml (vacío Modelo D)"
+        - "memsys3/memory/templates/memory-template.yaml"
+        - "memsys3_templates/memory/templates/memory-template.yaml"
+        - "memsys3/memory/templates/informe-template.md"
+        - "memsys3_templates/memory/templates/informe-template.md"
+        - "memsys3/memory/templates/plan-template.md"
+        - "memsys3_templates/memory/templates/plan-template.md"
+        - "memsys3/backlog/docs/.gitkeep"
+        - "memsys3_templates/backlog/docs/.gitkeep"
+        - "memsys3/backlog/BLUEPRINT-001-release-memsys3-v1.md"
+        - "memsys3/backlog/docs/informe_BLUEPRINT-001.md"
+        - "memsys3/backlog/docs/plan_BLUEPRINT-001.md"
+      modificados_pares_dogfooding_y_templates:
+        - "agents/main-agent.yaml (memoria_usuario + restricción firma_commits + bump 0.2.0→0.3.0)"
+        - "agents/context-agent.yaml (memory.yaml en Tier 1 lectura + restricción no-escritura + bump 0.1.0→0.2.0)"
+        - "prompts/newSession.md (lectura memory.yaml + bump 0.1.0→0.2.0)"
+        - "prompts/compile-context.md (memory.yaml en Tier 1 + regla docs/ selectiva en Tier 3 + bump 0.1.0→0.2.0)"
+        - "prompts/deploy.md (Paso 9 bridge MEMORY.md + scaffold backlog/docs/ + bump 0.1.0→0.2.0)"
+        - "prompts/actualizar.md (crear backlog/docs/ si falta, ADR-021)"
+        - "prompts/backlog.md (4ª operación documentar + bump 0.1.0→0.2.0)"
+        - "backlog/README.md (sección docs/, tabla por tipo, fecha actualización)"
+      modificados_solo_dogfooding:
+        - "memory/full/adr.yaml (ADRs 020 y 021 + índice)"
+
+    proximos_pasos:
+      - "Ejecutar Frente 1 BLUEPRINT-001: PRINCIPLES.md canónico con CDC como #1"
+      - "Smoke test actualizar.md con lógica nueva Pasos 6.4/6.4.5 (pendiente prioritario 1, ahora frente 7 BLUEPRINT)"
+      - "Limpiar leak memsys3_templates/backlog/IMPROVEMENT-008-*.md (frente 3 BLUEPRINT)"
+      - "Decidir distribución PRINCIPLES.md (raíz repo, templates, ambos)"
+      - "Refactorizar EXPLORATION-001/002/003 al patrón item+informe (validación adicional ADR-021)"
+
+    gotchas:
+      - tipo: "convencion-naming"
+        problema: "Inicialmente conversación usaba 'informe_ISSUE-NNN.md' sesgando hacia ISSUE-only. Confusión potencial: ¿aplica a otros prefijos?"
+        solucion: "ADR-021 + templates + backlog/README usan PREFIJO-NNN consistentemente. Tabla explícita por tipo (incluye EXPLORATION recomendado). Verificar siempre lo escrito en archivos canónicos, no la conversación."
+        criticidad: "media"
+
+      - tipo: "principio-anti-CDC"
+        problema: "Lucidez agéntica que solo emerge porque agente leyó algo concreto en sesión actual viola propósito de memsys3"
+        solucion: "Test mental para cada decisión de diseño: '¿esto requiere que agente fresco adivine, o le doy archivo canónico?'. Si emerge solo de contexto-en-sesión, formalizar en archivo (memory.yaml, ADR, PRINCIPLES.md, etc.)"
+        criticidad: "alta"
+
+      - tipo: "reflejo-bumpeo-file-version"
+        problema: "Agente bumpó memory.yaml file_version 0.1.0→0.1.1 al añadir contenido, pese a tener la regla escrita en el propio archivo (regla feedback) y en ADR-017. Reflejo automático 'modifico archivo → bumpo versión' se dispara antes de pasar por la regla."
+        solucion: "Defensa multi-capa: (1) mantener regla en memory.yaml feedback, (2) añadir restricción dura 'file_version_inmutable' en main-agent.yaml ambos sitios (cargada en cada newSession), (3) reglas en feedback NO bastan si solo se leen retrospectivamente — deben estar en restricciones del agent. Aplicado en sesión 2026-05-07 antes de cerrar."
+        criticidad: "alta"
+
+    referencias:
+      adrs_creadas: ["ADR-020", "ADR-021"]
+      blueprint_creado: "BLUEPRINT-001-release-memsys3-v1"
+      issues_cerrados: ["ISSUE-021 (auto-memory Claude — cerrado por ADR-020)"]
+      principios_articulados: ["CDC (Casualidad de Contexto) — primer principio fundacional anotado"]
+
+  - id: "2026-05-06-adrs-017-018-019-limpieza-scaffolds-release-v0220"
+    titulo: "ADRs 017-019 (file_version + sustitución diferencial + deprecation contextualizada) + limpieza scaffolds memsys3_templates + release v0.22.0"
+    data: "2026-05-06"
+    duracion: "~3h"
+    peso: "alto"
+    objetivo: "Investigar reporte CLIENT_D sobre desalineación schema, formalizar modelo de versionado/actualización/evolución en ADRs, integrar lógica en actualizar.md, release."
+
+    highlights:
+      - "Reporte CLIENT_D (agente externo) apuntaba a desalineación schema en project-status.yaml; investigación reveló que el archivo problemático NO era el dog-fooding (estaba limpio) sino los archivos operativos legacy en memsys3_templates/memory/ (snapshots dog-fooding congelados v1.3 con catalán residual, fugas hacia el producto distribuible)"
+      - "4 archivos vaciados a scaffold puro Modelo D (estructura mínima, sin placeholders, sin referencias, # version: 0.1.0): project-status.yaml, context.yaml, full/adr.yaml, full/sessions.yaml en memsys3_templates/memory/"
+      - "operations.log NO tocado (sin template equivalente, queda para plan paralelo)"
+      - "Tres ADRs arquitectónicas creadas: ADR-017 (sistema file_version), ADR-018 (sustitución diferencial), ADR-019 (deprecation contextualizada)"
+      - "Lógica nueva en actualizar.md Paso 6.4 (sustitución diferencial con extract_version + compare_versions + AskUserQuestion en estado anómalo) + Paso 6.4.5 (detección deprecated/huérfanos en modo Extendido)"
+      - "ISSUE-023 documentado y marcado completado (caso CLIENT_D resuelto)"
+      - "Release v0.22.0 (Minor): 4 commits atómicos sin firma + tag annotated con metadata rica + push exitoso"
+
+    features_implementadas:
+      - nombre: "ADR-017: Sistema file_version por archivo"
+        descripcion: |
+          Versionado independiente de infraestructura, formato 0.Y.Z. Tres ubicaciones según tipo:
+          - .md (prompts): última línea como <!-- version: X.Y.Z -->
+          - .yaml templates: primera línea como # version: X.Y.Z
+          - .yaml agents: campo file_version: "X.Y.Z" al final
+          Solo se bumpa con /actualizar-memsys3. MA y CA no lo modifican.
+          Alcance: 21 archivos infraestructura. NO aplica a datos vivos ni context.yaml (compilado).
+
+      - nombre: "ADR-018: Sustitución diferencial de templates de schema"
+        descripcion: |
+          actualizar.md compara file_version upstream vs destino para memory/templates/ (alcance acotado):
+          - upstream > destino → sobrescribir
+          - iguales → no tocar
+          - destino > upstream → AskUserQuestion (estado anómalo)
+          - destino sin file_version (legacy pre-ADR-017) → tratar como v0, sustituir
+          NO aplica a prompts/agents (personalizables, no inmutables).
+
+      - nombre: "ADR-019: Política de evolución de schema (deprecation contextualizada)"
+        descripcion: |
+          upstream propone deprecation con motivo, agente contextualizado en proyecto destino evalúa
+          si aplica al caso, usuario decide (mantener / migrar / eliminar). upstream NUNCA elimina
+          automáticamente. Templates pueden vivir con campos deprecated indefinidamente.
+          Encaja con modo Extendido de actualizar.md (precedente sesión 2026-04-15).
+
+      - nombre: "Lógica diferencial + deprecation en actualizar.md"
+        descripcion: |
+          Paso 6.4 reescrito con bash helpers (extract_version usando grep+sed, compare_versions
+          usando sort -V) y bucle for sobre cada template. Paso 6.4.5 (modo Extendido) busca
+          # DEPRECATED en templates y campos huérfanos en datos vivos. file_version actualizar.md:
+          0.1.0 → 0.2.0.
+
+      - nombre: "Limpieza scaffolds memsys3_templates/memory/"
+        descripcion: |
+          Modelo D: scaffold puro vacío sin placeholders [RELLENAR], sin referencias a otros
+          archivos (acoplamiento cero). Convención: agente sabe ir a templates/ por documentación.
+          Eliminadas 1145+ líneas legacy de fugas dog-fooding al producto distribuible.
+
+      - nombre: "ISSUE-023 backlog"
+        descripcion: |
+          Documentado caso CLIENT_D, diagnóstico, resolución y comunicación al colaborador externo.
+          Estado: Completado. Aprendizajes incluidos. Plan paralelo enumerado.
+
+    problemas_resueltos:
+      - problema: "Reporte CLIENT_D apuntaba a dog-fooding como problemático cuando el real era archivo paralelo legacy"
+        solucion: "Verificación con grep + comparación tamaños (live 24K vs legacy 7K) + análisis git log de últimos commits. Localizado el verdadero foco: memsys3_templates/memory/*.yaml (no memsys3/memory/*.yaml)."
+
+      - problema: "Modelo de contenido para archivo operativo vs template (¿idénticos? ¿diferentes? ¿ejemplo lleno?)"
+        solucion: "Modelo D: scaffold puro vacío (no idéntico, no ejemplo, no referencias). Convención > acoplamiento. El template-guía con [RELLENAR] vive en templates/, el operativo es estructura mínima vacía."
+
+      - problema: "Palabra 'inmutable' aplicada incorrectamente a prompts/agents"
+        solucion: "Reformulación en 3 clases (templates de schema canónicos / personalizables / datos vivos). memsys3 es agnóstico de dominio: software, escritura, marketing, dirección. Solo memory/templates/ es realmente inmutable por contrato."
+
+      - problema: "Política rígida de deprecation contradice agnosticismo memsys3"
+        solucion: "Decisión final NO la toma upstream sino el agente contextualizado en el proyecto destino. upstream propone con motivo, agente evalúa contra contexto del proyecto, usuario decide. Templates pueden conservar campos legacy indefinidamente si proyectos los justifican."
+
+    decisiones_tomadas:
+      - decision: "Sistema file_version por archivo (formato 0.Y.Z)"
+        justificacion: "Trazabilidad fina, audit trail, hot-fixes individuales sin bump global, prerequisito para sustitución diferencial"
+        adr_relacionada: "017"
+
+      - decision: "Sustitución diferencial acotada a memory/templates/ (no aplica a prompts/agents)"
+        justificacion: "Templates de schema son inmutables por contrato; prompts/agents son personalizables (precedente ISSUE-018 WORKSPACE_Y). Sustitución directa solo segura donde el contrato garantiza no-edición."
+        adr_relacionada: "018"
+
+      - decision: "Deprecation contextualizada por agente del proyecto, sin imposición upstream"
+        justificacion: "Agnosticismo memsys3: solo el usuario y agente contextualizado conocen su proyecto. upstream propone, no impone."
+        adr_relacionada: "019"
+
+      - decision: "Modelo D scaffold puro para archivos operativos (vacío, sin referencias)"
+        justificacion: "Cero acoplamiento entre archivos. Convención (agente consulta templates/) > referencia explícita (más mantenimiento)"
+
+      - decision: "Release Minor v0.22.0 en lugar de Patch v0.21.2"
+        justificacion: "3 ADRs arquitectónicas + lógica nueva en actualizar.md > cosmético/fix; pero backward-compatible (sin breaking changes)"
+
+    gotchas:
+      - tipo: "warning"
+        problema: "Archivos operativos en memsys3_templates/memory/ duplican estructura de dog-fooding y se desincronizan silenciosamente. Riesgo de fugas de datos del repo dev al producto distribuible si se rellenan en lugar de mantener vacíos."
+        solucion: "Mantener como scaffold puro Modelo D (vacío). NO rellenar con datos del propio memsys3. Vigilar en cada release."
+        criticidad: "media"
+
+      - tipo: "gotcha"
+        problema: "Reporte CLIENT_D apuntaba al archivo equivocado. La verificación contra master del repo es esencial antes de actuar sobre un reporte inter-proyecto."
+        solucion: "Siempre comparar diff sizes + dates entre los archivos sospechosos del dog-fooding y del producto distribuible. El reportante puede tener un deployment antiguo + interpretación errónea."
+        criticidad: "baja"
+
+      - tipo: "warning"
+        problema: "Push directo a master/main mostró warning 'master renamed to main'. Verificar si el repo tiene branch protection o conventions de PR."
+        solucion: "Por ahora push a master funcionó (origin/HEAD -> origin/master). Pendiente: revisar si conviene migrar default a main."
+        criticidad: "baja"
+
+    proximos_pasos:
+      - "Comunicar a CLIENT_D: ISSUE-023 cerrado, ejecutar /actualizar-memsys3 en su deployment"
+      - "Plan paralelo: ADR sobre completitud del scaffold en deploy + auditoría templates faltantes (operations.log sin template, etc.)"
+      - "Plan paralelo: ADR sobre estrategia de actualización para prompts/agents personalizables (precedente ISSUE-018)"
+      - "Desplegar web memsys3.org (pendiente desde sesión 2026-05-05)"
+      - "FEATURE-012 (glosario de conceptos)"
+      - "Ejecutar compile-context.md en nueva instancia limpia (3 ADRs nuevas + cambios de release merecen recompilación)"
+
+    notas_adicionales: |
+      Sesión metodológicamente disciplinada: plan mode → ADR vía prompt → release vía github.md
+      con 4 commits atómicos.
+
+      Aprendizaje clave: la analogía software-dev (refactor, ADR, sessions) es prestada en memsys3
+      por ser la práctica más madura en disciplina iterativa, pero el sistema sirve para CUALQUIER
+      construcción (libro, marketing, dirección). La rigidez de "inmutable" es incompatible con
+      esa universalidad. Solo memory/templates/ es canónico inmutable; el resto es andamio
+      adaptable.
+
+      Aprendizaje secundario: cuando un colaborador externo reporta un bug, verificar primero
+      el master upstream antes de actuar. Su deployment puede estar desactualizado y su
+      interpretación puede errar el foco.
+
+      Smoke test de actualizar.md con la lógica nueva pendiente (validar en proyecto de prueba
+      tipo WORKSPACE_Y). Idealmente probar tres casos: archivo sin file_version, archivo con
+      file_version igual, archivo con file_version mayor en destino.
+
   - id: "2026-05-05-release-v0211-dominio-memsys3-org"
     titulo: "Release v0.21.1 + decisión dominio memsys3.org canónico"
     data: "2026-05-05"

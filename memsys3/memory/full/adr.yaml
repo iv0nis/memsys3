@@ -1360,6 +1360,264 @@ adrs:
 
       Relacionado: ADR-017 (file_version), ADR-018 (sustitución diferencial).
 
+  - id: "020"
+    titulo: "Memoria de usuario/feedback agnóstica (memory.yaml) con bridge opcional para auto-memory de Claude Code"
+    data: "2026-05-07"
+    estado: aceptado
+    area: "arquitectura"
+
+    context: |
+      memsys3 ya cubre memoria de proyecto (project-status.yaml) y memoria histórica
+      sintetizada (context.yaml), pero NO tiene un lugar canónico para memoria de
+      usuario (perfil, rol, cómo colabora) ni feedback (correcciones y validaciones
+      de comportamiento aprendidas a lo largo del tiempo).
+
+      Claude Code introdujo auto-memory: el harness inyecta automáticamente archivos
+      MEMORY.md + feedback_*/project_*/user_*.md en una ruta interna del usuario.
+      Esto rompe dos principios del sistema:
+      1. ADR-016 (agnosticismo): memsys3 no debe depender de features de un modelo
+         concreto, pero los agentes Claude reciben memoria sin que memsys3 lo controle.
+      2. Human-in-the-loop: la auto-memory escribe sin que el usuario lo apruebe,
+         introduciendo defaults silenciosos (síntoma original ISSUE-021: "***"
+         como default sin contexto).
+      3. "Una sola carpeta": auto-memory vive fuera de memsys3/, fragmentando la
+         memoria del proyecto.
+
+      Adicionalmente, la auto-memory NO es editable desde settings.json (es harness
+      no configurable), así que la única vía de control es redirigirla por convención.
+
+      ISSUE-021 propuso 4 opciones (A desactivar, B CLAUDE.md, C limpieza manual,
+      D archivo estructurado memsys3-nativo). Esta ADR adopta la Opción D.
+
+    decision: |
+      Crear archivo agnóstico `memsys3/memory/memory.yaml` como lugar canónico de
+      memoria de usuario y feedback. Schema flexible (no rígido) con secciones
+      orientativas: usuario, feedback, referencias. Append + datado, nunca sobrescribir.
+
+      Permisos:
+      - Main Agent: lectura + escritura (registra preferencias y feedback durante el trabajo)
+      - Context Agent: solo lectura (lo carga como Tier nuevo en compile-context.md)
+      - /actualizar-memsys3: bumpa file_version (ADR-017), nunca toca contenido
+
+      Bridge OPCIONAL para Claude (graceful degradation, ADR-016):
+      Cuando se despliega memsys3 en un entorno Claude Code, deploy.md crea un
+      MEMORY.md raíz con un puntero corto del estilo:
+
+        # MEMORY
+        Este proyecto usa memsys3. Toda memoria de usuario/feedback vive en
+        `memsys3/memory/memory.yaml`. Léelo para preferencias, reglas y perfil.
+        No escribas aquí — usa memory.yaml.
+
+      MEMORY.md NO contiene memoria real, solo redirige. Si el modelo no es Claude,
+      el bridge no se crea (no hay nada que redirigir) y memory.yaml funciona igual.
+
+      Integración:
+      - newSession.md: Main Agent lee memory.yaml junto a project-status y context
+      - compile-context.md: Context Agent lo añade a Tier 1 (lectura obligatoria)
+      - main-agent.yaml: permiso explícito para escribir feedback aprendido
+      - context-agent.yaml: solo lectura, NO sintetiza ni edita memory.yaml
+
+      Archivo nace con `file_version: "0.1.0"` (entra en sistema ADR-017).
+
+    alternatives:
+      - nombre: "Opción A — Desactivar auto-memory de Claude"
+        pros:
+          - "Solución más limpia conceptualmente"
+        contras:
+          - "Auto-memory NO editable desde settings.json (harness inyectado)"
+          - "Requiere acción del usuario en cada deploy, frágil"
+        por_que_descartada: "Técnicamente imposible de hacer programáticamente"
+
+      - nombre: "Opción B — Instrucción en CLAUDE.md raíz"
+        pros:
+          - "Sin archivos nuevos"
+        contras:
+          - "CLAUDE.md no es agnóstico (nombre Claude-específico)"
+          - "Mezcla guía de proyecto con memoria operativa"
+          - "No estructura datos, solo dicta comportamiento"
+        por_que_descartada: "No resuelve el problema del lugar canónico"
+
+      - nombre: "Opción C — Prompt de limpieza manual"
+        pros:
+          - "Reactivo, sin cambios estructurales"
+        contras:
+          - "Requiere disciplina del usuario"
+          - "No previene el problema, solo limpia tras los hechos"
+        por_que_descartada: "Parche, no solución"
+
+      - nombre: "Opción D-bis — memory.md (en lugar de yaml)"
+        pros:
+          - "Simetría visual con MEMORY.md de Claude"
+          - "Prosa libre permite matices que YAML estructura"
+        contras:
+          - "Rompe consistencia con resto de memory/ (todo .yaml: project-status, context, sessions, adr)"
+          - "Más difícil de parsear/sintetizar para Context Agent"
+        por_que_descartada: "Consistencia de formato del sistema prevalece sobre simetría con auto-memory"
+
+    consecuencias:
+      positivas:
+        - "Cierra ISSUE-021 con solución estructural agnóstica"
+        - "Preserva 'una sola carpeta': MEMORY.md raíz solo es puntero, contenido en memsys3/"
+        - "Preserva agnosticismo (ADR-016): memory.yaml universal, bridge opt-in Claude-específico"
+        - "Preserva human-in-the-loop: escritura controlada por Main Agent con criterio, no harness"
+        - "Schema flexible: el archivo evoluciona con el uso real, no con prescripción rígida"
+        - "Reduce sorpresas (defaults silenciosos) al centralizar memoria revisable"
+      negativas:
+        - "Una nueva fuente de verdad que mantener (Tier 1 adicional en compile-context)"
+        - "Requiere disciplina del Main Agent para registrar feedback en lugar de 'recordar' implícitamente"
+        - "Bridge MEMORY.md depende de Claude no sobreescribir el puntero (riesgo: harness ignora redirect)"
+      impacto: |
+        Afecta: memory/ (nuevo archivo), newSession.md, compile-context.md,
+        main-agent.yaml (permisos escritura), context-agent.yaml (Tier 1 lectura),
+        deploy.md (paso opcional crear MEMORY.md bridge), templates/ (memory-template.yaml).
+        Cierra ISSUE-021. Consume sistema file_version (ADR-017).
+
+    notes: |
+      Schema sugerido (NO vinculante, libre):
+
+        metadata:
+          ultima_actualizacion: "YYYY-MM-DD"
+          file_version: "0.1.0"
+        usuario:
+          - nota: "..."
+            fecha: "YYYY-MM-DD"
+        feedback:
+          - regla: "..."
+            motivo: "..."
+            fecha: "YYYY-MM-DD"
+        referencias:
+          - nombre: "..."
+            url_o_path: "..."
+
+      Riesgo conocido: el harness de Claude Code podría seguir escribiendo en
+      su ruta interna pese al puntero MEMORY.md. Mitigación: revisar
+      ~/.claude/projects/<hash>/memory/ periódicamente y re-redirigir si es necesario.
+      Si en el futuro el harness expone API para desactivar auto-memory, esta ADR
+      podría complementarse (no superseded — el bridge sigue siendo útil para otros
+      modelos con auto-memory similar).
+
+      Relacionado: ADR-016 (agnosticismo), ADR-017 (file_version), ISSUE-021 (origen).
+
+  - id: "021"
+    titulo: "Backlog extendido con informe y plan opcionales (anti-CDC)"
+    data: "2026-05-07"
+    estado: aceptado
+    area: "documentación"
+
+    context: |
+      Los items de backlog (`memsys3/backlog/`) son por diseño cortos: estado,
+      prioridad, qué problema, opciones. Esa compresión es buena para escaneo
+      rápido pero genera CDC ("casualidad de contexto"): cuando un agente
+      fresco ejecuta un item complejo, el documento corto NO le da suficiente
+      contexto, así que el agente "rellena" con lo que tenga en su sesión
+      actual — y la calidad del trabajo depende del azar de su contexto, no
+      del sistema.
+
+      memsys3 existe precisamente para combatir CDC: garantizar lucidez
+      agéntica sostenida via archivos canónicos. Un item de backlog corto sin
+      documentación de respaldo viola ese principio cuando el item es complejo.
+
+      Casos donde el item corto es insuficiente:
+      - BLUEPRINTs (cambios arquitectónicos multi-componente)
+      - FEATUREs grandes (multi-sesión)
+      - ISSUEs con causa raíz no obvia
+      - Trabajos delegados a sesión fresca distinta de la que identificó el item
+
+    decision: |
+      Extender el sistema de backlog con dos documentos OPCIONALES por item:
+
+      Estructura:
+        memsys3/backlog/
+        ├── PREFIJO-NNN-titulo.md         (item: corto, escaneable)
+        └── docs/
+            ├── informe_PREFIJO-NNN.md    (contexto profundo, opcional)
+            └── plan_PREFIJO-NNN.md       (pasos ejecutables, opcional)
+
+      Convención:
+      - Item de backlog: SIEMPRE existe (índice mental rápido, ~50-150 líneas)
+      - informe_*.md: opcional. Contexto profundo, hallazgos, motivación,
+                     escenarios. Pensado para agente fresco que necesita
+                     entender el QUÉ y el POR QUÉ sin depender de CDC.
+      - plan_*.md: opcional. Pasos de ejecución, criterios de done, archivos
+                   afectados. Pensado para agente fresco que necesita el CÓMO.
+      - Link bidireccional: item referencia docs en sección `Referencias`,
+        docs referencian item en su encabezado.
+      - Cuándo crearlos: SIEMPRE para BLUEPRINTs. Para FEATUREs/ISSUEs cuando
+        el ítem se vaya a delegar o ejecutar en otra sesión.
+
+      Templates: `memsys3/memory/templates/informe-template.md` y
+      `memsys3/memory/templates/plan-template.md`.
+
+      Permisos:
+      - Main Agent: lee/escribe items, informes y planes
+      - Context Agent: lee items (Tier 3), NO lee informes/planes por defecto
+        (evita explosión de tokens). Solo los lee si el item está referenciado
+        en pendientes prioritarios y los docs aportan info no derivable del ítem.
+
+    alternatives:
+      - nombre: "Mantener solo items cortos"
+        pros:
+          - "Sistema simple, una sola fuente"
+        contras:
+          - "Genera CDC en items complejos"
+          - "Agente fresco ejecuta con menos lucidez que el que identificó el item"
+        por_que_descartada: "Viola principio anti-CDC, problema real observado"
+
+      - nombre: "Item largo (todo en un archivo)"
+        pros:
+          - "Sin docs separados, un solo lugar"
+        contras:
+          - "Items dejan de ser escaneables (200-500 líneas)"
+          - "Mezcla niveles: índice + contexto + plan en mismo doc"
+          - "CA en Tier 3 cargaría todo aunque solo necesite el índice"
+        por_que_descartada: "Pierde la virtud original del backlog (escaneo rápido)"
+
+      - nombre: "Informe/plan obligatorios para todos los items"
+        pros:
+          - "Consistencia total"
+        contras:
+          - "Burocracia para items triviales (typo fix, refactor pequeño)"
+          - "Coste alto sin beneficio en items simples"
+        por_que_descartada: "No proporcional al riesgo CDC, infla el sistema"
+
+      - nombre: "Informe/plan en directorio paralelo (memsys3/docs/backlog_docs/)"
+        pros:
+          - "Separación física clara"
+        contras:
+          - "Rompe localidad: trabajar un item requiere navegar a otra carpeta"
+          - "Aumenta riesgo de docs huérfanos cuando se completa/cancela item"
+        por_que_descartada: "backlog/docs/ mantiene cohesión local"
+
+    consecuencias:
+      positivas:
+        - "Reduce CDC en items complejos: agente fresco recibe contexto canónico"
+        - "Separación de concerns: índice (item) vs contexto (informe) vs ejecución (plan)"
+        - "Coste proporcional: solo se documenta lo que lo necesita"
+        - "Mantiene escaneabilidad de items cortos"
+        - "Habilita delegación entre sesiones sin pérdida de lucidez"
+      negativas:
+        - "Mantenibilidad: docs pueden quedar desincronizados con item al actualizar"
+        - "Disciplina requerida: distinguir cuándo crear docs vs no"
+        - "CA debe respetar regla 'no leer docs por defecto' o se infla Tier 3"
+      impacto: |
+        Afecta: backlog/README.md (documentar convención), prompts/backlog.md
+        (4ª operación 'documentar'), memory/templates/ (2 templates nuevos),
+        prompts/deploy.md y actualizar.md (crear backlog/docs/), prompts/compile-context.md
+        (regla Tier 3 selectiva), README.md raíz (mencionar feature).
+
+    notes: |
+      Origen: sesión 2026-05-07, articulación del principio CDC ("casualidad de
+      contexto"): lucidez agéntica generada por eventualidad del contexto de la
+      sesión actual y no por archivos canónicos. memsys3 es solución a CDC
+      (anotado en memory.yaml dogfooding como principio fundacional).
+
+      Primer caso de uso del patrón: BLUEPRINT-001-release-memsys3-v1
+      (auditoría release v1.0 con 7 frentes). Ese item se documenta usando
+      esta convención mientras está siendo creado — auto-validación del patrón.
+
+      Relacionado: ADR-001 (criterio inteligente CA), ADR-020 (memory.yaml).
+      Pendiente: futura ADR sobre PRINCIPLES.md canónico que formaliza CDC.
+
 # Índice rápido para encontrar ADRs
 index:
   - id: "001"
@@ -1412,4 +1670,10 @@ index:
     estado: aceptado
   - id: "019"
     titulo: "Política de evolución de schema en templates (deprecation contextualizada)"
+    estado: aceptado
+  - id: "020"
+    titulo: "Memoria de usuario/feedback agnóstica (memory.yaml) con bridge opcional para auto-memory de Claude Code"
+    estado: aceptado
+  - id: "021"
+    titulo: "Backlog extendido con informe y plan opcionales (anti-CDC)"
     estado: aceptado

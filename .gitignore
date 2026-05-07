@@ -6,5 +6,5 @@
 #                     que dejan issues/ideas para alimentar el backlog)
 #   - docs/*.md       drafts de posts, infografías, material divulgación
 #   - docs/*.pdf      referencias externas (papers, PDFs de blogs, etc.)
-docs/
+/docs/
 *.pdf

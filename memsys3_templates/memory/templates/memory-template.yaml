@@ -1,0 +1,54 @@
+# version: 0.1.0
+# Template: memory.yaml
+#
+# Memoria de usuario y feedback agnóstica (ADR-020).
+#
+# QUÉ guarda:
+#   - usuario: perfil, rol, contexto profesional, preferencias de colaboración
+#   - feedback: correcciones y validaciones de comportamiento aprendidas
+#               (qué hacer / qué evitar + por qué)
+#   - referencias: opcional — sistemas externos (Linear, Slack, dashboards, etc.)
+#
+# QUÉ NO guarda:
+#   - Estado del proyecto → usar project-status.yaml
+#   - Decisiones arquitectónicas → usar adr.yaml
+#   - Eventos de sesión → usar sessions.yaml
+#
+# REGLAS:
+#   - Append + datado, NUNCA sobreescribir entradas históricas
+#   - Schema flexible: las secciones de abajo son orientativas
+#   - Main Agent: lectura + escritura
+#   - Context Agent: SOLO lectura
+#   - file_version: solo se bumpa con /actualizar-memsys3 (ADR-017)
+#
+# BRIDGE (opcional, Claude Code):
+#   Si el modelo es Claude, deploy.md crea MEMORY.md raíz con un puntero
+#   corto a este archivo (ADR-020). MEMORY.md NO contiene memoria real.
+
+metadata:
+  ultima_actualizacion: "YYYY-MM-DD"
+  file_version: "0.1.0"
+
+usuario:
+  # Notas sobre el usuario: rol, contexto, cómo colabora, qué le importa.
+  # Ejemplo:
+  # - nota: "Senior Go developer, primera vez tocando React en este repo"
+  #   fecha: "2026-05-07"
+  []
+
+feedback:
+  # Reglas y validaciones aprendidas durante el trabajo.
+  # Incluir SIEMPRE el motivo — permite juzgar casos límite.
+  # Ejemplo:
+  # - regla: "No firmar commits con Co-Authored-By"
+  #   motivo: "Convención del proyecto, ver github.md"
+  #   fecha: "2026-05-07"
+  []
+
+referencias:
+  # Punteros a sistemas externos relevantes para el trabajo.
+  # Ejemplo:
+  # - nombre: "Linear INGEST"
+  #   url_o_path: "linear.app/.../INGEST"
+  #   nota: "Bugs de pipeline se trackean aquí"
+  []

@@ -1,9 +1,9 @@
 # Project Status - memsys3
 
 metadata:
-  ultima_actualizacion: "2026-05-06"
-  actualizado_por: "Claude (Session 2026-05-06 Release v0.22.0 + ADRs 017-019 + limpieza scaffolds memsys3_templates)"
-  fase: "Development v0.22.0"
+  ultima_actualizacion: "2026-05-07"
+  actualizado_por: "Claude (Session 2026-05-07 Principio CDC + ADR-020 memory.yaml + ADR-021 backlog docs + BLUEPRINT-001)"
+  fase: "Development v0.22.0 (preparando v1.0)"
   memsys3_version: "v0.22.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
@@ -14,9 +14,9 @@ vision_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estado_actual:
-  fase: "Development v0.22.0"
-  ultima_feature: "Release v0.22.0: ADRs 017-019 (file_version + sustitucion diferencial + deprecation contextualizada) + limpieza scaffolds memsys3_templates/memory/ (4 archivos vaciados a Modelo D) + nueva logica en actualizar.md Paso 6.4/6.4.5 + ISSUE-023 caso CLIENT_D resuelto"
-  siguiente_milestone: "Desplegar web memsys3.org + plan paralelo (auditoria scaffold completo + ADR prompts/agents personalizables) + FEATURE-012 (glosario conceptos)"
+  fase: "Development v0.22.0 (preparando release v1.0)"
+  ultima_feature: "ADR-020 (memory.yaml agnóstica + bridge MEMORY.md Claude) + ADR-021 (backlog docs anti-CDC) + principio fundacional CDC articulado + BLUEPRINT-001 (release memsys3 v1.0 con 7 frentes, dog-foodea ADR-021)"
+  siguiente_milestone: "Ejecutar BLUEPRINT-001 frente 1 (PRINCIPLES.md canónico) + smoke tests actualizar.md (frente 7) — preparación release v1.0"
 
 features:
   context_agent:
@@ -79,6 +79,16 @@ features:
     estado: "operativo"
     descripcion: "MA y CA no modifican archivos de infraestructura (prompts/, agents/, memory/templates/). Solo /actualizar-memsys3 lo hace."
 
+  memoria_usuario:
+    nombre: "Memoria usuario/feedback agnóstica (memory.yaml)"
+    estado: "operativo"
+    descripcion: "memsys3/memory/memory.yaml: schema flexible (usuario/feedback/referencias), append+datado. Main Agent escribe, Context Agent solo lee. Bridge opcional MEMORY.md raíz para Claude Code (ADR-020). Cierra ISSUE-021."
+
+  backlog_docs_extendidos:
+    nombre: "Backlog con informe/plan opcionales (anti-CDC)"
+    estado: "operativo"
+    descripcion: "memsys3/backlog/docs/ con informe_PREFIJO-NNN.md y plan_PREFIJO-NNN.md opcionales. Templates en memory/templates/. Tabla por tipo de item en backlog/README.md (BLUEPRINT siempre, FEATURE/SPEC grande recomendado, EXPLORATION recomendado, IMPROVEMENT pequeño nunca). CA NO lee docs/ por defecto en Tier 3 (ADR-021). Primer caso de uso: BLUEPRINT-001."
+
 stack_tecnologico:
   database: "Ninguno (YAML files)"
   deploy: "GitHub + clonado local"
@@ -90,10 +100,34 @@ urls:
 
 pendientes_prioritarios:
   - prioridad: 1
+    tarea: "Ejecutar BLUEPRINT-001 — release memsys3 v1.0 (7 frentes)"
+    detalle: "Plan completo en memsys3/backlog/docs/plan_BLUEPRINT-001.md. Empezar por Frente 1 (PRINCIPLES.md canónico con CDC). Estimación 6-8 sesiones. Anti-CDC: el plan e informe son auto-suficientes para sesión fresca."
+
+  - prioridad: 2
+    tarea: "Smoke test actualizar.md con lógica nueva (sustitución diferencial + deprecation)"
+    detalle: "Validar Pasos 6.4 y 6.4.5 nuevos en proyecto de prueba (WORKSPACE_Y u otro). Tres casos: archivo sin file_version, archivo con file_version igual, archivo con file_version mayor en destino. ADR-018/019. Cubierto por frente 7 BLUEPRINT-001."
+
+  - prioridad: 2
+    tarea: "Comunicar a CLIENT_D: ISSUE-023 cerrado"
+    detalle: "Su deployment necesita /actualizar-memsys3. Catalán residual ya corregido en master desde v0.22.0 (2026-05-06). Schema canónico vive en memsys3/memory/templates/."
+
+  - prioridad: 3
+    tarea: "Plan paralelo: ADR sobre completitud del scaffold en deploy + auditoría templates faltantes"
+    detalle: "operations.log no tiene template equivalente. Auditar todo el scaffold distribuible: ¿cada archivo tiene template? ¿backlog/, docs/?"
+
+  - prioridad: 4
+    tarea: "Plan paralelo: ADR sobre estrategia para prompts/agents personalizables"
+    detalle: "Reconocer que NO son inmutables. Definir lógica para detección modificación local (hash al deploy, *.dev.md paralelos, prompt user antes de sobrescribir). Precedente ISSUE-018 WORKSPACE_Y."
+
+  - prioridad: 5
+    tarea: "Desplegar web memsys3.org"
+    detalle: "Pendiente desde 2026-05-05. URL ya propagada en README/yaml/wiki. Aunque sea placeholder, evita 404."
+
+  - prioridad: 6
     tarea: "Testear deployment con consulta .gitignore en nuevo proyecto"
     detalle: "Validar que PASO 8 funciona correctamente con warning @ mentions y usuario puede elegir Opción A o B"
 
-  - prioridad: 2
+  - prioridad: 7
     tarea: "Testear actualizar_cat.md en futuras sincronizaciones"
     detalle: "Cuando haya nuevos cambios en master, validar que actualizar_cat.md sincroniza y traduce correctamente a branch catalan"
 
@@ -123,6 +157,12 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-05-07"
+    resumen: "Principio CDC (Casualidad de Contexto) articulado como fundacional + ADR-020 (memory.yaml agnóstica + bridge MEMORY.md opcional para Claude, cierra ISSUE-021) + ADR-021 (backlog extendido con informe/plan opcionales en docs/, anti-CDC, aplica a 6 prefijos) + BLUEPRINT-001-release-memsys3-v1 (item + informe 190L + plan 290L con 8 frentes, dog-foodea ADR-021) + regla dura firma_commits en main-agent.yaml + nota dogfooting explícita. 4 templates nuevos (memory + memory-template + informe-template + plan-template). 19 archivos modificados, 13 nuevos. ~3h peso alto."
+
+  - fecha: "2026-05-06"
+    resumen: "ADRs 017-019 (file_version + sustitución diferencial + deprecation contextualizada) + limpieza scaffolds memsys3_templates/memory/ (4 archivos vaciados a Modelo D, fugas dog-fooding eliminadas) + lógica nueva en actualizar.md Paso 6.4 (sustitución diferencial) y 6.4.5 (deprecated/huérfanos modo Extendido) + ISSUE-023 caso CLIENT_D resuelto + release v0.22.0 (Minor, 4 commits atómicos sin firma + tag). Aprendizaje: 'inmutable' solo aplica a memory/templates/, prompts/agents son personalizables (memsys3 agnóstico de dominio). ~3h peso alto."
+
   - fecha: "2026-05-05"
     resumen: "Release v0.21.1 ejecutada (workflow github.md validado: AskUserQuestion + sin firma + tag con metadata). Decision dominio: memsys3.org canonico + memsys3.com redirect 301 (cultura OSS). URL oficial propagada a README + project-status.yaml + context.yaml + wiki GitHub (Home + _Sidebar). Web aun no desplegada. ~30min peso bajo."
 

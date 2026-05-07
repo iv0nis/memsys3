@@ -139,8 +139,48 @@ Cada documento debe incluir como mínimo:
 
 ## Referencias
 
-[Commits, ADRs, sesiones relacionadas]
+- [Commits, ADRs, sesiones relacionadas]
+- **Informe:** `docs/informe_PREFIJO-XXX.md` (si existe)
+- **Plan:** `docs/plan_PREFIJO-XXX.md` (si existe)
 ```
+
+---
+
+## 📂 Documentación extendida: `docs/` (opcional, ADR-021)
+
+Para items complejos, el item corto puede no dar suficiente contexto a un agente fresco que lo ejecute en otra sesión. Esto se llama **CDC (Casualidad de Contexto)**: cuando la lucidez agéntica depende del azar del contexto de sesión, no de archivos canónicos.
+
+memsys3 combate CDC con dos documentos OPCIONALES por item:
+
+```
+backlog/
+├── PREFIJO-NNN-titulo.md         ← item: corto, escaneable (~50-150 líneas)
+└── docs/
+    ├── informe_PREFIJO-NNN.md    ← contexto profundo: por qué, hallazgos
+    └── plan_PREFIJO-NNN.md       ← pasos ejecutables: cómo, criterios done
+```
+
+### Cuándo crear informe / plan
+
+| Tipo de item | informe | plan |
+|---|---|---|
+| BLUEPRINT-XXX | **siempre** | **siempre** |
+| FEATURE/SPEC grande | recomendado | recomendado si se delega ejecución |
+| ISSUE con causa raíz no obvia | recomendado | opcional |
+| IMPROVEMENT pequeño / typo fix | innecesario | innecesario |
+| EXPLORATION | recomendado (es el formato natural) | si deriva en ejecución |
+
+### Templates
+
+- `memsys3/memory/templates/informe-template.md`
+- `memsys3/memory/templates/plan-template.md`
+
+### Reglas
+
+- **Link bidireccional**: el item referencia los docs en `Referencias`; los docs referencian el item en su encabezado
+- **NO duplicar info**: el item es índice, el informe es contexto, el plan es ejecución
+- **Mantener sincronizado**: si el item cambia de alcance, actualiza informe/plan
+- **Context Agent**: NO lee `docs/` por defecto en Tier 3 (evita explosión de tokens). Solo si el item está en pendientes prioritarios y los docs aportan info no derivable del item
 
 ---
 
@@ -312,4 +352,4 @@ result = df.apply(process, axis=1)
 ---
 
 **Sistema de backlog basado en memsys3**
-**Última actualización:** 2025-11-14
+**Última actualización:** 2026-05-07 (ADR-021: docs/ opcionales para anti-CDC)

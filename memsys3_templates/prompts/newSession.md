@@ -17,12 +17,14 @@ fi
 - Lee **README.md** del proyecto para entender su visión general y objetivo
 - Lee **@memsys3/memory/project-status.yaml** para conocer el estado actual (fase, features, pendientes)
 - Lee **@memsys3/memory/context.yaml** para cargar la memoria histórica (ADRs, sessions, gotchas)
+- Lee **@memsys3/memory/memory.yaml** para conocer al usuario y reglas de comportamiento aprendidas (ADR-020)
 - Actúa según las instrucciones en **@memsys3/agents/main-agent.yaml**
 
 ## Notas
 
 - README.md contiene la identidad actual del proyecto (siempre actualizada)
 - context.yaml contiene memoria histórica sintetizada (decisiones, aprendizajes)
+- memory.yaml contiene perfil del usuario + feedback (reglas/correcciones aprendidas)
 - Juntos proporcionan contexto completo para trabajar efectivamente
 
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->

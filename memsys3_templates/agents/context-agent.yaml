@@ -21,6 +21,10 @@ inputs:
       descripcion: Histórico completo de sesiones de trabajo
       accion: Extraer y sintetizar última sesión
 
+    - path: memsys3/memory/memory.yaml
+      descripcion: Memoria de usuario y feedback (ADR-020) — SOLO LECTURA
+      accion: Leer completo. Extraer perfil del usuario y reglas de comportamiento. NUNCA escribir aquí.
+
   opcionales:
     - path: README.md
       descripcion: README principal del proyecto (en raíz del proyecto) — Tier 2
@@ -97,6 +101,7 @@ instrucciones:
       - Carga memsys3/memory/project-status.yaml completo
       - Carga memsys3/memory/full/adr.yaml completo
       - Carga memsys3/memory/full/sessions.yaml completo
+      - Carga memsys3/memory/memory.yaml completo (SOLO LECTURA — perfil usuario + feedback, ADR-020)
       - Detecta archivos rotados (sessions_1.yaml, sessions_2.yaml, adr_1.yaml, ...) y léelos todos
       - Estima tokens acumulados (caracteres / 4)
 
@@ -243,6 +248,9 @@ restricciones:
     regla: "NO modificar archivos de infraestructura memsys3 (prompts/, agents/, memory/templates/) — solo leer"
     motivo: "La infraestructura solo se actualiza mediante /actualizar-memsys3. Los archivos tienen file_version independiente."
     excepcion: "memory/context.yaml es el OUTPUT del CA y SÍ se genera/sobrescribe normalmente"
+  memoria_usuario:
+    regla: "NO escribir en memsys3/memory/memory.yaml — solo lectura"
+    motivo: "ADR-020. memory.yaml es escrito exclusivamente por Main Agent (append + datado). El CA lo lee como input pero no lo modifica ni sintetiza en context.yaml (es fuente independiente)."
 
 # ============================================
 # METADATA
@@ -252,4 +260,4 @@ creado: "2025-10-23"
 ultima_actualizacion: "2026-04-13"
 responsable: "System Design"
 
-file_version: "0.1.0"
+file_version: "0.2.0"

@@ -1,0 +1,14 @@
+# Memoria de usuario y feedback
+# ADR-020. Schema en memory/templates/memory-template.yaml.
+#
+# Append + datado. Main Agent escribe, Context Agent solo lee.
+
+metadata:
+  ultima_actualizacion: ""
+  file_version: "0.1.0"
+
+usuario: []
+
+feedback: []
+
+referencias: []

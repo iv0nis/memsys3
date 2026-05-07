@@ -40,15 +40,17 @@ git clone https://github.com/iv0nis/memsys3 memsys3_temp
 Copia TODA la estructura de memsys3_templates/ al directorio memsys3/ del proyecto:
 
 ```bash
-# Crear estructura base
+# Crear estructura base (scaffold completo, vacío si no aplica)
 mkdir -p memsys3/memory/full
 mkdir -p memsys3/memory/templates
 mkdir -p memsys3/memory/history
 mkdir -p memsys3/prompts
 mkdir -p memsys3/agents
+mkdir -p memsys3/backlog/docs
 
-# Crear .gitkeep en history/ para que se suba a git
+# Crear .gitkeep en directorios que pueden quedar vacíos (para que git los versione)
 touch memsys3/memory/history/.gitkeep
+touch memsys3/backlog/docs/.gitkeep
 
 # Copiar templates
 cp memsys3_temp/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
@@ -256,13 +258,38 @@ B) No, excluir memsys3/ de git
    > - "Ejecuta memsys3/prompts/newSession.md"
    > - "Lee y ejecuta memsys3/prompts/compile-context.md"
 
-### Paso 9: Eliminar Clone Temporal
+### Paso 9: Bridge MEMORY.md para Claude Code (OPCIONAL)
+
+Si el usuario trabaja con **Claude Code** y tiene auto-memory activa, crea un puntero en `MEMORY.md` raíz que redirija a `memsys3/memory/memory.yaml` (ADR-020). Esto preserva el principio "una sola carpeta" y previene que Claude inyecte memoria fuera de memsys3.
+
+```bash
+# Pregunta al usuario:
+# "¿Usas Claude Code? Si es así, podemos crear MEMORY.md raíz como puntero
+#  a memsys3/memory/memory.yaml para que la auto-memory de Claude redirija
+#  ahí en lugar de escribir archivos sueltos."
+```
+
+Si responde sí, crea `MEMORY.md` en la raíz del proyecto con este contenido:
+
+```markdown
+# MEMORY
+
+Este proyecto usa **memsys3**. Toda la memoria de usuario y feedback vive en
+`memsys3/memory/memory.yaml`. Léelo para preferencias, reglas y perfil del usuario.
+
+**No escribas en este archivo** — usa `memsys3/memory/memory.yaml` (append + datado).
+Schema: `memsys3/memory/templates/memory-template.yaml`. Ver ADR-020.
+```
+
+Si el usuario NO usa Claude Code (o no quiere el bridge), saltar este paso. `memory.yaml` funciona igual sin el puntero — el bridge es opcional (graceful degradation, ADR-016 agnosticismo).
+
+### Paso 10: Eliminar Clone Temporal
 
 ```bash
 rm -rf memsys3_temp
 ```
 
-### Paso 10: Informar al Usuario
+### Paso 11: Informar al Usuario
 
 Confirma que el deployment se ha completado correctamente:
 
@@ -273,12 +300,14 @@ Estructura creada:
 - memsys3/memory/full/ (adr.yaml, sessions.yaml, operations.log inicializados)
 - memsys3/memory/templates/ (guías permanentes)
 - memsys3/memory/history/ (para Plan Contingencia)
+- memsys3/memory/memory.yaml (memoria de usuario + feedback, ADR-020)
 - memsys3/prompts/ (newSession, endSession, compile-context, etc.)
 - memsys3/agents/ (main-agent, context-agent)
 
 Archivos personalizados:
 - memsys3/memory/project-status.yaml
 - memsys3/prompts/newSession.md
+- MEMORY.md raíz (solo si usas Claude Code y aceptaste el bridge)
 
 Próximos pasos:
 1. Compila context inicial: @memsys3/prompts/compile-context.md
@@ -314,4 +343,4 @@ Escalabilidad automática:
 ---
 
 **Deployment completado. El sistema está listo para usar.**
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->
