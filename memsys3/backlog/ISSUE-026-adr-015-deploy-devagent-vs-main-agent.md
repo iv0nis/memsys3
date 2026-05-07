@@ -28,6 +28,19 @@ Tu (DevAgent) debes configurar memsys3 por primera vez en este proyecto.
 - ❌ `memsys3_templates/prompts/deploy.md:3` dice "DevAgent".
 - (Verificar también `memsys3/prompts/deploy.md` si existe la misma cadena.)
 
+### Hits adicionales (ampliación, sesión 2026-05-07 BLUEPRINT-001 Frente 4)
+
+Side-finding al verificar templates: el problema es más amplio de lo detectado en Frente 2.
+`grep -rni 'DevAI\|DevAgent' memsys3_templates/` devuelve 4 hits totales:
+
+- ❌ `memsys3_templates/prompts/deploy.md:3` ("DevAgent") — original
+- ❌ `memsys3_templates/prompts/endSession.md:3` ("DevAgent")
+- ❌ `memsys3_templates/prompts/endSession.md:7` ("DevAgent")
+- ❌ `memsys3_templates/prompts/compile-context.md:299` ("DevAgents")
+
+Verificar también equivalentes en `memsys3/prompts/` (sync dogfooting).
+Recoger en Frente 5 (Eliminación de residualidad).
+
 ## Acción propuesta
 
 Sustitución directa en `memsys3_templates/prompts/deploy.md` y, si aplica, en `memsys3/prompts/deploy.md`:

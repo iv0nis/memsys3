@@ -1824,6 +1824,106 @@ adrs:
       Resuelve: brecha ADR-021 leak (informe_BLUEPRINT-001-auditoria.md §4.3).
       Smoke test ejecutado y validado: 19 archivos en scaffold post-deploy coinciden con inventario.
 
+  - id: "024"
+    titulo: "Completitud de templates: criterio data-vs-as-is + operations-template.log"
+    data: "2026-05-07"
+    estado: aceptado
+    area: "templates"
+
+    context: |
+      BLUEPRINT-001 Frente 4 cierra la pregunta operativa "¿qué archivos del scaffold
+      necesitan template en memory/templates/?". Hasta ahora el sistema tenía templates
+      para casi todos los archivos data (adr, sessions, context, project-status, memory,
+      informe, plan), pero faltaba uno: `operations.log` (FEATURE-009) — pendiente
+      prioritario 3 de project-status.yaml.
+
+      La auditoría 1:1 detectó que también faltaba un criterio explícito y citable para
+      decidir cuándo un archivo del scaffold necesita template y cuándo no. Sin handle
+      formal, futuras decisiones tendrían que redefinirlo cada vez (CDC operativa sobre
+      la propia decisión de qué es template).
+
+      Side-finding: `memsys3/memory/templates/context-template.yaml` estaba desincronizado
+      con el distribuible — L3 usaba "DevAI" (viola ADR-015) y L13 tenía placeholder
+      menos informativo. Sync forward (templates → dogfooting) ejecutado.
+
+    decision: |
+      1. **Criterio data-vs-as-is** (handle citable):
+         *Un archivo del scaffold necesita template equivalente en memory/templates/ si
+         es DATA EVOLUTIVA del usuario (rellenable, mutable durante uso normal). NO lo
+         necesita si es INFRAESTRUCTURA o DOCUMENTACIÓN CANÓNICA versionada por
+         /actualizar-memsys3 (distribuible as-is).*
+
+         Aplicación a memsys3:
+         - Necesitan template: `memory/full/{adr,sessions,operations}.{yaml,log}`,
+           `memory/{context,memory,project-status}.yaml`, `backlog/docs/{informe,plan}_*.md`
+         - NO necesitan template (as-is): `PRINCIPLES.md`, `backlog/README.md`,
+           `memory/README.md`, `agents/*.yaml`, `prompts/*.md`
+
+         Citación esperada en futuras ADRs/PRINCIPLES.md:
+         "Aplicamos el criterio data-vs-as-is (ADR-024): X es Y, por tanto Z."
+
+      2. **Crear `operations-template.log`** en `memsys3_templates/memory/templates/` y
+         `memsys3/memory/templates/` (sync dogfooting). Schema: `# version: 0.1.0` +
+         doc inline (campos: timestamp, operacion, resultado, version_*, resumen) +
+         ejemplos comentados de actualizar/compilar + `operations: []` final.
+
+      3. **Extensión `.log` (no `.yaml`)** para el template, espejando el archivo data
+         (FEATURE-009 fijó `operations.log`). Aunque el contenido sea YAML válido, `.log`
+         es semántico (append-only, rotable estilo sessions). Mismo patrón que
+         `informe-template.md` espeja `informe_*.md`.
+
+    alternatives:
+      - nombre: "A — extensión .yaml para el template"
+        pros:
+          - "Coherente con que el contenido es YAML"
+          - "Tooling de validación YAML aplica directamente"
+        contras:
+          - "Diferente de la extensión del archivo data (operations.log)"
+          - "Rompe el patrón nombre-template.<misma-extensión-que-data>"
+        por_que_descartada: |
+          La consistencia data ↔ template es más importante que la coherencia
+          contenido ↔ extensión. Resto del sistema sigue el mismo patrón.
+
+      - nombre: "B — no formalizar criterio, solo crear el template"
+        pros:
+          - "Cambio más pequeño"
+        contras:
+          - "Cada futura ADR sobre 'qué es template' redefine el criterio (CDC)"
+          - "No hay handle citable"
+        por_que_descartada: |
+          Anti-CDC requiere léxico sistémico. El esfuerzo de nombrar el criterio
+          una vez compensa con creces.
+
+    consecuencias:
+      positivas:
+        - "Cada archivo data del scaffold tiene template equivalente (1:1 verificable)"
+        - "Criterio data-vs-as-is queda en el léxico del proyecto, citable como ADR-024"
+        - "Pendiente prioritario 3 de project-status.yaml cerrado"
+        - "Side-finding sync context-template.yaml (DevAI → Main Agent) corrige brecha ADR-015 latente en dogfooting"
+        - "operations.log queda completamente especificado: data + template ambos canónicos"
+      negativas:
+        - "Un archivo más que /actualizar-memsys3 debe sustituir diferencialmente (Paso 6.4)"
+      impacto: |
+        Afecta: memsys3_templates/memory/templates/operations-template.log (NUEVO),
+        memsys3/memory/templates/operations-template.log (sync dogfooting),
+        memsys3/memory/templates/context-template.yaml (sync 2 líneas).
+
+    notes: |
+      Anclaje a PRINCIPLES.md:
+      - #6 (Templates como documentación activa permanente) — operations-template.log
+        es referencia viva para el Main Agent al documentar operaciones.
+      - #9 (Separation of Concerns: una sola fuente de verdad por preocupación) — el
+        criterio data-vs-as-is es la respuesta sistémica a "¿quién es responsable de
+        qué archivo?".
+
+      Side-finding documentado: durante la auditoría se detectó desincronización en
+      `memsys3/memory/templates/context-template.yaml` (L3 "DevAI" violaba ADR-015,
+      L13 placeholder genérico). Sync forward ejecutado en este mismo frente —
+      el distribuible es la fuente de verdad post-Frente 1.
+
+      Origen: BLUEPRINT-001 Frente 4. Sesión 2026-05-07.
+      Cierra: pendiente prioritario 3 de project-status.yaml ("operations-template").
+
 # Índice rápido para encontrar ADRs
 index:
   - id: "001"
@@ -1888,4 +1988,7 @@ index:
     estado: aceptado
   - id: "023"
     titulo: "Scaffold completo en deploy: inventario canónico + memory/full/ como fuente única de archivos vacíos"
+    estado: aceptado
+  - id: "024"
+    titulo: "Completitud de templates: criterio data-vs-as-is + operations-template.log"
     estado: aceptado
