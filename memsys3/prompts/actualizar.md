@@ -616,6 +616,42 @@ mkdir -p "$MEMSYS3_ROOT/memory/history"
 touch "$MEMSYS3_ROOT/memory/history/.gitkeep"
 ```
 
+### 6.6 Sincronizar PRINCIPLES.md (sustitución diferencial)
+
+**Implementa ADR-022 + ADR-018.** `PRINCIPLES.md` es infraestructura versionada (vive en `memsys3/PRINCIPLES.md` en proyectos desplegados). Se sincroniza con la misma lógica que los templates de schema: comparar `file_version` upstream vs destino y sustituir condicionalmente. El usuario NO edita este archivo por contrato — los principios evolucionan en upstream y bajan vía `/actualizar-memsys3`.
+
+```bash
+src="memsys3_update_temp/memsys3_templates/PRINCIPLES.md"
+dst="$MEMSYS3_ROOT/PRINCIPLES.md"
+
+# Helper: extraer file_version desde "<!-- version: X.Y.Z -->" (formato .md)
+extract_md_version() {
+  grep -E "^\s*<!--\s*version:" "$1" 2>/dev/null | head -1 | sed -E 's/.*version:\s*([0-9.]+).*/\1/'
+}
+
+v_up=$(extract_md_version "$src")
+v_dst=$(extract_md_version "$dst" 2>/dev/null)
+
+if [ ! -f "$dst" ]; then
+  echo "🆕 PRINCIPLES.md — no existe en destino, copiando (v=$v_up)"
+  cp "$src" "$dst"
+elif [ -z "$v_dst" ]; then
+  echo "⚠️ PRINCIPLES.md — destino sin file_version (legacy). Sustituyendo (v_up=$v_up)"
+  cp "$src" "$dst"
+else
+  cmp=$(compare_versions "$v_up" "$v_dst")
+  case "$cmp" in
+    gt) echo "⬆️ PRINCIPLES.md — upstream $v_up > destino $v_dst, sustituyendo"; cp "$src" "$dst" ;;
+    eq) echo "✅ PRINCIPLES.md — versiones iguales ($v_up), no se toca" ;;
+    lt) echo "🚨 PRINCIPLES.md — destino $v_dst > upstream $v_up. Estado anómalo (preguntar al usuario)" ;;
+  esac
+fi
+```
+
+> **Nota:** reutiliza el helper `compare_versions` definido en el Paso 6.4. Si por orden de ejecución no estuviera definido aún, define ambos (`extract_md_version` + `compare_versions`) en este bloque.
+>
+> **Si aparece `🚨` (destino > upstream)**: usar `AskUserQuestion` con la misma lógica que el Paso 6.4 (sobrescribir / preservar).
+
 ### 6.7 Actualizar Documentación del Sistema
 
 ```bash
@@ -898,6 +934,7 @@ Antes de dar por terminada la actualización, verifica:
 
 - [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
 - [ ] Archivos del sistema actualizados (prompts, agents, templates)
+- [ ] `PRINCIPLES.md` sincronizado (Paso 6.6, sustitución diferencial — ADR-022 + ADR-018)
 - [ ] `docs/` copiada (`ls memsys3/docs/reference.md`)
 - [ ] `backlog/` existe (`ls memsys3/backlog/`)
 - [ ] history/ creado (si no existía)

@@ -64,6 +64,9 @@ cp memsys3_temp/memsys3_templates/agents/*.yaml memsys3/agents/
 # Copiar README
 cp memsys3_temp/memsys3_templates/memory/README.md memsys3/memory/
 
+# Copiar PRINCIPLES.md (documento canónico de principios sistémicos, ADR-022)
+cp memsys3_temp/memsys3_templates/PRINCIPLES.md memsys3/PRINCIPLES.md
+
 # Crear archivos vacíos memory/full/
 cat > memsys3/memory/full/adr.yaml << 'EOF'
 # ADR Log - [NOMBRE_PROYECTO]
@@ -297,6 +300,7 @@ Confirma que el deployment se ha completado correctamente:
 ✅ memsys3 deployment completado!
 
 Estructura creada:
+- memsys3/PRINCIPLES.md (principios sistémicos canónicos, ADR-022)
 - memsys3/memory/full/ (adr.yaml, sessions.yaml, operations.log inicializados)
 - memsys3/memory/templates/ (guías permanentes)
 - memsys3/memory/history/ (para Plan Contingencia)
