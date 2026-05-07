@@ -4,7 +4,7 @@ metadata:
   ultima_actualizacion: "2026-05-07"
   actualizado_por: "Claude (Session 2026-05-07 BLUEPRINT-001 Frente 2 — Auditoría ADRs vs código)"
   fase: "Development v0.22.0 (preparando v1.0)"
-  memsys3_version: "v0.22.0"
+  memsys3_version: "v0.23.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
 
