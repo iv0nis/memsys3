@@ -158,6 +158,9 @@ decisiones_clave:
 
 historico_sesiones:
   - fecha: "2026-05-07"
+    resumen: "BLUEPRINT-001 Frente 4 ejecutado: completitud de templates + ADR-024 (criterio data-vs-as-is). Verificación 1:1 data ↔ template (8/9 ya tenían, único faltante operations.log). operations-template.log creado en distribuible + sync dogfooting. ADR-024 formaliza handle citable 'criterio data-vs-as-is' — patrón sistémico para futuras decisiones sobre 'qué necesita template'. Decisión extensión .log (espejo data file). Side-finding sync context-template.yaml dogfooting (DevAI → Main Agent, brecha ADR-015 latente; L13 placeholder informativo). Side-finding fuera de scope: 3 hits DevAgent extra en prompts/ → ampliado ISSUE-026 para Frente 5. Cierra pendiente prioritario 3. BLUEPRINT-001 [x] Frente 4. Commit atómico 6cd7f70 sin firma sin tag pusheado. ~1h peso alto."
+
+  - fecha: "2026-05-07"
     resumen: "BLUEPRINT-001 Frente 3 ejecutado: Scaffold completo en deploy. EXPLORATION-004 (canonización proactiva anti-CDC meta) commiteado al inicio para árbol limpio. Plan first vía ExitPlanMode con AskUserQuestion para variante de Opción B (B-simple aceptada: cp directo de memsys3_templates/memory/full/* sin sufijo -empty). Eliminado leak memsys3_templates/backlog/IMPROVEMENT-008-*.md. deploy.md Paso 2 refactorizado en ambos sitios (templates + dogfooting): heredocs cat << EOF eliminados, cp directo + templates/*.md añadido (informe-template, plan-template). Limpieza adicional: 'memsys3' hardcoded en operations.log header del template → 'Operations Log'. ADR-023 creada (153 líneas, decisión + alternativas A/B-explícita descartadas + matiz semántico 'misma forma física, distinta semántica según ubicación' incluido por sugerencia del usuario). Smoke test en mktemp -d: 19 archivos coinciden con inventario canónico. Anclaje principios: #6, #9, #1. ~1.5h peso medio-alto. Siguiente: Frente 4 (Completitud templates) en sesión fresca."
 
   - fecha: "2026-05-07"

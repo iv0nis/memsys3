@@ -3,6 +3,85 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-07-blueprint001-frente4-completitud-templates-adr024"
+    titulo: "BLUEPRINT-001 Frente 4 ejecutado: completitud de templates + ADR-024 (criterio data-vs-as-is)"
+    data: "2026-05-07"
+    duracion: "~1h"
+    peso: "alto"
+    objetivo: |
+      Cerrar el cuarto frente de BLUEPRINT-001 (release v1.0): garantizar 1:1 que
+      cada archivo data del scaffold tiene template equivalente en memory/templates/.
+      Crear faltantes (operations-template.log, único hueco conocido). Sincronizar
+      dogfooting ↔ distribuible. Formalizar y nombrar el criterio que decide qué
+      necesita template y qué no, para que sea citable en futuras decisiones.
+
+    contexto_inicial: |
+      Punto de partida (newSession): Frente 3 cerrado y pusheado en sesión previa
+      (commit c81f148). Branch master limpio, untracked irrelevantes
+      (agent4_prompt_frente4.txt, blocked_files_log.md, multi_work.md). adr.yaml
+      en 1843 líneas (margen). Pendiente prioritario 3 de project-status apuntaba
+      explícitamente a este frente.
+      Usuario instruyó: plan first vía ExitPlanMode + lectura obligatoria de 5
+      archivos en orden + side-finding integrado si aparecía.
+
+    highlights:
+      - "Verificación 1:1 data ↔ template: 8/9 archivos data ya tenían template; único faltante operations.log (FEATURE-009)"
+      - "operations-template.log creado en memsys3_templates/memory/templates/ + sync dogfooting (memsys3/memory/templates/)"
+      - "ADR-024 documenta criterio **data-vs-as-is** con handle citable: 'un archivo necesita template si es data evolutiva del usuario; no si es infraestructura/docs canónicos versionados por /actualizar-memsys3'"
+      - "Decisión extensión .log (no .yaml) para operations-template — espejar el data file (mismo patrón que informe-template.md espeja informe_*.md)"
+      - "Side-finding sync: memsys3/memory/templates/context-template.yaml L3 'DevAI' → 'Main Agent' (ADR-015 brecha latente en dogfooting), L13 placeholder más informativo (sync forward desde distribuible)"
+      - "Side-finding adicional fuera de scope Frente 4: 3 hits DevAgent en memsys3_templates/prompts/ (deploy.md L3 ya en ISSUE-026 + endSession.md L3/L7 + compile-context.md L299) — ampliado ISSUE-026 para que Frente 5 (residualidad) los recoja en bloque"
+      - "Cierra pendiente prioritario 3 de project-status.yaml (operations-template). Milestone → Frente 5 (residualidad)"
+      - "BLUEPRINT-001 marca [x] Frente 4 con resumen 1-línea"
+      - "Commit atómico 6cd7f70 sin firma sin tag, pusheado limpio (verificación grep co-authored OK)"
+
+    decisiones_tomadas:
+      - decision: "Criterio data-vs-as-is con handle citable"
+        justificacion: |
+          Sin nombre formal, cada futura decisión sobre 'qué necesita template' redefiniría
+          el criterio (CDC operativa). Nombrarlo una vez (ADR-024) crea léxico sistémico
+          reutilizable. Patrón propuesto explícitamente por el usuario en planning.
+        adr_relacionada: "024"
+      - decision: "Extensión .log (no .yaml) para operations-template"
+        justificacion: |
+          Consistencia data ↔ template prima sobre coherencia contenido ↔ extensión.
+          El archivo data es .log (FEATURE-009 lo fijó); el template lo espeja igual
+          que informe-template.md espeja informe_*.md.
+        adr_relacionada: "024"
+      - decision: "No inflar Frente 4 con los hits DevAgent en prompts/"
+        justificacion: |
+          Disciplina de scope: Frente 4 es completitud de templates (memory/templates/),
+          no auditoría general ADR-015. Los 3 hits adicionales detectados por grep son
+          residualidad (Frente 5). Ampliado ISSUE-026 para que Frente 5 los recoja
+          en bloque, sin perder trazabilidad.
+        adr_relacionada: null
+      - decision: "Sin tag (acumular hasta cierre BLUEPRINT-001)"
+        justificacion: |
+          Coherencia con línea Frentes 1-3 (sin tags intermedios). El tag llegará en
+          Frente 8 cuando se cierre BLUEPRINT-001 → v1.0.0. AskUserQuestion ejecutado
+          según regla dura github.md. Usuario eligió 'Sin tag por ahora (Recomendado)'.
+        adr_relacionada: null
+
+    proximos_pasos:
+      - "Frente 5 (Eliminación de residualidad) — ISSUE-026 ampliado (3 hits DevAgent extra), grep catalán [àèéíòóúïü], referencias muertas viz/mind.md, archivos huérfanos. Sesión fresca recomendada (anti-CDC)."
+      - "adr.yaml en 1994 líneas (margen ~6 líneas hasta 2000) — la próxima ADR cruzará el umbral. Considerar rotación adr.yaml → adr_1.yaml en próxima sesión que cree ADR (Escenario B pre-doc)."
+      - "Recomendar al usuario abrir agente nuevo para Frente 5 (anti-CDC, plan + informe + ADR-024 son auto-suficientes)."
+
+    notas_adicionales: |
+      Anti-CDC operacional: la sesión arrancó cargando newSession.md + 5 archivos prescritos
+      en orden (PRINCIPLES, BLUEPRINT, plan, informe Frente 2, ADR-023). El plan verbal
+      del usuario fue redundante con esos archivos — confirma que la documentación canónica
+      del frente era suficiente sin lucidez de sesión previa.
+
+      Disciplina de scope demostrada: el grep detectó 4 hits totales de DevAgent en
+      memsys3_templates/, pero solo 1 está en alcance Frente 4 (templates). Resistir la
+      tentación de "ya que estamos, los arreglo todos" → Frente 5 los maneja en bloque
+      con visión de residualidad completa (probablemente más hits catalán + viz/mind.md).
+
+      Vocabulario sistémico nuevo: "criterio data-vs-as-is (ADR-024)" se incorpora al
+      léxico del proyecto. Cualquier futura ADR/PRINCIPLES.md que enfrente la pregunta
+      "¿esto necesita template?" puede citar ADR-024 sin redefinir.
+
   - id: "2026-05-07-blueprint001-frente3-scaffold-completo-deploy"
     titulo: "BLUEPRINT-001 Frente 3 ejecutado: scaffold completo en deploy + ADR-023 + EXPLORATION-004 commiteado"
     data: "2026-05-07"
