@@ -3,6 +3,75 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-07-blueprint001-frente2-auditoria-adrs"
+    titulo: "BLUEPRINT-001 Frente 2 ejecutado: auditoría 20 ADRs vs código real (3 forks Explore en paralelo) + 3 ISSUEs"
+    data: "2026-05-07"
+    duracion: "~2h"
+    peso: "alto"
+    objetivo: "Verificar 1 a 1 que las ADRs aceptadas se respetan en prompts/agents/templates/scaffold, usando PRINCIPLES.md como vara de medir. Documentar brechas como ISSUEs. Foundational para confianza en el corpus ADR antes de release v1.0."
+
+    highlights:
+      - "Auditoría ejecutada con 3 forks Agent (subagent_type Explore) en paralelo, división por bloques: Fork A (ADRs 001-009), Fork B (ADRs 012-016), Fork C (ADRs 017-022). Cada fork read-only, output estructurado <500-800 palabras (asimetría: cumplidas 1 línea, brechas detalladas). Heurística orquestación documentada en memory.yaml feedback (sesión 2026-05-07 anterior) — primer caso de uso real validando la heurística."
+      - "Conteo real corregido: 20 ADRs aceptadas (no 22 como decía blueprint inicial, no 21 como decía informe principal). ADRs 010-011 ausentes — skipped en numeración (verificado: no en adr.yaml ni rotados, no hay adr_1.yaml). Meta-finding documentado en ISSUE-024 (deuda histórica menor)."
+      - "Cumplimiento global: 18/20 ADRs (90%). 0 brechas críticas. Ninguna bloquea release v1.0. Anclaje cruzado: cada uno de los 10 principios PRINCIPLES.md tiene al menos 1 ADR de respaldo — corpus coherente."
+      - "Brechas accionables detectadas (2): ADR-007 — README.md raíz línea 217 linkea docs/UPDATE.md que NO existe en raíz repo (solo en memsys3/docs/ dogfooting). Lugar correcto: raíz repo, no scaffold (DEVELOPMENT/UPDATE son audiencia contribuidores/upgraders del repo, no usuarios desplegados). ADR-015 — deploy.md:3 contiene 'Tu (DevAgent)' en lugar de 'Main Agent' (escapó a la erradicación de sesión 2026-04-16)."
+      - "Brecha ADR-021 detectada (leak IMPROVEMENT-008 en memsys3_templates/backlog/) NO se documenta como ISSUE separado — ya identificada en informe_BLUEPRINT-001.md §3.3 y será resuelta por Frente 3 (Scaffold completo). Anti-duplicación."
+      - "Observación ADR-016 (README sin mención explícita jerarquía agnóstica templates→prompts→commands): NO ISSUE creado — PRINCIPLES.md ya formaliza el principio. Si se quiere reforzar el README es Frente 8 (comunicación), no brecha."
+      - "Reporte canónico: memsys3/backlog/docs/informe_BLUEPRINT-001-auditoria.md (tabla maestra 20 ADRs + brechas detalladas + observaciones + meta-finding + anclaje cruzado a los 10 principios). Anti-CDC: agente futuro fresco puede consumir reporte sin necesidad de los transcripts efímeros de los forks."
+      - "3 ISSUEs creados en memsys3/backlog/: ISSUE-024 (010-011 ausentes, baja, sin urgencia), ISSUE-025 (docs/UPDATE.md link roto, media, antes de v1.0.0), ISSUE-026 (deploy.md DevAgent → Main Agent, media, fix trivial 1 línea)."
+      - "BLUEPRINT-001-release-memsys3-v1.md: Frente 2 marcado [x] con resumen + corrección '21 ADRs' → '20 ADRs (010-011 ausentes, ver ISSUE-024)' en sección Problema/Necesidad."
+      - "project-status.yaml: ultima_feature actualizada con Frente 2 cierre, siguiente_milestone apunta a Frente 3 (Scaffold completo). Pendientes prioritarios reorganizados: prioridad 1 = Frente 3 + resolver ISSUE-025/026 antes v1.0.0."
+      - "2 commits atómicos en master: (1) docs(sessions) deuda Frente 1 que quedó tras endSession del agente Frente 1, (2) docs(blueprint-001) Frente 2 auditoría + ISSUEs + entry endSession Frente 2. Verificado SIN Co-Authored-By en ambos. Sin tag (continuum BLUEPRINT — tag v1.0.0 al cierre Frente 8)."
+
+    decisions:
+      - tema: "División de trabajo: 3 forks paralelos vs lectura secuencial"
+        decision: "3 forks Explore read-only en paralelo, división por bloques de ADRs. Síntesis en sesión principal."
+        motivo: "Auditoría es búsqueda exhaustiva (20 ADRs × N archivos cada una). Lectura secuencial saturaría tokens en ~30K antes de completar. Forks devuelven síntesis estructurada (~500 palabras), reducción ~10× tokens en sesión principal. Caso paradigmático de la heurística documentada en memory.yaml feedback."
+
+      - tema: "Conteo de ADRs: 22 (blueprint) vs 21 (informe) vs 20 (real)"
+        decision: "20 ADRs aceptadas. 010-011 ausentes documentados como meta-finding (ISSUE-024 baja). NO renumerar."
+        motivo: "Renumerar rompería referencias históricas en sessions.yaml, ADRs cruzadas y commits. La numeración no garantiza secuencialidad — convivir con el gap es preferible a romper trazabilidad."
+
+      - tema: "Brecha ADR-021 (leak IMPROVEMENT-008): ISSUE separado vs cubierta por Frente 3"
+        decision: "NO crear ISSUE separado. Anotada en informe de auditoría con referencia a Frente 3 que la abordará."
+        motivo: "Ya identificada en informe principal §3.3. Crear ISSUE duplicaría el tracking. Frente 3 tiene scope definido para limpieza de scaffold."
+
+      - tema: "Lugar correcto de DEVELOPMENT.md / UPDATE.md (ADR-007)"
+        decision: "Raíz repo (docs/), NO scaffold distribuible (memsys3_templates/docs/). Documentado en ISSUE-025."
+        motivo: "ADR-007 define audiencias: DEVELOPMENT.md = contribuidores del repo memsys3; UPDATE.md = quien actualiza memsys3 (también nivel repo, no nivel usuario desplegado). Un usuario desplegado no contribuye al desarrollo upstream — recibe el sistema, no lo evoluciona. El fork A propuso ubicación errónea (templates/docs/), corregida en síntesis."
+
+      - tema: "Granularidad commits: 1 vs 2 atómicos"
+        decision: "2 commits: (1) deuda Frente 1 endSession (sessions.yaml entry), (2) Frente 2 completo (informe + 3 ISSUEs + BLUEPRINT [x] + project-status + entry sessions Frente 2)."
+        motivo: "Limpia el árbol antes de mezclar contextos. Cada commit revertible independientemente. Patrón identificado: endSession escribe DESPUÉS del commit principal del frente, generando deuda recurrente — registrar como gotcha del flow."
+
+    issues_creados:
+      - id: "ISSUE-024"
+        titulo: "ADRs 010 y 011 ausentes — auditar si fueron descartadas o nunca creadas"
+        prioridad: "Baja"
+      - id: "ISSUE-025"
+        titulo: "README.md raíz linkea docs/UPDATE.md y docs/DEVELOPMENT.md que no existen en raíz repo"
+        prioridad: "Media"
+      - id: "ISSUE-026"
+        titulo: "deploy.md:3 usa DevAgent en lugar de Main Agent (brecha ADR-015)"
+        prioridad: "Media"
+
+    gotchas:
+      - tipo: "gotcha"
+        problema: "endSession escribe en sessions.yaml + project-status.yaml + BLUEPRINT [x] DESPUÉS del commit principal del frente, generando deuda recurrente sin commitear."
+        solucion: "Patrón observado en Frente 1 → Frente 2. Estrategia: ejecutar endSession ANTES del commit final del frente para que el commit capture todo en un único snapshot. Si endSession ya se ejecutó después, usar commit 'puente' separado (docs(sessions)) antes de mezclar nuevos contextos."
+        criticidad: "media"
+
+    proximos_pasos:
+      - "Ejecutar BLUEPRINT-001 Frente 3 (Scaffold completo en deploy) en sesión fresca anti-CDC. Plan en memsys3/backlog/docs/plan_BLUEPRINT-001.md. Resuelve brecha ADR-021 leak."
+      - "Resolver ISSUE-025 (docs/UPDATE.md link roto) y ISSUE-026 (deploy.md DevAgent fix trivial) antes de v1.0.0 — naturalmente en Frente 8 o como pre-trabajo."
+      - "context.yaml última compilación 2026-05-05. Tras Frente 2: 2 sesiones sin compilar (Frente 1 + Frente 2). Bajo umbral 5, no urgente. Compilar fresca tras 2-3 frentes más."
+
+    referencias:
+      - "memsys3/backlog/docs/informe_BLUEPRINT-001-auditoria.md (reporte canónico)"
+      - "memsys3/backlog/BLUEPRINT-001-release-memsys3-v1.md (item)"
+      - "memsys3/PRINCIPLES.md (vara de medir)"
+      - "memsys3/memory/full/adr.yaml (corpus auditado)"
+
   - id: "2026-05-07-blueprint001-frente1-principles-md-adr022"
     titulo: "BLUEPRINT-001 Frente 1 ejecutado: PRINCIPLES.md canónico (10 principios) + ADR-022 + propagación deploy/actualizar"
     data: "2026-05-07"
