@@ -2,7 +2,7 @@
 
 metadata:
   ultima_actualizacion: "2026-05-07"
-  actualizado_por: "Claude (Session 2026-05-07 Principio CDC + ADR-020 memory.yaml + ADR-021 backlog docs + BLUEPRINT-001)"
+  actualizado_por: "Claude (Session 2026-05-07 BLUEPRINT-001 Frente 1 — PRINCIPLES.md + ADR-022)"
   fase: "Development v0.22.0 (preparando v1.0)"
   memsys3_version: "v0.22.0"
   memsys3_deployed: "2025-10-28"
@@ -15,8 +15,8 @@ vision_general:
 
 estado_actual:
   fase: "Development v0.22.0 (preparando release v1.0)"
-  ultima_feature: "ADR-020 (memory.yaml agnóstica + bridge MEMORY.md Claude) + ADR-021 (backlog docs anti-CDC) + principio fundacional CDC articulado + BLUEPRINT-001 (release memsys3 v1.0 con 7 frentes, dog-foodea ADR-021)"
-  siguiente_milestone: "Ejecutar BLUEPRINT-001 frente 1 (PRINCIPLES.md canónico) + smoke tests actualizar.md (frente 7) — preparación release v1.0"
+  ultima_feature: "BLUEPRINT-001 Frente 1 completado: PRINCIPLES.md canónico (10 principios, CDC como #1) + ADR-022 (fuente única en memsys3_templates/, copia real en memsys3/, stub raíz) + deploy.md/actualizar.md sincronizan PRINCIPLES.md vía sustitución diferencial (ADR-018) + newSession.md lo carga"
+  siguiente_milestone: "Ejecutar BLUEPRINT-001 Frente 2 (auditoría ADRs vs código real, 22 ADRs revisadas 1 a 1, usando PRINCIPLES.md como vara de medir)"
 
 features:
   context_agent:
@@ -100,8 +100,8 @@ urls:
 
 pendientes_prioritarios:
   - prioridad: 1
-    tarea: "Ejecutar BLUEPRINT-001 — release memsys3 v1.0 (7 frentes)"
-    detalle: "Plan completo en memsys3/backlog/docs/plan_BLUEPRINT-001.md. Empezar por Frente 1 (PRINCIPLES.md canónico con CDC). Estimación 6-8 sesiones. Anti-CDC: el plan e informe son auto-suficientes para sesión fresca."
+    tarea: "Ejecutar BLUEPRINT-001 Frente 2 — auditoría ADRs vs código real"
+    detalle: "Frente 1 (PRINCIPLES.md) completado en sesión 2026-05-07. Siguiente: revisar las 22 ADRs aceptadas 1 a 1 contra prompts/agents/templates. Documentar brechas como ISSUEs. Plan completo en memsys3/backlog/docs/plan_BLUEPRINT-001.md. Anti-CDC: ejecutable en sesión fresca leyendo plan + informe + PRINCIPLES.md."
 
   - prioridad: 2
     tarea: "Smoke test actualizar.md con lógica nueva (sustitución diferencial + deprecation)"

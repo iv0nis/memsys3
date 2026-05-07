@@ -34,7 +34,7 @@ Sin esto, v1.0 sería un release con CDC alta: los usuarios externos dependería
 - [x] Articular principio CDC (sesión 2026-05-07, anotado en `memory.yaml`)
 - [x] ADR-020 (memory.yaml + bridge MEMORY.md para Claude)
 - [x] ADR-021 (backlog + informe/plan opcionales, anti-CDC)
-- [ ] Frente 1: Principios sistémicos canónicos (`PRINCIPLES.md` o equivalente)
+- [x] Frente 1: Principios sistémicos canónicos — `PRINCIPLES.md` creado (fuente única en `memsys3_templates/`, copia real en `memsys3/`, stub en raíz). 10 principios con CDC como #1. ADR-022. `deploy.md` Paso 2 + `actualizar.md` Paso 6.6 (sustitución diferencial). `newSession.md` instruye carga. (sesión 2026-05-07)
 - [ ] Frente 2: Auditoría ADRs vs código real (1 a 1)
 - [ ] Frente 3: Scaffold completo en deploy (verificar y completar)
 - [ ] Frente 4: Completitud de templates (todo archivo del scaffold tiene template)
