@@ -4,6 +4,8 @@
 
 Este sistema está diseñado para optimizar el consumo de tokens de los AI Agents (Main Agent) proporcionándoles contexto compacto y relevante del proyecto.
 
+> 📐 **Antes de operar memsys3, lee [`memsys3/PRINCIPLES.md`](../PRINCIPLES.md)** — los 10 principios sistémicos que rigen el sistema (anti-CDC, agnosticismo, separation of concerns, etc.). Cualquier comportamiento descrito en este README se justifica desde ahí.
+
 ## 🎯 Objetivo
 
 Evitar que los agentes lean decenas de archivos de código para entender el proyecto. En lugar de eso, cargan un único archivo `context.yaml` (máximo 2000 líneas) con toda la información crítica.

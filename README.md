@@ -24,6 +24,16 @@
 - Plan de contingencia con archivado inteligente (>150K tokens)
 - Actualización segura en proyectos existentes (con detección de estructura antigua)
 - Sistema Backlog y ADRs gestionables con prompts dedicados
+- **PRINCIPLES.md canónico** — los 10 principios sistémicos que rigen memsys3 (anti-CDC, agnosticismo, una sola carpeta, etc.). Ver [`memsys3_templates/PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md).
+
+## 📐 Principios
+
+memsys3 se rige por 10 principios sistémicos documentados de forma canónica en **[`memsys3_templates/PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md)** (fuente única). Cualquier comportamiento del sistema debe poder justificarse desde uno de ellos:
+
+1. **Anti-CDC** (Casualidad de Contexto) — el principio fundacional: lucidez agéntica garantizada por archivos canónicos, no por azar de sesión.
+2. Agnosticismo de modelo IA · 3. Una sola carpeta · 4. Human-in-the-loop · 5. Criterio inteligente vs límites arbitrarios · 6. Templates como documentación activa · 7. file_version inmutable salvo /actualizar-memsys3 · 8. Datos siempre preservados · 9. Separation of Concerns · 10. Restricciones de infraestructura en agents.
+
+Cuando despliegas memsys3 en un proyecto, `PRINCIPLES.md` se copia a `memsys3/PRINCIPLES.md` y los agents lo leen al inicio de cada sesión.
 
 ## ⚡ Quick Start
 

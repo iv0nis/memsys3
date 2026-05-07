@@ -15,6 +15,7 @@ fi
 ## 1. Cargar contexto
 
 - Lee **README.md** del proyecto para entender su visión general y objetivo
+- Lee **@memsys3/PRINCIPLES.md** si existe — referencia canónica de los principios sistémicos de memsys3 (ADR-022)
 - Lee **@memsys3/memory/project-status.yaml** para conocer el estado actual (fase, features, pendientes)
 - Lee **@memsys3/memory/context.yaml** para cargar la memoria histórica (ADRs, sessions, gotchas)
 - Lee **@memsys3/memory/memory.yaml** para conocer al usuario y reglas de comportamiento aprendidas (ADR-020)
@@ -23,6 +24,7 @@ fi
 ## Notas
 
 - README.md contiene la identidad actual del proyecto (siempre actualizada)
+- PRINCIPLES.md contiene los principios sistémicos de memsys3 (invariantes; anti-CDC, agnosticismo, etc.)
 - context.yaml contiene memoria histórica sintetizada (decisiones, aprendizajes)
 - memory.yaml contiene perfil del usuario + feedback (reglas/correcciones aprendidas)
 - Juntos proporcionan contexto completo para trabajar efectivamente

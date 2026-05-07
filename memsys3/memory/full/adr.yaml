@@ -1618,6 +1618,106 @@ adrs:
       Relacionado: ADR-001 (criterio inteligente CA), ADR-020 (memory.yaml).
       Pendiente: futura ADR sobre PRINCIPLES.md canónico que formaliza CDC.
 
+  - id: "022"
+    titulo: "PRINCIPLES.md como documento canónico de principios sistémicos (fuente única en templates)"
+    data: "2026-05-07"
+    estado: aceptado
+    area: "documentación"
+
+    context: |
+      Tras 6 meses de iteración, los principios sistémicos de memsys3 están dispersos:
+      CDC vive en `memory.yaml` dogfooting, agnosticismo en ADR-016 y README, una sola
+      carpeta y human-in-the-loop solo en README, criterio inteligente en ADR-001, etc.
+
+      Hallazgo del informe BLUEPRINT-001 sec 3.1: detectados 10 principios pero NO existe
+      documento canónico que los formalice. Esto es CDC pura — un agente fresco depende
+      del azar de qué archivos lea para captar los principios.
+
+      Para release v1.0 (BLUEPRINT-001), un usuario externo descargando memsys3 debe poder
+      operarlo sin acceso al mantenedor. Eso requiere un documento canónico de principios.
+
+    decision: |
+      Crear `PRINCIPLES.md` como documento canónico de los 10 principios sistémicos:
+
+      1. Anti-CDC, 2. Agnosticismo de modelo, 3. Una sola carpeta, 4. Human-in-the-loop,
+      5. Criterio inteligente vs límites arbitrarios, 6. Templates como documentación activa,
+      7. file_version inmutable salvo /actualizar-memsys3, 8. Datos siempre preservados,
+      9. Separation of Concerns, 10. Restricciones de infraestructura en agents.
+
+      Arquitectura "fuente única vs copias":
+      - `memsys3_templates/PRINCIPLES.md` = fuente única (SSoT, distribuible).
+      - `PRINCIPLES.md` raíz repo = stub corto pointer al template (descubrimiento OSS,
+        solo existe en este repo dev).
+      - `memsys3/PRINCIPLES.md` (dogfooting + proyectos desplegados) = copia real del
+        template, distribuida por `deploy.md` y sincronizada por `actualizar.md`.
+
+      Régimen de infraestructura. PRINCIPLES.md es infraestructura, NO datos:
+      - Hereda ADR-017: file_version (`<!-- version: 0.Y.Z -->`) solo se bumpa vía
+        /actualizar-memsys3. Bumpeo manual prohibido.
+      - Hereda ADR-018: actualizar.md Paso 6.6 sincroniza con sustitución diferencial
+        (comparar file_version upstream vs destino, sustituir condicionalmente).
+      - Aplica regla "MA y CA NO modifican infraestructura en proyectos destino"
+        (excepción dogfooting documentada en main-agent.yaml).
+
+      Carga: newSession.md instruye al agente leer @memsys3/PRINCIPLES.md si existe.
+
+    alternatives:
+      - nombre: "Solo en raíz del repo dev (no se distribuye)"
+        pros:
+          - "Identidad del proyecto OSS, no del scaffold desplegado"
+          - "Menos archivos en proyectos desplegados"
+        contras:
+          - "Usuarios externos NO tienen acceso a los principios tras deploy"
+          - "Genera CDC: el agente desplegado opera sin saber qué principios rigen el sistema"
+        por_que_descartada: "Viola el propósito anti-CDC del propio documento"
+
+      - nombre: "Tres copias paralelas (raíz + templates + dogfooting), todas completas"
+        pros:
+          - "Cada ubicación auto-contenida"
+        contras:
+          - "Mantenibilidad: cualquier cambio requiere 3 ediciones manuales"
+          - "Riesgo de divergencia silenciosa"
+        por_que_descartada: "El usuario explícitamente rechazó esta opción durante planning"
+
+      - nombre: "Symlinks desde raíz/dogfooting hacia templates"
+        pros:
+          - "Una sola fuente real, sin duplicación"
+        contras:
+          - "Symlinks problemáticos en Windows y en algunos sistemas de archivos"
+          - "Rompe portabilidad (principio 'una sola carpeta')"
+        por_que_descartada: "memsys3 debe ser multi-plataforma sin trucos del FS"
+
+    consecuencias:
+      positivas:
+        - "Anti-CDC: agente fresco tiene archivo canónico de principios desde la primera sesión"
+        - "Foundational para BLUEPRINT-001: define la vara de medir la auditoría ADRs (Frente 2)"
+        - "CDC formalmente documentada como principio #1 (no solo en memory.yaml dogfooting)"
+        - "Cada principio enlaza a las ADRs que lo formalizan (trazabilidad)"
+        - "Single source of truth: cambios solo en `memsys3_templates/PRINCIPLES.md`"
+      negativas:
+        - "deploy.md y actualizar.md ganan complejidad (un paso adicional cada uno)"
+        - "actualizar.md debe extender helper extract_version a formato .md (HTML comment)"
+        - "Dogfooting requiere copia real (no stub), implica mantener sincronizado memsys3/PRINCIPLES.md"
+      impacto: |
+        Afecta: PRINCIPLES.md (3 ubicaciones nuevas), README.md raíz (link),
+        memsys3_templates/memory/README.md (link), deploy.md (Paso 2 copia),
+        actualizar.md (Paso 6.6 sustitución diferencial), newSession.md
+        (templates + dogfooting: instrucción de carga).
+
+    notes: |
+      Origen: BLUEPRINT-001 Frente 1 (release memsys3 v1.0).
+      Sesión 2026-05-07 articuló el principio CDC (en memory.yaml dogfooting). Esta ADR
+      cierra el "pendiente" anotado en la sec notes de ADR-021.
+
+      Relacionado / hereda de:
+      - ADR-017 (file_version inmutable salvo /actualizar-memsys3) — PRINCIPLES.md es
+        infraestructura versionada, sigue el mismo régimen.
+      - ADR-018 (sustitución diferencial templates schema) — actualizar.md Paso 6.6
+        aplica la misma lógica a PRINCIPLES.md: comparar file_version, sustituir si gt.
+
+      Próxima evolución (BLUEPRINT-001 Frente 2): auditoría ADRs vs código real, usando
+      PRINCIPLES.md como vara de medir.
+
 # Índice rápido para encontrar ADRs
 index:
   - id: "001"
@@ -1676,4 +1776,7 @@ index:
     estado: aceptado
   - id: "021"
     titulo: "Backlog extendido con informe y plan opcionales (anti-CDC)"
+    estado: aceptado
+  - id: "022"
+    titulo: "PRINCIPLES.md como documento canónico de principios sistémicos (fuente única en templates)"
     estado: aceptado
