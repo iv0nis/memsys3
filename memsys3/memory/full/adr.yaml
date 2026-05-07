@@ -1718,6 +1718,112 @@ adrs:
       Próxima evolución (BLUEPRINT-001 Frente 2): auditoría ADRs vs código real, usando
       PRINCIPLES.md como vara de medir.
 
+  - id: "023"
+    titulo: "Scaffold completo en deploy: inventario canónico + memory/full/ como fuente única de archivos vacíos"
+    data: "2026-05-07"
+    estado: aceptado
+    area: "deploy"
+
+    context: |
+      BLUEPRINT-001 Frente 2 (informe_BLUEPRINT-001-auditoria.md §4.3) detectó dos brechas
+      en el scaffold producido por deploy.md:
+
+      1) Leak de dogfooting: `memsys3_templates/backlog/IMPROVEMENT-008-deploy-agnostico-memoria-antes-agente.md`
+         filtrado al template distribuible. El scaffold backlog debe contener únicamente
+         `README.md` + `docs/.gitkeep`.
+
+      2) Inconsistencia heredoc vs templates: `deploy.md` Paso 2 (líneas 71-94) usaba
+         heredocs `cat > ... << 'EOF'` para crear `memsys3/memory/full/{adr.yaml,sessions.yaml,operations.log}`
+         con contenido distinto del que ya existía en `memsys3_templates/memory/full/`
+         (los templates tenían `# version: 0.1.0` e `index: []`; los heredocs no).
+
+      Síntoma: dos fuentes de verdad divergentes para los mismos archivos vacíos —
+      cualquier evolución del schema vacío requería editar dos lugares y rezar para
+      no olvidar uno. CDC operativa.
+
+    decision: |
+      1. Inventario canónico del scaffold post-deploy:
+
+         memsys3/
+         ├── PRINCIPLES.md
+         ├── agents/{main-agent,context-agent}.yaml
+         ├── memory/
+         │   ├── README.md
+         │   ├── context.yaml          (vacío modelo D)
+         │   ├── memory.yaml           (vacío modelo D)
+         │   ├── project-status.yaml   (personalizado en briefing)
+         │   ├── full/{adr.yaml,sessions.yaml,operations.log}
+         │   ├── history/.gitkeep
+         │   └── templates/*.{yaml,md}
+         ├── prompts/*.md
+         └── backlog/{README.md,docs/.gitkeep}
+
+      2. `memsys3_templates/memory/full/{adr.yaml,sessions.yaml,operations.log}` son la
+         fuente única de archivos vacíos. `deploy.md` Paso 2 hace `cp` directo desde
+         el directorio entero (`cp memsys3_temp/memsys3_templates/memory/full/* memsys3/memory/full/`).
+         Heredocs eliminados.
+
+      3. `memsys3_templates/backlog/` distribuye únicamente `README.md` + `docs/.gitkeep`.
+         NUNCA items concretos (los items en `memsys3/backlog/` son dogfooting interno).
+
+      4. Templates copy también incluye `*.md` (informe-template, plan-template), no solo
+         `*.yaml`.
+
+    alternatives:
+      - nombre: "A — statu quo (heredocs en deploy.md)"
+        pros:
+          - "Cero cambios"
+          - "Heredoc tiene placeholder [NOMBRE_PROYECTO] explícito"
+        contras:
+          - "Divergencia silenciosa con memsys3_templates/memory/full/"
+          - "Cualquier evolución del schema vacío requiere editar dos sitios"
+        por_que_descartada: "Genera CDC sobre el schema vacío. Inaceptable para release v1.0."
+
+      - nombre: "B-explícita — *-empty.{yaml,log} en memory/templates/, deploy copia con rename"
+        pros:
+          - "Sufijo distintivo (-empty) hace explícita la naturaleza del archivo"
+          - "memory/templates/ centraliza todos los templates"
+        contras:
+          - "Introduce 3 archivos nuevos sin valor añadido (los archivos de memory/full/ ya cumplen ese rol)"
+          - "Operación de rename en deploy añade complejidad"
+        por_que_descartada: "Misma forma que B-simple pero con más archivos y un rename. Rechazada por el usuario en planning."
+
+    consecuencias:
+      positivas:
+        - "Una sola fuente de verdad para el scaffold de archivos vacíos"
+        - "Inventario canónico documentado y verificable con `find memsys3/ -type f`"
+        - "Smoke test reproducible en cualquier proyecto limpio"
+        - "Cualquier evolución del schema vacío se hace SOLO en memsys3_templates/memory/full/"
+      negativas:
+        - "Pérdida del placeholder `[NOMBRE_PROYECTO]` en headers de adr.yaml/sessions.yaml — trade-off aceptado, los archivos están vacíos y se llenarán con datos reales en su uso"
+      impacto: |
+        Afecta: memsys3_templates/prompts/deploy.md (Paso 2 refactorizado),
+        memsys3/prompts/deploy.md (sync dogfooting),
+        memsys3_templates/backlog/ (eliminado leak IMPROVEMENT-008),
+        memsys3_templates/memory/full/operations.log (eliminado "memsys3" hardcoded en header).
+
+    notes: |
+      Nota semántica (cierre del matiz "infraestructura vs datos"):
+      Los archivos `adr.yaml`, `sessions.yaml`, `operations.log` tienen MISMA forma física
+      pero DISTINTA semántica según ubicación:
+      - En `memsys3_templates/memory/full/` son **scaffold infraestructural**
+        (versionable, distribuible, con `# version: 0.1.0`, modificables solo vía
+        /actualizar-memsys3).
+      - Tras `cp` al proyecto destino son **datos del usuario** (modificables libremente
+        por Main Agent vía endSession/adr/etc, NO versionados por /actualizar-memsys3).
+
+      La transformación es por ubicación, no por contenido. Esto cierra para siempre el
+      matiz: "¿es adr.yaml infraestructura o datos?" → depende de dónde esté.
+
+      Anclaje a PRINCIPLES.md:
+      - #6 (Templates como documentación activa permanente)
+      - #9 (Separation of Concerns: una fuente de verdad)
+      - #1 (Anti-CDC: el schema del scaffold vacío es canónico, no eventual)
+
+      Origen: BLUEPRINT-001 Frente 3. Sesión 2026-05-07.
+      Resuelve: brecha ADR-021 leak (informe_BLUEPRINT-001-auditoria.md §4.3).
+      Smoke test ejecutado y validado: 19 archivos en scaffold post-deploy coinciden con inventario.
+
 # Índice rápido para encontrar ADRs
 index:
   - id: "001"
@@ -1779,4 +1885,7 @@ index:
     estado: aceptado
   - id: "022"
     titulo: "PRINCIPLES.md como documento canónico de principios sistémicos (fuente única en templates)"
+    estado: aceptado
+  - id: "023"
+    titulo: "Scaffold completo en deploy: inventario canónico + memory/full/ como fuente única de archivos vacíos"
     estado: aceptado

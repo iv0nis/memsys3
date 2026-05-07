@@ -2,8 +2,8 @@
 
 metadata:
   ultima_actualizacion: "2026-05-07"
-  actualizado_por: "Claude (Session 2026-05-07 BLUEPRINT-001 Frente 2 — Auditoría ADRs vs código)"
-  fase: "Development v0.22.0 (preparando v1.0)"
+  actualizado_por: "Claude (Session 2026-05-07 BLUEPRINT-001 Frente 3 — Scaffold completo en deploy + ADR-023)"
+  fase: "Development v0.23.0 (preparando v1.0)"
   memsys3_version: "v0.23.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
@@ -14,9 +14,9 @@ vision_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estado_actual:
-  fase: "Development v0.22.0 (preparando release v1.0)"
-  ultima_feature: "BLUEPRINT-001 Frente 2 completado: auditoría 20 ADRs vs código real (3 forks Explore en paralelo). 18/20 cumplidas (90%). 3 ISSUEs creados: ISSUE-024 (meta ADRs 010-011 ausentes, baja), ISSUE-025 (ADR-007 docs/UPDATE.md link roto en README:217, media), ISSUE-026 (ADR-015 deploy.md 'DevAgent' vs 'Main Agent', media). Brecha ADR-021 leak IMPROVEMENT-008 cubierta por Frente 3. Reporte: memsys3/backlog/docs/informe_BLUEPRINT-001-auditoria.md"
-  siguiente_milestone: "Ejecutar BLUEPRINT-001 Frente 3 (Scaffold completo en deploy: limpiar leak IMPROVEMENT-008, decidir Opción A/B sobre *-empty templates, smoke test inventario canónico)"
+  fase: "Development v0.23.0 (preparando release v1.0)"
+  ultima_feature: "BLUEPRINT-001 Frente 3 completado: Scaffold completo en deploy + ADR-023. Eliminado leak IMPROVEMENT-008 en memsys3_templates/backlog/. deploy.md Paso 2 refactorizado (Opción B-simple): heredocs eliminados, cp directo de memsys3_templates/memory/full/* como fuente única de archivos vacíos. Templates copy ahora incluye *.md (informe-template, plan-template). Smoke test ejecutado en tmpdir: inventario canónico (19 archivos) verificado. ADR-023 documenta inventario + matiz semántico 'misma forma física, distinta semántica según ubicación' (scaffold infraestructural en templates → datos del usuario tras cp)."
+  siguiente_milestone: "BLUEPRINT-001 Frente 4 (Completitud de templates: operations-template.log, auditar 1:1 cada archivo del scaffold tiene template). Sesión fresca recomendada (anti-CDC). Plan en backlog/docs/plan_BLUEPRINT-001.md Frente 4."
 
 features:
   context_agent:
@@ -100,8 +100,8 @@ urls:
 
 pendientes_prioritarios:
   - prioridad: 1
-    tarea: "Ejecutar BLUEPRINT-001 Frente 3 — Scaffold completo en deploy"
-    detalle: "Frentes 1-2 completados (PRINCIPLES.md + auditoría 20 ADRs). Siguiente: definir inventario canónico, limpiar leak IMPROVEMENT-008 en memsys3_templates/backlog/, decidir Opción A (heredoc inline en deploy.md) vs B (templates *-empty.yaml en memory/templates/), crear ADR-023, smoke test post-deploy. Plan en memsys3/backlog/docs/plan_BLUEPRINT-001.md (Frente 3). Anti-CDC: sesión fresca con plan + informe principal + informe_BLUEPRINT-001-auditoria.md."
+    tarea: "Ejecutar BLUEPRINT-001 Frente 4 — Completitud de templates"
+    detalle: "Frentes 1-3 completados. Siguiente: inventariar archivos del scaffold final (post-Frente 3) y verificar 1:1 que cada uno tiene template equivalente en memory/templates/. Crear faltantes (operations-template.log es el caso conocido — pendiente prioritario antiguo 3). Sincronizar memsys3/memory/templates/ ↔ memsys3_templates/memory/templates/. Plan en backlog/docs/plan_BLUEPRINT-001.md (Frente 4). Anti-CDC: sesión fresca recomendada."
 
   - prioridad: 1
     tarea: "Resolver ISSUEs detectados en Frente 2"
@@ -161,6 +161,9 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-05-07"
+    resumen: "BLUEPRINT-001 Frente 3 ejecutado: Scaffold completo en deploy. EXPLORATION-004 (canonización proactiva anti-CDC meta) commiteado al inicio para árbol limpio. Plan first vía ExitPlanMode con AskUserQuestion para variante de Opción B (B-simple aceptada: cp directo de memsys3_templates/memory/full/* sin sufijo -empty). Eliminado leak memsys3_templates/backlog/IMPROVEMENT-008-*.md. deploy.md Paso 2 refactorizado en ambos sitios (templates + dogfooting): heredocs cat << EOF eliminados, cp directo + templates/*.md añadido (informe-template, plan-template). Limpieza adicional: 'memsys3' hardcoded en operations.log header del template → 'Operations Log'. ADR-023 creada (153 líneas, decisión + alternativas A/B-explícita descartadas + matiz semántico 'misma forma física, distinta semántica según ubicación' incluido por sugerencia del usuario). Smoke test en mktemp -d: 19 archivos coinciden con inventario canónico. Anclaje principios: #6, #9, #1. ~1.5h peso medio-alto. Siguiente: Frente 4 (Completitud templates) en sesión fresca."
+
   - fecha: "2026-05-07"
     resumen: "BLUEPRINT-001 Frente 2 ejecutado: auditoría 20 ADRs vs código real con 3 forks Explore en paralelo (Fork A 001-009, Fork B 012-016, Fork C 017-022). 18/20 cumplidas (90%). Conteo corregido: 20 reales (010-011 ausentes — meta-finding). 3 ISSUEs creados: ISSUE-024 (010-011 baja), ISSUE-025 (docs/UPDATE.md link roto README:217 media), ISSUE-026 (deploy.md DevAgent vs Main Agent media). Brecha ADR-021 (leak IMPROVEMENT-008) cubierta por Frente 3. Anclaje cruzado validado: cada principio PRINCIPLES.md tiene ≥1 ADR. Reporte canónico anti-CDC en backlog/docs/. 2 commits atómicos sin firma. Sin tag. 5 archivos nuevos, 3 modificados. ~2h peso alto. Siguiente: Frente 3 (Scaffold completo en deploy)."
 
