@@ -3,6 +3,66 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-07-blueprint001-frente3-scaffold-completo-deploy"
+    titulo: "BLUEPRINT-001 Frente 3 ejecutado: scaffold completo en deploy + ADR-023 + EXPLORATION-004 commiteado"
+    data: "2026-05-07"
+    duracion: "~1.5h"
+    peso: "alto"
+    objetivo: "Cerrar la brecha del scaffold distribuible: definir inventario canónico, eliminar leak IMPROVEMENT-008 en memsys3_templates/backlog/, refactorizar deploy.md Paso 2 para usar memsys3_templates/memory/full/ como fuente única de archivos vacíos (eliminando heredocs divergentes). Cerrar el matiz semántico 'infraestructura vs datos según ubicación' en ADR-023. Smoke test del scaffold post-deploy."
+    contexto_inicial: |
+      Punto de partida (newSession): BLUEPRINT-001 Frente 2 cerrado en sesión previa
+      (commit 245550e). Estaba pendiente Frente 3 según plan_BLUEPRINT-001.md.
+      Branch master limpio, 2 untracked irrelevantes (blocked_files_log.md, multi_work.md)
+      + 1 untracked relevante: memsys3/backlog/EXPLORATION-004-canonizacion-proactiva-agentes.md
+      (articulado al final de la sesión anterior, sin commitear).
+      Usuario indicó: commitear EXPLORATION-004 atómico ANTES de Frente 3 + plan first vía
+      ExitPlanMode + leer plan + informe.
+    highlights:
+      - "EXPLORATION-004 (canonización proactiva anti-CDC meta) commiteado primero como árbol limpio (commit 294c620)"
+      - "Plan articulado en plan mode con AskUserQuestion para variante de Opción B (B-simple aceptada: cp directo memsys3_templates/memory/full/* sin sufijo -empty)"
+      - "Eliminado leak memsys3_templates/backlog/IMPROVEMENT-008-deploy-agnostico-memoria-antes-agente.md (commit aae28d5)"
+      - "Saneado side-finding: 'Operations Log - memsys3' hardcoded en operations.log template → 'Operations Log' neutro"
+      - "deploy.md Paso 2 refactorizado en AMBOS sitios (memsys3_templates/ + memsys3/ dogfooting): heredocs cat << EOF eliminados, cp directo + templates/*.md añadido (informe-template, plan-template) (commit a57edd1)"
+      - "ADR-023 creada (153 líneas, índice incluido): inventario canónico + B-simple + alternativas A/B-explícita descartadas + matiz semántico incluido por sugerencia del usuario (commit 45a52ef)"
+      - "Smoke test en mktemp -d: 19 archivos en scaffold post-deploy coinciden 1:1 con inventario canónico"
+      - "4 commits atómicos sin firma Co-Authored-By, push a origin/master, sin tag (acumular hasta v1.0.0 al cerrar BLUEPRINT-001)"
+    decisiones_clave:
+      - decision: "Opción B-simple (cp directo) frente a B-explícita (sufijo *-empty.yaml en templates/)"
+        motivo: "Los archivos en memsys3_templates/memory/full/ YA son los empty templates correctos (con # version: 0.1.0). Crear duplicados con sufijo -empty.yaml añade complejidad sin valor: 3 archivos nuevos + un rename en deploy.md."
+        alternativas_descartadas: ["A statu quo (heredocs)", "B-explícita (-empty suffix)"]
+      - decision: "Documentar matiz semántico 'misma forma física, distinta semántica según ubicación' en ADR-023 notes"
+        motivo: "Sugerencia del usuario al revisar el plan. Cierra para siempre la confusión 'adr.yaml ¿es infraestructura o datos?' → depende de dónde esté: en memsys3_templates/ scaffold infraestructural; tras cp al destino, datos del usuario."
+      - decision: "Sin tag para los 4 commits del Frente 3"
+        motivo: "Coherente con la línea acumular para v1.0.0 al cerrar BLUEPRINT-001 Frente 8. Mantiene actualizar.md apuntando a v0.23.0."
+    adr_relacionada: "ADR-023"
+    gotchas:
+      - tipo: "smoke-test"
+        problema: "git clone --quiet --depth 1 file:///<repo> falla silenciosamente cuando el repo tiene commits locales no pusheados (--quiet oculta el error). Smoke test inicial dio inventario vacío sin mostrar causa."
+        solucion: "Para validar cambios LOCALES, NO usar git clone — copiar directamente con cp -r memsys3_templates/ a tmpdir. Eliminar --quiet ayuda a ver el error real cuando se quiere reproducir el clone."
+        criticidad: "media"
+      - tipo: "leak-template"
+        problema: "Aunque el leak macro (IMPROVEMENT-008.md) era el conocido, había un leak menor adicional: 'memsys3' hardcoded en el header de operations.log del template distribuible."
+        solucion: "Heurística: cuando se sanee un leak en backlog/, grep paralelo en memsys3_templates/ por nombre del proyecto dogfooting puede destapar leaks análogos."
+        criticidad: "baja"
+    proximos_pasos:
+      - "Frente 4 (Completitud de templates) en sesión fresca — agente nuevo lee plan + informe + ADR-023 para anti-CDC"
+      - "Considerar rotación adr.yaml: ahora 1891 líneas (Escenario A flexible 1800-2000). Próxima sesión que añada ADR debería rotar primero"
+      - "Resolver ISSUE-025 (link roto README:217) e ISSUE-026 (deploy.md DevAgent → Main Agent) antes de v1.0"
+      - "EXPLORATION-004 sigue Propuesto — explorar Opción A (defensiva en endSession) cuando se priorice"
+    archivos_modificados:
+      - "memsys3/backlog/EXPLORATION-004-canonizacion-proactiva-agentes.md (nuevo, pre-Frente 3)"
+      - "memsys3_templates/backlog/IMPROVEMENT-008-deploy-agnostico-memoria-antes-agente.md (eliminado)"
+      - "memsys3_templates/memory/full/operations.log (header saneado)"
+      - "memsys3_templates/prompts/deploy.md (refactor Paso 2)"
+      - "memsys3/prompts/deploy.md (sync dogfooting)"
+      - "memsys3/memory/full/adr.yaml (ADR-023 añadida + entry index)"
+      - "memsys3/memory/project-status.yaml (Frente 3 completado, próximo Frente 4)"
+    commits:
+      - "294c620 docs(backlog): EXPLORATION-004 canonizacion proactiva (anti-CDC meta)"
+      - "aae28d5 chore(templates): eliminar leak IMPROVEMENT-008 + sanear header operations.log"
+      - "a57edd1 refactor(deploy): cp directo memory/full/ y templates/*.md (ADR-023)"
+      - "45a52ef docs(adr,status): ADR-023 scaffold completo en deploy + Frente 3 completado"
+
   - id: "2026-05-07-blueprint001-frente2-auditoria-adrs"
     titulo: "BLUEPRINT-001 Frente 2 ejecutado: auditoría 20 ADRs vs código real (3 forks Explore en paralelo) + 3 ISSUEs"
     data: "2026-05-07"
