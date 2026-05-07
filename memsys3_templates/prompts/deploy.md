@@ -41,58 +41,37 @@ Copia TODA la estructura de memsys3_templates/ al directorio memsys3/ del proyec
 
 ```bash
 # Crear estructura base (scaffold completo, vacío si no aplica)
-mkdir -p memsys3/memory/full
-mkdir -p memsys3/memory/templates
-mkdir -p memsys3/memory/history
-mkdir -p memsys3/prompts
-mkdir -p memsys3/agents
-mkdir -p memsys3/backlog/docs
+mkdir -p memsys3/{agents,memory/{full,history,templates},prompts,backlog/docs}
 
 # Crear .gitkeep en directorios que pueden quedar vacíos (para que git los versione)
 touch memsys3/memory/history/.gitkeep
 touch memsys3/backlog/docs/.gitkeep
 
-# Copiar templates
+# Copiar templates (.yaml + .md — incluye informe-template.md, plan-template.md)
 cp memsys3_temp/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
+cp memsys3_temp/memsys3_templates/memory/templates/*.md   memsys3/memory/templates/
 
-# Copiar prompts
+# Copiar archivos vacíos canónicos memory/full/ (adr.yaml, sessions.yaml, operations.log)
+# Fuente única: memsys3_templates/memory/full/ (ADR-023)
+cp memsys3_temp/memsys3_templates/memory/full/* memsys3/memory/full/
+
+# Copiar memoria root (context.yaml y memory.yaml vacíos modelo D)
+cp memsys3_temp/memsys3_templates/memory/context.yaml memsys3/memory/
+cp memsys3_temp/memsys3_templates/memory/memory.yaml  memsys3/memory/
+cp memsys3_temp/memsys3_templates/memory/README.md    memsys3/memory/
+
+# Copiar prompts y agents
 cp memsys3_temp/memsys3_templates/prompts/*.md memsys3/prompts/
-
-# Copiar agents
 cp memsys3_temp/memsys3_templates/agents/*.yaml memsys3/agents/
-
-# Copiar README
-cp memsys3_temp/memsys3_templates/memory/README.md memsys3/memory/
 
 # Copiar PRINCIPLES.md (documento canónico de principios sistémicos, ADR-022)
 cp memsys3_temp/memsys3_templates/PRINCIPLES.md memsys3/PRINCIPLES.md
 
-# Crear archivos vacíos memory/full/
-cat > memsys3/memory/full/adr.yaml << 'EOF'
-# ADR Log - [NOMBRE_PROYECTO]
-# Architecture Decision Records del proyecto
-
-adrs: []
-EOF
-
-cat > memsys3/memory/full/sessions.yaml << 'EOF'
-# Sessions Log - [NOMBRE_PROYECTO]
-# Histórico de sesiones de desarrollo
-
-sessions: []
-EOF
-
-cat > memsys3/memory/full/operations.log << 'EOF'
-# Operations Log - [NOMBRE_PROYECTO]
-# Registro automático de operaciones del sistema (actualizar, compilar)
-# Formato: YAML append-only, orden cronológico inverso (más reciente primero)
-# Rotación: cuando >= 1800 líneas, rotar a operations_N.log (estilo sessions)
-# Archivos rotados se pueden borrar libremente (no hay archivado)
-# Este archivo NO se lee en newSession ni compile-context — solo consulta bajo demanda
-
-operations: []
-EOF
+# Copiar backlog scaffold (solo README.md — items concretos NO se distribuyen, ADR-021/023)
+cp memsys3_temp/memsys3_templates/backlog/README.md memsys3/backlog/
 ```
+
+> **Nota (ADR-023):** los archivos `memsys3/memory/full/{adr.yaml,sessions.yaml,operations.log}` se copian directamente desde `memsys3_templates/memory/full/` (fuente única). Tras la copia son **datos del usuario** (escribibles por Main Agent), no infraestructura. `project-status.yaml` se crea en Paso 5 (briefing).
 
 ### Paso 3: Briefing con el Usuario
 
