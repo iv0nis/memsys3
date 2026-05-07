@@ -1,4 +1,4 @@
-# Operations Log - memsys3
+# Operations Log
 # Registro automático de operaciones del sistema (actualizar, compilar)
 # Formato: YAML append-only, orden cronológico inverso (más reciente primero)
 # Rotación: cuando >= 1800 líneas, rotar a operations_N.log (estilo sessions)
