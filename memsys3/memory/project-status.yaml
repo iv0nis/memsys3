@@ -4,7 +4,7 @@ metadata:
   ultima_actualizacion: "2026-05-08"
   actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 7 + EXPLORATION-004 A)"
   fase: "Development v0.24.0 (preparando v1.0 — Frente 7/8 completado, smoke tests OK)"
-  memsys3_version: "v0.24.0"
+  memsys3_version: "v0.24.1"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
 
