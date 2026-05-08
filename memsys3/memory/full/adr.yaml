@@ -1,1994 +1,239 @@
 # Architecture Decision Records - memsys3
 # Decisiones arquitectónicas del proyecto memsys3
+# ADRs anteriores rotadas a: adr_1.yaml (1994 líneas, hasta ADR-024, 2026-05-07)
 
 adrs:
-  - id: "006"
-    titulo: "Sistema de rutas unificado memsys3/"
-    data: "2025-10-29"
+  - id: "025"
+    titulo: "Estrategia dogfooting versionado: memsys3/ se commitea con protocolo anti-leak"
+    data: "2026-05-08"
     estado: aceptado
-    area: arquitectura
+    area: "dogfooting,infrastructure,workflow"
 
     context: |
-      Durante el desarrollo inicial se creó confusión sobre las rutas en el sistema.
-      Los prompts referencian archivos usando rutas relativas, pero cuando memsys3
-      se despliega en diferentes proyectos, esas rutas deben ser consistentes.
+      Tras 6 meses de uso real, el repo memsys3 mantiene `memsys3/` (instancia interna
+      de dogfooting) commiteado junto a `memsys3_templates/` (producto distribuible).
+      La separación agnóstico/específico vive informalmente en README:235-247, sin ADR
+      formal que la respalde — la auditoría del Frente 2 (ISSUE-024) confirmó que las
+      ADRs 010 y 011 son ausentes en la numeración. Por tanto NO existe "ADR-011 sobre
+      separación agnóstico/específico" pese a que múltiples docs y prompts la
+      mencionaban como referencia. Esta ADR-025 es la PRIMERA formalización del rol
+      de `memsys3/` en el repo, no una extensión de algo previo.
 
-      Inicialmente había inconsistencias:
-      - Algunos prompts usaban `memory/`, otros `@memory/`
-      - No estaba claro si las rutas eran del template o del deployment
-      - Los READMEs mezclaban niveles (template vs sistema desplegado)
+      El incidente IMPROVEMENT-008 (item de dogfooting filtrado a
+      memsys3_templates/backlog/, descubierto en Frente 3 y corregido manualmente)
+      demostró que el riesgo de leak dogfooting → distribuible es REAL y que la
+      disciplina humana/agéntica (recordar revisar antes de commitear) FALLA. Sin
+      protocolo sistémico el vector queda abierto: cualquier sesión futura puede
+      reintroducir el bug. v1.0 no debe salir con esta puerta sin cerrar.
 
-    decision: |
-      TODAS las rutas en memsys3_templates/ deben usar el prefijo `memsys3/`:
-
-      - `memsys3/memory/context.yaml`
-      - `memsys3/agents/main-agent.yaml`
-      - `memsys3/prompts/compile-context.md`
-      - etc.
-
-      Razón: Durante deployment, memsys3_templates/ se copia a la raíz del proyecto
-      como `memsys3/`, por lo tanto todas las rutas internas funcionan correctamente.
-
-      Además:
-      - compile-context.md debe referenciar explícitamente `memsys3/agents/context-agent.yaml`
-      - main-agent.yaml incluye restricción de NO proponer compile-context.md
-      - READMEs separados por meta-nivel (repositorio vs sistema desplegado)
-
-    alternatives:
-      - nom: "Rutas relativas sin prefijo"
-        pros:
-          - Más cortas
-          - Simples
-        contras:
-          - Ambigüedad sobre qué carpeta
-          - Conflictos en proyectosconcarpeta 'memory/'
-          - Difícil saber qué es de memsys3
-        por_que_descartada: "No escalable, genera confusión"
-
-      - nom: "Rutas absolutas desde raíz"
-        pros:
-          - Sin ambigüedad
-        contras:
-          - Dependiente de estructura del proyecto
-          - No portable
-        por_que_descartada: "No es portable entre proyectos"
-
-    consequencies:
-      positives:
-        - "Claridad todal: siempre se sabe que es de memsys3"
-        - "Portabilidad: funciona en cualquier proyecto"
-        - "Actualizable: fácil saber qué archivos actualizar"
-        - "Sin conflictosconcarpetas del proyecto"
-      negatives:
-        - "Rutas más largas en prompts"
-        - "Requiere disciplina al crear nuevos prompts"
-      impacto: "Cómo se estructuran y referencian todos los archivos del sistema"
-
-  - id: "007"
-    titulo: "Separación de meta-niveles en READMEs"
-    data: "2025-10-29"
-    estado: aceptado
-    area: documentación
-
-    context: |
-      Inicialmente había un solo README que mezclaba:
-      - Explicación de qué es memsys3 (para quien lo descubre)
-      - Instrucciones de uso del sistema (para quien lo usa)
-      - Información de templates y deployment
-      - Dog-fooding del propio memsys3
-
-      Esto generaba confusión porque no estaba claro el "nivel" de cada información.
+      Tres opciones evaluadas con el usuario en sesión 2026-05-08:
+      A) Statu quo (commitear sin protocolo).
+      B) `.gitignore memsys3/`.
+      C) Híbrido (commitear + protocolo anti-leak).
 
     decision: |
-      Crear READMEs separados por meta-nivel:
+      Adoptar Opción C: `memsys3/` se commitea (statu quo conserved) + protocolo
+      anti-leak en dos capas:
 
-      1. README.md (raíz repositorio):
-         - Meta-nivel: REPOSITORIO PÚBLICO
-         - Audiencia: Quien descubre memsys3 en GitHub
-         - Contenido: Qué es, cómo instalarlo, estructura del repo
-         - Incluye: Explicación de dog-fooding (memsys3_templates/ vs memsys3/)
+      **Capa 1 — Hook `pre-commit` (defensa primaria, self-enforcing).**
+      Ubicación: `.githooks/pre-commit` (versionable; `.git/hooks/` no se versiona).
+      Bash puro, ~20 líneas. Veta cualquier archivo
+      `memsys3_templates/backlog/[A-Z]+-[0-9]+-*.md` en `git diff --cached`. Permitido
+      en ese directorio: solo `README.md` y `docs/.gitkeep`. Activación una sola vez
+      por dev: `git config core.hooksPath .githooks`.
 
-      2. memsys3_templates/README.md:
-         - Meta-nivel: SISTEMA DESPLEGADO
-         - Audiencia: Agents y developers DENTRO de un proyecto
-         - Contenido: Cómo usar el sistema YA desplegado
-         - NO menciona: Templates, deployment, ni meta-información
-         - Escrito como si ya estuviera en producción
+      **Capa 2 — Auditoría en `comprobar_alineamiento.md` (defensa en profundidad).**
+      Bloque añadido al prompt (`memsys3/prompts-dev/comprobar_alineamiento.md`) que
+      verifica:
+      - `ls memsys3_templates/backlog/` solo contiene `README.md` y `docs/`.
+      - `find memsys3_templates -name '[A-Z]*-[0-9]*-*.md' -type f` está vacío.
+      Esta capa atrapa: hooks bypasseados con `--no-verify`, devs nuevos sin
+      `core.hooksPath` configurado, y vectores no anticipados por el patrón del hook.
 
-      3. docs/DEVELOPMENT.md:
-         - Meta-nivel: DESARROLLO DE MEMSYS3
-         - Audiencia: Contribuidores/desarrolladores de memsys3
-         - Contenido: Workflow de desarrollo, sistema de rutas, checklist
-
-      4. docs/UPDATE.md:
-         - Meta-nivel: ACTUALIZACIÓN
-         - Audiencia: Quien ya tiene memsys3 y quiere actualizar
-         - Contenido: Qué archivos actualizar, qué preservar
+      **Alcance del hook**: vive en este repo (protección del dev de memsys3 mismo).
+      NO se distribuye al scaffold porque los proyectos del usuario no tienen el
+      problema "templates vs dogfooting" — su `memsys3/` es solo data del proyecto,
+      sin capa distribuible que proteger.
 
     alternatives:
-      - nom: "Un solo README para todo"
+      - nombre: "A — Statu quo (commitear sin protocolo)"
         pros:
-          - Simple
-          - Todo en un lugar
+          - "Cero cambios, cero mantenimiento"
+          - "Conserva dogfooting visible como ejemplo vivo"
         contras:
-          - Confusión de niveles
-          - No está claro quién es la audiencia
-          - Mezcla información de template vs deployment
-        por_que_descartada: "Demasiada ambigüedad, difícil de mantener"
-
-    consequencies:
-      positives:
-        - "Claridad todal de meta-niveles"
-        - "Cada README tiene audiencia específica"
-        - "Agents leen README agnóstico sin confusión"
-        - "Developers tienen guía clara de contribución"
-      negatives:
-        - "Más archivos que mantener"
-        - "Requiere disciplina para actualizar todos"
-      impacto: "Cómo se estructura toda la documentación del proyecto"
-
-  - id: "008"
-    titulo: "Main-Agent NO debe proponer compile-context"
-    data: "2025-10-29"
-    estado: aceptado
-    area: workflow
-
-    context: |
-      El Main-Agent trabaya durante sesiones acumulando tokens. compile-context.md
-      requiere leer TODOS los archivos de memory/full/ (puede ser >50K tokens).
-
-      Si el Main-Agent propone ejecutar compile-context, acumula:
-      - Tokens de la sesión actual
-      - Tokens de leer todo memory/full/
-      - Tokens de generar context.yaml
-
-      Esto es ineficiente y puede superar límites de contexto.
-
-    decision: |
-      Main-Agent tiene restricción explícita en agents/main-agent.yaml:
-      - NO proponer ejecutar @memsys3/prompts/compile-context.md
-      - Solo sugerir endSession al finalizar sesión
-      - El user decide cuándo compilar (en nueva instancia limpia)
-
-      compile-context.md debe ejecutarse en una NUEVA INSTANCIA sin tokens acumulados.
-
-    alternatives:
-      - nom: "Main-Agent ejecuta compile-context"
-        pros:
-          - Automático
-          - Conveniente
-        contras:
-          - Acumula demasiados tokens
-          - Ineficiente
-          - Puede superar límites
-        por_que_descartada: "Consume demasiados tokens innecesariamente"
-
-      - nom: "Compilación automática en cada endSession"
-        pros:
-          - Context siempre actualizado
-        contras:
-          - Cada endSession sería muy pesado
-          - No siempre es necesario recompilar
-        por_que_descartada: "Overhead innecesario"
-
-    consequencies:
-      positives:
-        - "Eficiencia de tokens optimizada"
-        - "Main-Agent se enfoca en desarrollo"
-        - "Context Agent trabayaconinstancia limpia"
-        - "User controla cuándo compilar"
-      negatives:
-        - "Requiere paso manual extra de compilación"
-        - "Context puede quedar desactualizado entre compilaciones"
-      impacto: "Cómo se gestiona el workflow de compilación de contexto"
-
-  - id: "001"
-    titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
-    data: "2025-10-28"
-    estado: aceptado
-    area: arquitectura
-
-    context: |
-      Los sistemas anteriores usaban límites rígidos (máx 7 ADRs, máx 15 líneas por sesión)
-      que no se adaptaban a la realidad del proyecto. Proyectos pequeños perdían contexto,
-      proyectos grandes no podían expresarse adecuadamente.
-
-    decision: |
-      El Context Agent usa criterio inteligente basándose en la pregunta:
-      "¿Qué debe saber CUALQUIER agent descontextualizado para trabajar aquí?"
-
-      Límite ÚNICO: máximo 2000 líneas en context.yaml final.
-      NO hay límites arbitrarios para ADRs, sessions, gotchas, etc.
-
-    alternatives:
-      - nom: "Mantener límites arbitrarios"
-        pros:
-          - Predecible
-          - Fácil de implementar
-        contras:
-          - No se adapta a realidad del proyecto
-          - Pierde información crítica o incluye información irrelevante
-        por_que_descartada: "Demasiado rígido, no escala con complejidad del proyecto"
-
-      - nom: "Sin límite (contexto ilimitado)"
-        pros:
-          - Todo el contexto disponible
-        contras:
-          - Consume demasiados tokens
-          - Supera límites de Read tool (2000 líneas)
-        por_que_descartada: "No sostenible, problemas técnicos con Read"
-
-    consequencies:
-      positives:
-        - "Contexto adaptativo según necesidades del proyecto"
-        - "CA decideconvisión panorámica completa"
-        - "Proyectos pequeños mantienen todo, proyectos grandes filtran inteligentemente"
-        - "Más flexible y escalable"
-      negatives:
-        - "Menos predecible (depende criterio CA)"
-        - "Puede variar entre compilaciones"
-      impacto: "Cómo se compila todo el contexto del sistema"
-
-  - id: "002"
-    titulo: "Rotación automática de sessions/ADRs (flexible 1800-2000 líneas)"
-    data: "2025-10-28"
-    estado: aceptado
-    area: escalabilidad
-    ultima_actualizacion: "2025-12-03"
-
-    context: |
-      Read tool tiene límite de 2000 líneas. Si sessions.yaml o adr.yaml crecen
-      demasiado, los agents no pueden leerlos.
-
-      UPDATE 2025-12-03: Sistema de rotación mejorado con umbral flexible que aprovecha
-      espacio disponible (1800-2000) y evita duplicación de sesión actual.
-
-    decision: |
-      Sistema de rotación flexible con dos escenarios:
-
-      **Escenario A: 1800 < líneas < 2000** (Rotación LITE post-documentación)
-      1. Documentar sesión normalmente en sessions.yaml
-      2. DESPUÉS de documentar, si supera 1800 líneas:
-         - Copiar sessions.yaml → sessions_N.yaml (incluye sesión actual)
-         - Verificar copia (debe tener sesión actual)
-         - Crear nuevo sessions.yaml VACÍO (solo header YAML)
-      3. Resultado: Sesión actual SOLO en sessions_N.yaml (no duplicación)
-
-      **Escenario B: líneas > 2000** (Rotación PRE-documentación)
-      1. ANTES de documentar, rotar:
-         - Copiar sessions.yaml → sessions_N.yaml (sin sesión actual)
-         - Verificar copia
-         - Crear nuevo sessions.yaml vacío
-      2. Documentar sesión actual en sessions.yaml NUEVO (desde cero)
-      3. Resultado: Sesión actual SOLO en sessions.yaml nuevo
-
-      Context Agent lee TODOS los archivos rotados hasta detectar >150K tokens.
-
-    alternatives:
-      - nom: "Límite fijo de sessions/ADRs"
-        pros:
-          - Simple
-        contras:
-          - Pierde histórico
-        por_que_descartada: "No queremos perder datos nunca"
-
-      - nom: "Base de datos"
-        pros:
-          - Sin límites
-        contras:
-          - Complejidad adicional
-          - Dependencia externa
-        por_que_descartada: "YAML files son suficientes y simples"
-
-    consequencies:
-      positives:
-        - "Sistema escala infinitamente"
-        - "No se pierden datos nunca"
-        - "Automático, sin intervención manual"
-        - "Preserva histórico completo"
-        - "Rotación flexible (1800-2000): aprovecha espacio disponible"
-        - "Evita duplicación: sesión actual solo en un archivo"
-        - "Solo rota cuando REALMENTE necesario (>2000)"
-      negatives:
-        - "Múltiples archivos (sessions_1, sessions_2, etc.)"
-        - "CA debe leer múltiples archivos"
-        - "Dos escenarios posibles (complejidad decisión)"
-      impacto: "Cómo se gestiona el crecimiento de datos históricos"
-
-    notes: |
-      UPDATE 2025-12-03: Sistema mejorado tras primera rotación real (sessions.yaml 1849 líneas).
-      Rotación flexible más eficiente: no rota rígidamente en 1800, aprovecha espacio hasta 2000.
-      Evita duplicación documentando dónde queda sesión actual según escenario.
-
-  - id: "003"
-    titulo: "Plan de Contingenciaconarchivado inteligente (>150K tokens)"
-    data: "2025-10-28"
-    estado: aceptado
-    area: escalabilidad
-
-    context: |
-      Inclusoconrotación, proyectos muy grandes pueden acumular demasiados datos.
-      Si full/ (con todos los archivos rotados) supera 150K tokens, el CA no puede
-      procesarlo eficientemente.
-
-    decision: |
-      Cuando todal de full/ supera 150K tokens:
-      1. CA identifica ADRs/sessions irrelevantes con criterio inteligente
-      2. Los mueve a memory/history/ (que NO se lee)
-      3. Reduce a ~120K tokens
-      4. Continúa compilación normal
-
-      Datos en history/ están preservados, recuperables si es necesario.
-
-    alternatives:
-      - nom: "Borrar datos antiguos"
-        pros:
-          - Limpieza automática
-        contras:
-          - Pierde información irreversiblemente
-        por_que_descartada: "NEVER delete data"
-
-      - nom: "Comprimir archivos"
-        pros:
-          - Reduce tamaño
-        contras:
-          - CA no puede leer comprimido
-        por_que_descartada: "No resuelve problema de tokens"
-
-    consequencies:
-      positives:
-        - "Ahorro real de tokens (history/ NO se lee)"
-        - "Datos preservados, no perdidos"
-        - "Sistema escala ilimitadamente"
-        - "Reversible (puedes recuperar de history/)"
-      negatives:
-        - "Datos archivados no visibles para CA"
-        - "Depende criterio CA para archivar"
-      impacto: "Cómo se gestionan proyectosconmucho histórico"
-
-  - id: "004"
-    titulo: "YAML para todo (incluyendo sessions)"
-    data: "2025-10-28"
-    estado: aceptado
-    area: format
-
-    context: |
-      Sessions originalmentee eran .md (Markdown). Templates y ADRs ya eran YAML.
-      Inconsistencia de formatos dificultaba parsing y ahorro de tokens.
-
-    decision: |
-      Todo el sistema usa YAML:
-      - sessions.yaml (antes sessions.md)
-      - adr.yaml
-      - project-status.yaml
-      - context.yaml
-      - Todos los templates .yaml
-
-    alternatives:
-      - nom: "Markdown para sessions"
-        pros:
-          - Más legible para humans
-        contras:
-          - Inconsistentconresto
-          - Más tokens (~30% más)
-          - Difícil parsear para LLMs
-        por_que_descartada: "Queríamos consistència y eficiencia"
-
-      - nom: "JSON"
-        pros:
-          - Estándar web
-        contras:
-          - Menos legible
-          - No soporta multiline strings fácilmente
-        por_que_descartada: "YAML mejor para documentación"
-
-    consequencies:
-      positives:
-        - "Consistencia todal del sistema"
-        - "~30% ahorro tokens vs Markdown"
-        - "Mejor para LLMs (estructura clara)"
-        - "Fácil parsearconjs-yaml"
-      negatives:
-        - "Menos familiar para algunos devs"
-        - "Requiere indentació estricta"
-      impacto: "Formato de toda la documentació del sistema"
-
-  - id: "005"
-    titulo: "deploy.md como prompt (no script shell)"
-    data: "2025-10-28"
-    estado: aceptado
-    area: usabilidad
-
-    context: |
-      Necesitábamos manera de desplegar memsys3 en nuevos proyectos.
-      Opciones: script shell automático vs prompt para Main-Agent.
-
-    decision: |
-      Crear prompts/deploy.md que el Main-Agent ejecuta.
-      El agent hace briefingconuser para personalizar el deployment:
-      - Pregunta sobre proyecto, stack, comportamiento
-      - Copia templates
-      - Crea archivos específicos basándose en respuestas
-
-      Más flexible que script automático.
-
-    alternatives:
-      - nom: "Script shell (setup.sh)"
-        pros:
-          - Automático
-          - Rápido
-        contras:
-          - Menos flexible
-          - No puede hacer briefingconuser
-          - Requeriría CLI interactivo complex
-        por_que_descartada: "Promptconagent es más inteligente y flexible"
-
-      - nom: "Manual (README instructions)"
-        pros:
-          - Simple
-        contras:
-          - Propensos a errores humanos
-          - Lento
-        por_que_descartada: "Queríamos automatización"
-
-    consequencies:
-      positives:
-        - "Deployment guiado e inteligente"
-        - "Personalización según necesidades"
-        - "Agent puede adaptarse a respuestas"
-        - "Consistentconfilosofía de prompts"
-      negatives:
-        - "Requiere AI agent paraejecutar"
-        - "No funciona sense agent"
-      impacto: "Com los usuarios despliegan memsys3 en los sus proyectos"
-
-  - id: "009"
-    titulo: "Templates como documentació activa permanent + gotchas en sessions"
-    data: "2025-10-31"
-    estado: aceptado
-    area: arquitectura
-
-    context: |
-      Durante la validación del deployment surgió confusión sobre tres aspectos:
-
-      1. **Templates dentro de templates**: memsys3_templates/ es una carpeta-template completa,
-         pero dentro tiene memory/templates/. Esto genera la pregunta: ¿qué es template de qué?
-
-      2. **Uso de templates/**: Inicialmente se pensó en borrar memory/templates/ después
-         del deployment, pero al revisar el contenido se descubrió que contiene:
-         - Estructura exacta de ADRs, sessions, project-status
-         - Instrucciones de uso (orden cronológico, límites, etc.)
-         - Ejemplos de buena vs mala documentación
-         - Especificaciones que endSession.md no detalla
-
-      3. **Ubicación de gotchas**: project-status-template.yaml incluye sección gotchas_i_issues,
-         pero los gotchas surgen DURANTE sesiones de trabajo, no son características estáticas
-         del proyecto.
-
-    decision: |
-      **1. Concepto de memsys3_templates/ (ms3t):**
-      - ms3t/ = Estructura EXACTA del producto final
-      - Todos los archivos se copian durante deployment (incluido memory/templates/)
-      - memory/templates/ NO se borra después del deployment
-
-      **2. memory/templates/ = Guías permanentes:**
-      - Main-Agent consulta templates/ durante endSession.md
-      - "¿Cómo estructuro esta sesión?" → sessions-template.yaml
-      - "¿Qué campos tiene un ADR?" → adr-template.yaml
-      - "¿Qué puedo actualizar en project-status?" → project-status-template.yaml
-      - Templates son documentación ACTIVA, no solo guías de deployment
-
-      **3. Gotchas documentados en sessions.yaml:**
-      - Main-Agent documenta gotchas en cada sesión donde aparecen
-      - Estructura en sessions.yaml:
-        ```yaml
-        sessions:
-          - id: "2025-10-31"
-            gotchas:
-              - tipus: "warning|gotcha|issue"
-                problema: "[DESCRIPCIÓ]"
-                solucio: "[COM RESOLDRE]"
-                criticidad: "alta|media|baja"
-        ```
-      - Context-Agent extrae gotchas de TODAS las sesiones
-      - CA usa criterio inteligente para seleccionar top 5 más críticos
-      - Criterios: criticidad + recencia + impacto
-      - project-status.yaml NO contiene gotchas (solo info general del proyecto)
-
-      **4. Templatesconcomentarios explicativos:**
-      - Camposcon[PLACEHOLDER] y comentarios inline
-      - Ejemplos de buenas prácticas
-      - deploy.md usa templates como guía para hacer briefing
-
-      **5. Workflow de deployment actualizado:**
-      ```bash
-      # Usuario dice:
-      "Clona https://github.com/iv0nis/memsys3 como memsys3_temp
-       y ejecuta memsys3_temp/memsys3/prompts/deploy.md"
-
-      # Flujo:
-      1. git clone https://github.com/iv0nis/memsys3 memsys3_temp
-      2. cp -r memsys3_temp/memsys3/* ./memsys3/
-      3. Briefing usando templates/ como guía
-      4. Rellenar campos vacíos en project-status.yaml, main-agent.yaml
-      5. rm -rf memsys3_temp/
-
-      # Resultado: memsys3/conmemory/templates/ incluido (permanente)
-      ```
-
-    alternatives:
-      - nom: "Borrar templates/ després del deployment"
-        pros:
-          - Menos archivos en el proyecto desplegado (~15KB menos)
-          - Más limpio
-        contras:
-          - Main-Agent pierde referencia de cómo documentar
-          - endSession.md no tiene guía de estructura
-          - Ejemplos de buenas prácticas se pierden
-        por_que_descartada: "Templates son críticos para Main-Agent durante todo el proyecto"
-
-      - nom: "Gotchas en project-status.yaml"
-        pros:
-          - Centralizado en un solo lugar
-          - Fácil de encontrar
-        contras:
-          - Descontextualizados (no se sabe cuándo aparecieron)
-          - project-status más inflado
-          - No tiene sentido conceptual (gotchas surgen durante sesiones)
-        por_que_descartada: "Gotchas son eventos de sesiones, no características estáticas"
-
-      - nom: "Crear archivo gotchas.yaml separat"
-        pros:
-          - Dedicado solo a gotchas
-        contras:
-          - Un archivo más
-          - Descontextualizados igualmente
-          - CA debería leer un archivo extra
-        por_que_descartada: "Sessions ya documentan contexto temporal de los gotchas"
-
-    consequencies:
-      positives:
-        - "Deployment más simple: copiar todo, no borrar templates/"
-        - "Main-Agent siempre tiene referencia de cómo documentar correctamente"
-        - "Gotchas contextualizados (cuándo aparecieron, en qué sesión)"
-        - "CA tiene flexibilidad para priorizar gotchas según criterio"
-        - "project-status.yaml más limpio (solo info general)"
-        - "Templates enriquecidosconcomentarios guían briefing de deployment"
-        - "~15KB extra en proyecto (4 templates, aceptable)"
-      negatives:
-        - "memory/templates/ se mantiene pero no se borra (puede parecer residual)"
-        - "Gotchas dispersos entre sesiones (hay que leer todas para compilar)"
-        - "Templates/ como nombre puede generar confusión (son guías, no templates)"
-      impacto: "Cómo se despliega memsys3, cómo Main-Agent documenta sesiones, dónde se guardan gotchas"
-
-    notes: |
-      Esta ADR resuelve confusiones críticas descubiertas durante validación de deployment.
-
-      Consideración futura: Quizás renombrar memory/templates/ a memory/guides/ para más
-      claridad conceptual, pero se mantiene templates/ para no romper nada ahora.
-
-  - id: "012"
-    titulo: "README como lectura directa vs duplicado en context.yaml"
-    data: "2025-12-03"
-    estado: aceptado
-    area: arquitectura
-
-    context: |
-      Durante el deployment en otros proyectos se detectó que README.md cambia frecuentemente
-      (versiones, features nuevas, URLs, stack tecnológico), pero context.yaml solo se actualiza
-      cuando se ejecuta compile-context.md.
-
-      Problema identificado:
-      - README sintetizado en context.yaml quedaba desactualizado
-      - Requería re-ejecutar compile-context por cambios triviales en README
-      - Context Agent hacía "Análisis profundo README" (PASO 7) comparando README vs realidad,
-        pero si README ES la realidad, el análisis no tiene sentido
-      - Duplicación innecesaria: README existe como archivo independiente
-
-      Observación arquitectónica:
-      - README.md = "Quién soy ahora" (identidad actual del proyecto)
-      - context.yaml = "Qué he aprendido" (memoria histórica: sessions, ADRs, gotchas)
-
-      Estos son dos conceptos diferentes que no deberían mezclarse.
-
-    decision: |
-      README.md se lee DIRECTAMENTE en newSession.md, NO se incluye en context.yaml.
-
-      Cambios implementados:
-
-      1. newSession.md:
-         - Agregada instrucción explícita: "Lee README.md del proyecto"
-         - Orden de carga: README.md → project-status.yaml → context.yaml
-         - README proporciona identidad actual, context proporciona memoria histórica
-
-      2. compile-context.md:
-         - ELIMINADO "Paso Previo: Verificar README.md" (creación automática)
-         - ELIMINADO "PASO 7: Análisis profundo README" (comparación vs realidad)
-         - ELIMINADO de lista de archivos a leer
-         - Context Agent ya NO incluye README en el contexto compilado
-
-      3. context-template.yaml:
-         - ELIMINADA sección `readme_proyecto:`
-         - Agregado comentario: "README.md se lee directamente en newSession.md"
-
-      Filosofía: Separation of Concerns
-      - README = Identidad actual (fuente de verdad, siempre actualizada)
-      - context = Memoria histórica (síntesis de aprendizajes)
-
-    alternatives:
-      - nom: "Status quo (mantener README en context.yaml)"
-        pros:
-          - context.yaml sigue siendo archivo único con todo
-          - No requiere cambios
-        contras:
-          - Riesgo permanente de desincronización
-          - Re-compilaciones por cambios triviales
-          - Mantenimiento innecesario
-          - Análisis README paradójico (comparar contra sí mismo)
-        por_que_descartada: "Desincronización inevitable, mantenimiento costoso"
-
-      - nom: "README solo si no existe en proyecto"
-        pros:
-          - Útil para proyectos sin README
-          - Permite crear README automático desde project-status
-        contras:
-          - Complejidad condicional
-          - Sigue teniendo problema de desincronización si README existe
-        por_que_descartada: "No resuelve el problema principal (desincronización)"
-
-      - nom: "README en context + análisis profundo mejorado"
-        pros:
-          - Detecta discrepancias automáticamente
-          - CA puede actualizar README automáticamente
-        contras:
-          - Añade complejidad enorme (PASO 7 era ~250 líneas)
-          - Sigue duplicando información
-          - README debería SER la realidad, no compararse contra ella
-        por_que_descartada: "Arquitectónicamente incorrecto: README ES la fuente de verdad"
-
-    consequencies:
-      positives:
-        - "Imposible desincronización: README siempre es la versión actual"
-        - "No duplicación: una sola fuente de verdad"
-        - "Menos mantenimiento: no re-compilar por cambios en README"
-        - "Overhead trivial: 1 Read adicional (~200-400 líneas) es irrelevante"
-        - "Coherencia conceptual: README = identidad, context = memoria"
-        - "compile-context más enfocado: solo memoria histórica"
-        - "~95 líneas menos en context.yaml (~1.4K tokens ahorrados)"
-      negatives:
-        - "context.yaml ya NO es archivo único con todo (pequeña desviación conceptual)"
-        - "Un Read adicional en newSession (+1 tool call)"
-      impacto: "newSession.md, compile-context.md, context-template.yaml, context.yaml de todos los proyectos"
-
-    notes: |
-      Esta ADR resuelve IMPROVEMENT-004 del backlog.
-
-      Conflicto resuelto: IMPROVEMENT-001 (2025-11-03) proponía incluir README en context,
-      pero esta decisión (IMPROVEMENT-004, 2025-12-03) es arquitectónicamente más madura:
-      separar "identidad actual" vs "memoria histórica".
-
-      IMPROVEMENT-001 puede reconsiderarse para OTROS documentos críticos (DEVELOPMENT.md, etc.)
-      pero README específicamente debe leerse directamente.
-
-      Compatibilidad: Proyectos con context.yaml antiguo (con README incluido) seguirán funcionando,
-      pero en próxima compilación README se eliminará del context automáticamente.
-
-  - id: "013"
-    titulo: "Sistema de gestión de ADRs con prompt dedicado (consistencia arquitectónica)"
-    data: "2025-12-11"
-    estado: aceptado
-    area: usabilidad
-
-    context: |
-      El sistema backlog tiene:
-      - memsys3/backlog/README.md (documentación del sistema)
-      - memsys3/prompts/backlog.md (prompt para gestionar: consultar, crear, actualizar)
-      - Estructura clara y usable
-
-      El sistema ADRs tenía:
-      - memsys3/memory/full/adr.yaml (todas las ADRs en un archivo)
-      - memsys3/memory/templates/adr-template.yaml (solo template)
-      - Sin prompt dedicado para gestionar ADRs
-      - Sin documentación de estados/áreas disponibles
-
-      Usuario observó inconsistencia arquitectónica: backlog tiene interfaz conversacional
-      para gestión, ADRs no. Falta de consistencia entre ambos sistemas.
-
-    decision: |
-      Crear prompt memsys3/prompts/adr.md para gestionar ADRs con:
-
-      **Estructura:**
-      1. Contexto (explicación del sistema ADRs)
-      2. 3 Operaciones:
-         - Consultar ADRs (listar con filtros)
-         - Crear Nuevo ADR (guía paso a paso)
-         - Actualizar ADR Existente (modificar estado/notes/consequencies)
-      3. Leyendas integradas:
-         - Estados: accepted, deprecated, superseded_by
-         - Áreas: 10 categorías (arquitectura, frontend, backend, infrastructure,
-           escalabilidad, format, workflow, documentación, usabilidad, process)
-
-      **Decisiones adicionales:**
-      - adr.yaml permanece en memory/full/ (NO moverlo a subcarpeta)
-      - Documentación integrada en prompt (NO README separado)
-      - Estructura idéntica a backlog.md para consistencia
-
-    alternatives:
-      - nombre: "Opción B: Reestructuración completa (archivos separados ADR-XXX.md)"
-        pros:
-          - "Escalable (cada ADR en su archivo)"
-          - "Más parecido a backlog"
-          - "Fácil versionar ADRs individuales"
-        contras:
-          - "Requiere migración de datos (10 ADRs a archivos)"
-          - "Actualizar compile-context.md para leer múltiples archivos"
-          - "Mayor complejidad implementación"
-          - "Alto riesgo de romper algo"
-        por_que_descartada: "Demasiado complejo para el problema actual. Opción A resuelve inconsistencia arquitectónica con cambio mínimo."
-
-      - nombre: "Opción C: Híbrida (crear README+prompt ahora, migrar después)"
-        pros:
-          - "Mejora inmediata + planificación futura"
-          - "Enfoque incremental"
-        contras:
-          - "Deja trabajo pendiente (IMPROVEMENT futuro)"
-          - "No resuelve completamente ahora"
-        por_que_descartada: "Innecesariamente complejo. Opción A es suficiente y completa."
-
-    consequencies:
-      positives:
-        - "Consistencia arquitectónica: backlog y ADRs tienen misma interfaz gestión"
-        - "Usabilidad mejorada: usuarios pueden gestionar ADRs conversacionalmente"
-        - "Documentación accesible: estados/áreas explicadas en prompt"
-        - "Bajo riesgo: cambio minimalista, no toca estructura datos"
-        - "Testing inmediato: prompt validado consultando 10 ADRs existentes"
-      negatives:
-        - "Prompt adr.md más largo que backlog.md (71 vs 38 líneas) por mayor complejidad ADRs"
-        - "No resuelve escalabilidad si ADRs crecen muchísimo (pero rotación automática existe)"
-      impacto: "memsys3_templates/prompts/adr.md (nuevo), memsys3/prompts/adr.md (nuevo), README.md (actualizado)"
-
-    notes: |
-      Sesión corta (~45min) y enfocada.
-
-      Usuario identificó inconsistencia importante y propuso solución.
-
-      Opción A (solo documentación) fue la correcta: resuelve problema con mínimo cambio.
-
-      Sistema ahora más consistente y usable.
-
-      Próximos pasos posibles (futuro):
-      - Considerar si sessions.yaml necesita prompt dedicado sessions.md (consistencia completa)
-      - Testear crear nueva ADR con prompt (no solo consultar)
-
-  - id: "014"
-    titulo: "Sistema de comandos globales auto-actualizantes con launcher pattern"
-    data: "2025-12-14"
-    estado: aceptado
-    area: workflow
-
-    context: |
-      memsys3 necesita distribuirse en equipos de desarrollo. Dos problemas identificados:
-
-      1. **Evolución de prompts**: deploy.md y actualizar.md cambian frecuentemente con mejoras.
-         Si los comandos globales (/deploy-memsys3, /actualizar-memsys3) contienen lógica completa,
-         cada miembro del equipo debe actualizar manualmente su ~/.claude/commands/ cada vez que
-         cambian los prompts. Esto es insostenible y genera versiones desincronizadas.
-
-      2. **Onboarding de nuevos miembros**: Cada miembro debe crear manualmente los comandos globales
-         copiando contenido a ~/.claude/commands/. Proceso propenso a errores (rutas incorrectas,
-         copy-paste, versiones antiguas).
-
-      Necesitamos distribución simple y mantenimiento centralizado.
-
-    decision: |
-      Implementar dos decisiones complementarias:
-
-      **1. Launcher Pattern para comandos globales:**
-
-      Los comandos globales (/deploy-memsys3, /actualizar-memsys3) NO contienen lógica real.
-      Son "launchers" que:
-      1. Clonan repositorio temporalmente: `git clone https://github.com/iv0nis/memsys3 [temp_dir]`
-      2. Ejecutan prompt del repo clonado: `@[temp_dir]/memsys3_templates/prompts/[prompt].md`
-      3. Limpian temporal: `rm -rf [temp_dir]`
-
-      Ventaja crítica: Comandos siempre ejecutan la ÚLTIMA VERSIÓN del prompt del repositorio,
-      sin necesidad de actualizar el comando local.
-
-      **2. Prompt commands.md para instalación automática:**
-
-      Crear memsys3/prompts/commands.md que:
-      - Verifica qué comandos globales existen en ~/.claude/commands/
-      - Detecta comandos obsoletos o faltantes
-      - Pregunta al usuario si sobrescribir (si ya existen)
-      - Crea/actualiza todos los comandos globales usando cat heredoc + $HOME
-      - Verifica instalación exitosa
-
-      Onboarding simplificado: `@memsys3/prompts/commands.md`
-
-    alternatives:
-      - nombre: "Comandos globales con lógica completa embebida"
-        pros:
-          - "No requiere clonar repo en cada ejecución"
-          - "2-3 segundos más rápido"
-        contras:
-          - "Cada cambio en deploy.md/actualizar.md requiere actualizar manualmente TODOS los comandos en TODAS las máquinas"
-          - "Versiones desincronizadas entre miembros del equipo"
-          - "Mantenimiento distribuido (insostenible)"
-          - "No hay forma de saber quién tiene qué versión"
-        por_que_descartada: "Mantenimiento insostenible. Un equipo de 5 personas con prompts que cambian cada 2 semanas = caos total."
-
-      - nombre: "Solo documentar en README (instalación manual)"
-        pros:
-          - "Simple de implementar"
-          - "No requiere prompt dedicado"
-        contras:
-          - "Propenso a errores humanos (copy-paste incorrecto, rutas mal configuradas)"
-          - "No detecta comandos obsoletos"
-          - "No verifica instalación exitosa"
-          - "Cada miembro debe seguir 10+ pasos manualmente"
-        por_que_descartada: "Error-prone, no escala con equipos, no hay verificación"
-
-      - nombre: "Script bash externo (install-commands.sh)"
-        pros:
-          - "Automático"
-          - "Rápido"
-        contras:
-          - "Menos integrado con Claude Code workflow"
-          - "Requiere ejecutar fuera del contexto del agente"
-          - "No aprovecha capacidad conversacional del agente"
-          - "Dos contextos separados (bash script vs prompts)"
-        por_que_descartada: "Menos integrado con filosofía memsys3 (todo via prompts conversacionales)"
-
-    consequencies:
-      positives:
-        - "Mantenimiento centralizado: solo actualizar prompts en repo GitHub"
-        - "Auto-actualización transparente: comandos siempre usan última versión"
-        - "Consistencia garantizada: todo el equipo usa misma versión"
-        - "Onboarding 1 comando: @memsys3/prompts/commands.md → listo"
-        - "Detección comandos obsoletos: commands.md verifica y actualiza"
-        - "Trazabilidad: git tags indican qué versión se está usando"
-        - "Solo requiere git (ya requisito de memsys3)"
-      negatives:
-        - "Clone temporal agrega 2-3 segundos por ejecución (aceptable)"
-        - "Requiere conexión a internet para clonar repo"
-        - "Si GitHub está caído, comandos no funcionan (mitigable con cache local futuro)"
-      impacto: "~/.claude/commands/deploy-memsys3.md, ~/.claude/commands/actualizar-memsys3.md, memsys3_templates/prompts/commands.md (nuevo), memsys3/prompts/commands.md (nuevo)"
-
-    notes: |
-      Esta ADR complementa ADR-013 (sistema gestión ADRs).
-
-      Patrón launcher inspirado en comandos globales CLI modernos que auto-actualizan
-      (ejemplo: npx, brew, etc.).
-
-      Workaround técnico: Write tool falla con ~, usar cat heredoc + $HOME explícito
-      (descubierto sesión 2025-12-09, deploy-memsys3 inicial).
-
-      commands.md incluye:
-      - Verificación permisos escritura ~/.claude/commands/
-      - Troubleshooting para casos edge (permisos denegados, Claude Code no detecta)
-      - Alternativa manual si automatización falla
-
-      Próximos pasos:
-      - Testear /actualizar-memsys3 en proyecto CLIENT_E (validación real)
-      - Testear commands.md con compañero de equipo (validación onboarding)
-      - Considerar cache local opcional (mitigar dependencia GitHub)
-
-  - id: "015"
-    titulo: "Terminología unificada: Main Agent como nomenclatura estándar"
-    data: "2025-12-17"
-    estado: aceptado
-    area: documentación
-
-    context: |
-      Durante revisión del sistema se detectó inconsistencia terminológica para referirse
-      al agente que utiliza memsys3 para desarrollar el proyecto:
-
-      Términos usados en diferentes ubicaciones:
-      - main-agent.yaml (línea 3): "Development Agent"
-      - README.md: "AI Development Agents" / "DevAI"
-      - ADR-008: "Main-Agent NO debe proponer..."
-      - context.yaml: "Development Agents"
-      - compile-context.md: "Development Agents"
-
-      Problema: Tres términos diferentes para el mismo concepto generan confusión:
-      1. "Main Agent" - sugiere agente principal
-      2. "Development Agent" - sugiere especialista en desarrollo
-      3. "DevAI" - abreviatura informal
-
-      Si existiera un agente especialista en desarrollo futuro, se llamaría "Development Agent"
-      o similar, generando conflicto con el uso actual del término.
-
-    decision: |
-      Adoptar "Main Agent" como terminología estándar ÚNICA para el agente que utiliza memsys3.
-
-      **Razón del nombre:**
-      - "Main" indica que es el agente principal del proyecto
-      - Deja espacio conceptual para agentes especializados futuros (Development Agent,
-        Testing Agent, Documentation Agent, etc.)
-      - Ya usado en archivos críticos: main-agent.yaml, ADR-008
-
-      **Decisión:** Main Agent es el agente principal. Si en el futuro surge necesidad
-      de agentes especializados, podrán tener nombres específicos sin conflicto.
-
-      **Archivos/lugares a actualizar:**
-      - main-agent.yaml línea 3: "Development Agent" → "Main Agent"
-      - README.md: todas las referencias a "Development Agent" / "DevAI" → "Main Agent"
-      - compile-context.md: "Development Agents" → "Main Agent"
-      - Todos los prompts que referencien "Development Agent"
-      - ADRs que mencionen "Development Agent" (mantener consistencia histórica con notas)
-
-      **Excepción:** context.yaml ya compilado NO se actualiza (se regenerará en próxima compilación)
-
-    alternatives:
-      - nombre: "Mantener 'Development Agent' como estándar"
-        pros:
-          - "Más descriptivo del propósito"
-          - "Ya usado en varios archivos"
-        contras:
-          - "Conflicto futuro si aparece agente especialista en desarrollo"
-          - "No refleja que es el agente PRINCIPAL"
-          - "Genera ambigüedad: ¿es especialista o principal?"
-        por_que_descartada: "No escalable. Conflicto conceptual inevitable con agentes especializados futuros"
-
-      - nombre: "Crear sistema dual: Main Agent + Development Agent coexisten"
-        pros:
-          - "Permite especialización inmediata"
-        contras:
-          - "Complejidad innecesaria (no hay agentes especializados todavía)"
-          - "Confusión sobre cuál usar en cada contexto"
-          - "Requiere definir roles de ambos"
-        por_que_descartada: "Over-engineering. Resolver problema que no existe todavía"
-
-      - nombre: "Usar 'Agent' genérico sin calificativo"
-        pros:
-          - "Simple, corto"
-        contras:
-          - "Demasiado ambiguo"
-          - "No distingue entre Context Agent y Main Agent"
-          - "Pierde claridad conceptual"
-        por_que_descartada: "Pérdida de claridad. Sistema tiene múltiples agentes (Main, Context)"
-
-    consequencies:
-      positives:
-        - "Terminología consistente en todo el sistema"
-        - "Espacio conceptual claro para agentes especializados futuros"
-        - "Nombre refleja su rol: agente principal del proyecto"
-        - "Evita conflictos terminológicos futuros"
-        - "Más fácil explicar el sistema (Main Agent usa contexto, Context Agent compila)"
-      negatives:
-        - "Requiere actualización de múltiples archivos (templates, prompts, docs)"
-        - "Cambio breaking para proyectos con memsys3 desplegado (mitigable: solo nombre, no funcionalidad)"
-      impacto: "main-agent.yaml, compile-context.md, README.md, prompts varios, documentación completa del sistema"
-
-    notes: |
-      Esta ADR documenta decisión basada en feedback del usuario sobre inconsistencias detectadas.
-
-      El cambio es cosmético (renombrado) pero conceptualmente importante para escalabilidad
-      del sistema y claridad terminológica.
-
-      IMPROVEMENT-006 creado en backlog para trackear la depuración sistemática de todas
-      las referencias desalineadas en el codebase.
-
-  - id: "016"
-    titulo: "memsys3 agnóstico de modelo de IA + Commands como feature opcional Claude-específica"
-    data: "2025-12-30"
-    estado: aceptado
-    area: arquitectura
-
-    context: |
-      Durante investigación del bug ISSUE-005 (archivos faltantes en actualizar.md),
-      surgió discusión sobre la naturaleza de los comandos locales (.claude/commands/).
-
-      Observaciones:
-      1. memsys3 se diseñó para funcionar con CUALQUIER modelo de IA (Claude, Gemini, Codex, etc.)
-      2. Commands (.claude/commands/) es una feature ESPECÍFICA de Claude Code
-      3. Existe confusión sobre si commands es parte del core de memsys3 o un workaround opcional
-      4. La documentación no deja claro el principio fundamental de agnosticismo
-
-      Problema de jerarquía:
-      - ¿Cuál es la fuente de verdad? ¿templates, prompts específicos, o commands?
-      - ¿Commands debe ser obligatorio en deployment/actualización?
-      - ¿Usuarios de otros modelos pueden usar memsys3 sin commands?
-
-      Contexto adicional:
-      - Commands sirve como workaround para limitación de Claude Code con .gitignore
-      - Si excluyes memsys3/ en .gitignore, @ mentions dejan de funcionar
-      - Con commands locales (/adr, /backlog) funcionan aunque memsys3/ esté ignorado
-      - Otros modelos pueden tener (o no) alternativas similares con otros símbolos
-
-    decision: |
-      **Principio fundamental: memsys3 es agnóstico de modelo de IA**
-
-      **Arquitectura de fuente de verdad:**
-      1. memsys3_templates/prompts/ = AGNÓSTICOS (producto final distribuible, funcionan en cualquier modelo)
-      2. memsys3/prompts/ = ESPECÍFICOS del proyecto (pueden adaptarse/personalizarse)
-      3. .claude/commands/ = COMANDOS LOCALES (workaround opcional Claude-específico)
-
-      **Flujo de sincronización:**
-      ```
-      memsys3_templates/prompts/ (AGNÓSTICO)
-          ↓ deployment/actualización
-      memsys3/prompts/ (ESPECÍFICO, puede adaptarse)
-          ↓ sincronización opcional
-      .claude/commands/ (COMANDOS LOCALES, solo si usas Claude Code + .gitignore)
-      ```
-
-      **Decisiones concretas:**
-      1. Commands NO es parte del core de memsys3
-      2. Commands es un workaround opcional específico de Claude Code
-      3. La documentación debe dejar MUY CLARO que commands es OPCIONAL
-      4. Deployment/actualización incluye commands.md (es un prompt válido), pero documentado como feature opcional
-      5. Usuarios de Gemini, Codex, u otros modelos pueden IGNORAR completamente los commands
-
-      **Documentación requerida:**
-      - README.md debe mencionar principio agnóstico
-      - deploy.md debe documentar commands como sección OPCIONAL (solo Claude Code)
-      - actualizar.md debe documentar commands como sección OPCIONAL (solo Claude Code)
-      - commands.md debe tener warning claro: "Este prompt es ESPECÍFICO de Claude Code"
-
-    alternatives:
-      - nombre: "Hacer commands parte obligatoria del core"
-        pros:
-          - "Simplifica documentación (un solo workflow)"
-          - "Usuarios Claude tienen mejor experiencia"
-        contras:
-          - "Rompe principio agnóstico fundamental"
-          - "Excluye usuarios de Gemini, Codex, otros modelos"
-          - "Añade dependencia innecesaria a herramienta específica"
-          - "Va contra filosofía de memsys3 (portabilidad universal)"
-        por_que_descartada: "Viola principio fundamental de memsys3: ser agnóstico de modelo de IA"
-
-      - nombre: "Eliminar commands completamente del sistema"
-        pros:
-          - "Máxima simplicidad"
-          - "Cero confusión sobre qué es core vs opcional"
-        contras:
-          - "Usuarios Claude pierden workaround útil para .gitignore"
-          - "Obliga a usar @ mentions (que NO funcionan con archivos ignorados)"
-          - "Reduce usabilidad en caso de uso común (excluir memsys3/ de git)"
-        por_que_descartada: "Commands es útil para usuarios Claude. Mejor tenerlo como OPCIONAL que eliminarlo"
-
-      - nombre: "Crear sistema de comandos universal (agnóstico de herramienta)"
-        pros:
-          - "Funcionaría en cualquier modelo"
-          - "Parte del core sin romper agnosticismo"
-        contras:
-          - "No existe estándar universal para comandos entre modelos"
-          - "Requeriría implementación específica por modelo (vuelve a ser específico)"
-          - "Complejidad innecesaria (los prompts .md YA funcionan universalmente)"
-        por_que_descartada: "Los prompts .md YA son el estándar universal. No necesitamos otra capa"
-
-    consequencies:
-      positives:
-        - "memsys3 mantiene su principio fundamental: agnóstico de modelo de IA"
-        - "Usuarios de Gemini, Codex, otros modelos pueden usar memsys3 sin confusión"
-        - "Usuarios Claude tienen workaround útil para .gitignore (opcional pero disponible)"
-        - "Documentación clara sobre qué es core vs qué es específico de herramienta"
-        - "Jerarquía de fuente de verdad bien definida: templates → prompts → commands"
-        - "Sistema escalable: si Gemini implementa algo similar, podemos documentarlo como opcional también"
-      negatives:
-        - "Requiere actualización documentación (README, deploy, actualizar) para clarificar"
-        - "Usuarios Claude deben leer sección OPCIONAL para entender commands"
-        - "Ligera complejidad adicional en documentación (core vs opcional)"
-      impacto: "README.md, deploy.md, actualizar.md, commands.md (agregar warnings), documentación conceptual del sistema"
-
-    notes: |
-      Esta ADR surge del bug ISSUE-005 y la discusión sobre el rol de commands en memsys3.
-
-      Aclaraciones importantes:
-      - commands.md SÍ debe estar en actualizar.md (es un prompt válido del sistema)
-      - commands.md debe tener warning explícito: "OPCIONAL - Solo Claude Code"
-      - La documentación de deployment debe tener sección: "(OPCIONAL - Solo Claude Code) Comandos Locales"
-
-      Filosofía clave: memsys3 es una herramienta universal. Features específicas de herramientas
-      (Claude, Gemini, etc.) son bienvenidas como OPCIONALES, pero NUNCA como obligatorias.
-
-      Este principio debe guiar futuras decisiones sobre features específicas de modelos.
-
-  - id: "017"
-    titulo: "Sistema file_version por archivo (versionado independiente de infraestructura)"
-    data: "2026-05-06"
-    estado: aceptado
-    area: "infrastructure"
-
-    context: |
-      Hasta v0.20.0, memsys3 versionaba globalmente con git tags (memsys3_version v0.X.Y).
-      Bastaba para trazar releases pero no permitía:
-      - Saber qué versión tiene un archivo individual en un proyecto desplegado
-      - Detectar archivos desactualizados durante /actualizar-memsys3 sin diff completo
-      - Trazabilidad fina cuando solo cambia un prompt o template
-      - Auditoría granular en operations.log
-
-    decision: |
-      Cada archivo de infraestructura memsys3 tiene su propio file_version (formato 0.Y.Z).
-
-      Ubicación según tipo:
-      - .md (prompts): última línea como `<!-- version: 0.1.0 -->`
-      - .yaml templates: primera línea como `# version: 0.1.0`
-      - .yaml agents: campo `file_version: "0.2.0"` al final
-
-      Bumping: solo con /actualizar-memsys3. Main Agent y Context Agent NO lo modifican.
-
-      Alcance: 21 archivos en prompts/, agents/, memory/templates/.
-      NO aplica a: datos vivos (project-status.yaml, full/*.yaml), context.yaml
-      (compilado, usa version_context), README.md (identidad).
-
-    alternatives:
-      - nombre: "Solo versionado global (status quo pre-v0.20.0)"
-        pros:
-          - "Simplicidad: un único número de versión"
-          - "Coherente con git tags"
-        contras:
-          - "No detecta qué archivos cambiaron sin diff"
-          - "Imposibilita trazabilidad fina"
-        por_que_descartada: "Insuficiente para audit y updates quirúrgicos"
-
-      - nombre: "Versionado por hash de contenido"
-        pros:
-          - "Automático, sin mantenimiento"
-        contras:
-          - "Cambia con cualquier whitespace/comment edit"
-          - "Sin semántica major/minor"
-          - "No comparable como mayor/menor"
-        por_que_descartada: "Sin semántica humana ni jerarquía comparable"
-
-      - nombre: "Semver completo X.Y.Z con X mayor"
-        pros:
-          - "Estándar conocido"
-        contras:
-          - "X mayor implica breaking change global, redundante con memsys3_version"
-          - "Confunde versionado de archivo con versionado de sistema"
-        por_que_descartada: "Formato 0.Y.Z reserva 0 como prefijo de archivo, evita confusión"
-
-    consecuencias:
-      positivas:
-        - "Trazabilidad fina por archivo en operations.log"
-        - "Habilita sustitución diferencial en actualizar.md (ADR-018)"
-        - "Audit trail por archivo y versión"
-        - "Hot-fixes individuales sin bump global de memsys3"
-      negativas:
-        - "Mantenimiento manual del bump al modificar archivos de infraestructura"
-        - "21 archivos a vigilar — riesgo de olvidar bump"
-        - "Tres ubicaciones distintas según tipo (incoherencia visual)"
-      impacto: |
-        Afecta prompts/, agents/, templates/.
-        actualizar.md depende para Paso 14 (registro en operations.log).
-        Main Agent y Context Agent con restricción explícita: no modifican file_version.
-
-    notes: |
-      Implementado en sesión 2026-04-15 (release v0.20.0).
-      context.yaml es excepción (compilado, su metadata.version_context refleja fecha
-      de compilación, no versión de memsys3).
-      Relacionado: ADR-018 (sustitución diferencial en actualizar.md) consume este sistema.
-
-  - id: "018"
-    titulo: "Sustitución diferencial de templates de schema en actualizar.md"
-    data: "2026-05-06"
-    estado: aceptado
-    area: "process"
-
-    context: |
-      actualizar.md debe actualizar archivos memsys3 en proyectos desplegados sin
-      perder personalización ni introducir conflictos.
-
-      En memsys3 hay tres clases de archivos según su contrato con el usuario:
-
-      1. Templates de schema (`memory/templates/*-template.yaml`):
-         fuente de verdad canónica del schema YAML. El usuario NO los edita por
-         contrato — son referencia para que el agente sepa rellenar correctamente
-         los archivos de datos vivos. Idénticos en todo deployment.
-
-      2. Personalizables (`prompts/*.md`, `agents/*.yaml`):
-         memsys3 es agnóstico de dominio (software, escritura, marketing, dirección).
-         Un proyecto puede necesitar adaptar newSession.md para cargar bibliografía,
-         o renombrar Main Agent a Editor Agent. Estos archivos PUEDEN editarse.
-
-      3. Datos vivos (`memory/project-status.yaml`, `memory/full/*`, `memory/context.yaml`):
-         contenido del usuario. Merge inteligente (lógica ya existente, ISSUE-018 sesión
-         2026-03-22).
-
-      Con file_version (ADR-017) podemos comparar versiones, pero la estrategia de
-      actualización debe respetar el contrato de cada clase. Sustitución directa solo
-      es segura donde el contrato garantiza que no hay edición local: clase 1.
-
-    decision: |
-      En actualizar.md, los templates de schema (`memory/templates/*-template.yaml`)
-      se actualizan por SUSTITUCIÓN DIRECTA condicionada a comparación de file_version:
-
-      Para cada template de schema:
-      1. Leer file_version del upstream (clone temporal del repo)
-      2. Leer file_version del archivo en el proyecto destino
-      3. Si upstream > destino → sobrescribir destino (sustitución directa, sin merge)
-      4. Si iguales → no tocar
-      5. Si destino > upstream → warning (estado anómalo, pedir confirmación al usuario)
-
-      Tras cada sustitución, registrar en operations.log: archivo, versión anterior,
-      versión nueva, timestamp.
-
-      ALCANCE ACOTADO: esta lógica aplica EXCLUSIVAMENTE a `memory/templates/`.
-      NO aplica a:
-      - prompts/, agents/ — personalizables, requieren estrategia distinta (ADR pendiente)
-      - datos vivos (project-status.yaml, full/*, context.yaml) — merge inteligente
-
-    alternatives:
-      - nombre: "Sustitución directa también en prompts/agents"
-        pros:
-          - "Lógica uniforme para toda la infraestructura"
-        contras:
-          - "Rompe personalización legítima de proyectos no-software"
-          - "Asume rigidez incompatible con la naturaleza agnóstica de memsys3"
-          - "Precedente ISSUE-018 (WORKSPACE_Y) demostró que usuarios sí personalizan"
-        por_que_descartada: "Viola el principio de memsys3 como andamio adaptable"
-
-      - nombre: "Merge en todo (incluyendo templates de schema)"
-        pros:
-          - "Robusto ante cualquier modificación inesperada"
-        contras:
-          - "Innecesario donde el contrato garantiza no-edición"
-          - "Genera falsos conflictos en archivos donde el origen sí es determinista"
-          - "Más complejidad y superficie de error"
-        por_que_descartada: "Aporta riesgo sin beneficio en archivos canónicos por contrato"
-
-      - nombre: "Comparación por hash en vez de file_version"
-        pros:
-          - "Detecta cualquier diferencia, no solo bumps semánticos"
-        contras:
-          - "Cambios cosméticos disparan sustitución innecesaria"
-          - "No comunica intención del cambio"
-        por_que_descartada: "file_version (ADR-017) ya es la fuente de verdad semántica"
-
-    consecuencias:
-      positivas:
-        - "Updates limpios y deterministas en templates de schema"
-        - "Cero conflictos de merge en archivos canónicos por contrato"
-        - "operations.log informa qué templates se actualizaron"
-        - "Detección de estados anómalos (destino > upstream)"
-        - "Respeta personalización en prompts/agents al no aplicarles la regla"
-      negativas:
-        - "actualizar.md tiene tres rutas según clase de archivo (más lógica)"
-        - "Si el usuario rompe el contrato y edita un template de schema, su edición se pierde"
-        - "Depende de mantener correctamente file_version (ADR-017)"
-        - "Estrategia para prompts/agents personalizables queda pendiente (ADR futuro)"
-      impacto: |
-        Afecta el flujo de actualizar.md exclusivamente para `memory/templates/`.
-        Los pasos para prompts/, agents/, y datos vivos se mantienen como están.
-        Asume el contrato: archivos en memory/templates/ son canónicos, no se editan
-        en el destino. Si el usuario necesita personalizar el schema, debe abrir issue
-        o ADR upstream.
-
-    notes: |
-      Consume el sistema file_version definido en ADR-017.
-      Caso "destino > upstream" debe pedir confirmación al usuario antes de sobrescribir
-      (puede indicar hot-fix local sin push o estado corrupto).
-      Registro en operations.log se hace en Paso 14 de actualizar.md.
-
-      Pendiente — ADRs futuros relacionados:
-      - Política de evolución de schema (deprecation de campos en templates) — ADR-019
-      - Estrategia de sustitución/merge para prompts y agents personalizables — ADR pendiente
-
-  - id: "019"
-    titulo: "Política de evolución de schema en templates (deprecation contextualizada)"
-    data: "2026-05-06"
-    estado: aceptado
-    area: "process"
-
-    context: |
-      Los templates de schema (`memory/templates/*-template.yaml`) definen la estructura
-      canónica. Cuando upstream elimina un campo, surge la pregunta: ¿debería ese campo
-      desaparecer también en proyectos que sí lo encuentran útil?
-
-      memsys3 es agnóstico de dominio. Un campo que upstream considera obsoleto en
-      el caso general puede seguir siendo útil en un proyecto específico (libro,
-      proyecto de marketing, investigación). Decidir centralmente desde upstream
-      contradice el principio: solo el usuario y el agente contextualizado conocen
-      su proyecto.
-
-      Necesitamos una política que comunique la intención de upstream sin imponerla.
-
-    decision: |
-      Política en dos fases con decisión contextualizada por el agente del proyecto:
-
-      FASE 1 — upstream marca deprecation con justificación
-      - Comentario en el template: `# DEPRECATED v0.Y+1.0 — motivo: <razón>`
-      - Campo sigue presente, sigue siendo válido en cualquier proyecto
-      - El motivo permite al agente del proyecto evaluar si aplica a su caso
-
-      FASE 2 — actualizar.md ejecuta evaluación contextualizada
-      - El agente que actualiza lee project-status.yaml, context.yaml y sessions
-        recientes para contextualizarse en el proyecto destino (modo extendido,
-        precedente sesión 2026-04-15)
-      - Para cada campo deprecated o huérfano detectado:
-          a) Verifica si el campo se usa en datos vivos del proyecto
-          b) Evalúa si el motivo de upstream aplica a este proyecto
-          c) Propone al usuario: mantener / migrar a otro campo / eliminar
-          d) Nunca decide solo — pregunta al usuario con su evaluación como guía
-
-      upstream NUNCA elimina automáticamente. El template puede vivir con campos
-      deprecated indefinidamente si proyectos legítimos los siguen usando.
-
-    alternatives:
-      - nombre: "Política rígida: deprecation → eliminación obligatoria"
-        pros:
-          - "Schema converge globalmente"
-          - "Mantenimiento simple upstream"
-        contras:
-          - "Decide centralmente sin contexto del proyecto"
-          - "Viola agnosticismo de memsys3"
-          - "Fuerza migración aunque el campo siga siendo útil"
-        por_que_descartada: "Contradice principio: solo el usuario conoce su proyecto"
-
-      - nombre: "Eliminación silenciosa sin deprecation"
-        pros:
-          - "Simplicidad"
-        contras:
-          - "Sin aviso al usuario"
-          - "Sin contexto del proyecto"
-          - "Viola human-in-the-loop"
-        por_que_descartada: "Rompe expectativas y elimina datos sin confirmar"
-
-      - nombre: "Tolerar huérfanos indefinidamente sin aviso"
-        pros:
-          - "Cero fricción"
-        contras:
-          - "Schema diverge sin que nadie lo sepa"
-          - "Usuario pierde oportunidad de evaluar"
-        por_que_descartada: "Falta visibilidad de intención de upstream"
-
-    consecuencias:
-      positivas:
-        - "Decisión de eliminar la toma quien conoce el proyecto"
-        - "upstream comunica intención sin imponerla"
-        - "Templates pueden conservar campos legacy si proyectos los justifican"
-        - "Agnosticismo respetado: no se asume rigidez del dominio software"
-        - "Human-in-the-loop preservado en cada paso"
-      negativas:
-        - "Templates pueden acumular campos deprecated indefinidamente"
-        - "actualizar.md requiere agente contextualizado (modo extendido)"
-        - "Más diálogo durante actualización (no automático)"
-      impacto: |
-        Afecta el flujo de actualizar.md: requiere lectura de contexto antes de
-        proponer eliminaciones. Mantenedores upstream solo marcan deprecation con
-        motivo, no fuerzan timeline.
-        Aplica solo a templates de schema (memory/templates/).
-
-    notes: |
-      Encaja con precedente del modo extendido en actualizar.md (sesión 2026-04-15):
-      subagente lee newSession.md para contextualizarse antes de proponer cambios.
-
-      "Motivo" en deprecated debería ser conciso pero accionable, ej:
-      "Reemplazado por campo X, ver ADR-NNN" o "Redundante con metadata.fase"
-
-      Relacionado: ADR-017 (file_version), ADR-018 (sustitución diferencial).
-
-  - id: "020"
-    titulo: "Memoria de usuario/feedback agnóstica (memory.yaml) con bridge opcional para auto-memory de Claude Code"
-    data: "2026-05-07"
-    estado: aceptado
-    area: "arquitectura"
-
-    context: |
-      memsys3 ya cubre memoria de proyecto (project-status.yaml) y memoria histórica
-      sintetizada (context.yaml), pero NO tiene un lugar canónico para memoria de
-      usuario (perfil, rol, cómo colabora) ni feedback (correcciones y validaciones
-      de comportamiento aprendidas a lo largo del tiempo).
-
-      Claude Code introdujo auto-memory: el harness inyecta automáticamente archivos
-      MEMORY.md + feedback_*/project_*/user_*.md en una ruta interna del usuario.
-      Esto rompe dos principios del sistema:
-      1. ADR-016 (agnosticismo): memsys3 no debe depender de features de un modelo
-         concreto, pero los agentes Claude reciben memoria sin que memsys3 lo controle.
-      2. Human-in-the-loop: la auto-memory escribe sin que el usuario lo apruebe,
-         introduciendo defaults silenciosos (síntoma original ISSUE-021: "***"
-         como default sin contexto).
-      3. "Una sola carpeta": auto-memory vive fuera de memsys3/, fragmentando la
-         memoria del proyecto.
-
-      Adicionalmente, la auto-memory NO es editable desde settings.json (es harness
-      no configurable), así que la única vía de control es redirigirla por convención.
-
-      ISSUE-021 propuso 4 opciones (A desactivar, B CLAUDE.md, C limpieza manual,
-      D archivo estructurado memsys3-nativo). Esta ADR adopta la Opción D.
-
-    decision: |
-      Crear archivo agnóstico `memsys3/memory/memory.yaml` como lugar canónico de
-      memoria de usuario y feedback. Schema flexible (no rígido) con secciones
-      orientativas: usuario, feedback, referencias. Append + datado, nunca sobrescribir.
-
-      Permisos:
-      - Main Agent: lectura + escritura (registra preferencias y feedback durante el trabajo)
-      - Context Agent: solo lectura (lo carga como Tier nuevo en compile-context.md)
-      - /actualizar-memsys3: bumpa file_version (ADR-017), nunca toca contenido
-
-      Bridge OPCIONAL para Claude (graceful degradation, ADR-016):
-      Cuando se despliega memsys3 en un entorno Claude Code, deploy.md crea un
-      MEMORY.md raíz con un puntero corto del estilo:
-
-        # MEMORY
-        Este proyecto usa memsys3. Toda memoria de usuario/feedback vive en
-        `memsys3/memory/memory.yaml`. Léelo para preferencias, reglas y perfil.
-        No escribas aquí — usa memory.yaml.
-
-      MEMORY.md NO contiene memoria real, solo redirige. Si el modelo no es Claude,
-      el bridge no se crea (no hay nada que redirigir) y memory.yaml funciona igual.
-
-      Integración:
-      - newSession.md: Main Agent lee memory.yaml junto a project-status y context
-      - compile-context.md: Context Agent lo añade a Tier 1 (lectura obligatoria)
-      - main-agent.yaml: permiso explícito para escribir feedback aprendido
-      - context-agent.yaml: solo lectura, NO sintetiza ni edita memory.yaml
-
-      Archivo nace con `file_version: "0.1.0"` (entra en sistema ADR-017).
-
-    alternatives:
-      - nombre: "Opción A — Desactivar auto-memory de Claude"
-        pros:
-          - "Solución más limpia conceptualmente"
-        contras:
-          - "Auto-memory NO editable desde settings.json (harness inyectado)"
-          - "Requiere acción del usuario en cada deploy, frágil"
-        por_que_descartada: "Técnicamente imposible de hacer programáticamente"
-
-      - nombre: "Opción B — Instrucción en CLAUDE.md raíz"
-        pros:
-          - "Sin archivos nuevos"
-        contras:
-          - "CLAUDE.md no es agnóstico (nombre Claude-específico)"
-          - "Mezcla guía de proyecto con memoria operativa"
-          - "No estructura datos, solo dicta comportamiento"
-        por_que_descartada: "No resuelve el problema del lugar canónico"
-
-      - nombre: "Opción C — Prompt de limpieza manual"
-        pros:
-          - "Reactivo, sin cambios estructurales"
-        contras:
-          - "Requiere disciplina del usuario"
-          - "No previene el problema, solo limpia tras los hechos"
-        por_que_descartada: "Parche, no solución"
-
-      - nombre: "Opción D-bis — memory.md (en lugar de yaml)"
-        pros:
-          - "Simetría visual con MEMORY.md de Claude"
-          - "Prosa libre permite matices que YAML estructura"
-        contras:
-          - "Rompe consistencia con resto de memory/ (todo .yaml: project-status, context, sessions, adr)"
-          - "Más difícil de parsear/sintetizar para Context Agent"
-        por_que_descartada: "Consistencia de formato del sistema prevalece sobre simetría con auto-memory"
-
-    consecuencias:
-      positivas:
-        - "Cierra ISSUE-021 con solución estructural agnóstica"
-        - "Preserva 'una sola carpeta': MEMORY.md raíz solo es puntero, contenido en memsys3/"
-        - "Preserva agnosticismo (ADR-016): memory.yaml universal, bridge opt-in Claude-específico"
-        - "Preserva human-in-the-loop: escritura controlada por Main Agent con criterio, no harness"
-        - "Schema flexible: el archivo evoluciona con el uso real, no con prescripción rígida"
-        - "Reduce sorpresas (defaults silenciosos) al centralizar memoria revisable"
-      negativas:
-        - "Una nueva fuente de verdad que mantener (Tier 1 adicional en compile-context)"
-        - "Requiere disciplina del Main Agent para registrar feedback en lugar de 'recordar' implícitamente"
-        - "Bridge MEMORY.md depende de Claude no sobreescribir el puntero (riesgo: harness ignora redirect)"
-      impacto: |
-        Afecta: memory/ (nuevo archivo), newSession.md, compile-context.md,
-        main-agent.yaml (permisos escritura), context-agent.yaml (Tier 1 lectura),
-        deploy.md (paso opcional crear MEMORY.md bridge), templates/ (memory-template.yaml).
-        Cierra ISSUE-021. Consume sistema file_version (ADR-017).
-
-    notes: |
-      Schema sugerido (NO vinculante, libre):
-
-        metadata:
-          ultima_actualizacion: "YYYY-MM-DD"
-          file_version: "0.1.0"
-        usuario:
-          - nota: "..."
-            fecha: "YYYY-MM-DD"
-        feedback:
-          - regla: "..."
-            motivo: "..."
-            fecha: "YYYY-MM-DD"
-        referencias:
-          - nombre: "..."
-            url_o_path: "..."
-
-      Riesgo conocido: el harness de Claude Code podría seguir escribiendo en
-      su ruta interna pese al puntero MEMORY.md. Mitigación: revisar
-      ~/.claude/projects/<hash>/memory/ periódicamente y re-redirigir si es necesario.
-      Si en el futuro el harness expone API para desactivar auto-memory, esta ADR
-      podría complementarse (no superseded — el bridge sigue siendo útil para otros
-      modelos con auto-memory similar).
-
-      Relacionado: ADR-016 (agnosticismo), ADR-017 (file_version), ISSUE-021 (origen).
-
-  - id: "021"
-    titulo: "Backlog extendido con informe y plan opcionales (anti-CDC)"
-    data: "2026-05-07"
-    estado: aceptado
-    area: "documentación"
-
-    context: |
-      Los items de backlog (`memsys3/backlog/`) son por diseño cortos: estado,
-      prioridad, qué problema, opciones. Esa compresión es buena para escaneo
-      rápido pero genera CDC ("casualidad de contexto"): cuando un agente
-      fresco ejecuta un item complejo, el documento corto NO le da suficiente
-      contexto, así que el agente "rellena" con lo que tenga en su sesión
-      actual — y la calidad del trabajo depende del azar de su contexto, no
-      del sistema.
-
-      memsys3 existe precisamente para combatir CDC: garantizar lucidez
-      agéntica sostenida via archivos canónicos. Un item de backlog corto sin
-      documentación de respaldo viola ese principio cuando el item es complejo.
-
-      Casos donde el item corto es insuficiente:
-      - BLUEPRINTs (cambios arquitectónicos multi-componente)
-      - FEATUREs grandes (multi-sesión)
-      - ISSUEs con causa raíz no obvia
-      - Trabajos delegados a sesión fresca distinta de la que identificó el item
-
-    decision: |
-      Extender el sistema de backlog con dos documentos OPCIONALES por item:
-
-      Estructura:
-        memsys3/backlog/
-        ├── PREFIJO-NNN-titulo.md         (item: corto, escaneable)
-        └── docs/
-            ├── informe_PREFIJO-NNN.md    (contexto profundo, opcional)
-            └── plan_PREFIJO-NNN.md       (pasos ejecutables, opcional)
-
-      Convención:
-      - Item de backlog: SIEMPRE existe (índice mental rápido, ~50-150 líneas)
-      - informe_*.md: opcional. Contexto profundo, hallazgos, motivación,
-                     escenarios. Pensado para agente fresco que necesita
-                     entender el QUÉ y el POR QUÉ sin depender de CDC.
-      - plan_*.md: opcional. Pasos de ejecución, criterios de done, archivos
-                   afectados. Pensado para agente fresco que necesita el CÓMO.
-      - Link bidireccional: item referencia docs en sección `Referencias`,
-        docs referencian item en su encabezado.
-      - Cuándo crearlos: SIEMPRE para BLUEPRINTs. Para FEATUREs/ISSUEs cuando
-        el ítem se vaya a delegar o ejecutar en otra sesión.
-
-      Templates: `memsys3/memory/templates/informe-template.md` y
-      `memsys3/memory/templates/plan-template.md`.
-
-      Permisos:
-      - Main Agent: lee/escribe items, informes y planes
-      - Context Agent: lee items (Tier 3), NO lee informes/planes por defecto
-        (evita explosión de tokens). Solo los lee si el item está referenciado
-        en pendientes prioritarios y los docs aportan info no derivable del ítem.
-
-    alternatives:
-      - nombre: "Mantener solo items cortos"
-        pros:
-          - "Sistema simple, una sola fuente"
-        contras:
-          - "Genera CDC en items complejos"
-          - "Agente fresco ejecuta con menos lucidez que el que identificó el item"
-        por_que_descartada: "Viola principio anti-CDC, problema real observado"
-
-      - nombre: "Item largo (todo en un archivo)"
-        pros:
-          - "Sin docs separados, un solo lugar"
-        contras:
-          - "Items dejan de ser escaneables (200-500 líneas)"
-          - "Mezcla niveles: índice + contexto + plan en mismo doc"
-          - "CA en Tier 3 cargaría todo aunque solo necesite el índice"
-        por_que_descartada: "Pierde la virtud original del backlog (escaneo rápido)"
-
-      - nombre: "Informe/plan obligatorios para todos los items"
-        pros:
-          - "Consistencia total"
-        contras:
-          - "Burocracia para items triviales (typo fix, refactor pequeño)"
-          - "Coste alto sin beneficio en items simples"
-        por_que_descartada: "No proporcional al riesgo CDC, infla el sistema"
-
-      - nombre: "Informe/plan en directorio paralelo (memsys3/docs/backlog_docs/)"
-        pros:
-          - "Separación física clara"
-        contras:
-          - "Rompe localidad: trabajar un item requiere navegar a otra carpeta"
-          - "Aumenta riesgo de docs huérfanos cuando se completa/cancela item"
-        por_que_descartada: "backlog/docs/ mantiene cohesión local"
-
-    consecuencias:
-      positivas:
-        - "Reduce CDC en items complejos: agente fresco recibe contexto canónico"
-        - "Separación de concerns: índice (item) vs contexto (informe) vs ejecución (plan)"
-        - "Coste proporcional: solo se documenta lo que lo necesita"
-        - "Mantiene escaneabilidad de items cortos"
-        - "Habilita delegación entre sesiones sin pérdida de lucidez"
-      negativas:
-        - "Mantenibilidad: docs pueden quedar desincronizados con item al actualizar"
-        - "Disciplina requerida: distinguir cuándo crear docs vs no"
-        - "CA debe respetar regla 'no leer docs por defecto' o se infla Tier 3"
-      impacto: |
-        Afecta: backlog/README.md (documentar convención), prompts/backlog.md
-        (4ª operación 'documentar'), memory/templates/ (2 templates nuevos),
-        prompts/deploy.md y actualizar.md (crear backlog/docs/), prompts/compile-context.md
-        (regla Tier 3 selectiva), README.md raíz (mencionar feature).
-
-    notes: |
-      Origen: sesión 2026-05-07, articulación del principio CDC ("casualidad de
-      contexto"): lucidez agéntica generada por eventualidad del contexto de la
-      sesión actual y no por archivos canónicos. memsys3 es solución a CDC
-      (anotado en memory.yaml dogfooding como principio fundacional).
-
-      Primer caso de uso del patrón: BLUEPRINT-001-release-memsys3-v1
-      (auditoría release v1.0 con 7 frentes). Ese item se documenta usando
-      esta convención mientras está siendo creado — auto-validación del patrón.
-
-      Relacionado: ADR-001 (criterio inteligente CA), ADR-020 (memory.yaml).
-      Pendiente: futura ADR sobre PRINCIPLES.md canónico que formaliza CDC.
-
-  - id: "022"
-    titulo: "PRINCIPLES.md como documento canónico de principios sistémicos (fuente única en templates)"
-    data: "2026-05-07"
-    estado: aceptado
-    area: "documentación"
-
-    context: |
-      Tras 6 meses de iteración, los principios sistémicos de memsys3 están dispersos:
-      CDC vive en `memory.yaml` dogfooting, agnosticismo en ADR-016 y README, una sola
-      carpeta y human-in-the-loop solo en README, criterio inteligente en ADR-001, etc.
-
-      Hallazgo del informe BLUEPRINT-001 sec 3.1: detectados 10 principios pero NO existe
-      documento canónico que los formalice. Esto es CDC pura — un agente fresco depende
-      del azar de qué archivos lea para captar los principios.
-
-      Para release v1.0 (BLUEPRINT-001), un usuario externo descargando memsys3 debe poder
-      operarlo sin acceso al mantenedor. Eso requiere un documento canónico de principios.
-
-    decision: |
-      Crear `PRINCIPLES.md` como documento canónico de los 10 principios sistémicos:
-
-      1. Anti-CDC, 2. Agnosticismo de modelo, 3. Una sola carpeta, 4. Human-in-the-loop,
-      5. Criterio inteligente vs límites arbitrarios, 6. Templates como documentación activa,
-      7. file_version inmutable salvo /actualizar-memsys3, 8. Datos siempre preservados,
-      9. Separation of Concerns, 10. Restricciones de infraestructura en agents.
-
-      Arquitectura "fuente única vs copias":
-      - `memsys3_templates/PRINCIPLES.md` = fuente única (SSoT, distribuible).
-      - `PRINCIPLES.md` raíz repo = stub corto pointer al template (descubrimiento OSS,
-        solo existe en este repo dev).
-      - `memsys3/PRINCIPLES.md` (dogfooting + proyectos desplegados) = copia real del
-        template, distribuida por `deploy.md` y sincronizada por `actualizar.md`.
-
-      Régimen de infraestructura. PRINCIPLES.md es infraestructura, NO datos:
-      - Hereda ADR-017: file_version (`<!-- version: 0.Y.Z -->`) solo se bumpa vía
-        /actualizar-memsys3. Bumpeo manual prohibido.
-      - Hereda ADR-018: actualizar.md Paso 6.6 sincroniza con sustitución diferencial
-        (comparar file_version upstream vs destino, sustituir condicionalmente).
-      - Aplica regla "MA y CA NO modifican infraestructura en proyectos destino"
-        (excepción dogfooting documentada en main-agent.yaml).
-
-      Carga: newSession.md instruye al agente leer @memsys3/PRINCIPLES.md si existe.
-
-    alternatives:
-      - nombre: "Solo en raíz del repo dev (no se distribuye)"
-        pros:
-          - "Identidad del proyecto OSS, no del scaffold desplegado"
-          - "Menos archivos en proyectos desplegados"
-        contras:
-          - "Usuarios externos NO tienen acceso a los principios tras deploy"
-          - "Genera CDC: el agente desplegado opera sin saber qué principios rigen el sistema"
-        por_que_descartada: "Viola el propósito anti-CDC del propio documento"
-
-      - nombre: "Tres copias paralelas (raíz + templates + dogfooting), todas completas"
-        pros:
-          - "Cada ubicación auto-contenida"
-        contras:
-          - "Mantenibilidad: cualquier cambio requiere 3 ediciones manuales"
-          - "Riesgo de divergencia silenciosa"
-        por_que_descartada: "El usuario explícitamente rechazó esta opción durante planning"
-
-      - nombre: "Symlinks desde raíz/dogfooting hacia templates"
-        pros:
-          - "Una sola fuente real, sin duplicación"
-        contras:
-          - "Symlinks problemáticos en Windows y en algunos sistemas de archivos"
-          - "Rompe portabilidad (principio 'una sola carpeta')"
-        por_que_descartada: "memsys3 debe ser multi-plataforma sin trucos del FS"
-
-    consecuencias:
-      positivas:
-        - "Anti-CDC: agente fresco tiene archivo canónico de principios desde la primera sesión"
-        - "Foundational para BLUEPRINT-001: define la vara de medir la auditoría ADRs (Frente 2)"
-        - "CDC formalmente documentada como principio #1 (no solo en memory.yaml dogfooting)"
-        - "Cada principio enlaza a las ADRs que lo formalizan (trazabilidad)"
-        - "Single source of truth: cambios solo en `memsys3_templates/PRINCIPLES.md`"
-      negativas:
-        - "deploy.md y actualizar.md ganan complejidad (un paso adicional cada uno)"
-        - "actualizar.md debe extender helper extract_version a formato .md (HTML comment)"
-        - "Dogfooting requiere copia real (no stub), implica mantener sincronizado memsys3/PRINCIPLES.md"
-      impacto: |
-        Afecta: PRINCIPLES.md (3 ubicaciones nuevas), README.md raíz (link),
-        memsys3_templates/memory/README.md (link), deploy.md (Paso 2 copia),
-        actualizar.md (Paso 6.6 sustitución diferencial), newSession.md
-        (templates + dogfooting: instrucción de carga).
-
-    notes: |
-      Origen: BLUEPRINT-001 Frente 1 (release memsys3 v1.0).
-      Sesión 2026-05-07 articuló el principio CDC (en memory.yaml dogfooting). Esta ADR
-      cierra el "pendiente" anotado en la sec notes de ADR-021.
-
-      Relacionado / hereda de:
-      - ADR-017 (file_version inmutable salvo /actualizar-memsys3) — PRINCIPLES.md es
-        infraestructura versionada, sigue el mismo régimen.
-      - ADR-018 (sustitución diferencial templates schema) — actualizar.md Paso 6.6
-        aplica la misma lógica a PRINCIPLES.md: comparar file_version, sustituir si gt.
-
-      Próxima evolución (BLUEPRINT-001 Frente 2): auditoría ADRs vs código real, usando
-      PRINCIPLES.md como vara de medir.
-
-  - id: "023"
-    titulo: "Scaffold completo en deploy: inventario canónico + memory/full/ como fuente única de archivos vacíos"
-    data: "2026-05-07"
-    estado: aceptado
-    area: "deploy"
-
-    context: |
-      BLUEPRINT-001 Frente 2 (informe_BLUEPRINT-001-auditoria.md §4.3) detectó dos brechas
-      en el scaffold producido por deploy.md:
-
-      1) Leak de dogfooting: `memsys3_templates/backlog/IMPROVEMENT-008-deploy-agnostico-memoria-antes-agente.md`
-         filtrado al template distribuible. El scaffold backlog debe contener únicamente
-         `README.md` + `docs/.gitkeep`.
-
-      2) Inconsistencia heredoc vs templates: `deploy.md` Paso 2 (líneas 71-94) usaba
-         heredocs `cat > ... << 'EOF'` para crear `memsys3/memory/full/{adr.yaml,sessions.yaml,operations.log}`
-         con contenido distinto del que ya existía en `memsys3_templates/memory/full/`
-         (los templates tenían `# version: 0.1.0` e `index: []`; los heredocs no).
-
-      Síntoma: dos fuentes de verdad divergentes para los mismos archivos vacíos —
-      cualquier evolución del schema vacío requería editar dos lugares y rezar para
-      no olvidar uno. CDC operativa.
-
-    decision: |
-      1. Inventario canónico del scaffold post-deploy:
-
-         memsys3/
-         ├── PRINCIPLES.md
-         ├── agents/{main-agent,context-agent}.yaml
-         ├── memory/
-         │   ├── README.md
-         │   ├── context.yaml          (vacío modelo D)
-         │   ├── memory.yaml           (vacío modelo D)
-         │   ├── project-status.yaml   (personalizado en briefing)
-         │   ├── full/{adr.yaml,sessions.yaml,operations.log}
-         │   ├── history/.gitkeep
-         │   └── templates/*.{yaml,md}
-         ├── prompts/*.md
-         └── backlog/{README.md,docs/.gitkeep}
-
-      2. `memsys3_templates/memory/full/{adr.yaml,sessions.yaml,operations.log}` son la
-         fuente única de archivos vacíos. `deploy.md` Paso 2 hace `cp` directo desde
-         el directorio entero (`cp memsys3_temp/memsys3_templates/memory/full/* memsys3/memory/full/`).
-         Heredocs eliminados.
-
-      3. `memsys3_templates/backlog/` distribuye únicamente `README.md` + `docs/.gitkeep`.
-         NUNCA items concretos (los items en `memsys3/backlog/` son dogfooting interno).
-
-      4. Templates copy también incluye `*.md` (informe-template, plan-template), no solo
-         `*.yaml`.
-
-    alternatives:
-      - nombre: "A — statu quo (heredocs en deploy.md)"
-        pros:
-          - "Cero cambios"
-          - "Heredoc tiene placeholder [NOMBRE_PROYECTO] explícito"
-        contras:
-          - "Divergencia silenciosa con memsys3_templates/memory/full/"
-          - "Cualquier evolución del schema vacío requiere editar dos sitios"
-        por_que_descartada: "Genera CDC sobre el schema vacío. Inaceptable para release v1.0."
-
-      - nombre: "B-explícita — *-empty.{yaml,log} en memory/templates/, deploy copia con rename"
-        pros:
-          - "Sufijo distintivo (-empty) hace explícita la naturaleza del archivo"
-          - "memory/templates/ centraliza todos los templates"
-        contras:
-          - "Introduce 3 archivos nuevos sin valor añadido (los archivos de memory/full/ ya cumplen ese rol)"
-          - "Operación de rename en deploy añade complejidad"
-        por_que_descartada: "Misma forma que B-simple pero con más archivos y un rename. Rechazada por el usuario en planning."
-
-    consecuencias:
-      positivas:
-        - "Una sola fuente de verdad para el scaffold de archivos vacíos"
-        - "Inventario canónico documentado y verificable con `find memsys3/ -type f`"
-        - "Smoke test reproducible en cualquier proyecto limpio"
-        - "Cualquier evolución del schema vacío se hace SOLO en memsys3_templates/memory/full/"
-      negativas:
-        - "Pérdida del placeholder `[NOMBRE_PROYECTO]` en headers de adr.yaml/sessions.yaml — trade-off aceptado, los archivos están vacíos y se llenarán con datos reales en su uso"
-      impacto: |
-        Afecta: memsys3_templates/prompts/deploy.md (Paso 2 refactorizado),
-        memsys3/prompts/deploy.md (sync dogfooting),
-        memsys3_templates/backlog/ (eliminado leak IMPROVEMENT-008),
-        memsys3_templates/memory/full/operations.log (eliminado "memsys3" hardcoded en header).
-
-    notes: |
-      Nota semántica (cierre del matiz "infraestructura vs datos"):
-      Los archivos `adr.yaml`, `sessions.yaml`, `operations.log` tienen MISMA forma física
-      pero DISTINTA semántica según ubicación:
-      - En `memsys3_templates/memory/full/` son **scaffold infraestructural**
-        (versionable, distribuible, con `# version: 0.1.0`, modificables solo vía
-        /actualizar-memsys3).
-      - Tras `cp` al proyecto destino son **datos del usuario** (modificables libremente
-        por Main Agent vía endSession/adr/etc, NO versionados por /actualizar-memsys3).
-
-      La transformación es por ubicación, no por contenido. Esto cierra para siempre el
-      matiz: "¿es adr.yaml infraestructura o datos?" → depende de dónde esté.
-
-      Anclaje a PRINCIPLES.md:
-      - #6 (Templates como documentación activa permanente)
-      - #9 (Separation of Concerns: una fuente de verdad)
-      - #1 (Anti-CDC: el schema del scaffold vacío es canónico, no eventual)
-
-      Origen: BLUEPRINT-001 Frente 3. Sesión 2026-05-07.
-      Resuelve: brecha ADR-021 leak (informe_BLUEPRINT-001-auditoria.md §4.3).
-      Smoke test ejecutado y validado: 19 archivos en scaffold post-deploy coinciden con inventario.
-
-  - id: "024"
-    titulo: "Completitud de templates: criterio data-vs-as-is + operations-template.log"
-    data: "2026-05-07"
-    estado: aceptado
-    area: "templates"
-
-    context: |
-      BLUEPRINT-001 Frente 4 cierra la pregunta operativa "¿qué archivos del scaffold
-      necesitan template en memory/templates/?". Hasta ahora el sistema tenía templates
-      para casi todos los archivos data (adr, sessions, context, project-status, memory,
-      informe, plan), pero faltaba uno: `operations.log` (FEATURE-009) — pendiente
-      prioritario 3 de project-status.yaml.
-
-      La auditoría 1:1 detectó que también faltaba un criterio explícito y citable para
-      decidir cuándo un archivo del scaffold necesita template y cuándo no. Sin handle
-      formal, futuras decisiones tendrían que redefinirlo cada vez (CDC operativa sobre
-      la propia decisión de qué es template).
-
-      Side-finding: `memsys3/memory/templates/context-template.yaml` estaba desincronizado
-      con el distribuible — L3 usaba "DevAI" (viola ADR-015) y L13 tenía placeholder
-      menos informativo. Sync forward (templates → dogfooting) ejecutado.
-
-    decision: |
-      1. **Criterio data-vs-as-is** (handle citable):
-         *Un archivo del scaffold necesita template equivalente en memory/templates/ si
-         es DATA EVOLUTIVA del usuario (rellenable, mutable durante uso normal). NO lo
-         necesita si es INFRAESTRUCTURA o DOCUMENTACIÓN CANÓNICA versionada por
-         /actualizar-memsys3 (distribuible as-is).*
-
-         Aplicación a memsys3:
-         - Necesitan template: `memory/full/{adr,sessions,operations}.{yaml,log}`,
-           `memory/{context,memory,project-status}.yaml`, `backlog/docs/{informe,plan}_*.md`
-         - NO necesitan template (as-is): `PRINCIPLES.md`, `backlog/README.md`,
-           `memory/README.md`, `agents/*.yaml`, `prompts/*.md`
-
-         Citación esperada en futuras ADRs/PRINCIPLES.md:
-         "Aplicamos el criterio data-vs-as-is (ADR-024): X es Y, por tanto Z."
-
-      2. **Crear `operations-template.log`** en `memsys3_templates/memory/templates/` y
-         `memsys3/memory/templates/` (sync dogfooting). Schema: `# version: 0.1.0` +
-         doc inline (campos: timestamp, operacion, resultado, version_*, resumen) +
-         ejemplos comentados de actualizar/compilar + `operations: []` final.
-
-      3. **Extensión `.log` (no `.yaml`)** para el template, espejando el archivo data
-         (FEATURE-009 fijó `operations.log`). Aunque el contenido sea YAML válido, `.log`
-         es semántico (append-only, rotable estilo sessions). Mismo patrón que
-         `informe-template.md` espeja `informe_*.md`.
-
-    alternatives:
-      - nombre: "A — extensión .yaml para el template"
-        pros:
-          - "Coherente con que el contenido es YAML"
-          - "Tooling de validación YAML aplica directamente"
-        contras:
-          - "Diferente de la extensión del archivo data (operations.log)"
-          - "Rompe el patrón nombre-template.<misma-extensión-que-data>"
+          - "Riesgo IMPROVEMENT-008 conocido y NO mitigado"
+          - "Confiar en disciplina humana/agéntica = CDC sobre la canonización"
+          - "Aceptar un caso documentado es saber que volverá a pasar"
         por_que_descartada: |
-          La consistencia data ↔ template es más importante que la coherencia
-          contenido ↔ extensión. Resto del sistema sigue el mismo patrón.
+          Aceptar un riesgo ya documentado es elegir no protegerse. La disciplina
+          ya falló una vez (IMPROVEMENT-008); confiar en que ahora será distinta es
+          irrazonable. Anti-CDC requiere mecanismo, no buenas intenciones.
 
-      - nombre: "B — no formalizar criterio, solo crear el template"
+      - nombre: "B — `.gitignore memsys3/`"
         pros:
-          - "Cambio más pequeño"
+          - "Aislamiento total del código distribuible"
+          - "Cero riesgo de leak por construcción"
         contras:
-          - "Cada futura ADR sobre 'qué es template' redefine el criterio (CDC)"
-          - "No hay handle citable"
+          - "Pierde dogfooting visible como ejemplo de uso"
+          - "Recuperación entre máquinas requiere backup separado"
+          - "Incoherente con la propia recomendación de memsys3 a usuarios (deploy.md Paso 8 sugiere INCLUIR memsys3/ en su repo, opción A 'recomendada')"
         por_que_descartada: |
-          Anti-CDC requiere léxico sistémico. El esfuerzo de nombrar el criterio
-          una vez compensa con creces.
+          La incoherencia conceptual ("haz lo que digo, no lo que hago") rompe la
+          credibilidad del sistema. Además, perder dogfooting visible elimina un
+          vector de validación importante: ver cómo memsys3 se usa a sí mismo es
+          parte del valor pedagógico para usuarios externos.
+
+      - nombre: "Mecanismo descartado: regla en actualizar.md"
+        contexto: "Dentro de Opción C, alternativa de mecanismo anti-leak."
+        por_que_descartada: |
+          Capa equivocada. `actualizar.md` corre del lado del usuario que actualiza
+          memsys3 en SU proyecto. Los leaks son problema del UPSTREAM (este repo) —
+          si llegan a master, ya es tarde. Además bloataría un prompt agnóstico
+          crítico con responsabilidades que no son suyas.
+
+      - nombre: "Mecanismo descartado: CI check (GitHub Action)"
+        contexto: "Dentro de Opción C, alternativa de mecanismo anti-leak."
+        por_que_descartada: |
+          No hay pipeline CI activo en el repo actualmente. Sería defensa
+          complementaria al PR/push (útil para PRs externos), no sustitutiva del
+          hook local. Pospuesto a ISSUE-028 para cuando se establezca CI.
 
     consecuencias:
       positivas:
-        - "Cada archivo data del scaffold tiene template equivalente (1:1 verificable)"
-        - "Criterio data-vs-as-is queda en el léxico del proyecto, citable como ADR-024"
-        - "Pendiente prioritario 3 de project-status.yaml cerrado"
-        - "Side-finding sync context-template.yaml (DevAI → Main Agent) corrige brecha ADR-015 latente en dogfooting"
-        - "operations.log queda completamente especificado: data + template ambos canónicos"
+        - "Vector IMPROVEMENT-008 cerrado sistémicamente (no por disciplina)"
+        - "Dogfooting permanece visible como ejemplo vivo + validación del scaffold"
+        - "Coherencia conceptual con la recomendación a usuarios preservada"
+        - "Hook agnóstico (bash + git-estándar): no depende de modelo IA ni Claude Code"
+        - "Defensa en profundidad (2 capas) cubre bypasses y devs nuevos"
+        - "Léxico citable: 'protocolo anti-leak (ADR-025)' como handle para futuras decisiones"
       negativas:
-        - "Un archivo más que /actualizar-memsys3 debe sustituir diferencialmente (Paso 6.4)"
+        - "Devs del repo deben activar `git config core.hooksPath .githooks` una sola vez"
+        - "Mantenimiento del hook (auditable en 20 líneas, riesgo bajo)"
       impacto: |
-        Afecta: memsys3_templates/memory/templates/operations-template.log (NUEVO),
-        memsys3/memory/templates/operations-template.log (sync dogfooting),
-        memsys3/memory/templates/context-template.yaml (sync 2 líneas).
+        Afecta:
+          - `.githooks/pre-commit` (NUEVO)
+          - `memsys3/prompts-dev/comprobar_alineamiento.md` (extensión)
+          - `README.md` raíz (línea sobre activación de hooks)
+          - `memsys3/backlog/ISSUE-028-ci-check-anti-leak.md` (NUEVO, futuro)
 
     notes: |
       Anclaje a PRINCIPLES.md:
-      - #6 (Templates como documentación activa permanente) — operations-template.log
-        es referencia viva para el Main Agent al documentar operaciones.
-      - #9 (Separation of Concerns: una sola fuente de verdad por preocupación) — el
-        criterio data-vs-as-is es la respuesta sistémica a "¿quién es responsable de
-        qué archivo?".
+      - #2 (Agnosticismo de modelo IA): hook en bash puro + git-estándar, sin
+        dependencia de Claude Code ni de un modelo concreto.
+      - #3 (Una sola carpeta): no se modifica la regla; `memsys3/` sigue siendo la
+        única carpeta del sistema en el proyecto del usuario. El hook protege
+        específicamente la frontera dogfooting/templates EN ESTE REPO.
+      - #4 (Human-in-the-loop): hook bloquea, usuario decide. `--no-verify` queda
+        como escape válido pero deja huella (anotable en sessions.yaml).
+      - #9 (Separation of Concerns): formaliza la frontera templates (agnóstico)
+        vs dogfooting (específico) que vivía solo en README:235-247.
 
-      Side-finding documentado: durante la auditoría se detectó desincronización en
-      `memsys3/memory/templates/context-template.yaml` (L3 "DevAI" violaba ADR-015,
-      L13 placeholder genérico). Sync forward ejecutado en este mismo frente —
-      el distribuible es la fuente de verdad post-Frente 1.
+      Relación con otras ADRs:
+      - Formaliza convención previa que vivía en README:235-247.
+      - Complementa ADR-016 (agnosticismo + commands opt-in) en la dimensión
+        "qué se versiona y cómo se protege la frontera distribuible".
+      - NO es extensión de ADR-011 (inexistente, ISSUE-024 confirma su ausencia).
 
-      Origen: BLUEPRINT-001 Frente 4. Sesión 2026-05-07.
-      Cierra: pendiente prioritario 3 de project-status.yaml ("operations-template").
+      Items relacionados:
+      - ISSUE-028: CI check anti-leak (futuro, cuando haya pipeline).
+      - ISSUE-022: hook pre-commit anti-firma (línea de trabajo paralela; mismo
+        mecanismo `.githooks/`, podría compartir infraestructura).
+      - IMPROVEMENT-008: incidente histórico que motiva esta ADR (resuelto
+        manualmente en Frente 3, ahora protegido sistémicamente).
 
-# Índice rápido para encontrar ADRs
+      Origen: BLUEPRINT-001 Frente 6. Sesión 2026-05-08.
+
+# Índice rápido para encontrar ADRs (incluye rotadas en adr_1.yaml)
 index:
   - id: "001"
     titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "002"
     titulo: "Rotación automática de sessions/ADRs (flexible 1800-2000 líneas)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "003"
     titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "004"
     titulo: "YAML para todo (incluyendo sessions)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "005"
     titulo: "deploy.md como prompt (no script shell)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "006"
     titulo: "Sistema de rutas unificado memsys3/"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "007"
     titulo: "Separación de meta-niveles en READMEs"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "008"
     titulo: "Main-Agent NO debe proponer compile-context"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "009"
     titulo: "Templates como documentación activa permanent + gotchas en sessions"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "012"
     titulo: "README como lectura directa vs duplicado en context.yaml"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "013"
     titulo: "Sistema de gestión de ADRs con prompt dedicado (consistencia arquitectónica)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "014"
     titulo: "Sistema de comandos globales auto-actualizantes con launcher pattern"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "015"
     titulo: "Terminología unificada: Main Agent como nomenclatura estándar"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "016"
     titulo: "memsys3 agnóstico de modelo de IA + Commands como feature opcional Claude-específica"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "017"
     titulo: "Sistema file_version por archivo (versionado independiente de infraestructura)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "018"
     titulo: "Sustitución diferencial de templates de schema en actualizar.md"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "019"
     titulo: "Política de evolución de schema en templates (deprecation contextualizada)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "020"
     titulo: "Memoria de usuario/feedback agnóstica (memory.yaml) con bridge opcional para auto-memory de Claude Code"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "021"
     titulo: "Backlog extendido con informe y plan opcionales (anti-CDC)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "022"
     titulo: "PRINCIPLES.md como documento canónico de principios sistémicos (fuente única en templates)"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "023"
     titulo: "Scaffold completo en deploy: inventario canónico + memory/full/ como fuente única de archivos vacíos"
     estado: aceptado
+    archivo: "adr_1.yaml"
   - id: "024"
     titulo: "Completitud de templates: criterio data-vs-as-is + operations-template.log"
     estado: aceptado
+    archivo: "adr_1.yaml"
+  - id: "025"
+    titulo: "Estrategia dogfooting versionado: memsys3/ se commitea con protocolo anti-leak"
+    estado: aceptado
+    archivo: "adr.yaml"
