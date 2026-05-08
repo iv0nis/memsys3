@@ -77,6 +77,23 @@ feedback:
     motivo: "Operacionalización del principio CDC. Si una conducta deseable solo emerge cuando el agente 'ha leído X justo antes' en sesión, X debe estar en archivo canónico que se lea siempre (newSession, compile-context). Si solo emerge en sesión específica, es CDC y hay que eliminarla. Aplicable a: dónde guardar feedback nuevo, qué documentar en backlog/docs/, qué meter en PRINCIPLES.md, qué dejar implícito."
     fecha: "2026-05-07"
 
+  - regla: "coordinacion_paralela / blocked_files_log.md aplica SOLO con paralelismo humano confirmado"
+    motivo: "Multi-work es para agentes lanzados por humanos en paralelo (otra sesión Claude abierta simultáneamente por el mismo usuario u otro), NO para una sesión solitaria. Reservar locks 'por defensa' cuando trabajas solo añade ruido. Antes de invocar el sistema, confirmar con el usuario que va a operar otra sesión humana en paralelo. Clarificación canonizada por el usuario al revisar plan Frente 7 (2026-05-08)."
+    fecha: "2026-05-08"
+
+  - regla: "Plans deben cubrir explícitamente sub-pasos opcionales del scope, no solo el camino principal"
+    motivo: |
+      Feedback del usuario al revisar plan Frente 7 (2026-05-08): un plan que dice 'Test deploy.md Paso 2'
+      deja fuera Pasos 8 (gitignore A/B) y 9 (MEMORY.md bridge), aunque pendientes prioritarios los
+      mencionan. Reglas:
+      (1) Inspección estática debe especificar el checklist concreto (ej: '4 items: launcher pattern,
+          sync con frentes recientes, permisos, sobreescritura'), no decir 'coherencia con ADR-X' (vago).
+      (2) Lectura crítica de un Paso debe cubrir TODA la lógica del paso, no solo la primera línea
+          (ej: Paso 6.4.5 deprecation incluye sub-paso 1 'detectar deprecations' Y sub-paso 2 'huérfanos').
+      (3) Cuando el agent prompt mencione pendientes prioritarios cubiertos, mapear cada uno a un test
+          concreto en el plan (no asumir cobertura implícita).
+    fecha: "2026-05-08"
+
   - regla: "Heurística de orquestación de forks (Agent sin subagent_type) para ahorrar contexto"
     motivo: |
       Tres casos:

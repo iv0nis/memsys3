@@ -3,6 +3,43 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-08-blueprint-001-frente-7-smoke-tests"
+    titulo: "BLUEPRINT-001 Frente 7 — Smoke tests deploy/actualizar/commands + EXPLORATION-004 A"
+    data: "2026-05-08"
+    duracion: "~2h"
+    peso: "alto"
+    highlights:
+      - "6 smoke tests ejecutados literalmente contra escenarios sintéticos en mktemp -d (excepto hook anti-leak en repo real)"
+      - "Test 1 deploy.md Paso 2: inventario canónico ADR-023 coincide 100% (31 archivos, headers version intactos, vacíos canónicos OK)"
+      - "Test 1.5 deploy.md Pasos 8 (.gitignore A/B) + 9 (MEMORY.md bridge) inspección estática: estructura coherente, AskUserQuestion bien especificado, graceful degradation explícita"
+      - "Test 2 actualizar.md Paso 6.4 — 3 casos validados: ⚠️ destino sin version → sustituido; ✅ versiones iguales → no toca; 🚨 destino 99.0.0 > upstream 0.1.0 → preservado (caso anómalo, en agente real entraría a AskUserQuestion)"
+      - "Test 3 actualizar.md Paso 6.6 PRINCIPLES.md sync — 4 casos OK (no existe / sin version / igual / mayor). Helper extract_md_version filtra correctamente pese a que PRINCIPLES.md menciona literalmente la sintaxis (regex requiere ^\\s*<!--)"
+      - "Test 4 actualizar.md Paso 6.4.5 deprecation: grep detecta DEPRECATED inyectado. Lectura crítica de lógica posterior (sub-pasos 1+2): coherente con ADR-019 human-in-the-loop. Side-finding: 'historico_sesiones' está en datos vivos pero no en upstream — huérfano legítimo que el sub-paso 2 elevaría a AskUserQuestion (no es bug)"
+      - "Test 5 hook anti-leak (ADR-025) en repo real: git commit con TEST-999-leak.md retorna exit=1, mensaje claro, cleanup OK"
+      - "Test 6 commands.md inspección estática: launcher pattern OK, permisos OK, pero descripciones internas NO mencionan features post-Frentes 1-6 (sustitución diferencial, PRINCIPLES.md sync, deprecation) → ISSUE-029 prioridad baja"
+      - "Sub-tarea EXPLORATION-004 Opción A incluida: paso 2.7 defensivo añadido a endSession.md (ambos sitios sincronizados, file_version 0.1.0 intacta). Disposicional reminder explícito (PRINCIPLES.md #1 corolario meta-amnesia). Cierra el bucle anti-CDC operativo más importante"
+      - "Reporte canónico anti-CDC: backlog/docs/informe_BLUEPRINT-001-smoke-tests.md"
+      - "BLUEPRINT-001 7/8 frentes completados. Solo Frente 8 (cierre release v1.0.0) pendiente"
+    decisiones:
+      - "NO reservar locks en blocked_files_log.md (clarificación canonizada del usuario antes de empezar): coordinacion_paralela aplica solo a paralelismo humano confirmado, no a sesión solitaria"
+      - "Smoke tests = ejecución literal de bloques bash, NO orquestación de prompts completos como agente (fuera de scope Frente 7)"
+      - "Aislamiento estricto en mktemp -d salvo hook anti-leak (necesita repo real con cleanup garantizado)"
+      - "Sub-tarea ISSUE-027 (migrar principios_fundacionales) diferida a Frente 8 cleanup"
+      - "Plan first vía ExitPlanMode antes de ejecutar (per agent7 prompt). Usuario aprobó con 4 notas integradas durante ejecución sin re-plan"
+    gotchas:
+      - tipo: "exit-code-pipe-bash"
+        problema: "git commit ... 2>&1 | tail captura exit code de tail, NO del comando original. Probar éxito/fallo de git con pipe enmascara el resultado verdadero (en Test 5 inicial mostró exit=0 cuando el commit realmente había fallado)."
+        solucion: "Capturar exit code INMEDIATAMENTE post-comando (RC=$?) sin pipe intermedio, o usar ${PIPESTATUS[0]} en bash. Aplicable a cualquier verificación de exit code en smoke tests."
+        criticidad: "media"
+    proximos:
+      - "Frente 8 (cierre release v1.0.0): README raíz final + CHANGELOG.md + web memsys3.org placeholder + sincronizar wiki + cleanup multi-work + decisión ISSUE-029/ISSUE-027 + tag v1.0.0 + release notes"
+      - "Sesión dedicada recomendada (workflow github.md crítico)"
+    items_backlog_afectados:
+      - "BLUEPRINT-001 Frente 7 [x]"
+      - "ISSUE-029 abierto (commands.md descripción desactualizada, prioridad baja)"
+      - "EXPLORATION-004 Opción A aplicada (paso 2.7 endSession.md)"
+      - "Pendientes prioritarios 2, 4, 6 cubiertos"
+
   - id: "2026-05-08-meta-orquestador-multi-work-integration-canonization"
     titulo: "Meta-orquestador BLUEPRINT-001 (Frentes 5+6) + integración multi-work dogfooting + canonización CDC/olvidan-que-olvidan + tag surgery v0.23.1/v0.24.0"
     data: "2026-05-08"

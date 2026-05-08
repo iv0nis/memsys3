@@ -2,8 +2,8 @@
 
 metadata:
   ultima_actualizacion: "2026-05-08"
-  actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 6 + integración multi-work dogfooting)"
-  fase: "Development v0.24.0 (preparando v1.0 — Frente 6/8 completado, multi-work integrado temporal)"
+  actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 7 + EXPLORATION-004 A)"
+  fase: "Development v0.24.0 (preparando v1.0 — Frente 7/8 completado, smoke tests OK)"
   memsys3_version: "v0.24.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
@@ -14,9 +14,9 @@ vision_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estado_actual:
-  fase: "Development v0.23.0 (preparando release v1.0 — Frente 6/8 completado)"
-  ultima_feature: "BLUEPRINT-001 Frente 6 completado: Estrategia dogfooting versionado formalizada en ADR-025 (primera ADR sobre el tema; ISSUE-024 confirmó que ADR-011 nunca existió). Decisión: Opción C (commitear memsys3/ + protocolo anti-leak en 2 capas). Capa 1: hook .githooks/pre-commit (bash agnóstico, ~20 líneas) veta items [A-Z]+-[0-9]+-*.md en memsys3_templates/backlog/. Capa 2: bloque PASO 6.5 en comprobar_alineamiento.md (defensa periódica). Mecanismos descartados con razón: regla en actualizar.md (capa equivocada) + CI check (no hay pipeline → ISSUE-028). README raíz actualizado con instrucción git config core.hooksPath .githooks. Adr.yaml rotado pre-doc → adr_1.yaml (1994 líneas, hasta ADR-024). Cierra vector IMPROVEMENT-008 sistémicamente."
-  siguiente_milestone: "BLUEPRINT-001 Frente 7 (Pulir deploy/actualizar/commands + smoke tests). Smoke test actualizar.md con lógica nueva (Pasos 6.4 sustitución diferencial + 6.4.5 deprecation, ADR-018/019). Plan en backlog/docs/plan_BLUEPRINT-001.md Frente 7. Sesión fresca recomendada (anti-CDC)."
+  fase: "Development v0.24.0 (preparando release v1.0 — Frente 7/8 completado, smoke tests OK)"
+  ultima_feature: "BLUEPRINT-001 Frente 7 completado: smoke tests deploy/actualizar/commands + hook anti-leak. 6 tests ejecutados (deploy inventario canónico ADR-023, deploy Pasos 8/9 estático, actualizar Paso 6.4 sustitución diferencial 3 casos ADR-018, actualizar Paso 6.6 PRINCIPLES.md sync 4 casos ADR-022, actualizar Paso 6.4.5 deprecation ADR-019, hook anti-leak ADR-025). 0 bugs bloqueantes. ISSUE-029 abierto (commands.md descripción interna no menciona features post-Frentes 1-6, prioridad baja, decisión Frente 8). Sub-tarea EXPLORATION-004 Opción A incluida: paso 2.7 defensivo en endSession.md (anti-CDC operativo, ambos sitios, file_version intacta). Reporte canónico en backlog/docs/informe_BLUEPRINT-001-smoke-tests.md. Cierra pendientes prioritarios 2, 4 y 6."
+  siguiente_milestone: "BLUEPRINT-001 Frente 8 (cierre release v1.0.0): README raíz final + CHANGELOG.md + web memsys3.org placeholder + sincronizar wiki + cleanup multi-work (dogfooting temporal) + decisión ISSUE-029/ISSUE-027 + tag v1.0.0 + release notes. Sesión dedicada recomendada (workflow github.md crítico)."
 
 features:
   context_agent:
@@ -100,16 +100,16 @@ urls:
 
 pendientes_prioritarios:
   - prioridad: 1
-    tarea: "Ejecutar BLUEPRINT-001 Frente 4 — Completitud de templates"
-    detalle: "Frentes 1-3 completados. Siguiente: inventariar archivos del scaffold final (post-Frente 3) y verificar 1:1 que cada uno tiene template equivalente en memory/templates/. Crear faltantes (operations-template.log es el caso conocido — pendiente prioritario antiguo 3). Sincronizar memsys3/memory/templates/ ↔ memsys3_templates/memory/templates/. Plan en backlog/docs/plan_BLUEPRINT-001.md (Frente 4). Anti-CDC: sesión fresca recomendada."
+    tarea: "Ejecutar BLUEPRINT-001 Frente 8 (cierre release v1.0.0)"
+    detalle: "README raíz final + CHANGELOG.md + web memsys3.org placeholder + sincronizar wiki + cleanup multi-work (dogfooting temporal pre-v1.0) + decisión ISSUE-029 (commands.md descripción) + decisión ISSUE-027 (migrar principios_fundacionales memory.yaml → PRINCIPLES.md) + tag v1.0.0 + release notes. Sesión dedicada recomendada (workflow github.md crítico). Plan en backlog/docs/plan_BLUEPRINT-001.md Frente 8."
 
   - prioridad: 1
     tarea: "Resolver ISSUE-025 detectado en Frente 2"
     detalle: "ISSUE-025 (docs/UPDATE.md link roto en README:217 — lugar correcto raíz repo, no templates). Pendiente antes de v1.0.0 (Frente 8 comunicación). ISSUE-024 (010-011 ausentes) baja, sin urgencia. ISSUE-026 cerrado en Frente 5 (2026-05-08)."
 
   - prioridad: 2
-    tarea: "Smoke test actualizar.md con lógica nueva (sustitución diferencial + deprecation)"
-    detalle: "Validar Pasos 6.4 y 6.4.5 nuevos en proyecto de prueba (WORKSPACE_Y u otro). Tres casos: archivo sin file_version, archivo con file_version igual, archivo con file_version mayor en destino. ADR-018/019. Cubierto por frente 7 BLUEPRINT-001."
+    tarea: "✅ COMPLETADO: Smoke test actualizar.md con lógica nueva (sustitución diferencial + deprecation)"
+    detalle: "Cubierto por Frente 7 BLUEPRINT-001 (sesión 2026-05-08). 3 casos validados Paso 6.4 ADR-018, 4 casos Paso 6.6 PRINCIPLES.md ADR-022, deprecation Paso 6.4.5 ADR-019. Reporte: backlog/docs/informe_BLUEPRINT-001-smoke-tests.md."
 
   - prioridad: 2
     tarea: "Comunicar a CLIENT_D: ISSUE-023 cerrado"
@@ -124,8 +124,8 @@ pendientes_prioritarios:
     detalle: "Pendiente desde 2026-05-05. URL ya propagada en README/yaml/wiki. Aunque sea placeholder, evita 404."
 
   - prioridad: 6
-    tarea: "Testear deployment con consulta .gitignore en nuevo proyecto"
-    detalle: "Validar que PASO 8 funciona correctamente con warning @ mentions y usuario puede elegir Opción A o B"
+    tarea: "✅ COMPLETADO (estático): Testear deployment con consulta .gitignore en nuevo proyecto"
+    detalle: "Cubierto por Frente 7 BLUEPRINT-001 (Test 1.5 inspección estática deploy.md Pasos 8 y 9). Estructura coherente, AskUserQuestion bien especificado, branches A/B coherentes, graceful degradation. Pendiente: smoke test real con usuario en proyecto nuevo (no bloqueante para v1.0.0)."
 
   - prioridad: 7
     tarea: "Testear actualizar_cat.md en futuras sincronizaciones"
@@ -157,6 +157,9 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-05-08"
+    resumen: "BLUEPRINT-001 Frente 7 ejecutado: 6 smoke tests deploy/actualizar/commands + hook anti-leak. Test 1 inventario canónico ADR-023 OK (31 archivos, 100% coincidencia). Test 1.5 deploy Pasos 8 (.gitignore A/B) + 9 (MEMORY.md bridge ADR-020) inspección estática OK. Test 2 actualizar.md Paso 6.4 (ADR-018 sustitución diferencial) — 3 casos validados con outputs literales (⚠️ sin version → sustituido, ✅ igual → no toca, 🚨 destino mayor → preservado). Test 3 Paso 6.6 PRINCIPLES.md sync (ADR-022) — 4 casos OK. Test 4 Paso 6.4.5 deprecation (ADR-019) — grep OK + lectura crítica sub-pasos 1+2 + side-finding 'historico_sesiones' huérfano legítimo. Test 5 hook anti-leak (ADR-025) en repo real — git commit retorna exit=1, mensaje claro, cleanup OK. Test 6 commands.md inspección estática — 1 ISSUE menor (ISSUE-029 descripciones desactualizadas post-Frentes 1-6, prioridad baja). Sub-tarea EXPLORATION-004 Opción A incluida: paso 2.7 defensivo en endSession.md (ambos sitios sync, file_version intacta, disposicional reminder explícito). Reporte: backlog/docs/informe_BLUEPRINT-001-smoke-tests.md. Cierra pendientes prioritarios 2, 4, 6. Gotcha canonizado: exit-code-pipe-bash (capturar RC=$? sin pipe). 2 feedbacks nuevos a memory.yaml (locks solo paralelismo humano confirmado + plans deben cubrir sub-pasos opcionales). 7/8 frentes BLUEPRINT-001 completados. ~2h peso alto."
+
   - fecha: "2026-05-08"
     resumen: "BLUEPRINT-001 Frente 6 ejecutado: Estrategia dogfooting versionado formalizada en ADR-025 (primera ADR sobre el tema; ISSUE-024 confirmó que ADR-011 nunca existió, era convención informal en README:235-247). Plan mode con AskUserQuestion x2: Opción C (híbrido) sobre A/B + mecanismos 1+2 (hook + auditoría) descartando 3 (regla en actualizar.md, capa equivocada) y 4 (CI, no hay pipeline → ISSUE-028 abierto). Capa 1: hook .githooks/pre-commit (bash 21 líneas, agnóstico, exit=1 si detecta items [A-Z]+-[0-9]+-*.md en memsys3_templates/backlog/). Capa 2: bloque PASO 6.5 en comprobar_alineamiento.md. Rotación pre-doc adr.yaml → adr_1.yaml (1994 líneas). README raíz: instrucción git config core.hooksPath .githooks. Verificación end-to-end OK (test positivo TEST-999-leak.md → exit=1, auditoría manual 0 hits). 6 commits atómicos sin firma + endSession + bump v0.23.1 + tag patch. Cierra IMPROVEMENT-008 sistémicamente. 6/8 frentes BLUEPRINT-001 completados. Reframing crítico documentado como gotcha: verificar que ADRs citadas existen antes de extenderlas. ~1.5h peso alto."
 
