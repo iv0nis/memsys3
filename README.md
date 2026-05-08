@@ -255,6 +255,8 @@ Este sistema está abierto a mejoras. Si tienes ideas o encuentras bugs, abre un
 git config core.hooksPath .githooks
 ```
 
+> **Nota**: `.githooks/` es dev-tooling de **este repo de desarrollo de memsys3**, no forma parte del sistema memsys3 distribuido. Los proyectos del usuario que despliegan memsys3 (vía `deploy.md`) NO lo necesitan ni lo reciben — `deploy.md` y `actualizar.md` no lo copian. memsys3 funciona en proyectos sin git (no se requiere repo en el proyecto destino).
+
 ## 📝 Licencia
 
 MIT License - Libre para usar en cualquier proyecto
