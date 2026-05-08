@@ -2,8 +2,8 @@
 
 metadata:
   ultima_actualizacion: "2026-05-08"
-  actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 5 — Eliminación de residualidad)"
-  fase: "Development v0.23.0 (preparando v1.0)"
+  actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 6 — Estrategia dogfooting + ADR-025)"
+  fase: "Development v0.23.0 (preparando v1.0 — Frente 6/8 completado)"
   memsys3_version: "v0.23.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
@@ -14,9 +14,9 @@ vision_general:
   client: "Open Source (GitHub: iv0nis/memsys3)"
 
 estado_actual:
-  fase: "Development v0.23.0 (preparando release v1.0 — Frente 5/8 completado)"
-  ultima_feature: "BLUEPRINT-001 Frente 5 completado: Eliminación de residualidad. 33 hits resueltos en 14 archivos sin escalación a ISSUEs. Catalán residual (9 strings, bloque YAML ejemplo en memory/README.md ×2 traducido íntegro). DevAgent/DevAI/Development Agent (12 hits en prompts deploy/endSession/compile-context templates+dogfooting + README:127,138 + drift dogfooting agents/context-agent.yaml:4,183) → cierra ISSUE-026 e IMPROVEMENT-006. Refs muertas viz/mind.md (12 hits en docs/DEVELOPMENT.md, docs/UPDATE.md masivo, prompts-dev/actualizar_cat.md). 0 archivos huérfanos. 0 docs obsoletos por antigüedad. Sin ADR nueva (limpieza pura). 5 hits adicionales hallados en re-validación (forks no cubrieron agents/ ni UPDATE.md viz refs). Reporte: backlog/docs/informe_BLUEPRINT-001-residualidad.md."
-  siguiente_milestone: "BLUEPRINT-001 Frente 6 (Estrategia dogfooting revisada: ADR-024-extensión sobre rol de memsys3/ vs memsys3_templates/, política anti-leak, decisión .gitignore). Sesión fresca recomendada (anti-CDC). Plan en backlog/docs/plan_BLUEPRINT-001.md Frente 6."
+  fase: "Development v0.23.0 (preparando release v1.0 — Frente 6/8 completado)"
+  ultima_feature: "BLUEPRINT-001 Frente 6 completado: Estrategia dogfooting versionado formalizada en ADR-025 (primera ADR sobre el tema; ISSUE-024 confirmó que ADR-011 nunca existió). Decisión: Opción C (commitear memsys3/ + protocolo anti-leak en 2 capas). Capa 1: hook .githooks/pre-commit (bash agnóstico, ~20 líneas) veta items [A-Z]+-[0-9]+-*.md en memsys3_templates/backlog/. Capa 2: bloque PASO 6.5 en comprobar_alineamiento.md (defensa periódica). Mecanismos descartados con razón: regla en actualizar.md (capa equivocada) + CI check (no hay pipeline → ISSUE-028). README raíz actualizado con instrucción git config core.hooksPath .githooks. Adr.yaml rotado pre-doc → adr_1.yaml (1994 líneas, hasta ADR-024). Cierra vector IMPROVEMENT-008 sistémicamente."
+  siguiente_milestone: "BLUEPRINT-001 Frente 7 (Pulir deploy/actualizar/commands + smoke tests). Smoke test actualizar.md con lógica nueva (Pasos 6.4 sustitución diferencial + 6.4.5 deprecation, ADR-018/019). Plan en backlog/docs/plan_BLUEPRINT-001.md Frente 7. Sesión fresca recomendada (anti-CDC)."
 
 features:
   context_agent:
