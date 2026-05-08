@@ -6,6 +6,18 @@
 # Este archivo NO se lee en newSession ni compile-context — solo consulta bajo demanda
 
 operations:
+  - timestamp: "2026-05-08T00:00:00"
+    operacion: "compilar"
+    version_context: "0.14.0"
+    resultado: "ok"
+    resumen:
+      lineas: 530
+      adrs_incluidas: "23 de 24 (010-011 ausentes — ISSUE-024)"
+      sesiones_incluidas: "11 (6 alto, 3 medio, 1 bajo + 1 sin peso histórico)"
+      gotchas: "7 críticos"
+      reduccion_tokens: "~94%"
+      archivamiento: "no activado"
+
   - timestamp: "2026-05-05T00:00:00"
     operacion: "compilar"
     version_context: "0.13.0"

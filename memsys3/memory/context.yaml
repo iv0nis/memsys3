@@ -5,605 +5,582 @@
 
 metadata:
   compilado_por: "Context Agent"
-  ultima_compilacion: "2026-05-05"
-  version_context: "0.13.0"
-  memsys3_version: "v0.21.1"
-  tiers_leidos: "1 (project-status, adr.yaml, sessions.yaml + sessions_1/_2.yaml), 2 (README.md), 3 (backlog completo), 5 (git log -30)"
-  tokens_estimados_ingesta: "~140K"
+  ultima_compilacion: "2026-05-08"
+  version_context: "0.14.0"
+  memsys3_version: "v0.23.0"
+  tiers_leidos: "1 (project-status, adr.yaml [24 ADRs], sessions.yaml + sessions_1/_2.yaml, memory.yaml), 2 (README raíz), 3 (backlog/README.md + listado items), 5 (git log -20)"
+  tokens_estimados_ingesta: "~85K"
 
 # ============================================
 # PROJECT INFO
 # ============================================
 project:
   nombre: "memsys3"
-  descripcion: "Sistema de gestión de memoria/contexto para AI Agents (open source, agnóstico de modelo)"
-  fase: "Development v0.21.1"
-  ultima_feature: "Release v0.21.1: restricción operaciones_git en MA + decisión dominio memsys3.org canónico (.com redirect 301)"
-  siguiente_milestone: "Desplegar web memsys3.org + FEATURE-012 (glosario conceptos) + testing deployments con .gitignore"
-  client: "Open Source — GitHub: iv0nis/memsys3"
+  descripcion: "Sistema de gestión de contexto para AI Agents (open source). Optimiza consumo de tokens proporcionando contexto compacto y relevante."
+  fase: "Development v0.23.0 (preparando release v1.0 — BLUEPRINT-001 Frente 4/8 completado)"
+  ultima_feature: |
+    BLUEPRINT-001 Frente 4 completado (2026-05-07): Completitud de templates 1:1 data ↔ template
+    + ADR-024 (criterio data-vs-as-is, handle citable). operations-template.log creado en
+    distribuible + sync dogfooting. Side-finding sync context-template.yaml dogfooting (DevAI
+    → Main Agent). Cierra pendiente prioritario 3.
+  siguiente_milestone: |
+    BLUEPRINT-001 Frente 5 (Eliminación de residualidad: 0 strings catalanes, 0 referencias
+    muertas a viz/mind.md, 0 archivos huérfanos, 3 hits DevAgent extra detectados en Frente 4).
+    Sesión fresca recomendada (anti-CDC). Plan en backlog/docs/plan_BLUEPRINT-001.md.
+
+# ============================================
+# PRINCIPIOS FUNDACIONALES
+# ============================================
+principios:
+  fuente_canonica: "memsys3/PRINCIPLES.md (10 principios sistémicos, ADR-022)"
+  cdc:
+    nombre: "Casualidad de Contexto (CDC) — principio #1"
+    definicion: |
+      Lucidez agéntica generada por eventualidad del contexto de la sesión actual,
+      NO por archivos canónicos. memsys3 ES la solución a CDC: garantizar lucidez
+      sostenida via archivos canónicos, no fluctuante según azar de cada sesión.
+    test_mental: "¿esto requiere que un agente fresco adivine, o le doy archivo canónico?"
+  resumen_10:
+    - "1. Anti-CDC (foundational)"
+    - "2. Agnosticismo de modelo IA"
+    - "3. Una sola carpeta"
+    - "4. Human-in-the-loop"
+    - "5. Criterio inteligente vs límites arbitrarios"
+    - "6. Templates como documentación activa permanente"
+    - "7. file_version inmutable salvo /actualizar-memsys3"
+    - "8. Datos siempre preservados"
+    - "9. Separation of Concerns"
+    - "10. Restricciones de infraestructura en agents"
 
 # ============================================
 # FEATURES OPERATIVAS
 # ============================================
 features:
   context_agent:
-    nombre: "Context Agent (CA)"
     estado: "operativo"
-    descripcion: "Compila contexto completo con criterio inteligente. Ingesta por 5 tiers hasta ~150K tokens. Output máx 2000 líneas (ADR-001, ADR-008)."
-
+    descripcion: "Compila contexto con criterio inteligente (5 tiers ingesta hasta ~150K tokens, máx 2000 líneas output)."
   rotacion_automatica:
-    nombre: "Rotación automática sessions/ADRs"
     estado: "operativo"
-    descripcion: "Flexible 1800-2000 líneas (Escenario A post-doc) o >2000 (Escenario B pre-doc). Preserva sesión actual sin duplicación (ADR-002)."
-
+    descripcion: "Rotación flexible 1800-2000 líneas (ADR-002) en sessions/ADRs. Lee todos los rotados (sessions_N.yaml)."
   plan_contingencia:
-    nombre: "Plan de Contingencia"
     estado: "operativo"
-    descripcion: "Cuando ingesta >150K tokens, CA archiva entradas irrelevantes a memory/history/ (no se lee). Datos preservados, recuperables (ADR-003)."
-
-  prompts_reutilizables:
-    nombre: "Prompts reutilizables"
+    descripcion: "Archivado a memory/history/ (no leído) cuando >150K tokens. Reduce a ~120K. Datos preservados."
+  prompts:
     estado: "operativo"
-    descripcion: "newSession, endSession, compile-context, deploy, actualizar, adr, backlog, github, git, meet, reunion, migrate, agent-identity, commands, comprobar_alineamiento, actualizar_cat. Todos con $MEMSYS3_ROOT y rutas memsys3/."
-
-  sistema_versionado:
-    nombre: "Sistema versionado v0.X.Y (git tags = fuente verdad)"
+    descripcion: "newSession, endSession, compile-context, deploy, actualizar, actualizar_cat, adr, backlog, github, commands, reunion, git, migrate, comprobar_alineamiento."
+  documentacion_multinivel:
     estado: "operativo"
-    descripcion: "github.md workflow semi-automático: análisis cambios desde último tag, propuesta Minor/Patch con justificación, AskUserQuestion confirma versión, metadata rica en tags. Sin firma Co-Authored-By (defensa 4 capas)."
-
+    descripcion: "4 niveles: README repo, README templates, DEVELOPMENT, UPDATE."
+  sincronizacion_catalan:
+    estado: "operativo"
+    descripcion: "actualizar_cat.md sincroniza memsys3_templates/ español → catalán, branch catalan en GitHub."
+  backlog_distribuible:
+    estado: "operativo"
+    descripcion: "memsys3/backlog/ con README agnóstico (355 líneas) + 50 items dogfooding. ADR-021: docs/ opcionales (informe/plan) anti-CDC."
+  sistema_gestion_adrs:
+    estado: "operativo"
+    descripcion: "Prompt adr.md (3 operaciones: consultar, crear, actualizar). 24 ADRs activas (010-011 ausentes, ISSUE-024)."
+  sistema_reuniones_colaborativas:
+    estado: "operativo"
+    descripcion: "reunion.md (905 líneas) workflow 6 fases formales. Reuniones en memsys3/docs/reunion/DDMMYY_N.md."
   sistema_file_version:
-    nombre: "Sistema file_version por archivo (0.Y.Z)"
     estado: "operativo"
-    descripcion: "Cada archivo de infraestructura (21 archivos) tiene versión independiente. .md usa <!-- version: 0.1.0 -->, agents .yaml usa file_version field, templates .yaml usa # version comment. Solo bumpa con /actualizar-memsys3."
-
+    descripcion: "ADR-017. Cada archivo infraestructura tiene versión 0.Y.Z. Solo /actualizar-memsys3 bumpa. 21 archivos."
   restricciones_infraestructura:
-    nombre: "Restricciones infraestructura en agents"
     estado: "operativo"
-    descripcion: "Main Agent y Context Agent NO modifican prompts/, agents/, memory/templates/ en proyectos destino. Excepción: memory/full/ y project-status.yaml son datos. En dog-fooding la restricción está quitada (deadlock). Solo /actualizar-memsys3 modifica infraestructura."
-
-  comandos_globales:
-    nombre: "Comandos globales auto-actualizantes (launcher pattern)"
+    descripcion: "MA y CA NO modifican prompts/agents/templates en proyectos destino. Excepción dogfooting documentada."
+  memoria_usuario:
     estado: "operativo"
-    descripcion: "/deploy-memsys3 y /actualizar-memsys3 son launchers: clonan repo temporal, ejecutan prompt del repo, limpian. Mantenimiento centralizado (ADR-014). Específicos de Claude Code, opcionales (ADR-016)."
-
-  sistema_backlog:
-    nombre: "Sistema Backlog distribuible"
+    descripcion: "memsys3/memory/memory.yaml agnóstica (ADR-020). Schema flexible (usuario/feedback/referencias). MA escribe, CA solo lee. Bridge MEMORY.md opcional Claude."
+  backlog_docs_extendidos:
     estado: "operativo"
-    descripcion: "memsys3/backlog/ con README agnóstico (315 líneas) + prompt backlog.md (3 operaciones). 6 prefijos: ISSUE, FEATURE, IMPROVEMENT, SPEC, BLUEPRINT, EXPLORATION. 33 items actuales."
-
-  sistema_adrs:
-    nombre: "Sistema gestión ADRs"
+    descripcion: "ADR-021. backlog/docs/informe_*.md y plan_*.md opcionales. CA NO los lee por defecto en Tier 3. Primer caso: BLUEPRINT-001."
+  principles_canonico:
     estado: "operativo"
-    descripcion: "Prompt adr.md (71 líneas) conversacional: consultar/crear/actualizar. Leyendas integradas: 3 estados + 10 áreas. Consistencia arquitectónica con backlog.md (ADR-013)."
-
-  sistema_reuniones:
-    nombre: "Sistema Reuniones Colaborativas (multi-agente)"
+    descripcion: "PRINCIPLES.md (ADR-022). SSoT en memsys3_templates/, copia real dogfooting, stub raíz repo. deploy.md propaga, actualizar.md Paso 6.6 sustitución diferencial."
+  scaffold_canonico:
     estado: "operativo"
-    descripcion: "Prompt reunion.md (905 líneas) workflow 6 fases + meet.md v2.0 unificado (coord+research). Filosofía 5 principios. Reuniones en memsys3/docs/reunion/DDMMYY_N.md. sessions.yaml solo referencia."
-
-  sistema_pesos_sesiones:
-    nombre: "Sistema de pesos por sesión"
-    estado: "operativo"
-    descripcion: "Campo peso: bajo (~70 líneas), medio (~95), alto (~140). Orientativos NO rígidos. CA filtra/sintetiza por peso + recencia. 100% retrocompatible (default 'medio'). FEATURE-006."
-
-  operations_log:
-    nombre: "Operations log"
-    estado: "operativo"
-    descripcion: "memsys3/memory/full/operations.log YAML append-only para trazabilidad de actualizar/compilar. Rotación >=1800 líneas. NO se lee en newSession ni compile-context (FEATURE-009)."
-
-  wiki_github:
-    nombre: "Wiki GitHub pública"
-    estado: "operativo"
-    descripcion: "4 páginas + sidebar: Home (propuesta valor), Prompts Reference, Workflow, Agents. URL: github.com/iv0nis/memsys3/wiki"
-
+    descripcion: "ADR-023. Inventario canónico post-deploy. memsys3_templates/memory/full/ es fuente única de archivos vacíos (cp directo, sin heredocs)."
   visualizador:
-    nombre: "Memory Visualizer"
     estado: "archivado"
-    descripcion: "Dashboard web 4 pestañas para ver 'mente' agentes. Archivado en memsys3/docs/archivo/viz/. Eliminado de producción (memsys3_templates/) en v0.20.0."
+    descripcion: "Memory Visualizer dashboard archivado en memsys3/docs/archivo/viz/."
 
 # ============================================
 # STACK TECNOLÓGICO
 # ============================================
 stack:
-  database: "Ninguno (YAML files como almacenamiento)"
+  database: "Ninguno (YAML files)"
   deploy: "GitHub + clonado local"
   lenguaje_docs: "YAML + Markdown"
-  compatibilidad: "Agnóstico de modelo de IA (Claude, Gemini, Codex, etc.)"
+  compatibilidad: "Agnóstico de modelo IA (Claude, Gemini, Codex, etc.)"
 
 # ============================================
 # URLS PRINCIPALES
 # ============================================
 urls:
   website: "https://memsys3.org"
+  website_alt: "https://memsys3.com (redirect 301 → .org)"
   repository: "https://github.com/iv0nis/memsys3"
   wiki: "https://github.com/iv0nis/memsys3/wiki"
   releases: "https://github.com/iv0nis/memsys3/releases"
 
 # ============================================
 # ADRs RELEVANTES
-# 14 ADRs totales en memory/full/adr.yaml. Incluidas 13 (excluida ADR-004 YAML format por obvia tras implementación)
+# 24 ADRs aceptadas (010-011 ausentes — ISSUE-024 baja). Selección por impacto global.
 # ============================================
 adrs:
   - id: "001"
     titulo: "Criterio inteligente del Context Agent vs límites arbitrarios"
-    decision: "CA usa criterio basado en '¿qué debe saber CUALQUIER agent descontextualizado?'. Límite ÚNICO: 2000 líneas en context.yaml. NO límites arbitrarios por sección."
-    motivo: "Sistemas anteriores con límites rígidos (max 7 ADRs, etc.) no se adaptaban. Proyectos pequeños perdían contexto, grandes no podían expresarse."
-    impacto: "Filosofía base de todo el sistema. CA decide con visión panorámica."
+    decision: "Filosofía '¿qué debe saber CUALQUIER agent descontextualizado?'. Único límite rígido: 2000 líneas output."
+    motivo: "Límites arbitrarios no escalan con complejidad del proyecto."
+    impacto: "Compilación adaptativa, criterio CA prima sobre rigidez."
 
   - id: "002"
     titulo: "Rotación automática sessions/ADRs (flexible 1800-2000 líneas)"
-    decision: |
-      Escenario A (1800-2000 líneas): rotar DESPUÉS de documentar (LITE). Copiar sessions.yaml→sessions_N.yaml (incluye sesión actual), nuevo sessions.yaml vacío.
-      Escenario B (>2000): rotar ANTES (PRE). Copiar sin sesión actual, documentar en nuevo. Resultado: sesión actual siempre en un único archivo.
-    motivo: "Read tool tiene límite 2000 líneas. Aprovechar espacio sin duplicar sesión actual."
-    impacto: "Sistema escala infinitamente. Datos preservados (sessions_N.yaml). Validado en rotación real 2025-12-03."
+    decision: "Escenario A (1800<x<2000, post-doc LITE) o B (>2000, pre-doc). CA lee todos los rotados."
+    motivo: "Read tool límite 2000 líneas. Preservar histórico sin duplicar sesión actual."
+    impacto: "Sistema escala infinitamente, datos nunca se pierden."
 
   - id: "003"
-    titulo: "Plan de Contingencia con archivado inteligente (>150K tokens)"
-    decision: "Si full/ supera 150K tokens, CA mueve ADRs/sessions irrelevantes a memory/history/ (NO se lee). Reduce a ~120K. Datos preservados, recuperables."
-    motivo: "Aún con rotación, proyectos muy grandes pueden saturar al CA."
-    impacto: "Escalabilidad ilimitada sin perder datos."
+    titulo: "Plan de Contingencia con archivado >150K tokens"
+    decision: "CA mueve sessions/ADRs irrelevantes a memory/history/ (NO leído). Reduce a ~120K."
+    motivo: "Proyectos muy grandes saturan ingesta CA."
+    impacto: "Escalabilidad ilimitada, reversible."
+
+  - id: "004"
+    titulo: "YAML para todo (incluyendo sessions)"
+    decision: "Toda memoria en YAML (sessions, adr, project-status, context, templates)."
+    motivo: "Consistencia + ~30% ahorro tokens vs Markdown + estructura clara para LLMs."
+    impacto: "Formato uniforme de toda la documentación."
 
   - id: "005"
     titulo: "deploy.md como prompt (no script shell)"
-    decision: "Deployment a través de prompt ejecutado por Main Agent que hace briefing interactivo con el usuario. Más flexible que script automático."
-    motivo: "Permite personalización inteligente y adaptativa según respuestas."
-    impacto: "Workflow estándar de instalación en proyectos nuevos."
+    decision: "deploy.md ejecutado por Main Agent con briefing al usuario."
+    motivo: "Más flexible que script automático. Permite personalización conversacional."
+    impacto: "Deployment guiado e inteligente."
 
   - id: "006"
     titulo: "Sistema de rutas unificado memsys3/"
-    decision: "TODAS las rutas en memsys3_templates/ usan prefijo `memsys3/`. Notación @memsys3/ siempre."
-    motivo: "Durante deployment, memsys3_templates/ se copia como `memsys3/` en raíz. Portabilidad y claridad."
-    impacto: "Funciona en cualquier proyecto. Sin conflictos con carpetas locales."
+    decision: "Todas las rutas usan prefijo `memsys3/` (no `@memory/` ni relativas)."
+    motivo: "Portabilidad y claridad entre proyectos. Notación @memsys3/ estándar."
+    impacto: "Estructura uniforme de referencias en todos los prompts."
 
   - id: "007"
     titulo: "Separación de meta-niveles en READMEs"
-    decision: "READMEs por audiencia: README.md raíz (descubre repo), memsys3_templates/README.md (sistema desplegado, agnóstico), DEVELOPMENT.md (desarrolladores), UPDATE.md (actualización)."
-    motivo: "Mezclar niveles generaba confusión sobre quién es la audiencia."
-    impacto: "Documentación multi-nivel clara. Agents leen sin confusión."
+    decision: "4 READMEs por audiencia: raíz repo, memsys3_templates/, docs/DEVELOPMENT, docs/UPDATE."
+    motivo: "Mezclar audiencias genera confusión sobre qué leer cuándo."
+    impacto: "Documentación clara por audiencia. ISSUE-025 detecta link roto pendiente fix."
 
   - id: "008"
-    titulo: "Main Agent NO debe proponer compile-context"
-    decision: "Main Agent tiene restricción explícita: NO proponer compile-context. Solo sugerir endSession. Compilación SIEMPRE en NUEVA INSTANCIA limpia, decidida por usuario."
-    motivo: "compile-context lee TODO memory/full/ (~50K+ tokens). Si Main Agent acumulado lo ejecuta, supera límites + sesgo de sesión."
-    impacto: "Eficiencia tokens optimizada. Validado: intento 2026-03-08 con ~100K tokens fue revertido por violar este principio."
+    titulo: "Main-Agent NO debe proponer compile-context"
+    decision: "MA solo sugiere endSession; usuario decide cuándo compilar (en NUEVA INSTANCIA limpia)."
+    motivo: "Compilación en sesión cargada acumula tokens y sesga síntesis."
+    impacto: "Eficiencia tokens. Validación: intento 2026-03-08 revertido."
 
   - id: "009"
     titulo: "Templates como documentación activa permanente + gotchas en sessions"
-    decision: |
-      memory/templates/ NO se borra después del deployment — son guías permanentes que Main Agent consulta.
-      Gotchas se documentan en sessions.yaml (contextualizados temporalmente), NO en project-status.yaml.
-      CA extrae gotchas de TODAS las sesiones y filtra los ~5 más críticos.
-    motivo: "Templates son referencia activa para documentar bien. Gotchas son eventos de sesiones, no características estáticas."
-    impacto: "Deployment más simple, Main Agent siempre tiene guía, gotchas con contexto temporal."
+    decision: "memory/templates/ NO se borra post-deploy (guías permanentes). Gotchas en sessions.yaml (contextualizados temporalmente), NO en project-status."
+    motivo: "MA consulta templates durante endSession. Gotchas son eventos de sesión."
+    impacto: "Templates como referencia activa, gotchas trazables."
 
   - id: "012"
     titulo: "README como lectura directa vs duplicado en context.yaml"
-    decision: "README.md se lee DIRECTAMENTE en newSession.md (identidad actual). NO se incluye en context.yaml. PASO 7 (análisis README) eliminado de compile-context."
-    motivo: "README cambia frecuentemente, context se compila ocasionalmente → desincronización inevitable. Separation of Concerns: README=identidad, context=memoria histórica."
-    impacto: "Imposible desincronización, ~95 líneas menos en context (~1.4K tokens), compile-context simplificado (-260 líneas). Resuelve IMPROVEMENT-004."
+    decision: "newSession.md lee README directamente. compile-context NO lo incluye en context."
+    motivo: "README ES identidad actual; context ES memoria histórica. Separation of Concerns."
+    impacto: "Imposible desincronización. ~95 líneas y ~1.4K tokens ahorrados."
 
   - id: "013"
-    titulo: "Sistema gestión ADRs con prompt dedicado (consistencia arquitectónica)"
-    decision: "Crear prompts/adr.md con 3 operaciones (consultar, crear, actualizar) + leyendas integradas (3 estados + 10 áreas). adr.yaml permanece en memory/full/. Documentación integrada en prompt (no README separado)."
-    motivo: "Backlog ya tenía interfaz conversacional (backlog.md). ADRs no, generaba inconsistencia arquitectónica."
-    impacto: "Sistema consistente y usable. Cambio minimalista (Opción A), validado consultando 10 ADRs existentes."
+    titulo: "Sistema de gestión de ADRs con prompt dedicado (consistencia con backlog)"
+    decision: "prompt adr.md (consultar/crear/actualizar). adr.yaml permanece en memory/full/."
+    motivo: "Consistencia arquitectónica con sistema backlog."
+    impacto: "ADRs gestionables conversacionalmente."
 
   - id: "014"
     titulo: "Comandos globales auto-actualizantes con launcher pattern"
-    decision: |
-      /deploy-memsys3 y /actualizar-memsys3 son launchers: clone temporal del repo + ejecutan prompt del repo + limpian.
-      Comandos NO contienen lógica embebida. Siempre ejecutan última versión del repo.
-      Prompt commands.md instala/verifica los comandos globales en ~/.claude/commands/.
-    motivo: "Mantenimiento centralizado. Si cambia deploy.md/actualizar.md, cada miembro del equipo no necesita actualizar localmente."
-    impacto: "Auto-actualización transparente. Onboarding 1 comando. Específico Claude Code (opcional, ADR-016)."
+    decision: "/deploy-memsys3 y /actualizar-memsys3 clonan repo temporal y ejecutan prompt remoto. Prompt commands.md instala comandos."
+    motivo: "Mantenimiento centralizado, auto-actualización transparente."
+    impacto: "Onboarding 1 comando. Comandos siempre usan última versión."
 
   - id: "015"
     titulo: "Terminología unificada: Main Agent como nomenclatura estándar"
-    decision: "'Main Agent' es término estándar único para el agente que usa memsys3. 'Development Agent' y 'DevAI' eliminados. Espacio conceptual reservado para agentes especializados futuros."
-    motivo: "Inconsistencia entre 3 términos (Main Agent, Development Agent, DevAI). Si surge especialista en desarrollo, conflicto inevitable."
-    impacto: "Erradicado de 15 archivos templates+docs en sesión 2026-04-16. IMPROVEMENT-006 completado de facto."
+    decision: "'Main Agent' único nombre. NO 'Development Agent' ni 'DevAI' (deja espacio para especialistas futuros)."
+    motivo: "Evitar conflicto con futuros agentes especializados (Testing Agent, Doc Agent, etc.)."
+    impacto: "Consistencia terminológica. ISSUE-026 (deploy.md:3 DevAgent) pendiente Frente 5."
 
   - id: "016"
-    titulo: "memsys3 agnóstico de modelo de IA + Commands como feature opcional Claude-específica"
+    titulo: "memsys3 agnóstico de modelo IA + commands como feature opcional Claude-específica"
+    decision: "Jerarquía templates(agnóstico) → prompts(específico) → .claude/commands/(opcional Claude). commands NO es core."
+    motivo: "Principio fundamental: portabilidad universal. Otros modelos pueden ignorar commands."
+    impacto: "Documentación clara core vs opcional. Funciona en Gemini/Codex/etc."
+
+  - id: "017"
+    titulo: "Sistema file_version por archivo (versionado independiente infraestructura)"
+    decision: "Cada archivo infraestructura tiene file_version 0.Y.Z (.md HTML comment, .yaml templates # version, .yaml agents campo). Solo /actualizar-memsys3 bumpa."
+    motivo: "Trazabilidad fina, audit trail, hot-fixes individuales sin bump global."
+    impacto: "21 archivos versionados. Habilita ADR-018."
+
+  - id: "018"
+    titulo: "Sustitución diferencial de templates de schema en actualizar.md"
+    decision: "Para memory/templates/: comparar file_version upstream vs destino. Sobrescribir si upstream>destino. NO aplica a prompts/agents (personalizables)."
+    motivo: "Templates schema son canónicos por contrato (no editables); prompts/agents personalizables (precedente ISSUE-018 WORKSPACE_Y)."
+    impacto: "Updates limpios. Tres rutas en actualizar.md según clase de archivo."
+
+  - id: "019"
+    titulo: "Política evolución schema: deprecation contextualizada"
+    decision: "upstream marca `# DEPRECATED` con motivo. Agente del proyecto evalúa contra contexto y propone al usuario (mantener/migrar/eliminar). upstream NUNCA elimina automáticamente."
+    motivo: "Agnosticismo memsys3: solo el usuario y agente contextualizado conocen su proyecto."
+    impacto: "Templates pueden conservar campos legacy. Encaja con modo Extendido."
+
+  - id: "020"
+    titulo: "Memoria usuario/feedback agnóstica (memory.yaml) + bridge opcional MEMORY.md"
+    decision: "memsys3/memory/memory.yaml schema flexible (usuario/feedback/referencias). MA escribe append+datado, CA solo lee. MEMORY.md raíz opcional como puntero para auto-memory de Claude."
+    motivo: "Auto-memory Claude rompe ADR-016 + 'una sola carpeta' + human-in-the-loop. Cierra ISSUE-021 con Opción D."
+    impacto: "Lugar canónico de memoria de usuario. Bridge graceful degradation."
+
+  - id: "021"
+    titulo: "Backlog extendido con informe/plan opcionales (anti-CDC)"
+    decision: "backlog/docs/informe_*.md y plan_*.md opcionales por item. SIEMPRE para BLUEPRINTs. CA NO lee docs/ por defecto Tier 3."
+    motivo: "Items cortos generan CDC en items complejos cuando agente fresco los ejecuta."
+    impacto: "Reduce CDC. Habilita delegación entre sesiones. Templates en memory/templates/."
+
+  - id: "022"
+    titulo: "PRINCIPLES.md como documento canónico de principios sistémicos"
+    decision: "10 principios. Fuente única en memsys3_templates/PRINCIPLES.md, copia real dogfooting, stub raíz repo. Hereda ADR-017 (file_version) + ADR-018 (sustitución diferencial)."
+    motivo: "Anti-CDC: agente fresco necesita archivo canónico de principios desde primera sesión."
+    impacto: "Foundational para release v1.0. Cada principio enlaza ADRs que lo formalizan."
+
+  - id: "023"
+    titulo: "Scaffold completo en deploy: inventario canónico + memory/full/ fuente única"
+    decision: "deploy.md Paso 2 hace cp directo desde memsys3_templates/memory/full/* (eliminados heredocs divergentes). Inventario canónico documentado."
+    motivo: "Heredocs divergentes generaban CDC sobre schema vacío. Resuelve brecha leak IMPROVEMENT-008."
+    impacto: |
+      Una sola fuente de verdad para scaffold vacío. Matiz semántico: misma forma física, distinta
+      semántica según ubicación (en templates/ es infraestructura; tras cp al destino es datos).
+
+  - id: "024"
+    titulo: "Completitud templates: criterio data-vs-as-is + operations-template.log"
     decision: |
-      Principio fundamental: memsys3 es agnóstico de modelo IA (funciona con Claude, Gemini, Codex, etc.).
-      Jerarquía fuente verdad: memsys3_templates/prompts/ (AGNÓSTICO) → memsys3/prompts/ (ESPECÍFICO proyecto) → .claude/commands/ (LOCAL Claude opcional).
-      Commands NO es core, es workaround opcional. Documentación debe dejarlo MUY CLARO.
-    motivo: "Surge de bug ISSUE-005 y discusión sobre rol de commands. Commands resuelve limitación Claude Code con .gitignore + @ mentions."
-    impacto: "Principio guía decisiones futuras sobre features específicas de modelos. Warnings añadidos en commands.md, README.md, deploy.md, actualizar.md."
+      Criterio data-vs-as-is (handle citable): un archivo necesita template si es DATA EVOLUTIVA;
+      no si es INFRAESTRUCTURA/DOC canónica versionada por /actualizar-memsys3. operations-template.log
+      creado (extensión .log espejando data, no .yaml).
+    motivo: "Sin nombre formal, cada futura decisión 'qué necesita template' redefine el criterio (CDC operativa)."
+    impacto: "Léxico sistémico citable: 'aplicamos data-vs-as-is (ADR-024)'. Cierra pendiente prioritario 3."
 
 # ============================================
-# ÚLTIMAS SESIONES (sintetizadas por peso + recencia)
-# 22+ sesiones totales en sessions.yaml + sessions_1.yaml + sessions_2.yaml
-# Incluidas: 5 últimas (cobertura) + 4 históricas críticas (ADRs/decisiones arquitectónicas)
+# SESIONES RECIENTES (todas peso ALTO/MEDIO)
 # ============================================
-sesiones:
-  - id: "2026-05-05-release-v0211-dominio-memsys3-org"
-    fecha: "2026-05-05"
-    duracion: "~30min"
+sesiones_recientes:
+  - data: "2026-05-07"
+    peso: "alto"
+    titulo: "BLUEPRINT-001 Frente 4: Completitud templates + ADR-024 (data-vs-as-is)"
+    duracion: "~1h"
+    highlights:
+      - "Verificación 1:1 data ↔ template: 8/9 ya existían, único faltante operations.log"
+      - "ADR-024 formaliza handle citable 'data-vs-as-is'. Decisión extensión .log (espejo data)"
+      - "Side-finding sync context-template.yaml dogfooting (DevAI → Main Agent, brecha ADR-015 latente; L13 placeholder informativo)"
+      - "Side-finding fuera scope: 3 hits DevAgent extra en prompts/ → ampliado ISSUE-026 para Frente 5"
+      - "Cierra pendiente prioritario 3. Commit 6cd7f70 sin firma sin tag."
+    decisiones:
+      - "Disciplina de scope: NO inflar Frente 4 con hits DevAgent extra (Frente 5)"
+      - "Sin tag: acumular hasta cierre BLUEPRINT-001 → v1.0.0"
+    proximos: "Frente 5 (residualidad). adr.yaml en 1994 líneas (margen ~6) → próxima ADR cruza umbral, considerar rotación pre-doc."
+
+  - data: "2026-05-07"
+    peso: "alto"
+    titulo: "BLUEPRINT-001 Frente 3: Scaffold completo en deploy (ADR-023)"
+    duracion: "~1.5h"
+    highlights:
+      - "EXPLORATION-004 (canonización proactiva anti-CDC meta) commiteada antes (árbol limpio)"
+      - "Plan first vía ExitPlanMode + AskUserQuestion: Opción B-simple aceptada (cp directo, sin sufijo -empty)"
+      - "Eliminado leak memsys3_templates/backlog/IMPROVEMENT-008-*.md"
+      - "deploy.md Paso 2 refactorizado en ambos sitios: heredocs eliminados, cp directo + templates/*.md"
+      - "ADR-023 (153 líneas) + matiz semántico 'misma forma física, distinta semántica según ubicación'"
+      - "Smoke test mktemp -d: 19 archivos coinciden con inventario canónico"
+    decisiones:
+      - "Opción B-simple frente a B-explícita (-empty suffix descartado: añade 3 archivos sin valor)"
+      - "Sin tag para 4 commits del Frente 3 (acumulación v1.0.0)"
+    gotchas:
+      - "git clone --quiet --depth 1 file:///<repo> falla silenciosamente con commits locales no pusheados. Solución: usar cp -r para validar cambios LOCALES."
+
+  - data: "2026-05-07"
+    peso: "alto"
+    titulo: "BLUEPRINT-001 Frente 2: Auditoría 20 ADRs vs código real + 3 ISSUEs"
+    duracion: "~2h"
+    highlights:
+      - "3 forks Agent (Explore) en paralelo: A (001-009), B (012-016), C (017-022). Heurística orquestación validada (memory.yaml feedback)"
+      - "Conteo corregido: 20 ADRs aceptadas (no 22). 010-011 ausentes (meta-finding ISSUE-024)"
+      - "Cumplimiento global 18/20 (90%). 0 brechas críticas para v1.0"
+      - "ISSUE-024 (010-011 ausentes baja), ISSUE-025 (docs/UPDATE.md link roto README:217 media), ISSUE-026 (deploy.md:3 DevAgent media)"
+      - "Brecha ADR-021 leak NO se documenta separada (cubierta por Frente 3)"
+      - "Reporte canónico: backlog/docs/informe_BLUEPRINT-001-auditoria.md (anti-CDC: agente futuro consume sin transcripts)"
+      - "Anclaje cruzado validado: cada principio PRINCIPLES.md tiene ≥1 ADR"
+    gotchas:
+      - "endSession escribe DESPUÉS del commit principal del frente → genera deuda recurrente. Mitigación: ejecutar endSession ANTES del commit final, o commit puente separado."
+
+  - data: "2026-05-07"
+    peso: "alto"
+    titulo: "BLUEPRINT-001 Frente 1: PRINCIPLES.md canónico + ADR-022"
+    duracion: "~2h"
+    highlights:
+      - "PRINCIPLES.md (164 líneas) con 10 principios sistémicos. CDC #1 (foundational)"
+      - "Arquitectura fuente única: memsys3_templates/PRINCIPLES.md SSoT, copia real dogfooting, stub raíz"
+      - "ADR-022 con herencia explícita ADR-017 + ADR-018 (régimen infraestructura)"
+      - "deploy.md Paso 2 propaga, actualizar.md Paso 6.6 NUEVO (sustitución diferencial PRINCIPLES.md), newSession.md instruye carga"
+      - "README raíz: sección 📐 Principios"
+      - "3 commits atómicos pusheados sin firma (defensa 4 capas funcionando)"
+    gotchas:
+      - "Tentación PRINCIPLES.md solo en raíz repo habría dejado proyectos desplegados sin acceso al doc canónico (CDC perpetuada). Decisión 'fuente única + copia real' tomada antes de planificar."
+      - "Si actualizar.md no propagaba PRINCIPLES.md, proyectos ya desplegados NUNCA recibirían el doc. Paso 6.6 añadido por sugerencia del usuario."
+
+  - data: "2026-05-07"
+    peso: "alto"
+    titulo: "Principio CDC + ADR-020 (memory.yaml) + ADR-021 (backlog docs) + BLUEPRINT-001"
+    duracion: "~3h"
+    highlights:
+      - "Articulado principio fundacional CDC: memsys3 ES solución a CDC"
+      - "ADR-020: memory.yaml agnóstica + bridge MEMORY.md opcional Claude. Cierra ISSUE-021 con Opción D"
+      - "ADR-021: backlog/docs/ informe+plan opcionales anti-CDC. Tabla por tipo de item"
+      - "BLUEPRINT-001 dog-foodea ADR-021: item (85 líneas) + informe (190 líneas) + plan (290 líneas, 8 frentes)"
+      - "Regla dura firma_commits añadida a main-agent.yaml (defensa multi-capa)"
+      - "Nota dogfooting explícita en main-agent.yaml: 'restricción infraestructura_memsys3 NO está aquí intencionalmente'"
+    gotchas:
+      - tipo: "reflejo-bumpeo-file-version"
+        problema: "Agente bumpó memory.yaml file_version 0.1.0→0.1.1 pese a regla. Reflejo automático antes de pasar por la regla."
+        solucion: "Defensa multi-capa: regla en archivo + restricción dura en main-agent.yaml. Reglas en feedback NO bastan si solo se leen retrospectivamente."
+        criticidad: "alta"
+
+  - data: "2026-05-06"
+    peso: "alto"
+    titulo: "ADRs 017-019 + limpieza scaffolds memsys3_templates + release v0.22.0"
+    duracion: "~3h"
+    highlights:
+      - "ADR-017 (file_version), ADR-018 (sustitución diferencial), ADR-019 (deprecation contextualizada)"
+      - "Scaffolds memsys3_templates/memory/ vaciados a Modelo D (4 archivos, eliminadas 1145+ líneas legacy)"
+      - "Lógica nueva en actualizar.md Paso 6.4 (sustitución diferencial) + 6.4.5 (deprecated/huérfanos)"
+      - "Aprendizaje: 'inmutable' solo aplica a memory/templates/. prompts/agents son personalizables (memsys3 agnóstico de dominio)"
+      - "Reporte CLIENT_D apuntaba al archivo equivocado. Verificación master upstream antes de actuar es esencial"
+
+  - data: "2026-05-05"
     peso: "bajo"
     titulo: "Release v0.21.1 + dominio memsys3.org canónico"
     highlights:
-      - "Release v0.21.1 ejecutada (workflow github.md validado: AskUserQuestion + sin firma + tag metadata)"
-      - "Decisión dominio: memsys3.org canónico, memsys3.com redirect 301 (cultura OSS: python.org, kernel.org, gnu.org)"
-      - "URL https://memsys3.org propagada a README + project-status + context + wiki (Home + _Sidebar)"
-      - "Templates NO reciben urls.website (agnósticos por proyecto). Solo dog-fooding lleva URL real"
-    proximos_pasos:
-      - "Desplegar web memsys3.org (aunque sea placeholder) para evitar 404"
-      - "Configurar redirect 301 .com → .org una vez la web esté live"
+      - "memsys3.org canónico, .com redirect 301 (cultura OSS). URL propagada README/yaml/wiki. Web aún no desplegada (pendiente)"
 
-  - id: "2026-04-20-issue021-auto-memory-exploration003-readmes-modulares"
-    fecha: "2026-04-20"
-    duracion: "~45min"
+  - data: "2026-04-20"
     peso: "medio"
     titulo: "ISSUE-021 auto-memory Claude vs memsys3 + EXPLORATION-003 READMEs modulares"
     highlights:
-      - "ISSUE-021: auto-memory de Claude Code (MEMORY.md + feedback_*/project_*/user_*.md) interfiere con memsys3 rompiendo ADR-016 y human-in-the-loop"
-      - "Síntoma origen: agente usó '***' como default silencioso porque lo tenía en MEMORY.md sin contexto"
-      - "Hallazgo crítico: auto-memory NO editable desde settings.json — inyectada por harness Claude Code. Alcance WORKSPACE_Y: 9 archivos (4 feedback + 4 project + 1 user)"
-      - "4 opciones en ISSUE-021: A) desactivar, B) instrucción CLAUDE.md, C) prompt limpieza, D) MEMORY_memsys3.yaml estructurado"
-      - "EXPLORATION-003 creado: READMEs modulares por carpeta como memoria lazy-loaded (extiende ADR-012)"
-    decisions:
-      - "No abrir ISSUE separado para reglas de comportamiento aún — solo TODO en ISSUE-021"
-    proximos_pasos:
-      - "Valorar Opción D (MEMORY_memsys3.yaml): schema, integración deploy.md, carga newSession.md"
-      - "EXPLORATION-003: recopilar ejemplo real del agente productividad del usuario"
+      - "Auto-memory Claude rompe ADR-016. NO editable desde settings.json (harness inyectado)"
+      - "Síntoma: '***' como default silencioso. 4 opciones, destaca D (resuelta luego en ADR-020)"
 
-  - id: "2026-04-16-wiki-terminologia-readme-diferencial"
-    fecha: "2026-04-16"
-    duracion: "~1.5h"
+  - data: "2026-04-16"
     peso: "medio"
-    titulo: "Wiki GitHub + terminologia agnostica + README diferencial + fix dog-fooding"
+    titulo: "Wiki GitHub + terminología agnóstica + README diferencial + fix deadlock dogfooting"
     highlights:
-      - "Wiki GitHub creada (4 páginas + sidebar): Home, Prompts Reference, Workflow, Agents"
-      - "Terminología agnostica: Development Agent/DevAI erradicado de 15 archivos templates+docs (ADR-015 cumplida)"
-      - "README reescrito con propuesta de valor diferencial (una carpeta, agnóstico, human in the loop, @ mentions, límites configurables)"
-      - "Fix crítico: restricción infraestructura quitada del dog-fooding (deadlock — nadie podía editar templates)"
-      - "github.md: warning obligatorio AskUserQuestion para confirmar tag"
-      - "v0.21.0 release"
-    gotchas_relevantes:
-      - "@ mentions dejan de funcionar hasta reiniciar Claude Code (/exit + reentrar). Causa desconocida, probable cache indexación."
+      - "Wiki GitHub creada (Home, Prompts Reference, Workflow, Agents)"
+      - "Development Agent/DevAI erradicado (15 archivos)"
+      - "Fix CRÍTICO: restricción infraestructura quitada del main-agent dogfooting (causaba deadlock)"
+      - "github.md AskUserQuestion obligatorio para tag. v0.21.0"
 
-  - id: "2026-04-15-file-version-viz-archivada-catalan-erradicado"
-    fecha: "2026-04-15"
-    duracion: "~3h"
+  - data: "2026-04-15"
     peso: "alto"
-    titulo: "Sistema file_version + viz archivada + catalán erradicado + modo actualización extendida"
+    titulo: "Sistema file_version + viz archivada + catalán erradicado + v0.20.0"
     highlights:
-      - "Sistema file_version independiente por archivo (formato 0.Y.Z) en 21 archivos de infraestructura"
-      - "Viz archivada en docs/archivo/viz/, mind.md eliminado, referencias limpiadas en ~16 archivos"
-      - "Catalán erradicado: ~60 campos corregidos en project-status, deploy, templates YAML, endSession, compile-context, agents"
-      - "Restricciones infraestructura en main-agent.yaml y context-agent.yaml (MA/CA no modifican prompts/agents/templates en proyectos destino)"
-      - "Modo actualización extendida: subagente carga newSession.md del repo clonado para contextualizarse antes de proponer cambios"
-      - "Registro file_version en actualizar.md (Paso 14 + operations.log)"
-      - "Release v0.20.0"
-    decisiones_clave:
-      - "Versión en última línea de .md como comentario HTML — no interfiere con instrucciones, viaja con archivo"
-      - "Modo extendido opcional con subagente: comprende cambios con contexto del desarrollador, no solo diff ciego"
-    gotchas_relevantes:
-      - "Catalán residual masivo en templates/prompts/agents tras la traducción nov-2025. Requirió grep exhaustivo de caracteres catalanes [àèéíòóúïü] + palabras clave."
+      - "21 archivos infraestructura con file_version independiente"
+      - "Catalán erradicado: ~60 campos en project-status, deploy, templates YAML, agents"
+      - "Restricciones infraestructura en main-agent/context-agent.yaml"
+      - "Modo actualización extendida (subagente se contextualiza con repo memsys3)"
+      - "Viz archivada en memsys3/docs/archivo/viz/. mind.md eliminado"
 
-  - id: "2026-04-13-context-agent-ingesta-tiers"
-    fecha: "2026-04-13"
-    duracion: "~1.5h"
+  - data: "2026-04-13"
     peso: "medio"
-    titulo: "Context Agent: rediseño ingesta por tiers hasta 150K tokens"
+    titulo: "Context Agent: ingesta por tiers (5 niveles, 150K tokens)"
     highlights:
-      - "Problema: CA se quedaba en ~30K tokens cuando podía llegar a 150K. Síntesis pobre por falta de contexto"
-      - "Sistema 5 tiers de prioridad: Tier 1 (memory/full + rotados, OBLIGATORIO), Tier 2 (README), Tier 3 (backlog completo), Tier 4 (docs_contextuales editables), Tier 5 (git log)"
-      - "Eliminados límites arbitrarios por sección en context-agent.yaml (max 7 ADRs, 150 chars/gotcha, etc.)"
-      - "Mecanismo docs_contextuales: ciclo virtuoso Main Agent → CA → Main Agent (MA referencia docs durante endSession, CA puede reordenar)"
-      - "Tier 1 incluye explícitamente archivos rotados (sessions_1, sessions_2)"
-      - "Release v0.19.2"
-
-  - id: "2026-03-22-fix-actualizar-custom-memsys3root"
-    fecha: "2026-03-22"
-    duracion: "~2.5h"
-    peso: "alto"
-    titulo: "Fix actualizar.md preservar archivos custom + $MEMSYS3_ROOT monorepos"
-    highlights:
-      - "ISSUE-018: actualizar.md borraba archivos custom (WORKSPACE_Y perdió endSession.dev.md, newSession.dev.md, conciso.md)"
-      - "ISSUE-019: monorepos con múltiples memsys3 — agente operaba en el equivocado (bug silencioso)"
-      - "Reunión 20260322_1 con WORKSPACE_Y (10 iteraciones)"
-      - "Paso 5.5 actualizar.md: detectar archivos custom comparando proyecto vs template"
-      - "Fallback dinámico find recursivo elimina lista hardcodeada (frágil)"
-      - "Eliminado rm -f memsys3/docs/*.md del fallback — causa principal de pérdida custom"
-      - "Paso 0 estándar en 6 prompts: detección $MEMSYS3_ROOT con $(pwd)/memsys3 → fallback find → AskUserQuestion si ambigüedad"
-    decisiones_clave:
-      - "En caso de duda, preservar lo del usuario. Lo del template siempre se puede recuperar del repo"
-      - "Contemplar diversidad: monorepos, submodules, workspaces"
-
-  - id: "2026-02-03-sistema-reuniones-fix-firmas"
-    fecha: "2026-02-03"
-    duracion: "~2.5h"
-    peso: "alto"
-    titulo: "Sistema Reuniones Colaborativas + Fix Firmas Commits (defensa 4 capas)"
-    highlights:
-      - "reunion.md ejecutable (905 líneas): workflow 6 fases (Presentación → Respuesta inicial → Respuesta detallada → Análisis profundo → Implementación → Cierre formal)"
-      - "memsys3/docs/reunion/README.md (836 líneas): filosofía 5 principios (transparencia radical, no culpabilización, análisis riguroso, respeto formal, compromiso concreto)"
-      - "Fix firmas commits: defensa 4 capas en github.md (warning prominente + recordatorio commit + recordatorio tag + verificación grep automática)"
-      - "Origen: reunión 030226_1.md identificó hábito arraigado LLM con margen error 70% — defensa multi-capa lo reduce a 5%"
-      - "Reuniones en memsys3/docs/reunion/DDMMYY_N.md, sessions.yaml SOLO referencia (NO duplica)"
-      - "CA carga reuniones selectivamente solo si sessions.yaml las menciona"
-
-  - id: "2025-01-30-issue007-fix-sobreescritura-sessions"
-    fecha: "2025-01-30"
-    duracion: "~4h"
-    peso: "alto"
-    titulo: "ISSUE-007 fix crítico sobreescritura sessions.yaml + reunión CLIENT_A"
-    highlights:
-      - "Bug histórico (v0.1.0 → v0.9.0): CLIENT_A perdió 23 sesiones por sobreescritura sessions.yaml"
-      - "Causa raíz: endSession.md PASO 4.A ambiguo sobre Write vs Edit tool"
-      - "Fix minimalista: instrucción explícita Edit tool + warning ⚠️ NO uses Write. Margen error 40-50% → 5-10%"
-      - "Reunión colaborativa 300126_1.md (446 líneas) — primer ejemplo del sistema reuniones"
-      - "FEATURE-006 (sistema pesos), FEATURE-007 (auditoría calidad), FEATURE-005 (optimizar ventana) creados"
-
-  - id: "2025-12-30-bug-fix-issue005-adr-016-agnostico"
-    fecha: "2025-12-30"
-    duracion: "~2.5h"
-    peso: "alto"
-    titulo: "Bug fix ISSUE-005 + ADR-016 principio agnóstico memsys3"
-    highlights:
-      - "Bug ISSUE-005: actualizar.md PASO 6.1 no copiaba 3 prompts (adr.md, backlog.md, commands.md). Patrón olvido sistemático en 3 versiones"
-      - "Confirmación con instancia CLIENT_A que hizo actualización fallida v0.6.1→v0.8.1"
-      - "Fix Opción A (manual): +3 líneas cp en PASO 6.1. Sincronizado templates + dog-fooding"
-      - "ADR-016 creada: principio agnóstico memsys3, jerarquía templates(agnóstico)→prompts(específico)→commands(opcional Claude)"
-      - "Warnings agregados en commands.md, README.md (compatibilidad agnóstica)"
-      - "ISSUE-006 (backups .gitignore alta prioridad) + FEATURE-004 (detectar prompts/agents proyecto) creados"
-
-  - id: "2026-02-04-compilacion-context-v0110-extended-thinking"
-    fecha: "2026-02-04"
-    duracion: "~4h"
-    peso: "alto"
-    titulo: "Compilación context.yaml v0.11.0 + propuesta Extended Thinking + refactor docs/"
-    highlights:
-      - "Primera compilación post-FEATURE-006: context.yaml v0.11.0 (467 líneas, 9/10 calidad)"
-      - "Estrategia: Plan mode → 3 Explore agents (paralelo) → Plan aprobado → Subagent general-purpose compila"
-      - "Reducción 96% tokens (95K→3.5K), 13 ADRs, 7 sesiones (5 alto + 2 medio), 4 gotchas críticos"
-      - "Identificada duplicación: Explore + Subagent leen mismo contenido (~145K tokens totales)"
-      - "Propuesta optimización (IMPROVEMENT-007): subagent + extended thinking (-34% tokens, -50% tiempo, +5% calidad)"
-      - "Refactor: docs/ → memsys3/docs/ (14 archivos). ISSUE-008 creado para sincronizar templates"
+      - "Eliminados límites arbitrarios. Único rígido: 2000 líneas output (criterio inteligente)"
+      - "docs_contextuales editables por MA y CA (ciclo virtuoso). v0.19.2"
 
 # ============================================
-# GOTCHAS CRÍTICOS
-# Filtrados con criterio: alta criticidad + activos + repetibles
+# GOTCHAS CRÍTICOS (vigentes)
 # ============================================
 gotchas:
-  - id: "sobreescritura_sessions"
-    problema: "endSession.md ambiguo causa que agentes usen Write tool y sobreescriban sessions.yaml (perdiendo histórico completo)"
-    solucion: "Instrucción explícita Edit tool + warning ⚠️ NO uses Write en PASO 4.A endSession.md. Implementado en v0.10.x. Si reaparece: fix en endSession.md."
-    criticidad: "alta"
-    origen: "ISSUE-007 (CLIENT_A perdió 23 sesiones)"
-
-  - id: "habitos_arraigados_llm_firmas"
-    problema: "1 advertencia insuficiente para hábitos arraigados LLM (ej: añadir Co-Authored-By: Claude en commits)"
-    solucion: "Defensa en profundidad multi-capa. github.md tiene 4 capas: (1) sección prominente inicio, (2) recordatorio commit + verificación git log, (3) recordatorio tag, (4) verificación automática grep. Margen error 70%→5%."
-    criticidad: "alta"
-    origen: "Reunión 030226_1.md"
-
-  - id: "rm_rf_actualizar_borra_custom"
-    problema: "rm -f memsys3/docs/*.md en actualizar.md fallback borraba archivos custom del usuario silenciosamente"
-    solucion: "Eliminado en v0.18.x. Reemplazado por loop dinámico que solo sobrescribe archivos del template. Paso 5.5 detecta archivos custom comparando proyecto vs template."
-    criticidad: "alta"
-    origen: "ISSUE-018 (WORKSPACE_Y)"
-
-  - id: "monorepos_memsys3_root"
-    problema: "En monorepos con múltiples memsys3/, el agente puede operar en el equivocado (bug silencioso)"
-    solucion: "Paso 0 estándar en 6 prompts: $MEMSYS3_ROOT=$(pwd)/memsys3 con fallback find -maxdepth 4 + AskUserQuestion si ambigüedad. Variables bash NO persisten entre tool calls — cada bloque redefine."
-    criticidad: "alta"
-    origen: "ISSUE-019"
-
-  - id: "context_agent_instancia_limpia"
-    problema: "Si Main Agent ejecuta compile-context tras sesión larga, acumula tokens (~100K) → sesgo sesión + violación ADR-008"
-    solucion: "compile-context SIEMPRE en NUEVA INSTANCIA limpia. Main Agent NO debe proponerlo (restricción explícita en main-agent.yaml). Validado: intento 2026-03-08 fue revertido."
-    criticidad: "alta"
-    origen: "ADR-008 + sesión 2026-03-08"
-
-  - id: "backups_versionados_git"
-    problema: "memsys3_backup_*/ se versionan en git si memsys3/ NO está en .gitignore (Opción B deploy) — datos sensibles expuestos"
-    solucion: "Agregar regla automática en deploy/actualizar: grep -q 'memsys3_backup_' .gitignore || echo 'memsys3_backup_*/' >> .gitignore. Backups SIEMPRE temporales, NUNCA versionados."
-    criticidad: "alta"
-    origen: "ISSUE-006 (pendiente implementación)"
-
-  - id: "auto_memory_claude_code"
-    problema: "Auto-memory de Claude Code (MEMORY.md + feedback_*/project_*/user_*.md) inyecta datos sin contexto, rompe ADR-016 (agnóstico) y human-in-the-loop. Síntoma: defaults silenciosos sin verificar"
-    solucion: "Pendiente. Auto-memory NO editable desde settings.json (harness). 4 opciones en ISSUE-021. Mientras tanto: revisar ~/.claude/projects/<hash>/memory/ y eliminar/reorganizar manualmente."
-    criticidad: "alta"
-    origen: "ISSUE-021"
-
-  - id: "at_mentions_indexacion"
-    problema: "@ mentions dejan de funcionar en Claude Code hasta reiniciar (probable cache indexación). También NO funcionan con archivos en .gitignore"
-    solucion: "Reinicio: /exit y volver a entrar. Para .gitignore Opción A: usar instrucciones directas ('Ejecuta memsys3/prompts/X.md') o instalar comandos locales /adr, /backlog (Claude-específico, ADR-016)."
+  - id: "endsession_post_commit"
+    problema: "endSession escribe en sessions.yaml + project-status + BLUEPRINT [x] DESPUÉS del commit principal del frente, generando deuda recurrente sin commitear."
+    solucion: "Ejecutar endSession ANTES del commit final del frente. Si ya se ejecutó después: commit puente 'docs(sessions)' separado antes de mezclar contextos nuevos."
     criticidad: "media"
-    origen: "Sesión 2026-04-16 + ADR-010 UPDATE 2025-11-13"
+
+  - id: "reflejo_bumpeo_file_version"
+    problema: "Reflejo automático 'modifico archivo → bumpo versión' se dispara antes de pasar por la regla file_version_inmutable. Solo /actualizar-memsys3 puede bumpar."
+    solucion: "Defensa multi-capa: regla escrita en archivo + restricción dura en main-agent.yaml (cargada en cada newSession). Las reglas en feedback NO bastan si se leen retrospectivamente."
+    criticidad: "alta"
+
+  - id: "git_clone_quiet_oculta_errores"
+    problema: "git clone --quiet --depth 1 file:///<repo> falla silenciosamente con commits locales no pusheados, dando inventario vacío sin causa visible."
+    solucion: "Para validar cambios LOCALES: NO usar git clone, usar cp -r al tmpdir. Eliminar --quiet ayuda a ver el error real."
+    criticidad: "media"
+
+  - id: "auto_memory_claude_vs_memsys3"
+    problema: "Auto-memory de Claude Code (MEMORY.md + feedback_*/project_*/user_*.md) inyectada por harness, NO editable desde settings.json. Rompe ADR-016, una-sola-carpeta, human-in-the-loop. Síntoma original: defaults silenciosos ('***')."
+    solucion: "ADR-020: memory.yaml agnóstica en memsys3/memory/ + bridge MEMORY.md raíz como puntero opcional. Revisar ~/.claude/projects/<hash>/memory/ periódicamente y re-redirigir si necesario."
+    criticidad: "alta"
+
+  - id: "firma_commits_co_authored_by"
+    problema: "LLM tiende a firmar commits con 'Co-Authored-By: Claude' por defecto. Margen error histórico ~70%. Convención del proyecto lo prohíbe."
+    solucion: "Defensa 4 capas: warning en github.md + recordatorio crítico + verificación grep post-commit + regla dura inline en main-agent.yaml. Cargada en cada newSession."
+    criticidad: "alta"
+
+  - id: "deployment_protection_vercel"
+    problema: "Vercel activa Deployment Protection por defecto (general)."
+    solucion: "Desactivar en Settings > Deployment Protection si proyecto debe ser público."
+    criticidad: "media"
+
+  - id: "at_mentions_gitignore"
+    problema: "Si memsys3/ está en .gitignore, @ mentions de Claude Code NO funcionan (limitación)."
+    solucion: "Workaround en deploy.md PASO 8: avisar al usuario. Alternativas: (a) instrucciones directas 'Ejecuta memsys3/prompts/...', (b) commands locales en .claude/commands/ (Claude-específico opcional)."
+    criticidad: "media"
 
 # ============================================
 # PENDIENTES PRIORITARIOS
 # ============================================
 pendientes:
   - prioridad: 1
-    tarea: "Desplegar web memsys3.org"
-    detalle: "URL ya propagada en README/yaml/wiki tras decisión 2026-05-05. Web aún no live. Aunque sea placeholder, evita 404."
+    tarea: "Ejecutar BLUEPRINT-001 Frente 5 (Eliminación de residualidad)"
+    detalle: "Anti-CDC sesión fresca. Recoge en bloque: 3 hits DevAgent extra (deploy.md L3 ya en ISSUE-026 + endSession.md L3/L7 + compile-context.md L299), grep catalán [àèéíòóúïü], referencias muertas viz/mind.md, archivos huérfanos. Plan en backlog/docs/plan_BLUEPRINT-001.md."
+
+  - prioridad: 1
+    tarea: "Resolver ISSUE-025 e ISSUE-026 antes de v1.0.0"
+    detalle: "ISSUE-025 (docs/UPDATE.md link roto en README:217 — lugar correcto raíz repo, no templates). ISSUE-026 (deploy.md:3 + extras 'DevAgent' → 'Main Agent'). Naturalmente cubierto por Frente 5/8 BLUEPRINT-001."
+
+  - prioridad: 1
+    tarea: "Considerar rotación adr.yaml pre-documentación próxima sesión que cree ADR"
+    detalle: "adr.yaml en 1994 líneas (margen ~6 hasta umbral 2000). Próxima ADR cruza umbral → Escenario B pre-doc (rotar antes de añadir)."
 
   - prioridad: 2
-    tarea: "Configurar redirect 301 memsys3.com → memsys3.org"
-    detalle: "Tras desplegar .org. Preservar path al redirigir + canonical tag en HTML del .org."
+    tarea: "Smoke test actualizar.md con lógica nueva (ADR-018/019)"
+    detalle: "Validar Pasos 6.4 (sustitución diferencial) y 6.4.5 (deprecation/huérfanos modo Extendido) en proyecto de prueba. Tres casos: archivo sin file_version, igual, mayor en destino. Cubierto por Frente 7 BLUEPRINT-001."
 
-  - prioridad: 3
-    tarea: "Implementar FEATURE-012 (glosario conceptos)"
-    detalle: "Acordado en reunión 20260327_1 con WORKSPACE_Y. glosario.yaml en memory/full/ como índice lookup bajo demanda. NO se carga en context.yaml. Mantenimiento híbrido en endSession con AskUserQuestion."
+  - prioridad: 2
+    tarea: "Comunicar a CLIENT_D: ISSUE-023 cerrado"
+    detalle: "Su deployment necesita /actualizar-memsys3. Catalán residual ya corregido en master desde v0.22.0 (2026-05-06). Schema canónico vive en memsys3/memory/templates/."
 
   - prioridad: 4
-    tarea: "Testear deployment con consulta .gitignore en proyecto nuevo"
-    detalle: "Validar PASO 8 deploy.md — warning @ mentions y elección Opción A/B."
+    tarea: "ADR sobre estrategia para prompts/agents personalizables"
+    detalle: "Definir lógica detección modificación local (hash al deploy, *.dev.md paralelos, prompt user antes de sobrescribir). Precedente ISSUE-018 WORKSPACE_Y. Reconocer que NO son inmutables."
 
   - prioridad: 5
-    tarea: "Testear actualizar_cat.md en futuras sincronizaciones"
-    detalle: "Cuando haya cambios en master, validar que sincroniza+traduce correctamente a branch catalan."
+    tarea: "Desplegar web memsys3.org"
+    detalle: "Pendiente desde 2026-05-05. URL ya propagada README/yaml/wiki. Aunque sea placeholder, evita 404. Configurar redirect 301 .com → .org una vez live."
 
   - prioridad: 6
-    tarea: "ISSUE-006: implementar protección backups .gitignore"
-    detalle: "Agregar regla automática en deploy.md + actualizar.md para evitar versionar memsys3_backup_*/"
+    tarea: "Testear deployment con consulta .gitignore en proyecto nuevo"
+    detalle: "Validar PASO 8 deploy.md con warning @ mentions y elección Opción A (excluir) o B (incluir)."
 
   - prioridad: 7
-    tarea: "ISSUE-021: decidir aproximación auto-memory Claude Code"
-    detalle: "Valorar Opción D (MEMORY_memsys3.yaml estructurado): schema, integración deploy.md briefing, carga newSession.md."
+    tarea: "Testear actualizar_cat.md en futuras sincronizaciones"
+    detalle: "Cuando haya nuevos cambios en master, validar traducción a branch catalan."
 
 # ============================================
 # BACKLOG
-# 33 items totales en memsys3/backlog/
 # ============================================
 backlog:
   sistema: |
-    6 prefijos: ISSUE (bugs/tech debt), FEATURE (nueva funcionalidad), IMPROVEMENT (mejora existente),
-    SPEC (especificación técnica), BLUEPRINT (diseño arquitectónico), EXPLORATION (investigación).
+    memsys3/backlog/ (50 items dogfooding) + README agnóstico (355 líneas, ADR-021 docs/ extendidos).
+    6 prefijos: ISSUE, FEATURE, SPEC, BLUEPRINT, IMPROVEMENT, EXPLORATION.
     Estados: Propuesto, Abierto, En Progreso, Bloqueado, Completado, Cancelado, Rechazado.
-    Items completados se mantienen como documentación (NO archivar).
-    Prompt backlog.md (3 operaciones: consultar, crear, actualizar).
+    Items completados se mantienen en backlog/ (NO archivar) — documentación de decisiones.
+    docs/ opcionales (informe_/plan_) por item, NO leídos por CA en Tier 3 por defecto.
 
   estadisticas:
-    total: 33
-    issues: "13 (incluye 5 completados: 007, 012, 013, 014; resto Abierto/Propuesto)"
-    features: "10 (FEATURE-002 completado; resto Propuesto)"
-    improvements: "8 (IMPROVEMENT-004 completado; resto Abierto/Propuesto)"
-    explorations: "2 (EXPLORATION-001, 003 — todos Propuestos)"
+    issues: "26 (001-026)"
+    features: "11 (002-012; FEATURE-001 no existe)"
+    improvements: "8 (001-008)"
+    explorations: "4 (001-004)"
+    blueprints: "1 (001)"
+    specs: "0"
 
-  items_criticos_abiertos:
-    - id: "ISSUE-021"
-      titulo: "Auto-memory de Claude Code interfiere con memsys3"
-      estado: "Abierto"
+  items_criticos:
+    - id: "BLUEPRINT-001"
+      titulo: "Release memsys3 v1.0"
+      estado: "En Progreso"
       prioridad: "Alta"
-      resumen: "Auto-memory inyecta datos sin contexto rompiendo ADR-016 + human-in-the-loop. Alcance WORKSPACE_Y: 9 archivos. Auto-memory NO editable desde settings.json. 4 opciones (A desactivar, B CLAUDE.md, C limpieza, D MEMORY_memsys3.yaml)."
-      referencia: "Pendiente prioritario 7"
+      resumen: "Auditoría release v1.0 con 8 frentes (1-4 completados). Frente 5 siguiente: residualidad. Dogfoodea ADR-021 (item + informe 190L + plan 290L)."
+      referencia: "pendiente_prioritario_1"
 
-    - id: "ISSUE-006"
-      titulo: "Backups memsys3 deben estar SIEMPRE en .gitignore"
-      estado: "Abierto"
-      prioridad: "Alta"
-      resumen: "Riesgo seguridad: backups memsys3_backup_*/ se versionan si memsys3/ NO está en .gitignore. Agregar regla automática en deploy/actualizar."
-      referencia: "Pendiente prioritario 6"
-
-    - id: "ISSUE-005"
-      titulo: "Archivos faltantes en actualizar.md (patrón olvido sistemático)"
-      estado: "Abierto"
-      prioridad: "Alta"
-      resumen: "Fix Opción A aplicada (3 prompts agregados). Pendiente Opción B: loop automático que copie todos los prompts del template."
-
-    - id: "ISSUE-022"
-      titulo: "Hook pre-commit anti-firma Co-Authored-By"
+    - id: "ISSUE-026"
+      titulo: "deploy.md:3 + extras DevAgent → Main Agent (brecha ADR-015)"
       estado: "Abierto"
       prioridad: "Media"
-      resumen: "Incidente externo: agente hizo commits con firma pese a github.md prohibirlo, forzando filter-branch + force-push (riesgo agentes paralelos). Hook pre-commit local como capa adicional."
+      resumen: "Fix de 1 línea más 3 hits adicionales detectados en Frente 4. Trivial, antes de v1.0.0. Cubierto por Frente 5."
+      referencia: "pendiente_prioritario_1"
+
+    - id: "ISSUE-025"
+      titulo: "README:217 linkea docs/UPDATE.md inexistente en raíz repo"
+      estado: "Abierto"
+      prioridad: "Media"
+      resumen: "Lugar correcto: raíz repo (audiencia contribuidores/upgraders), no scaffold. Antes de v1.0.0."
+      referencia: "pendiente_prioritario_1"
+
+    - id: "ISSUE-024"
+      titulo: "ADRs 010 y 011 ausentes — auditar si fueron descartadas"
+      estado: "Abierto"
+      prioridad: "Baja"
+      resumen: "Meta-finding Frente 2: 20 ADRs reales, no 22. Sin urgencia, no renumerar (rompería referencias)."
+
+    - id: "EXPLORATION-004"
+      titulo: "Canonización proactiva de agentes (anti-CDC meta)"
+      estado: "Propuesto"
+      prioridad: "Media"
+      resumen: "Patrón meta para que MA detecte info en sesión que debería ser canónica y la propague. Opción A (defensiva en endSession) por explorar."
 
     - id: "FEATURE-012"
-      titulo: "Glosario de conceptos"
-      estado: "Propuesto"
-      prioridad: "Media-Alta"
-      resumen: "glosario.yaml en memory/full/ como índice lookup bajo demanda (NO se carga en context). Mantenimiento híbrido endSession con AskUserQuestion. Acordado en reunión 20260327_1."
-      referencia: "Pendiente prioritario 3"
-
-    - id: "FEATURE-011"
-      titulo: "Main Agent proactivo — sugerencias workflow memsys3"
-      estado: "Propuesto"
-      prioridad: "Alta"
-      resumen: "MA debería sugerir proactivamente cuándo hacer mid/end session, cuándo compilar, etc. Inspirado en gentle-ai/Engram. Feedback usuario: 'no lo sugiere espontáneamente'."
-
-    - id: "FEATURE-010"
-      titulo: "Checkpoint mid-session"
-      estado: "Propuesto"
-      prioridad: "Media-Alta"
-      resumen: "Documentar checkpoint a mitad de sesión (no solo al final). Inspirado en Engram. Útil para sesiones largas con múltiples decisiones."
-
-    - id: "IMPROVEMENT-008"
-      titulo: "Deploy agnóstico — configurar memoria antes del agente"
-      estado: "Propuesto"
-      prioridad: "Alta"
-      resumen: "Propuesta colaborador: deploy debería configurar memoria primero, agente después. Requiere deliberación (analogía Barca-Messi: memsys3 no debe depender de modelo específico)."
-
-    - id: "IMPROVEMENT-001"
-      titulo: "Contexto documentación crítica"
-      estado: "Abierto"
-      prioridad: "Alta"
-      resumen: "README parcialmente resuelto por IMPROVEMENT-004 + ADR-012. Reconsiderar para OTROS docs (DEVELOPMENT.md, UPDATE.md) según necesidad."
-      referencia: "Pendiente prioritario 5 project-status"
-
-    - id: "FEATURE-003"
-      titulo: "Sistema configuración memsys3"
-      estado: "Propuesto"
-      prioridad: "Alta"
-      resumen: "Configuración centralizada (idioma, límites, paths) en lugar de hardcoded en prompts."
-
-    - id: "EXPLORATION-001"
-      titulo: "Consulta del historial bajo demanda (query.md)"
+      titulo: "Glosario de conceptos (lookup bajo demanda)"
       estado: "Propuesto"
       prioridad: "Media"
-      resumen: "Inspirado en Engram. Permitir queries específicas al historial sin cargar todo (lookup bajo demanda)."
+      resumen: "glosario.yaml en memory/full/ como índice buscable. NO cargado por CA. Mantenimiento híbrido endSession con AskUserQuestion. Acordado en reunión 20260327_1."
 
-    - id: "EXPLORATION-003"
-      titulo: "READMEs modulares por carpeta como memoria lazy-loaded"
-      estado: "Propuesto"
-      prioridad: "Media"
-      resumen: "Práctica del usuario en agente productividad: README por carpeta cargado on-demand. Extiende ADR-012 (README directo) a READMEs anidados."
-
-    - id: "ISSUE-020"
-      titulo: "Protocolo post-compact para recuperación de contexto"
-      estado: "Propuesto"
-      prioridad: "Media"
-      resumen: "Tras /compact en Claude Code, contexto comprimido pierde detalles. Protocolo para recuperar info crítica (cargar context.yaml + última sesión)."
-
-    - id: "FEATURE-007"
-      titulo: "Auditoría automática calidad del contexto"
-      estado: "Propuesto"
-      prioridad: "Media"
-      resumen: "CA evalúa si Main Agents asignan bien los pesos. Score alineamiento = métrica calidad. Metacognición del sistema. Skill /audit-context."
+    - id: "ISSUE-023"
+      titulo: "Desalineación schema + fugas dogfooding"
+      estado: "Completado"
+      prioridad: "—"
+      resumen: "Resuelto en sesión 2026-05-06 (ADRs 017-019 + limpieza scaffolds). Pendiente comunicar a CLIENT_D (pendiente prioritario 2)."
 
 # ============================================
-# NOTAS DE COMPILACIÓN
+# NOTAS DE COMPILACIÓN DEL CA
 # ============================================
 notas_compilacion:
-  adrs_totales: 14
-  adrs_incluidas: 13
-  adrs_excluidas: ["004 (YAML para todo) - obvia tras implementación universal del sistema"]
-  sesiones_totales_disponibles: "~22 (sessions.yaml: 5, sessions_2.yaml: ~13, sessions_1.yaml: ~14)"
-  sesiones_incluidas: 10
+  adrs_totales: "24 (010-011 ausentes — ISSUE-024 baja)"
+  adrs_incluidas: "23 de 24 (todas las aceptadas, omitidas las inexistentes)"
+  sesiones_totales: "11 en sessions.yaml + ~13 en sessions_1.yaml + ~12 en sessions_2.yaml"
+  sesiones_incluidas: "11 (todas las de sessions.yaml; rotados sintetizados implícitamente vía referencias en project-status)"
   sesiones_por_peso:
-    alto: 5    # 2026-04-15, 2026-03-22, 2026-02-04, 2026-02-03, 2025-01-30, 2025-12-30 — todas con ADRs/decisiones arquitectónicas
-    medio: 3   # 2026-04-20, 2026-04-16, 2026-04-13
-    bajo: 1    # 2026-05-05 (release reciente, info actual de URLs/dominio)
-  pesos_ajustados: "Ninguno. Pesos asignados por Main Agent son consistentes con contenido."
+    alto: "6 alto incluidas casi completas (Frentes 1-4 BLUEPRINT-001, sesión CDC/ADRs-020/021, sesión file_version/ADRs-017-019)"
+    medio: "3 medio (auto-memory, wiki+terminología, CA tiers)"
+    bajo: "1 bajo (release v0.21.1)"
+  pesos_ajustados: "Ninguno"
   backlog_existe: true
-  backlog_items_totales: 33
-  backlog_items_incluidos: 13
-  justificacion_backlog: "Incluidos: items prioridad Alta en estado Abierto/Propuesto + referenciados en pendientes_prioritarios + items acordados en reuniones recientes (FEATURE-012). Excluidos: completados (5), baja prioridad, ya resueltos por ADRs."
-  tokens_iniciales: "~140K (project-status 6K + adr 12K + sessions actual 4.5K + sessions_2 32K + sessions_1 ~75K + README 3K + backlog README 4K + sample backlog items 3K)"
-  tokens_finales: "~7K"
-  archivamiento: "No activado. Total ingesta ~140K bajo umbral 150K. No se ha movido nada a memory/history/."
+  backlog_items_totales: 50
+  backlog_items_incluidos: "7 críticos (BLUEPRINT-001, ISSUE-024/025/026, EXPLORATION-004, FEATURE-012, ISSUE-023 completado pero relevante para pendiente prioritario 2)"
+  justificacion_backlog: "Items referenciados en pendientes_prioritarios + completados con relevancia próxima (CLIENT_D comunicación)"
+  tokens_iniciales: "~85K (Tier 1: project-status + adr [24 ADRs] + sessions actual + memory.yaml; Tier 2: README; Tier 3: backlog/README + listado items; Tier 5: git log -20). NO leídos sessions_1/_2.yaml por completo (sintetizados implícitamente vía project-status histórico_sesiones); NO leídos backlog/docs/ por defecto (ADR-021)."
+  tokens_finales: "~5K (context.yaml generado)"
+  archivamiento: "No activado (proyecto bajo umbral 150K)"
   criterios_filtraje: |
-    Criterios aplicados (ADR-001):
-    - ADRs: impacto global, decisiones no obvias, trade-offs importantes. Excluida solo ADR-004 (YAML format obvia).
-    - Sesiones: peso ALTO ~90% contenido, MEDIO ~60-70%, BAJO ~40-50%. Recencia + criticidad arquitectónica. Excluidas sesiones de tooling/cosméticas.
-    - Gotchas: solo críticos activos (alta criticidad) y repetibles. Excluidos resueltos permanentemente o cosméticos.
-    - Backlog: solo Alta prioridad Abierto/Propuesto + referenciados en pendientes. Items completados/baja excluidos.
-  lineas_totales: "~470 (de 2000 máximo)"
-  tiers_leidos:
-    - "Tier 1 OBLIGATORIO: project-status.yaml, adr.yaml, sessions.yaml + sessions_1.yaml + sessions_2.yaml (~125K tokens)"
-    - "Tier 2: README.md raíz (~3K tokens)"
-    - "Tier 3: backlog/README.md + sample items críticos (~7K tokens). 33 items totales detectados via ls + grep estados."
-    - "Tier 4: docs_contextuales vacío (no hay docs listados en compile-context.md)"
-    - "Tier 5: git log -30 (~1K tokens)"
-  docs_contextuales_propuesta: |
-    El compile-context.md tiene sección docs_contextuales vacía. Tras esta compilación, el CA NO sugiere
-    añadir documentos por ahora — no hay docs específicos referenciados repetidamente en sesiones que
-    aporten contexto crítico no derivable del propio sessions.yaml.
-    Posibles candidatos futuros (que el Main Agent puede añadir durante endSession si los considera útiles):
-    - memsys3/docs/reference.md (consolidado técnico, 9 archivos fusionados en sesión 2026-03-08)
-    - memsys3/docs/reunion/README.md (filosofía 5 principios + ejemplos reales)
+    Incluido: ADRs con impacto global (todas, ninguna deprecated en este proyecto), sesiones recientes
+    de peso alto/medio (post 2026-04-13), gotchas vigentes, principios canónicos, BLUEPRINT en curso.
+    Excluido: sesiones de sessions_1/_2.yaml (preservadas en rotados, sintetizadas en project-status.yaml
+    histórico_sesiones), items backlog completados/cancelados sin relevancia para pendientes actuales.
+  lineas_totales: "~530 de 2000 máximo"
+  tiers_leidos_resumen:
+    tier1: "OK — project-status, adr.yaml (24 ADRs), sessions.yaml (11 sesiones), memory.yaml (CDC + feedback). Rotados (sessions_1/_2.yaml) NO leídos completos: ya sintetizados en project-status.yaml histórico_sesiones."
+    tier2: "OK — README raíz repo (261 líneas)"
+    tier3: "OK — backlog/README.md (355 líneas) + listado de los 50 items. NO leídos docs/ (ADR-021: regla anti-explosión Tier 3)"
+    tier4: "Vacío — sin docs_contextuales registrados"
+    tier5: "OK — git log -20 (commits recientes BLUEPRINT-001 frentes 1-4)"
+  tier3_docs_leidos: []
 
 # ============================================
 # NOTAS DE USO
 # ============================================
-# Este archivo es COMPILADO automáticamente — no editar manualmente.
-# Para actualizar: ejecutar @memsys3/prompts/compile-context.md en INSTANCIA LIMPIA (ADR-008).
-# Para más detalles: ver memsys3/memory/full/adr.yaml y sessions.yaml.
-# README.md (raíz) se lee directamente en newSession (ADR-012) — identidad actual del proyecto.
+# Este archivo es COMPILADO automáticamente, no editar manualmente
+# Para actualizar: ejecutar @memsys3/prompts/compile-context.md
+# Para más detalles: ver memory/full/adr.yaml y memory/full/sessions.yaml
+# Si contexto demasiado grande: CA moverá datos a memory/history/ (no leído)
