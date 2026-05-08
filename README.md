@@ -249,6 +249,12 @@ Al finalizar sesiones donde modificaste archivos agnósticos (prompts, agents, t
 
 Este sistema está abierto a mejoras. Si tienes ideas o encuentras bugs, abre un issue o PR en GitHub.
 
+**Antes de tu primer commit en este repo**, activa los git hooks versionados (protección anti-leak dogfooting → distribuible, ADR-025):
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## 📝 Licencia
 
 MIT License - Libre para usar en cualquier proyecto
