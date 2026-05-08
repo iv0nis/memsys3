@@ -67,6 +67,7 @@ coordinacion_paralela:
   log_central: "memsys3/blocked_files_log.md"
   workflow: "memsys3/prompts-dev/multi_work.md"
   agent_id_path: "~/.claude/memsys3_agent_id"
+  precondicion: "REQUIERE plan mode activo. Sin plan mode los pasos 1 (pre-plan) y 2 (post-aprobación) no tienen anclaje temporal y la coordinación se rompe. Si el usuario quiere multi-agente paralelo, todos los agentes deben operar con ExitPlanMode."
   reglas_resumen: |
     1. Pre-plan: leer log central y verificar que ningún fichero que tu plan
        ESCRIBIRÁ está bloqueado por OTRO agente. Lecturas siempre permitidas.

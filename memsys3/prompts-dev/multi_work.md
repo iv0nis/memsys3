@@ -2,6 +2,18 @@
 
 Sistema de **locks explícitos** para evitar conflictos cuando varios agentes trabajan el mismo repositorio en paralelo. Cada agente declara por adelantado qué ficheros escribirá; si otro agente ya los tiene bloqueados, espera.
 
+## ⚠️ Precondición: REQUIERE PLAN MODE
+
+Este sistema **solo funciona si el agente opera con plan mode activo** (Claude Code: agente articula plan antes de ejecutar; usuario aprueba vía `ExitPlanMode`).
+
+**Por qué:** los pasos del workflow tienen anclajes temporales que dependen de plan mode:
+- **Paso 1 (pre-plan)** = "después de definir qué hace el plan, antes de aprobarlo" — solo existe si hay un plan formal.
+- **Paso 2 (post-aprobación plan)** = "justo después de que el usuario apruebe el plan" — sin `ExitPlanMode` no hay este momento discreto.
+
+Sin plan mode, el agente improvisa escrituras sobre la marcha y NO hay un punto canónico donde registrar locks. La coordinación se rompe — agentes paralelos pueden pisarse trabajando en los mismos ficheros.
+
+**En la práctica:** cualquier agente que active el bloque `coordinacion_paralela` (ver `memsys3/agents/main-agent.yaml`) debe ejecutar SUS sesiones en plan mode. Si el usuario quiere multi-agente paralelo, todos los agentes implicados deben respetar este modo.
+
 ## Fichero central
 
 `memsys3/blocked_files_log.md` (relativa a la raíz del repo).
