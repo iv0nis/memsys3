@@ -83,7 +83,7 @@ Cabecera fija en el fichero (no se borra nunca):
 ```markdown
 # Blocked Files Log
 
-Ficheros bloqueados por agentes en paralelo. Ver `memsys3/prompts-dev/multi_work.md`.
+Ficheros bloqueados por agentes en paralelo. Ver `memsys3/prompts/multi_work.md`.
 
 Formato: `- <path> | <Agent> | <tarea> | <YYYY-MM-DD HH:MM>`
 

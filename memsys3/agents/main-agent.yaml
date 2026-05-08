@@ -53,19 +53,19 @@ restricciones:
     motivo: "github.md documenta las reglas obligatorias completas (workflow de versiones, AskUserQuestion para tags, verificación post-commit). Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
 
 # ============================================
-# COORDINACIÓN PARALELA (TEMPORAL — pre-v1.0, dogfooting)
+# COORDINACIÓN PARALELA (estado: en evaluación pre-v1.0)
 # ============================================
 # Sistema de locks explícitos para evitar colisiones cuando múltiples agentes
-# operan el repo en paralelo. Detalles operativos completos en
-# memsys3/prompts-dev/multi_work.md. Log central: memsys3/blocked_files_log.md.
+# humanos operan el repo en paralelo. Detalles operativos completos en
+# memsys3/prompts/multi_work.md. Log central: memsys3/blocked_files_log.md.
 #
-# ⚠️ TEMPORAL: este sistema es dogfooting de memsys3 mismo. Se eliminará
-# antes del release v1.0 (Frente 8 BLUEPRINT-001 cleanup TODO).
-# NO se distribuye al scaffold (no entra en memsys3_templates/).
+# ⚠️ ESTADO: en modo espejo dogfooting↔templates desde 2026-05-08.
+# Decisión sobre inclusión definitiva en release v1.0 vs eliminación
+# pendiente al próximo frente BLUEPRINT-001 (estrategia de distribución).
 
 coordinacion_paralela:
   log_central: "memsys3/blocked_files_log.md"
-  workflow: "memsys3/prompts-dev/multi_work.md"
+  workflow: "memsys3/prompts/multi_work.md"
   agent_id_path: "~/.claude/memsys3_agent_id"
   scope: "Solo agentes lanzados por humanos en paralelo (varias terminales con `claude`). NO aplica a sub-agentes lanzados por IA orquestadora vía Agent tool — el orquestador coordina sus sub-agentes directamente."
   precondicion: "Cada sesión humana implicada REQUIERE plan mode activo. Sin plan mode los pasos 1 (pre-plan) y 2 (post-aprobación) no tienen anclaje temporal y la coordinación se rompe."
@@ -81,6 +81,6 @@ coordinacion_paralela:
     5. Caducidad >4h: NO eliminar tú solo. Avisar usuario y esperar OK.
     6. Solo bloquea ESCRITURAS. Granularidad = fichero (excepción: directorio
        de migraciones SQL si reservas un número).
-  detalles_completos: "Ver memsys3/prompts-dev/multi_work.md"
+  detalles_completos: "Ver memsys3/prompts/multi_work.md"
 
 file_version: "0.3.0"
