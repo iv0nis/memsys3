@@ -215,13 +215,13 @@ Si el CA detecta >150K tokens totales:
    ```yaml
    sessions:
      - id: "2025-10-23"
-       titol: "Sistema d'Exportació de Documents"
-       features_implementades:
-         - nom: "Exportació PDF"
-           descripcio: "Text real amb Llibreria X, format professional..."
-       decisions_preses:
-         - decisio: "jsPDF vs html2canvas"
-           justificacio: "Millor qualitat de text"
+       titulo: "Sistema de Exportación de Documentos"
+       features_implementadas:
+         - nombre: "Exportación PDF"
+           descripcion: "Texto real con Librería X, formato profesional..."
+       decisiones_tomadas:
+         - decision: "jsPDF vs html2canvas"
+           justificacion: "Mejor calidad de texto"
    ```
 3. Si decidiste algo arquitectónico, añade ADR en `memsys3/memory/full/adr.yaml`
 4. Ejecutas `@memsys3/prompts/compile-context.md`
