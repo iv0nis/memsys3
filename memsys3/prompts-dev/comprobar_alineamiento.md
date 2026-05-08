@@ -203,6 +203,39 @@ Después de sincronizar, ejecuta de nuevo el script del PASO 3 para confirmar:
 # Todos los archivos deben mostrar ✅ SINCRONIZADO
 ```
 
+### PASO 6.5: Auditoría anti-leak (ADR-025)
+
+**Capa 2 de defensa.** Capa 1 es `.githooks/pre-commit` (instalado vía `git config core.hooksPath .githooks`). Esta auditoría atrapa lo que el hook pueda saltarse: hooks bypasseados con `--no-verify`, devs nuevos sin `core.hooksPath` configurado, o vectores no anticipados por el patrón del hook.
+
+```bash
+echo "=== AUDITORÍA ANTI-LEAK memsys3_templates/ (ADR-025) ==="
+
+# Check 1: backlog/ del distribuible solo debe contener README.md + docs/
+LEAK_BACKLOG=$(ls memsys3_templates/backlog/ 2>/dev/null | grep -vE '^(README\.md|docs)$' || true)
+if [ -n "$LEAK_BACKLOG" ]; then
+  echo "❌ LEAK detectado en memsys3_templates/backlog/:"
+  echo "$LEAK_BACKLOG" | sed 's/^/    /'
+  echo "Permitido: solo README.md + docs/"
+else
+  echo "✅ memsys3_templates/backlog/ limpio (solo README.md + docs/)"
+fi
+
+# Check 2: ningún archivo PREFIJO-NNN-*.md en todo memsys3_templates/
+LEAK_ITEMS=$(find memsys3_templates -name '[A-Z]*-[0-9]*-*.md' -type f 2>/dev/null || true)
+if [ -n "$LEAK_ITEMS" ]; then
+  echo "❌ Items de backlog dogfooting filtrados al distribuible:"
+  echo "$LEAK_ITEMS" | sed 's/^/    /'
+else
+  echo "✅ Sin items de backlog en memsys3_templates/"
+fi
+
+echo "=== AUDITORÍA COMPLETADA ==="
+```
+
+Si hay hits, son **leaks de dogfooting → distribuible** (escenario IMPROVEMENT-008). Acción inmediata: mover el archivo a `memsys3/backlog/` (o eliminarlo si fue creación errónea), commitear corrección, y anotar incidente en sessions.yaml.
+
+---
+
 ### PASO 7: Documentar en sessions.yaml
 
 Documenta la sincronización realizada:
