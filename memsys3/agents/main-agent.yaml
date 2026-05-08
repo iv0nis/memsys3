@@ -52,4 +52,33 @@ restricciones:
     regla: "Antes de cualquier git commit/push/tag/merge/rebase, leer @memsys3/prompts/github.md"
     motivo: "github.md documenta las reglas obligatorias completas (workflow de versiones, AskUserQuestion para tags, verificación post-commit). Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
 
+# ============================================
+# COORDINACIÓN PARALELA (TEMPORAL — pre-v1.0, dogfooting)
+# ============================================
+# Sistema de locks explícitos para evitar colisiones cuando múltiples agentes
+# operan el repo en paralelo. Detalles operativos completos en
+# memsys3/prompts-dev/multi_work.md. Log central: memsys3/blocked_files_log.md.
+#
+# ⚠️ TEMPORAL: este sistema es dogfooting de memsys3 mismo. Se eliminará
+# antes del release v1.0 (Frente 8 BLUEPRINT-001 cleanup TODO).
+# NO se distribuye al scaffold (no entra en memsys3_templates/).
+
+coordinacion_paralela:
+  log_central: "memsys3/blocked_files_log.md"
+  workflow: "memsys3/prompts-dev/multi_work.md"
+  agent_id_path: "~/.claude/memsys3_agent_id"
+  reglas_resumen: |
+    1. Pre-plan: leer log central y verificar que ningún fichero que tu plan
+       ESCRIBIRÁ está bloqueado por OTRO agente. Lecturas siempre permitidas.
+       Si conflicto → STOP, avisar usuario con la línea conflictiva.
+    2. Post-aprobación plan: append líneas al log con tu agent_id (de
+       ~/.claude/memsys3_agent_id) y timestamp local YYYY-MM-DD HH:MM.
+    3. Trabajo: libre en ficheros reservados. No re-validar locks durante.
+    4. Post-completado (commit + push, o flujo completo con tag): elimina TUS
+       líneas del log. NUNCA toques líneas de otros agentes.
+    5. Caducidad >4h: NO eliminar tú solo. Avisar usuario y esperar OK.
+    6. Solo bloquea ESCRITURAS. Granularidad = fichero (excepción: directorio
+       de migraciones SQL si reservas un número).
+  detalles_completos: "Ver memsys3/prompts-dev/multi_work.md"
+
 file_version: "0.3.0"
