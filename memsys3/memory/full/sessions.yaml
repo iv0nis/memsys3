@@ -3,6 +3,82 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-08-meta-orquestador-multi-work-integration-canonization"
+    titulo: "Meta-orquestador BLUEPRINT-001 (Frentes 5+6) + integración multi-work dogfooting + canonización CDC/olvidan-que-olvidan + tag surgery v0.23.1/v0.24.0"
+    data: "2026-05-08"
+    duracion: "~6h efectivas (sesión meta multi-tarea con ventanas paralelas a Frentes 5/6)"
+    peso: "alto"
+    objetivo: |
+      Sesión meta-orquestadora: coordinar agentes paralelos ejecutando BLUEPRINT-001
+      Frentes 5 y 6, articular principios fundacionales emergentes (CDC,
+      meta-amnesia agéntica), integrar sistema multi-agente locks como
+      dogfooting temporal, y dejar el repo en estado consistente con tags y commits
+      atómicos sin firma.
+
+    contexto_rol: |
+      Agente meta-orquestador en sesión principal. Funciones: validar planes
+      de agentes Frente N (en terminales paralelas), responder consultas A/B/C
+      del agente Frente 6 sobre estrategia dogfooting, articular hallazgos
+      conversacionales como principios canónicos, ejecutar integración
+      multi-work in-session tras decisión usuario, y manejar tag surgery
+      cuando colisión de timing entre agentes paralelos contaminó v0.23.1.
+
+    highlights:
+      - "Validación 4 planes agentes Frente N: F5 (residualidad), F6 (dogfooting + ADR-025), multi-work subagent (integración), F7 (deferido). Cada validación con feedback estructurado: aprobaciones, correcciones, anti-CDC reminders."
+      - "Refinamiento principio CDC con corolario disposicional 'olvidan-que-olvidan' (meta-amnesia agéntica): los agentes LLM no solo olvidan al cambiar turno, NO SABEN que están olvidando — la conversación se 'siente' continua. Cura no es regla nueva, es reformular DEFAULT mental sobre efimeridad."
+      - "PRINCIPLES.md sección #1 ampliada (×2 sitios): 'Límites del principio' (CDC ≠ esponja conceptual; distingue gaps datos ambientales / capacidades modelo / sistemas externos) + 'Corolario disposicional' (frase invariante: 'tu estado por defecto es el olvido')."
+      - "EXPLORATION-004 refinada con Opción E (disposicional + defensiva): A/B/C/D originales fallan en aislamiento porque presuponen metacognición ausente. E ataca causa+síntoma."
+      - "ISSUE-027 abierto: deuda migrar 'principios_fundacionales' de memory.yaml → PRINCIPLES.md (redundancia heredada pre-Frente-1)."
+      - "newSession.md (×2): paso 0 incluye 'date +%Y-%m-%d %H:%M %Z'. Rationale: gap de sensores ambientales del agente, distinto de CDC."
+      - "Integración multi-work dogfooting: traducción español prompt CLIENT_A (catalán) + generalización paths + movimiento a memsys3/prompts-dev/multi_work.md + memsys3/blocked_files_log.md + bloque coordinacion_paralela en main-agent.yaml. TEMPORAL — eliminar en Frente 8."
+      - "Tag surgery v0.23.1 → d405338: timing colisión hizo que v0.23.1 inicialmente apuntase a commit multi-work. Detectado por agente Frente 6, corregido con git tag -d + push :tag + recreate. Recoverable, ningún consumidor externo accedió."
+      - "Tag v0.24.0 creado para release multi-work: bump minor consciente. Multi-work es feature significativa pese a ser temporal."
+      - "5 batches commits atómicos sin firma pusheados: F5, F6, multi-work, context recompilación, meta-canonización. ~14 commits, 0 firmas Co-Authored-By (defensa multi-capa funcionando)."
+
+    decisiones_tomadas:
+      - decision: "Multi-work va a memsys3/prompts-dev/ + memsys3/blocked_files_log.md (NO distribuible)"
+        justificacion: "Es dogfooting de memsys3 mismo. Proyectos externos NO tienen problema templates vs dogfooting."
+        scope: "TEMPORAL: cleanup en Frente 8 BLUEPRINT-001"
+
+      - decision: "Tag surgery v0.23.1 (no destructive on branch)"
+        justificacion: "Narrativa de release importa para OSS. Multi-work no es feature de v0.23.1. Ningún consumidor externo accedió al tag."
+
+      - decision: "Bump v0.24.0 minor para multi-work"
+        justificacion: "Feature arquitectónica significativa pese a ser temporal. Mejor v0.24.0-dogfooting que patch oculto."
+
+      - decision: "Distinción canónica entre CDC y otros gaps agénticos"
+        justificacion: "CDC = variabilidad de lucidez entre sesiones (cura: archivos canónicos). Datos ambientales / capacidades modelo / sistemas externos = gaps distintos con curas distintas. Confundir empobrece el principio."
+
+    proximos_pasos:
+      - "Sesión fresca para BLUEPRINT-001 Frente 7 (Pulir deploy/actualizar/commands + smoke tests)"
+      - "Considerar prototipar EXPLORATION-004 Opción A (paso defensivo en endSession.md) como sub-frente entre 7 y 8"
+      - "ISSUE-027 (migrar principios_fundacionales) ejecutable en Frente 7 o sub-frente"
+      - "Frente 8 cleanup: eliminar multi-work integration antes del tag v1.0.0"
+
+    gotchas:
+      - tipo: "agentes-no-tienden-a-canonizar"
+        problema: "Los agentes LLM tienen metacognición ausente sobre la efimeridad de su contexto. NO solo olvidan, NO SABEN que olvidan. Reglas 'detecta candidatos canonizables' fallan en aislamiento."
+        solucion: "EXPLORATION-004 Opción E: invariante disposicional en main-agent.yaml + paso defensivo en endSession.md."
+        criticidad: "alta"
+
+      - tipo: "tag-collision-paralelismo"
+        problema: "Agentes paralelos haciendo commits + push + tag pueden mover HEAD entre bump-commit y tag. Tag apunta a commit equivocado."
+        solucion: "Tag surgery (recoverable mientras nadie consume el tag). Para futuro: un solo agente hace tag al cerrar release. O usar locks blocked_files_log.md sobre commit de bump."
+        criticidad: "media"
+
+      - tipo: "subagent-sandbox-bash"
+        problema: "Agent tool con subagent_type=general-purpose tiene Bash restrictivo. Subagent multi-work no pudo ejecutar git/mv."
+        solucion: "Plan correcto, ejecutado directamente desde sesión meta. Futuro: usar fork (Agent sin subagent_type) para tareas con Bash extenso."
+        criticidad: "baja"
+
+    referencias:
+      adrs_creadas_indirectamente: ["ADR-025 (por agente Frente 6)"]
+      principios_canonizados: ["olvidan-que-olvidan (memory.yaml + PRINCIPLES.md corolario)"]
+      issues_creados: ["ISSUE-027 (migrar principios_fundacionales)"]
+      exploraciones_refinadas: ["EXPLORATION-004 (Opción E)"]
+      tags_publicados: ["v0.23.1 (Frente 6 limpio post-surgery)", "v0.24.0 (multi-work dogfooting temporal)"]
+      sesiones_paralelas_coordinadas: ["Frente 5 BLUEPRINT-001", "Frente 6 BLUEPRINT-001", "compile-context v0.14.0", "subagent multi-work integration"]
+
   - id: "2026-05-08-blueprint001-frente6-estrategia-dogfooting-adr025"
     titulo: "BLUEPRINT-001 Frente 6: Estrategia dogfooting versionado formalizada (ADR-025 + protocolo anti-leak)"
     data: "2026-05-08"
