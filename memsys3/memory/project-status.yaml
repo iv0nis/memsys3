@@ -2,9 +2,9 @@
 
 metadata:
   ultima_actualizacion: "2026-05-08"
-  actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 6 — Estrategia dogfooting + ADR-025)"
-  fase: "Development v0.23.0 (preparando v1.0 — Frente 6/8 completado)"
-  memsys3_version: "v0.23.1"
+  actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 6 + integración multi-work dogfooting)"
+  fase: "Development v0.24.0 (preparando v1.0 — Frente 6/8 completado, multi-work integrado temporal)"
+  memsys3_version: "v0.24.0"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
 
