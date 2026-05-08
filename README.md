@@ -124,7 +124,7 @@ memsys3/                          # Repositorio GitHub
 
 ## 🔄 Workflow
 
-### 1. **Documentar** (Humans/DevAI)
+### 1. **Documentar** (Humans/Main Agent)
 - Escribe decisiones en `memsys3/memory/full/adr.yaml`
 - Documenta sesiones en `memsys3/memory/full/sessions.yaml`
 - Actualiza `memsys3/memory/project-status.yaml`
@@ -135,7 +135,7 @@ memsys3/                          # Repositorio GitHub
 - Aplica rotación automática si supera 1800 líneas
 - Aplica Plan de Contingencia si supera 150K tokens
 
-### 3. **Desarrollar** (DevAI)
+### 3. **Desarrollar** (Main Agent)
 - Carga `@memsys3/prompts/newSession.md`
 - Desarrolla con contexto completo
 - Documenta al acabar con `@memsys3/prompts/endSession.md`

@@ -296,7 +296,7 @@ Usa tu criterio para mantener lo esencial.
 - **SÍ puedes borrar** de `memsys3/memory/full/` después de archivar a `history/`
 - **SÍ actualiza** el timestamp y versión de compilación
 - **SÍ documenta** los criterios usados en notas_compilacion (incluyendo archivado si procede)
-- **Confía en tu criterio** - tú tienes la visión completa, los DevAgents no
+- **Confía en tu criterio** - tú tienes la visión completa, el Main Agent no
 
 ## Ejemplos de Buen Criterio
 

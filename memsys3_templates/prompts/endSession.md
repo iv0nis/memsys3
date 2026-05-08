@@ -1,10 +1,10 @@
 # End Session - Documenta la Sesión Actual
 
-Tu (DevAgent) debes documentar esta sesión de trabajo en el sistema Memory del proyecto.
+Tu (Main Agent) debes documentar esta sesión de trabajo en el sistema Memory del proyecto.
 
 ## Objetivo
 
-Registrar qué se ha hecho durante esta sesión para que el próximo DevAgent tenga contexto completo.
+Registrar qué se ha hecho durante esta sesión para que el próximo Main Agent tenga contexto completo.
 
 ## Workflow
 

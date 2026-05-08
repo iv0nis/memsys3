@@ -1,11 +1,13 @@
 # ISSUE-026: `deploy.md:3` usa "DevAgent" en lugar de "Main Agent" (brecha ADR-015)
 
-**Estado:** Abierto
+**Estado:** Cerrado (2026-05-08, BLUEPRINT-001 Frente 5)
 **Prioridad:** Media (fix trivial)
 **Tipo:** Issue (inconsistencia terminológica)
 **Plazo:** Inmediato (1 línea)
 **Fecha identificación:** 2026-05-07
+**Fecha cierre:** 2026-05-08
 **Origen:** Auditoría BLUEPRINT-001 Frente 2 — verificación ADR-015.
+**Resolución:** Frente 5 ejecutó las 4 sustituciones en `memsys3_templates/prompts/` (deploy.md:3, endSession.md:3 y :7, compile-context.md:299) + sync dogfooting + 2 hits en `README.md:127,138` + 2 drift adicionales en `memsys3/agents/context-agent.yaml:4,183`. Validación final: `grep -rniE 'DevAI|DevAgent|Development Agent'` sobre infraestructura activa devuelve 0 hits. Detalle: `memsys3/backlog/docs/informe_BLUEPRINT-001-residualidad.md` §4.2.
 
 ---
 

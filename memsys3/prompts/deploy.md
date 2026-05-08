@@ -1,6 +1,6 @@
 # Deploy memsys3 - Configura el Sistema Memory para tu Proyecto
 
-Tu (DevAgent) debes configurar memsys3 por primera vez en este proyecto.
+Tu (Main Agent) debes configurar memsys3 por primera vez en este proyecto.
 
 ## Objetivo
 

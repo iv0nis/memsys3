@@ -1,10 +1,12 @@
 # IMPROVEMENT-006: Depurar Terminología "Main Agent" en Todo el Sistema
 
-**Estado**: Abierto
+**Estado**: Cerrado (2026-05-08, BLUEPRINT-001 Frente 5)
 **Prioridad**: Alta
 **Tipo**: Mejora
 **Fecha creación**: 2025-12-17
-**Relacionado con**: ADR-015
+**Fecha cierre**: 2026-05-08
+**Relacionado con**: ADR-015, ISSUE-026
+**Resolución**: Frente 5 cerró todos los criterios de aceptación. 12 sustituciones aplicadas en infraestructura activa: 4 en `memsys3_templates/prompts/`, 4 sync en `memsys3/prompts/`, 2 en `README.md`, 2 drift en `memsys3/agents/context-agent.yaml` (Fork inicial los pasó por alto, hallados en re-validación). Validación: `grep -rniE 'DevAI|DevAgent|Development Agent'` sobre infraestructura activa → 0 hits. Detalle: `memsys3/backlog/docs/informe_BLUEPRINT-001-residualidad.md` §4.2.
 
 ---
 
