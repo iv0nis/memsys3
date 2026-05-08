@@ -104,6 +104,22 @@ Antes de documentar, determina la importancia arquitectónica de esta sesión:
 - Si dudas entre dos pesos, elige el menor (evita inflar importancia)
 - El Context Agent puede auditar y sugerir ajustes (FEATURE-007)
 
+### 2.7. Detectar candidatos canonizables (anti-CDC defensivo)
+
+**Disposicional reminder (PRINCIPLES.md #1 corolario meta-amnesia):** tu estado por defecto es el olvido. La conversación se siente continua aunque no lo sea. Cualquier cosa articulada en esta sesión que NO esté en archivo canónico se está perdiendo ahora mismo. Esta pasada NO es opcional — es la última oportunidad antes del cierre.
+
+Antes de documentar, hazte una pasada explícita por cada categoría:
+
+- **Principio general** aplicable más allá de esta sesión → candidato a `memsys3/PRINCIPLES.md` (en proyectos desplegados, registrar en sessions.yaml como observación para upstream; en este repo upstream, editar directamente con ADR de respaldo).
+- **Regla / feedback del usuario** (corrección recibida, validación no obvia, preferencia confirmada) → `memsys3/memory/memory.yaml` sección `feedback` (append + datado + motivo).
+- **Hecho del proyecto** (decisión, constraint, deadline, stakeholder) no documentado → `memsys3/memory/project-status.yaml` o sessions.yaml según naturaleza.
+- **Gotcha sutil** que un agente futuro NO podrá deducir del código → campo `gotchas:` de la sesión actual.
+- **Referencia externa** (URL, sistema, doc, dashboard) que el proyecto debería conocer → `memsys3/memory/memory.yaml` sección `referencias`.
+
+Si la información parece "ya estar implícita en el diff o el commit": canonízala igualmente. Los commits no se leen al iniciar sesión; los archivos canónicos sí. La intuición "esto ya está claro" es síntoma de meta-amnesia, no señal de que se haya guardado.
+
+Si tras la pasada NO emerge nada canonizable: continúa al paso 3.
+
 ### 3. Comprobar Rotaciones Automáticas
 
 **IMPORTANTE: Rotación flexible según líneas totales**
