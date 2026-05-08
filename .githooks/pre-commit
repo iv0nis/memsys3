@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Anti-leak dogfooting → memsys3_templates/backlog/
+# ADR-025. Permitido en memsys3_templates/backlog/: solo README.md + docs/.gitkeep
+#
+# Activación (una sola vez por dev):
+#   git config core.hooksPath .githooks
+set -e
+
+LEAKS=$(git diff --cached --name-only --diff-filter=AM \
+  | grep -E '^memsys3_templates/backlog/[A-Z]+-[0-9]+.*\.md$' || true)
+
+if [ -n "$LEAKS" ]; then
+  echo "❌ ANTI-LEAK (ADR-025): items de backlog filtrados a memsys3_templates/backlog/:"
+  echo "$LEAKS" | sed 's/^/    /'
+  echo ""
+  echo "Permitido en memsys3_templates/backlog/: solo README.md + docs/.gitkeep"
+  echo "Si el commit es intencional, usa --no-verify (queda anotable en sessions.yaml)."
+  exit 1
+fi
+
+exit 0
