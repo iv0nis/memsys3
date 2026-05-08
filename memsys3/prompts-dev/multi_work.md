@@ -2,9 +2,19 @@
 
 Sistema de **locks explícitos** para evitar conflictos cuando varios agentes trabajan el mismo repositorio en paralelo. Cada agente declara por adelantado qué ficheros escribirá; si otro agente ya los tiene bloqueados, espera.
 
-## ⚠️ Precondición: REQUIERE PLAN MODE
+## ⚠️ Scope: agentes lanzados por humanos en paralelo
 
-Este sistema **solo funciona si el agente opera con plan mode activo** (Claude Code: agente articula plan antes de ejecutar; usuario aprueba vía `ExitPlanMode`).
+Este sistema está diseñado para el escenario donde **el humano lanza varios agentes independientes** simultáneamente (ej. abre múltiples terminales con `claude`, cada uno con su propia sesión sin estado compartido). Cada sesión es una entidad autónoma que ignora las demás — necesita un mecanismo externo (este log) para coordinarse.
+
+**NO aplica a sub-agentes lanzados por una IA orquestadora.** Cuando una IA usa el `Agent` tool para invocar sub-agentes (forks o subagent_type), la IA orquestadora YA ve qué hace cada sub-agente y puede evitar que dos de ellos editen el mismo fichero — la coordinación es responsabilidad del orquestador, no de un log externo.
+
+Regla práctica:
+- ¿El humano abrió N terminales con `claude` en paralelo? → multi-work aplica a esas sesiones.
+- ¿Una IA está orquestando sub-agentes con `Agent` tool? → multi-work NO aplica a esos sub-agentes; el orquestador coordina directamente.
+
+## ⚠️ Precondición: REQUIERE PLAN MODE (en cada sesión humana implicada)
+
+Las sesiones humanas que participen en el sistema **solo coordinan correctamente si operan con plan mode activo** (Claude Code: agente articula plan antes de ejecutar; usuario aprueba vía `ExitPlanMode`).
 
 **Por qué:** los pasos del workflow tienen anclajes temporales que dependen de plan mode:
 - **Paso 1 (pre-plan)** = "después de definir qué hace el plan, antes de aprobarlo" — solo existe si hay un plan formal.
@@ -12,7 +22,7 @@ Este sistema **solo funciona si el agente opera con plan mode activo** (Claude C
 
 Sin plan mode, el agente improvisa escrituras sobre la marcha y NO hay un punto canónico donde registrar locks. La coordinación se rompe — agentes paralelos pueden pisarse trabajando en los mismos ficheros.
 
-**En la práctica:** cualquier agente que active el bloque `coordinacion_paralela` (ver `memsys3/agents/main-agent.yaml`) debe ejecutar SUS sesiones en plan mode. Si el usuario quiere multi-agente paralelo, todos los agentes implicados deben respetar este modo.
+**En la práctica:** si el usuario va a lanzar dos o más sesiones humanas simultáneamente que tocarán el mismo repo, debe activar plan mode en cada una de ellas (`/plan` o equivalente).
 
 ## Fichero central
 
