@@ -1,8 +1,12 @@
 # New Session - Cargar Contexto del Proyecto
 
-## 0. Identificar tu memsys3
+## 0. Identificar tu memsys3 + fecha actual
 
 ```bash
+# Fecha actual (referencia para fechar entradas, pendientes, deadlines)
+date '+%Y-%m-%d %H:%M %Z'
+
+# Localizar memsys3
 MEMSYS3_ROOT="$(pwd)/memsys3"
 if [ -f "$MEMSYS3_ROOT/memory/project-status.yaml" ]; then
   echo "✅ memsys3: $MEMSYS3_ROOT"
@@ -11,6 +15,8 @@ else
   find . -maxdepth 4 -path "*/memsys3/memory/project-status.yaml" 2>/dev/null | sed 's|/memory/project-status.yaml$||'
 fi
 ```
+
+**Por qué `date`**: el agente NO conoce la fecha actual con fiabilidad (su corte de entrenamiento + ausencia de variable de tiempo) — ejecutar `date` al inicio le da una referencia concreta para datar entradas en sessions.yaml/memory.yaml/ADRs, calcular deadlines relativos ("en 2 semanas"), comparar recencia de archivos, y calendarizar pendientes.
 
 ## 1. Cargar contexto
 

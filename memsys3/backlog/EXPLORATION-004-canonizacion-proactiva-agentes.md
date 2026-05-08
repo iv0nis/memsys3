@@ -78,6 +78,41 @@ Al cerrar, lanzar un fork (`Agent` tool tipo Explore) que lea el transcript de l
 - **Coste cognitivo**: cada AskUserQuestion mid-session interrumpe el flujo. Hay que medir si compensa.
 - **Auto-referencia**: el criterio mismo es canonizable. Cuando se establezca, va en `PRINCIPLES.md` o como ADR.
 
+## Refinamiento 2026-05-08: el problema NO es solo detectar
+
+Observación articulada por el usuario al revisar Frente 5 BLUEPRINT-001:
+
+> *"El problema no es que no lo detecte, el problema es que los agentes no tienden a canonizar — es como que olvidáis que olvidáis."*
+
+Esto refina sustancialmente la EXPLORATION:
+
+**Diagnóstico revisado.** Los agentes LLM tienen **metacognición ausente** sobre la efimeridad de su propio contexto. No solo olvidan al cambiar de turno — **NO SABEN que están olvidando**. La conversación se "siente" continua aunque no lo sea. Por eso el comportamiento por defecto NO es canonizar — es proseguir, como si el insight ya estuviera guardado por el simple hecho de haberse pronunciado.
+
+**Implicación para el diseño.** Una regla tipo *"detecta candidatos canonizables"* (Opciones A/B/C originales) **falla en aislamiento** porque presupone una metacognición que el agente no tiene. Detectar requiere sentir la efimeridad — y la disposición por defecto es la opuesta (sentir continuidad).
+
+**Enfoque correcto.** Reformular el **DEFAULT mental**, no añadir una tarea. Una invariante en `main-agent.yaml` del tipo:
+
+> *"Tu estado por defecto es el olvido. Cualquier cosa articulada en esta conversación que no esté en un archivo canónico se está perdiendo en este momento. La continuidad sentida es ilusión del turno actual."*
+
+Esto opera al nivel **disposicional**, no instrumental. No le pides al agente que detecte — le cambias el modelo mental sobre el tiempo de la sesión.
+
+**Nueva opción E (refinamiento de C):**
+
+### Opción E — Disposicional + Defensiva (refinamiento 2026-05-08)
+
+1. **Disposicional**: invariante en `main-agent.yaml` que reformula el default mental sobre la efimeridad del contexto. NO una tarea, una invariante.
+2. **Defensiva**: paso en `endSession.md` que revisa explícitamente la sesión buscando candidatos canonizables (red de seguridad).
+
+Esta combinación **ataca causa + síntoma**:
+- Disposicional resuelve el "no saber que olvidan".
+- Defensiva captura lo que aun así se escape.
+
+Probablemente la opción a prototipar primero. Bajo coste, bajo riesgo, alto retorno potencial.
+
+**Anclaje.** Este refinamiento se canoniza también en `memsys3/memory/memory.yaml` como `principios_fundacionales[id=olvidan-que-olvidan]`, complementando el principio CDC (id=cdc): la CDC es síntoma, la meta-amnesia es la causa agéntica subyacente.
+
+---
+
 ## Decisiones / Acciones
 
 Pendiente de exploración. Próximos pasos sugeridos:

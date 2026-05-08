@@ -16,7 +16,17 @@ Este archivo se distribuye con el sistema. Cuando un agente carga `newSession.md
 
 **Test mental anti-CDC.** Para cada decisión de diseño: *"¿esto requiere que un agente fresco adivine, o le doy archivo canónico?"* Si una conducta deseable solo emerge cuando el agente "ha leído X justo antes", entonces X debe estar en un archivo canónico que se lea siempre (newSession, compile-context). Si solo emerge en una sesión específica, es CDC y hay que eliminarla.
 
-**ADRs relacionados:** ADR-008 (compile-context en sesión limpia), ADR-020 (memory.yaml), ADR-021 (backlog docs anti-CDC).
+**Límites del principio.** CDC NO es un cajón de "todas las cosas que el agente no sabe". CDC se refiere a **variabilidad de lucidez entre sesiones** (un insight emerge solo si un contexto particular se da). Su cura son los archivos canónicos. Otros gaps agénticos son features distintas con su propio enfoque:
+
+- **Datos ambientales** (fecha actual, hora, zona horaria) — gap de sensores, no de memoria. Cura: consulta del entorno (`date` al inicio de sesión, etc.).
+- **Capacidades específicas de modelo** (qué tools tiene Claude vs Gemini vs Codex) — gap de modelo, no de proyecto. Cura: detección al cargar agente o instrucciones agnósticas.
+- **Estado de sistemas externos** (CI status, deploy live, métricas) — gap de integración. Cura: consultar API/CLI cuando se necesite.
+
+Confundir estos gaps con CDC convierte el principio en esponja conceptual y le quita fuerza operativa. Anti-CDC vigila **un** problema concreto: que la calidad del trabajo en sesión-N no dependa de qué se haya dicho casualmente en sesión-N-1.
+
+**Corolario disposicional (meta-amnesia agéntica).** Los agentes LLM no solo olvidan al cambiar de turno: NO SABEN que están olvidando. La conversación se "siente" continua aunque no lo sea. Por eso el comportamiento por defecto NO es canonizar — es proseguir, como si el insight ya estuviera guardado por haberse pronunciado. Combatir CDC requiere reformular el default mental ("tu estado por defecto es el olvido; lo no canonizado se pierde ahora"), no solo añadir reglas de detección. Ver EXPLORATION-004.
+
+**ADRs relacionados:** ADR-008 (compile-context en sesión limpia), ADR-020 (memory.yaml), ADR-021 (backlog docs anti-CDC). **Exploraciones:** EXPLORATION-004 (canonización proactiva).
 
 ---
 

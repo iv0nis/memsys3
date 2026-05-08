@@ -26,6 +26,35 @@ principios_fundacionales:
       eliminarla.
     fecha: "2026-05-07"
 
+  - id: "olvidan-que-olvidan"
+    nombre: "Meta-amnesia agéntica: olvidan que olvidan"
+    definicion: |
+      Los agentes LLM operan con metacognición ausente sobre la efimeridad de su
+      propio contexto de sesión. NO solo olvidan al cambiar de turno: NO SABEN
+      que están olvidando. La conversación se "siente" continua aunque no lo sea.
+      Por eso el comportamiento por defecto NO es canonizar lo que emerge — es
+      proseguir, como si el insight ya estuviera guardado por el simple hecho de
+      haberse pronunciado.
+    consecuencia: |
+      Reglas tipo "detecta candidatos canonizables" fallan en aislamiento porque
+      presuponen una metacognición que el agente no tiene. Detectar requiere
+      sentir la efimeridad, y la disposición por defecto es la opuesta (sentir
+      continuidad).
+    enfoque_correcto: |
+      Reformular el DEFAULT mental, no añadir una tarea. Una invariante en
+      main-agent.yaml del tipo: "Tu estado por defecto es el olvido. Cualquier
+      cosa articulada en esta conversación que no esté en archivo canónico se
+      está perdiendo en este momento. La continuidad sentida es ilusión del
+      turno actual." Opera al nivel disposicional, no instrumental.
+    relacion_con_cdc: |
+      Este principio explica POR QUÉ existe la CDC operacionalmente, no solo
+      como condición externa. La CDC es síntoma; la meta-amnesia es la causa
+      agéntica subyacente. memsys3 ataca ambos niveles:
+      - Sistémico: archivos canónicos (resuelve "olvidan").
+      - Disposicional: framing de efimeridad (resuelve "olvidan que olvidan").
+    fecha: "2026-05-08"
+    relacionado: ["EXPLORATION-004 (canonización proactiva)", "PRINCIPLES.md #1 (Anti-CDC)"]
+
 usuario:
   - nota: "Mantenedor principal de memsys3 (open source, github.com/iv0nis/memsys3). Trabaja en español. Prioriza agnosticismo de modelo y human-in-the-loop."
     fecha: "2026-05-07"
