@@ -3,6 +3,122 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-08-blueprint001-frente5-eliminacion-residualidad"
+    titulo: "BLUEPRINT-001 Frente 5 ejecutado: Eliminación de residualidad (cierra ISSUE-026 + IMPROVEMENT-006)"
+    data: "2026-05-08"
+    duracion: "~1.5h"
+    peso: "alto"
+    objetivo: |
+      Cerrar el quinto frente de BLUEPRINT-001 (release v1.0): 0 strings catalanes
+      residuales, 0 referencias muertas a viz/mind.md, 0 archivos huérfanos, 0 docs
+      obsoletos en infraestructura activa (memsys3_templates/ distribuible y memsys3/
+      dogfooting). Cierre de ISSUE-026 (deploy.md DevAgent) e IMPROVEMENT-006
+      (depuración terminológica completa). Validación final por grep.
+
+    contexto_inicial: |
+      Punto de partida (newSession): Frentes 1-4 cerrados, branch master limpio
+      modulo 3 untracked de orquestación (agent4/5_prompt_*, multi_work.md,
+      blocked_files_log.md). context.yaml v0.14.0 recién compilado (compilación
+      previa, externa a esta sesión). Usuario instruyó plan first vía ExitPlanMode
+      + 3 forks Explore en paralelo para barrido search-heavy + anti-scope-creep
+      ("hallazgo que abre caja de Pandora → ISSUE separado").
+
+    highlights:
+      - "3 forks Explore paralelos: A (catalán + DevAI/DevAgent), B (refs viz/mind.md + huérfanos), C (docs obsoletos + artefactos extra). Cobertura inicial: 17 hits accionables"
+      - "Re-validación post-edits destapó 5 hits adicionales NO cubiertos por forks: drift dogfooting agents/context-agent.yaml:4,183 + UPDATE.md viz refs masivas (7 bloques)"
+      - "Total 33 hits resueltos en 14 archivos. 0 ISSUEs nuevos, 0 ADRs nuevas (limpieza pura, todo trazable a ADR-009/ADR-015 existentes)"
+      - "Bloque A — Catalán residual: bloque YAML ejemplo entero en memory/README.md ×2 (templates + dogfooting), traducido íntegro (titol/features_implementades/decisio/justificacio + valores)"
+      - "Bloque B — DevAgent/DevAI → Main Agent: 12 sustituciones (4 templates/prompts + 4 dogfooting/prompts + 2 README.md raíz + 2 drift dogfooting agents/context-agent.yaml). Cierra ISSUE-026 e IMPROVEMENT-006 con grep validation 0 hits"
+      - "Bloque C — Refs muertas viz/mind.md: 12 hits en docs/DEVELOPMENT.md (2 estructura tree + entry obsoleta), prompts-dev/actualizar_cat.md (sección Visualizador eliminada + renumeración), docs/UPDATE.md (7 bloques eliminados — checklist, sección Visualizador, Paso 5, troubleshooting, etc.)"
+      - "3 commits atómicos sin firma: 0e5ccb1 (catalán), da9eb27 (DevAgent + cierres), aad6fec (viz/mind + informe + cierre Frente 5). Sin tag (acumular hasta v1.0.0). Sin push automático"
+      - "Informe canónico anti-CDC: backlog/docs/informe_BLUEPRINT-001-residualidad.md (espejo del informe_BLUEPRINT-001-auditoria.md de Frente 2)"
+      - "BLUEPRINT-001 marca [x] Frente 5. project-status.yaml ultima_feature + siguiente_milestone (Frente 6) + pendiente prioritario 1 ajustado (ISSUE-026 cerrado)"
+
+    decisiones_tomadas:
+      - decision: "Anti-scope-creep estricto: side-finding masivo en UPDATE.md (refs viz/) → resolver en mismo Frente 5 sin abrir ISSUE separado"
+        justificacion: |
+          Era limpieza pura del mismo dominio (refs muertas a viz/), no decisión
+          arquitectónica. Crear ISSUE-027 habría sido burocracia anti-CDC. Regla
+          aplicada: "limpieza directa si el dominio coincide con el scope del frente;
+          ISSUE solo si abre caja de Pandora arquitectónica".
+      - decision: "NO modificar memsys3/memory/context.yaml ni memory/full/operations.log"
+        justificacion: |
+          Cambios independientes de Frente 5 (compilación previa v0.14.0 ejecutada
+          por otra instancia/usuario antes de esta sesión). Excluidos de los 3
+          commits atómicos. El usuario decide commitearlos o no por separado.
+      - decision: "Extender Bloque A (catalán) más allá del hit inicial Fork A"
+        justificacion: |
+          Fork A flaggeó solo 'descripcio:' (regex específica). Inspección visual
+          reveló bloque YAML ejemplo completo en catalán (titol, features_implementades,
+          nom, decisio, decisions_preses, justificacio + valores). Traducido íntegro;
+          sigue siendo del mismo dominio "catalán residual" del Bloque A.
+      - decision: "Untracked en raíz (agent4/5_prompt_*, multi_work.md, blocked_files_log.md): no tocar"
+        justificacion: |
+          Decisión usuario explícita en AskUserQuestion: 'son temporales, no hagas
+          nada'. NO añadir a .gitignore (la decisión 'no hacer nada' incluye no
+          tocar el .gitignore). Quedan como working tree noise local del usuario.
+
+    observaciones_canonizables:
+      - hallazgo: "Cobertura de forks: agents/ y docs/UPDATE.md frecuentemente fuera de scope"
+        evidencia: |
+          5/22 hits no detectados por los 3 forks iniciales (drift dogfooting
+          agents/context-agent.yaml + UPDATE.md viz refs masivas, 7 bloques).
+          Idéntico patrón en Frente 4 (side-finding 3 hits DevAgent extras en
+          prompts/ no cubiertos por su scope). Patrón emergente, dos sesiones.
+        propuesta: |
+          Para futuros frentes search-heavy de auditoría/residualidad, incluir
+          explícitamente agents/, docs/UPDATE.md, docs/DEVELOPMENT.md en el ámbito
+          de cada fork (no asumir cobertura completa con prompts/+templates/+README).
+          Si patrón se confirma en Frente 6, formalizar como regla en memory.yaml
+          feedback ('Heurística de cobertura para forks de residualidad').
+        estado: "no anclado todavía (pendiente segunda confirmación en Frente 6)"
+
+    sin_adr_nueva:
+      razon: |
+        Toda la limpieza es trazable a ADRs existentes:
+        - viz archivada: decisión histórica vinculada a ADR-009 (templates permanentes,
+          viz no era template — fue archivada al moverse a docs/archivo/).
+        - DevAgent → Main Agent: ADR-015 (terminología unificada).
+        - Catalán: erradicación histórica sesión 2026-04-15.
+        No emergió ninguna decisión arquitectónica en ejecución.
+
+    archivos_tocados:
+      en_frente_5:
+        - "memsys3_templates/memory/README.md (traducción YAML ejemplo)"
+        - "memsys3/memory/README.md (sync dogfooting)"
+        - "memsys3_templates/prompts/{deploy,endSession,compile-context}.md"
+        - "memsys3/prompts/{deploy,endSession,compile-context}.md (sync dogfooting)"
+        - "README.md (raíz repo, 2 hits)"
+        - "memsys3/agents/context-agent.yaml (drift dogfooting)"
+        - "memsys3/docs/DEVELOPMENT.md (2 viz tree + entry mind.md obsoleta)"
+        - "memsys3/docs/UPDATE.md (7 bloques viz/ eliminados — el más extenso)"
+        - "memsys3/prompts-dev/actualizar_cat.md (lista archivos a traducir)"
+        - "memsys3/backlog/docs/informe_BLUEPRINT-001-residualidad.md (NUEVO)"
+        - "memsys3/backlog/BLUEPRINT-001-release-memsys3-v1.md (Frente 5 [x])"
+        - "memsys3/backlog/ISSUE-026-* (cerrado)"
+        - "memsys3/backlog/IMPROVEMENT-006-* (cerrado)"
+        - "memsys3/memory/project-status.yaml (ultima_feature, siguiente_milestone, pendiente prioritario 1)"
+      no_tocados_intencionalmente:
+        - "memsys3/memory/context.yaml + memory/full/operations.log: cambios de compilación v0.14.0 previa, independientes (working tree)"
+        - "memsys3/memory/memory.yaml: usuario añadió principio 'olvidan-que-olvidan' fuera de mi sesión — working tree, no toco"
+        - "Untracked raíz: temporales por decisión usuario"
+
+    proximos_pasos:
+      - "Push los 3 commits Frente 5 (0e5ccb1, da9eb27, aad6fec) cuando usuario confirme"
+      - "Decidir destino de cambios working tree no-Frente-5 (context.yaml + operations.log + memory.yaml principio nuevo)"
+      - "Sesión fresca para BLUEPRINT-001 Frente 6 (Estrategia dogfooting revisada). Anti-CDC, plan en backlog/docs/plan_BLUEPRINT-001.md"
+      - "ISSUE-025 (link roto docs/UPDATE.md en README:217) sigue abierto — scope Frente 8 (Comunicación)"
+
+    metricas:
+      hits_resueltos: 33
+      archivos_modificados_frente_5: 14
+      issues_cerrados: 2
+      improvements_cerrados: 1
+      adrs_nuevas: 0
+      issues_nuevos: 0
+      commits_atomicos: 3
+      tag: "ninguno (acumular hasta v1.0.0)"
+
   - id: "2026-05-07-blueprint001-frente4-completitud-templates-adr024"
     titulo: "BLUEPRINT-001 Frente 4 ejecutado: completitud de templates + ADR-024 (criterio data-vs-as-is)"
     data: "2026-05-07"
