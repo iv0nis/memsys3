@@ -4,7 +4,7 @@ metadata:
   ultima_actualizacion: "2026-05-08"
   actualizado_por: "Claude (Session 2026-05-08 BLUEPRINT-001 Frente 6 — Estrategia dogfooting + ADR-025)"
   fase: "Development v0.23.0 (preparando v1.0 — Frente 6/8 completado)"
-  memsys3_version: "v0.23.0"
+  memsys3_version: "v0.23.1"
   memsys3_deployed: "2025-10-28"
   file_version: "0.1.0"
 
@@ -157,6 +157,9 @@ decisiones_clave:
   notacion_rutas: "Estándar @memsys3/ siempre (notación Claude Code)"
 
 historico_sesiones:
+  - fecha: "2026-05-08"
+    resumen: "BLUEPRINT-001 Frente 6 ejecutado: Estrategia dogfooting versionado formalizada en ADR-025 (primera ADR sobre el tema; ISSUE-024 confirmó que ADR-011 nunca existió, era convención informal en README:235-247). Plan mode con AskUserQuestion x2: Opción C (híbrido) sobre A/B + mecanismos 1+2 (hook + auditoría) descartando 3 (regla en actualizar.md, capa equivocada) y 4 (CI, no hay pipeline → ISSUE-028 abierto). Capa 1: hook .githooks/pre-commit (bash 21 líneas, agnóstico, exit=1 si detecta items [A-Z]+-[0-9]+-*.md en memsys3_templates/backlog/). Capa 2: bloque PASO 6.5 en comprobar_alineamiento.md. Rotación pre-doc adr.yaml → adr_1.yaml (1994 líneas). README raíz: instrucción git config core.hooksPath .githooks. Verificación end-to-end OK (test positivo TEST-999-leak.md → exit=1, auditoría manual 0 hits). 6 commits atómicos sin firma + endSession + bump v0.23.1 + tag patch. Cierra IMPROVEMENT-008 sistémicamente. 6/8 frentes BLUEPRINT-001 completados. Reframing crítico documentado como gotcha: verificar que ADRs citadas existen antes de extenderlas. ~1.5h peso alto."
+
   - fecha: "2026-05-08"
     resumen: "BLUEPRINT-001 Frente 5 ejecutado: Eliminación de residualidad. 33 hits resueltos en 14 archivos sin escalación a ISSUE. 3 forks Explore paralelos (catalán+DevAI, viz/mind+huérfanos, docs+artefactos) cubrieron 17 hits; re-validación destapó 5 adicionales no cubiertos (drift agents/context-agent.yaml + UPDATE.md viz masivo) → patrón emergente sobre cobertura de forks (hallazgo canonizable, pendiente segunda confirmación Frente 6). Bloque A catalán: bloque YAML ejemplo entero en memory/README.md ×2 traducido. Bloque B DevAgent/DevAI: 12 hits → cierra ISSUE-026 + IMPROVEMENT-006 con grep validation. Bloque C viz/mind.md: 12 hits en DEVELOPMENT.md, UPDATE.md (7 bloques), actualizar_cat.md. 0 ADRs nuevas (limpieza pura, todo trazable a ADR-009/ADR-015 existentes). 3 commits atómicos sin firma sin tag. Working tree: context.yaml+operations.log de compilación v0.14.0 previa + memory.yaml principio 'olvidan-que-olvidan' añadido por usuario externo a sesión, NO tocados. Untracked raíz dejados como están (decisión usuario explícita). Cierra Frente 5 [x]. Siguiente: Frente 6 (Estrategia dogfooting revisada). ~1.5h peso alto."
 

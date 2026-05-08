@@ -3,6 +3,110 @@
 # Sesiones anteriores rotadas a: sessions_1.yaml (1849 líneas, hasta 2025-12-03), sessions_2.yaml (1837 líneas, hasta 2026-03-26)
 
 sessions:
+  - id: "2026-05-08-blueprint001-frente6-estrategia-dogfooting-adr025"
+    titulo: "BLUEPRINT-001 Frente 6: Estrategia dogfooting versionado formalizada (ADR-025 + protocolo anti-leak)"
+    data: "2026-05-08"
+    duracion: "~1.5h"
+    peso: "alto"
+    objetivo: |
+      Cerrar el sexto frente del BLUEPRINT-001 (release v1.0): formalizar el rol de
+      memsys3/ (instancia dogfooting) en el repo memsys3 e implementar protocolo
+      anti-leak sistémico que cierre el vector IMPROVEMENT-008 (leak histórico
+      dogfooting → distribuible). Distinto en perfil a frentes 2/3/5 (search-heavy):
+      éste es decisión arquitectónica con tradeoffs reales, conversacional con el
+      usuario.
+
+    contexto_inicial: |
+      Punto de partida (newSession 2026-05-08): Frentes 1-5 cerrados, branch master
+      con working tree dirty (M en context.yaml/operations.log/memory.yaml +
+      memory.yaml con principio "olvidan-que-olvidan" añadido por usuario fuera de
+      sesión + EXPLORATION-004/PRINCIPLES.md/newSession.md ×2 modificados; 4
+      untracked: agent6_prompt_frente6.txt como prompt de misión, multi_work.md y
+      blocked_files_log.md como sistema de locks multi-agente catalán de origen
+      CLIENT_A, ISSUE-027 sobre migrar principios_fundacionales de memory.yaml
+      → PRINCIPLES.md). Disciplina de scope: ninguna de esas modificaciones se toca
+      en este frente.
+
+    que_es_va_fer:
+      - "Plan mode con investigación previa: leídos PRINCIPLES.md, BLUEPRINT-001 item, plan_BLUEPRINT-001 sección Frente 6, informe_BLUEPRINT-001 §3.5"
+      - "Hallazgo crítico anti-CDC: ADR-011 (que el prompt mencionaba como base a revisar) NO EXISTE — confirmado por ISSUE-024 del Frente 2 (010/011 son las dos ADRs ausentes). Reframing: ADR-025 NO es 'extensión de ADR-011' sino primera ADR formal sobre dogfooting versionado; la convención previa vivía solo en README:235-247"
+      - "AskUserQuestion plan A/B/C: usuario eligió C (híbrido). Razones de fondo confirmadas: coherencia con deploy.md Paso 8 (memsys3 recomienda al usuario INCLUIR memsys3/), anti-CDC sistémico (la disciplina humana/agéntica ya falló en IMPROVEMENT-008), A subóptimo"
+      - "AskUserQuestion mecanismos: 1+2 (hook pre-commit + auditoría comprobar_alineamiento). 3 (regla en actualizar.md) descartado: capa equivocada. 4 (CI check) descartado: no hay pipeline → ISSUE-028 abierto para futuro"
+      - "Rotación pre-doc adr.yaml → adr_1.yaml (1994 líneas, 24 ADRs hasta ADR-024). Nuevo adr.yaml con ADR-025 + índice completo señalando archivo por ADR"
+      - "ADR-025 escrita: contexto + decisión + 4 alternativas descartadas con razón + consecuencias + anclaje PRINCIPLES.md #2/#3/#4/#9 + relación con ADR-016 + nota explícita sobre no-extensión-de-ADR-011"
+      - ".githooks/pre-commit creado (bash 21 líneas, agnóstico, exit=1 si detecta items [A-Z]+-[0-9]+-*.md en memsys3_templates/backlog/)"
+      - "comprobar_alineamiento.md extendido con PASO 6.5 'Auditoría anti-leak': 2 checks bash (ls backlog + find memsys3_templates) y diagnóstico explícito"
+      - "ISSUE-028 creado: plan para GitHub Action cuando se establezca CI, dos opciones (workflow propio vs reutilizar hook como script invocable)"
+      - "README raíz: línea en sección Contribuciones con 'git config core.hooksPath .githooks' (activación una sola vez por dev)"
+      - "BLUEPRINT-001-release-memsys3-v1.md: Frente 6 [x] con resumen completo. project-status.yaml: metadata + fase + ultima_feature + siguiente_milestone actualizados (6/8 → siguiente Frente 7)"
+      - "Verificación end-to-end: hook activado, test positivo passed (TEST-999-leak.md → exit=1 con mensaje correcto, archivo limpiado), auditoría manual ejecutada → 0 hits"
+      - "6 commits atómicos sin firma (defensa multi-capa funcionando): rotation+ADR025, hook, comprobar_alineamiento, ISSUE-028, README, blueprint+project-status"
+
+    decisiones_tomadas:
+      - "Opción C (híbrido) sobre A (statu quo) y B (.gitignore memsys3/): la disciplina ya falló (IMPROVEMENT-008), B es incoherente con la propia recomendación de memsys3 a usuarios"
+      - "Mecanismos 1+2 (hook + auditoría): 3 (actualizar.md) capa equivocada, 4 (CI) sin pipeline → pospuesto en ISSUE-028"
+      - "Hook vive en este repo, NO se distribuye al scaffold: los proyectos del usuario no tienen el problema 'templates vs dogfooting' (su memsys3/ es solo data)"
+      - "Ubicación .githooks/ (versionable) + activación opt-in vía git config core.hooksPath (git-estándar, agnóstico PRINCIPLES.md #2)"
+      - "Scope dur: NO tocar M/?? no relacionados — son items aparte (ISSUE-027, multi_work.md, etc.)"
+      - "Push + tag patch v0.23.1 al cierre (decisión usuario): trazabilidad fina del Frente 6 justifica patch antes de seguir acumulando hasta v1.0.0"
+
+    adr_relacionada: "ADR-025"
+
+    gotchas:
+      - tipo: "verificacion-prerequisito-adr-citada"
+        problema: |
+          El prompt del Frente 6 daba como referencia 'ADR-011 (separación
+          agnóstico/específico)' en múltiples sitios (informe, BLUEPRINT, README),
+          pero ADR-011 NUNCA existió — ISSUE-024 del Frente 2 ya lo había
+          identificado como ADR ausente. Si no se hubiera leído ISSUE-024 primero,
+          el frente habría arrancado con framing equivocado ('extensión de ADR-011')
+          y la ADR-025 habría salido mal anclada.
+        solucion: |
+          Antes de escribir una ADR que cite o extienda otra: VERIFICAR que la ADR
+          citada existe (grep en adr.yaml). Documentar el reframing explícitamente
+          en la nueva ADR para que el agente futuro encuentre la corrección en el
+          archivo canónico (no tenga que reconstruirla).
+        criticidad: "media"
+
+      - tipo: "scope-creep-untracked-prep-artifacts"
+        problema: |
+          Working tree con artefactos preparatorios untracked (multi_work.md,
+          blocked_files_log.md, ISSUE-027, agent6_prompt_frente6.txt) y M no
+          relacionados (PRINCIPLES.md, memory.yaml con olvidan-que-olvidan,
+          newSession.md ×2). Tentación: 'mientras estamos aquí, los limpiamos
+          también'. Riesgo: scope creep en frente arquitectónico que requiere
+          disciplina de alcance.
+        solucion: |
+          Out-of-scope explícito en el plan (sección dedicada). Selective `git add`
+          por archivo, NUNCA `git add -A` en sesiones con working tree mixto.
+        criticidad: "media"
+
+      - tipo: "regex-bash-special-chars"
+        problema: "Verificación 'grep -c \"Frente 6.*\\[x\\]\"' devolvió 0 por escape incorrecto del bracket regex (clase de caracteres). Falso negativo."
+        solucion: "Usar grep -F (literal) para verificar marcas [x] en docs Markdown."
+        criticidad: "baja"
+
+    proximos_pasos:
+      - "Frente 7 BLUEPRINT-001: Pulir deploy/actualizar/commands + smoke tests. Validar Pasos 6.4 (sustitución diferencial) y 6.4.5 (deprecation) de actualizar.md con ADR-018/019 en proyecto de prueba. Sesión fresca recomendada (anti-CDC)"
+      - "Frente 8 BLUEPRINT-001: Comunicación / release v1.0 (CHANGELOG, web memsys3.org placeholder, wiki sincronizada, tag v1.0.0)"
+      - "Pendiente independiente: decidir destino de multi_work.md + blocked_files_log.md (migrar a memsys3/prompts/ tras agnostización + traducción, o prompts-dev/, o .gitignore)"
+      - "Pendiente independiente: ejecutar ISSUE-027 (migrar principios_fundacionales de memory.yaml → PRINCIPLES.md)"
+      - "Pendiente independiente: refresh de pendientes_prioritarios en project-status.yaml — stale"
+
+    notas_adicionales: |
+      Frente 6 cierra el último vector arquitectónico abierto del BLUEPRINT-001 antes
+      del bloque operativo final (Frentes 7-8). 6/8 completados.
+
+      Defensa multi-capa anti-firma funcionando: 6 commits + bump versión + session
+      doc = 8 commits sin Co-Authored-By detectados.
+
+      Heurística orquestación de forks (memory.yaml feedback): NO se forkó nada
+      —correcto— era decisión arquitectónica conversacional, no search-heavy.
+      Confirma criterio (1) vs (2) del feedback.
+
+      adr.yaml ahora limpio (239 líneas con ADR-025 + índice completo) — margen
+      amplio para Frente 7-8.
+
   - id: "2026-05-08-blueprint001-frente5-eliminacion-residualidad"
     titulo: "BLUEPRINT-001 Frente 5 ejecutado: Eliminación de residualidad (cierra ISSUE-026 + IMPROVEMENT-006)"
     data: "2026-05-08"
