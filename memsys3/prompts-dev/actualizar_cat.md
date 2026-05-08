@@ -92,13 +92,12 @@ Ahora debes traducir TODOS los archivos copiados de español a catalán.
 
 #### Archivos a Traducir (por orden de prioridad):
 
-**1. Prompts (9 archivos):**
+**1. Prompts (8 archivos):**
 - `prompts/newSession.md`
 - `prompts/endSession.md`
 - `prompts/compile-context.md`
 - `prompts/deploy.md`
 - `prompts/actualizar.md`
-- `prompts/mind.md`
 - `prompts/backlog.md`
 - `prompts/github.md`
 - `prompts/actualizar_cat.md` (este mismo archivo, ¡irónico!)
@@ -113,12 +112,7 @@ Ahora debes traducir TODOS los archivos copiados de español a catalán.
 - `agents/main-agent.yaml`
 - `agents/context-agent.yaml`
 
-**4. Visualizador (3 archivos):**
-- `viz/index.html`
-- `viz/viewer.js`
-- `viz/README.md`
-
-**5. READMEs (1 archivo):**
+**4. READMEs (1 archivo):**
 - `memory/README.md`
 
 **NO traducir:**
@@ -247,7 +241,6 @@ Arxius actualitzats:
 - prompts/*.md
 - memory/templates/*.yaml
 - agents/*.yaml
-- viz/*
 
 Generated with Claude Code
 https://claude.com/claude-code

@@ -14,7 +14,7 @@ Este prompt:
 - ✅ Detecta automáticamente tu versión actual de memsys3
 - ✅ Identifica estructura antigua incompatible (PASO 0 crítico)
 - ✅ Crea backups automáticos antes de tocar datos
-- ✅ Actualiza solo archivos safe (viz/, templates/, prompts/, agents/)
+- ✅ Actualiza solo archivos safe (templates/, prompts/, agents/)
 - ✅ Preserva tus datos (adr.yaml, sessions.yaml, project-status.yaml)
 - ✅ Valida la actualización al finalizar
 
@@ -33,11 +33,6 @@ Esta guía es para cuando hay **cambios/mejoras en memsys3_templates/** y quiere
 ### 1. Actualización de Sistema (Safe)
 
 Archivos que puedes actualizar sin perder datos:
-
-**Visualizador (viz/):**
-```bash
-cp -r memsys3/memsys3_templates/viz/* tu-proyecto/memsys3/viz/
-```
 
 **Documentación del sistema:**
 ```bash
@@ -104,9 +99,6 @@ cp -r tu-proyecto/memsys3 tu-proyecto/memsys3_backup_$(date +%Y%m%d)
 ```bash
 cd tu-proyecto
 
-# Visualizador
-cp -r path/to/memsys3/memsys3_templates/viz/* memsys3/viz/
-
 # Templates
 cp path/to/memsys3/memsys3_templates/memory/templates/*.yaml memsys3/memory/templates/
 
@@ -132,10 +124,6 @@ Si hay mejoras en prompts/agents que quieres:
 ### Paso 5: Verificar
 
 ```bash
-# Verifica que el visualizador funciona
-cd memsys3/memory
-python3 serve.py
-
 # Verifica que puedes compilar contexto
 # Con tu AI agent: @memsys3/prompts/compile-context.md
 ```
@@ -151,14 +139,6 @@ Si hay cambios en `prompts/compile-context.md`:
 3. Aplica cambios manualmente si quieres el nuevo feature
 4. Prueba compilando: `@memsys3/prompts/compile-context.md`
 
-### Nueva Funcionalidad en Visualizador
-
-Actualización directa (safe):
-
-```bash
-cp -r memsys3/memsys3_templates/viz/* tu-proyecto/memsys3/viz/
-```
-
 ### Cambios en Templates YAML
 
 Actualización directa (safe):
@@ -168,16 +148,6 @@ cp memsys3/memsys3_templates/memory/templates/*.yaml tu-proyecto/memsys3/memory/
 ```
 
 ## Troubleshooting
-
-### "El visualizador no carga después de actualizar"
-
-```bash
-# Verifica permisos
-chmod +x memsys3/viz/serve.py
-
-# Verifica paths en viewer.js
-# Deben apuntar a tus archivos correctos
-```
 
 ### "El Context Agent se comporta diferente"
 
@@ -193,13 +163,11 @@ chmod +x memsys3/viz/serve.py
 ## Checklist de Actualización
 
 - [ ] Backup de `memsys3/` completo
-- [ ] Actualizar visualizador (`viz/`)
 - [ ] Actualizar templates (`memory/templates/`)
 - [ ] Actualizar documentación (`memory/README.md`)
 - [ ] Revisar diff de prompts
 - [ ] Revisar diff de agents
 - [ ] Aplicar cambios manualmente en prompts/agents si aplica
-- [ ] Verificar visualizador funciona
 - [ ] Verificar compilación de contexto funciona
 - [ ] Eliminar backup si todo OK
 

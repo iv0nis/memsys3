@@ -38,7 +38,7 @@ Sin esto, v1.0 sería un release con CDC alta: los usuarios externos dependería
 - [x] Frente 2: Auditoría ADRs vs código real (1 a 1) — completado sesión 2026-05-07. Reporte: [`docs/informe_BLUEPRINT-001-auditoria.md`](docs/informe_BLUEPRINT-001-auditoria.md). 18/20 ADRs cumplidas. Brechas → ISSUE-024 (meta 010/011 ausentes), ISSUE-025 (ADR-007 docs/UPDATE.md link roto), ISSUE-026 (ADR-015 deploy.md "DevAgent"). ADR-021 leak cubierto por Frente 3.
 - [ ] Frente 3: Scaffold completo en deploy (verificar y completar)
 - [x] Frente 4: Completitud de templates — completado sesión 2026-05-07. ADR-024 formaliza criterio **data-vs-as-is** (handle citable) + `operations-template.log` creado en ambos sitios (templates + dogfooting). Side-finding: sync `context-template.yaml` dogfooting (DevAI → Main Agent, brecha ADR-015 latente). Cierra pendiente prioritario 3 de project-status.yaml.
-- [ ] Frente 5: Eliminación de residualidad (catalán, referencias muertas, huérfanos)
+- [x] Frente 5: Eliminación de residualidad — completado sesión 2026-05-08. Reporte: [`docs/informe_BLUEPRINT-001-residualidad.md`](docs/informe_BLUEPRINT-001-residualidad.md). 33 hits resueltos en 14 archivos (catalán YAML ejemplo en memory/README.md ×2; DevAgent/DevAI ×12 en prompts/agents/README cierra ISSUE-026 + IMPROVEMENT-006; viz/mind.md ×12 en DEVELOPMENT.md + UPDATE.md + actualizar_cat.md). 0 archivos huérfanos. 0 docs obsoletos. Sin ADR nueva. Siguiente: Frente 6.
 - [ ] Frente 6: Estrategia dogfooding revisada
 - [ ] Frente 7: Pulir deploy/actualizar/commands + smoke tests
 

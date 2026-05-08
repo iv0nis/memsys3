@@ -92,7 +92,6 @@ memsys3_templates/                # TODO esto se copia
 │   ├── history/                  # Vacío (para Plan Contingencia)
 │   ├── project-status.yaml       # Con campos [PLACEHOLDER] para rellenar
 │   └── README.md                 # Agnóstico
-├── viz/                          # Agnóstico (todo se copia)
 ├── prompts/                      # Agnósticos (todos se copian)
 └── README.md                     # Agnóstico
 ```
@@ -142,7 +141,6 @@ memsys3/
 │   ├── history/                  # Vacío
 │   ├── project-status.yaml       # Rellenado con info del proyecto
 │   └── README.md
-├── viz/                          # Copiado tal cual
 ├── prompts/                      # Copiados tal cual
 └── README.md
 ```
@@ -314,9 +312,6 @@ Archivos que contienen muchas referencias a rutas y deben revisarse siempre:
 4. **memsys3_templates/prompts/endSession.md**
    - Escribe en: `memsys3/memory/full/sessions.yaml`
    - Usa templates: `memsys3/memory/templates/`
-
-5. **memsys3_templates/prompts/mind.md**
-   - Comando: `cd memsys3/viz && python3 serve.py`
 
 ## Main-Agent vs Context-Agent
 
