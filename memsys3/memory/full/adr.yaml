@@ -143,6 +143,102 @@ adrs:
 
       Origen: BLUEPRINT-001 Frente 6. Sesión 2026-05-08.
 
+  - id: "026"
+    titulo: "Mono-repo + multi-work distribuible (decisiones arquitectónicas v1.0)"
+    data: "2026-05-10"
+    estado: aceptado
+    area: "arquitectura,distribución,workflow"
+
+    context: |
+      Pre-release v1.0 emergieron dos decisiones arquitectónicas que requerían
+      formalización: (1) separación dev-repo vs distribuible-repo, (2) inclusión
+      del sistema multi-work (locks paralelos) en el release v1.0 distribuible.
+
+      Decisión 1 — Mono-repo: la separación agnóstico/específico ya está resuelta
+      a nivel de carpeta (ADR-011, ADR-023): `memsys3_templates/` es el producto
+      distribuible y `memsys3/` es la instancia dogfooting. Ambos viven en el
+      mismo repo `iv0nis/memsys3`. La pregunta era si conviene split en dos repos
+      antes de v1.0 (uno público para distribución, uno privado para desarrollo).
+
+      Decisión 2 — Multi-work distribuible: en sesión 2026-05-08 se integró el
+      sistema multi-work (`memsys3/prompts/multi_work.md` + `blocked_files_log.md`)
+      en modo espejo dogfooting↔templates. La inclusión definitiva en v1.0 quedó
+      diferida a Frente 8.
+
+    decision: |
+      Decisión 1 — MANTENER MONO-REPO. memsys3 sigue siendo un único repo público
+      `iv0nis/memsys3`. La separación carpeta agnóstico/dogfooting es suficiente:
+      `memsys3_templates/` se distribuye via deploy.md/actualizar.md, `memsys3/`
+      es interno (gitignored selectivamente desde Fase 1 saneamiento privacidad).
+
+      Decisión 2 — MULTI-WORK SE DISTRIBUYE EN v1.0. El sistema de locks paralelos
+      (`memsys3/prompts/multi_work.md` + `blocked_files_log.md`) entra en el
+      scaffold distribuible (`memsys3_templates/`). Los wildcards de deploy.md y
+      actualizar.md ya lo incluyen. Aunque temporal en su origen, demostró valor
+      operativo durante BLUEPRINT-001 — la solución es real, no provisional.
+
+    alternatives:
+      - nombre: "Split en dos repos (dev privado + público distribuible)"
+        pros:
+          - "Aislamiento total del dev en repo privado"
+          - "Distribuible público sin diary granular"
+        contras:
+          - "Sync manual entre repos = complejidad alta"
+          - "Dos sets de issues/PRs/CI"
+          - "Fricción para contribuidores externos (qué repo usar)"
+          - "memsys3 es 1 producto cohesionado, no 2 con vidas independientes"
+        por_que_descartada: "Coste/beneficio negativo. Privacidad ya resuelta vía gitignore + history rewrite (ver PRIVACY-CLEANUP-PROCEDURE)."
+
+      - nombre: "Eliminar multi-work del scaffold antes de v1.0"
+        pros:
+          - "Scaffold más mínimo"
+          - "Una feature menos que mantener para usuarios externos"
+        contras:
+          - "Multi-work resuelve problema real (colisiones agentes paralelos humanos)"
+          - "Implementación ya validada y agnóstica de modelo"
+          - "Quitar y reañadir post-v1.0 es churn innecesario"
+        por_que_descartada: "Multi-work demostró valor operativo durante BLUEPRINT-001. Distribuirlo es coherente con su utilidad."
+
+      - nombre: "Multi-work como feature opt-in (NO en scaffold default)"
+        pros:
+          - "Scaffold más limpio por defecto"
+          - "Users que no lo necesitan no lo ven"
+        contras:
+          - "Complejidad de configuración (¿flag en deploy.md? ¿separate prompt?)"
+          - "Discoverability bajo: users que SÍ lo necesitan no saben que existe"
+        por_que_descartada: "Multi-work es lightweight (1 prompt + 1 log file). Distribuirlo en scaffold default es mejor UX."
+
+    consecuencias:
+      positivas:
+        - "Mono-repo simplifica contribuciones externas (un fork, una vista del histórico)"
+        - "Multi-work disponible out-of-the-box para usuarios que ejecuten múltiples sesiones humanas paralelas"
+        - "Cero coordinación CI entre repos"
+        - "Stars/forks/issues centralizados en un único proyecto"
+      negativas:
+        - "El dogfooting `memsys3/` requiere disciplina de gitignore para no exponer datos personales (ya resuelto Fase 1)"
+        - "Multi-work añade ~150 líneas al scaffold distribuido"
+      impacto: |
+        Afecta: memsys3_templates/prompts/multi_work.md, memsys3_templates/blocked_files_log.md,
+        memsys3/agents/main-agent.yaml (bloque coordinacion_paralela ya distribuible),
+        deploy.md y actualizar.md (wildcards los incluyen automáticamente).
+
+    notes: |
+      Decisión 1 (mono-repo): práctica OSS dominante (React, VS Code, Rust, Linux,
+      Next.js, etc.). Multi-repo es excepción raramente justificada (Node.js core
+      vs sub-projects con ciclos de release independientes — no aplica a memsys3).
+
+      Decisión 2 (multi-work distribuible): la decisión se tomó tras 2 sesiones
+      reales de uso paralelo durante BLUEPRINT-001 que validaron la utilidad.
+      El sistema es agnóstico (bash POSIX puro, no depende de Claude Code).
+
+      Decisiones complementarias en sesión 2026-05-09:
+      - ISSUE-027 cerrado: principios_fundacionales migrados de memory.yaml a PRINCIPLES.md
+      - ISSUE-029 cerrado: commands.md descriptions actualizadas con features post-Frentes 1-6
+      - LICENSE MIT añadido en raíz repo
+
+      Origen: BLUEPRINT-001 Frente 8 Bloque 1 decisiones. Sesión 2026-05-09 (continuación
+      multi-día desde 2026-05-08).
+
 # Índice rápido para encontrar ADRs (incluye rotadas en adr_1.yaml)
 index:
   - id: "001"
@@ -235,5 +331,9 @@ index:
     archivo: "adr_1.yaml"
   - id: "025"
     titulo: "Estrategia dogfooting versionado: memsys3/ se commitea con protocolo anti-leak"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "026"
+    titulo: "Mono-repo + multi-work distribuible (decisiones arquitectónicas v1.0)"
     estado: aceptado
     archivo: "adr.yaml"
