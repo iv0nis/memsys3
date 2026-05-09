@@ -214,7 +214,7 @@ Ver **[memsys3_templates/memory/README.md](memsys3_templates/memory/README.md)**
 Para desplegar memsys3 en un proyecto nuevo, ver la guía en `memsys3_templates/prompts/deploy.md`
 
 ### Actualización (Proyecto Existente)
-Para actualizar memsys3 en un proyecto que ya lo tiene desplegado, ver la guía en `docs/UPDATE.md`
+Para actualizar memsys3 en un proyecto que ya lo tiene desplegado, ver la guía en `UPDATE.md`
 
 ## 🛠 Requisitos
 
