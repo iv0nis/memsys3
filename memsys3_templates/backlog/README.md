@@ -84,17 +84,19 @@ Cuando decides trabajar en un item:
 ### 3. Completar Items
 
 Cuando el trabajo está completo:
-1. Cambiar estado a **Completado**
+1. Cambiar estado a **Completado** dentro del archivo + fecha de cierre
 2. Agregar referencia a commits/PRs
-3. **NO mover a archivo/** - mantener en backlog/ como referencia
+3. **Mover a `backlog/archive/`** vía `git mv` (preserva blame)
 4. Items completados sirven como documentación de decisiones
+
+**Por qué archivar**: `ls memsys3/backlog/` muestra solo pendientes. Visibilidad inmediata sin abrir archivos.
 
 ### 4. Cancelar/Rechazar Items
 
 Si decides no implementar algo:
 1. Cambiar estado a **Cancelado** o **Rechazado**
 2. Documentar por qué (cambio de prioridad, no viable, etc.)
-3. Mantener en backlog/ como referencia histórica
+3. **Mover a `backlog/archive/`** (mismo tratamiento que Completado: ya no es trabajo pendiente)
 
 ---
 
@@ -213,8 +215,9 @@ Backlog (futuro) → Sessions (hacer) → ADRs (decidir) → Project Status (aho
 ## 🗂️ Organización
 
 - Un archivo por item
-- Numeración secuencial por tipo (no global)
-- Mantener completados en backlog/ (no archivar)
+- Numeración secuencial por tipo (no global). **Para próximo ID, escanea `backlog/` Y `backlog/archive/`** (numeración monótona ininterrumpida)
+- **Items pendientes**: en `backlog/` raíz
+- **Items completados/cancelados/rechazados**: en `backlog/archive/`
 - README.md (este archivo) documenta el sistema
 
 ---

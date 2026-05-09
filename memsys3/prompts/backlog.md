@@ -55,14 +55,20 @@ Propuesto → Abierto → En Progreso → Completado / Cancelado / Rechazado / B
 ## 1. Consultar Backlog
 Si el usuario quiere ver el estado del backlog:
 1. Lee `memsys3/backlog/README.md` para entender el sistema
-2. Lista los ítems actuales en `memsys3/backlog/` (excluye README.md)
-3. Muestra: prefijo, título, estado, prioridad de cada ítem
+2. Lista los ítems pendientes en `memsys3/backlog/` (excluye README.md, archive/, docs/)
+3. Si el usuario pide "todos" o "incluye archivados", lista también `memsys3/backlog/archive/`
+4. Muestra: prefijo, título, estado, prioridad de cada ítem
 
 ## 2. Crear Nuevo Item
 Si el usuario quiere crear un item:
 1. Pregunta qué tipo de item quiere crear (usa la leyenda abajo)
 2. Lee `memsys3/backlog/README.md` para entender estructura de documentos
-3. Verifica numeración existente del prefijo elegido
+3. **Verifica numeración existente del prefijo escaneando AMBAS carpetas:**
+   ```bash
+   ls memsys3/backlog/[PREFIJO]-*.md memsys3/backlog/archive/[PREFIJO]-*.md 2>/dev/null \
+     | grep -oE '[A-Z]+-[0-9]+' | sort -u | tail -3
+   ```
+   Esto garantiza numeración monótona ininterrumpida (items archivados cuentan).
 4. Crea el archivo `memsys3/backlog/[PREFIJO]-[NUMERO]-[nombre].md` con estructura correcta
 5. Incluye: Estado, Prioridad, Tipo, Plazo, Fecha, Problema/Propuesta, Referencias
 

@@ -118,7 +118,24 @@ Antes de documentar, hazte una pasada explícita por cada categoría:
 
 Si la información parece "ya estar implícita en el diff o el commit": canonízala igualmente. Los commits no se leen al iniciar sesión; los archivos canónicos sí. La intuición "esto ya está claro" es síntoma de meta-amnesia, no señal de que se haya guardado.
 
-Si tras la pasada NO emerge nada canonizable: continúa al paso 3.
+Si tras la pasada NO emerge nada canonizable: continúa al paso 2.8.
+
+### 2.8. Archivar items de backlog completados (auto)
+
+Revisa el flujo de la sesión. Identifica items de `memsys3/backlog/` que se cerraron (resueltos por trabajo realizado o por decisión explícita del usuario) y NO están todavía en `memsys3/backlog/archive/`.
+
+Para cada item detectado, ejecuta automáticamente sin pedir confirmación:
+
+1. Editar el archivo: actualizar `**Estado:** Completado` (o `Cancelado`/`Rechazado` según corresponda) + añadir línea `**Fecha cierre:** YYYY-MM-DD`.
+2. `git mv memsys3/backlog/PREFIJO-NNN-titulo.md memsys3/backlog/archive/`
+
+Reportar en el resumen final (paso 6) la lista con razón concreta de cierre:
+
+> "📦 Items archivados: ISSUE-005 (cerrado por commit X), FEATURE-002 (cubierto por sesión Y), ..."
+
+**Salvaguarda**: el usuario ve la lista en el resumen final. Si algún archivado es incorrecto, `git mv archive/X .` lo revierte trivialmente.
+
+Si NO detectas items completables, omite este paso silenciosamente.
 
 ### 3. Comprobar Rotaciones Automáticas
 
