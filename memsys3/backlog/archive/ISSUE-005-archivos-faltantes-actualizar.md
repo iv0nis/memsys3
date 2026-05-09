@@ -1,6 +1,6 @@
 # ISSUE-005: Archivos faltantes en actualizar.md PASO 6.1
 
-**Estado:** Abierto
+**Estado:** Completado (2026-05-09, BLUEPRINT-001 Frente 8 cleanup pass)
 **Prioridad:** Alta
 **Tipo:** Bug / Actualización Incompleta
 **Plazo:** Inmediato
