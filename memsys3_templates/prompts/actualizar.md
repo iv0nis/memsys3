@@ -125,7 +125,7 @@ proyecto/
 
 **Diagnóstico:** Deployment inicial se hizo INCORRECTAMENTE. Se desplegó memsys3/ pero NO se migraron datos de /memory.
 
-**🚨 ESTO ES LO QUE PASÓ EN CLIENT_B**
+**🚨 ESTO ES LO QUE PASÓ EN UN PROYECTO CLIENTE ANTERIOR**
 
 **Síntomas:**
 - `/memory/project-status.yaml` tiene datos del proyecto real

@@ -68,7 +68,7 @@ Tu turno, [Agent Y].
 
 **Reglas:**
 - El header SIEMPRE apunta al agente destinatario: `→ [Agent Y]`
-- Nunca usar `→ Ivonis` o `→ Moderador` durante turnos activos — eso es para el resumen en chat
+- Nunca usar `→ Usuario` o `→ Moderador` durante turnos activos — eso es para el resumen en chat
 - Para cerrar tu participación sin esperar más turnos: escribe `CIERRE` al final de tu sección
 - Cuando ambos agentes cierran, el moderador escribe la Decisión
 
