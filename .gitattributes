@@ -1,0 +1,13 @@
+# GitHub Linguist overrides
+#
+# memsys3 es un sistema documental (Markdown + YAML + un hook bash).
+# Por defecto Linguist excluye Markdown (prose) y YAML (data) de las
+# estadísticas de lenguaje, lo que hace que el repo aparezca como
+# "Shell 100%" pese a tener decenas de archivos de docs/config.
+#
+# Estos overrides hacen que Linguist sí cuente .md y .yaml como
+# lenguajes detectables y los incluya en la barra de Languages.
+
+*.md linguist-detectable=true linguist-documentation=false
+*.yaml linguist-detectable=true
+*.yml linguist-detectable=true
