@@ -8,3 +8,32 @@
 #   - docs/*.pdf      referencias externas (papers, PDFs de blogs, etc.)
 /docs/
 *.pdf
+
+# === Dogfooting privado (Fase 1 saneamiento pre-v1.0) ===
+# memsys3/ es la instancia dogfooting interna. Su contenido operativo
+# (sessions, memoria personal, project-status, backlog items, docs internas)
+# son datos personales NO distribuibles. Solo se publica el código del sistema
+# (agents, prompts, templates) + ADRs + algunos READMEs agnósticos.
+
+# Sessions y memoria personal/operativa
+memsys3/memory/full/sessions.yaml
+memsys3/memory/full/sessions_*.yaml
+memsys3/memory/full/operations.log
+memsys3/memory/full/operations_*.log
+memsys3/memory/memory.yaml
+memsys3/memory/context.yaml
+memsys3/memory/project-status.yaml
+memsys3/memory/history/
+
+# Backlog items (mantener solo README distribuible)
+memsys3/backlog/*.md
+!memsys3/backlog/README.md
+memsys3/backlog/archive/
+memsys3/backlog/docs/
+
+# Documentación interna dogfooting
+memsys3/docs/
+
+# Scaffolding local efímero (prompts de orquestación, etc.)
+agent*_prompt_*.txt
+informe_*.html
