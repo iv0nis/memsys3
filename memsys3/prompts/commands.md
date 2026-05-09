@@ -13,8 +13,9 @@
 ## ¿Qué son los comandos globales?
 
 Comandos que funcionan desde **cualquier proyecto** sin necesidad de tener memsys3 desplegado localmente:
-- `/deploy-memsys3` - Desplegar memsys3 en un proyecto nuevo
-- `/actualizar-memsys3` - Actualizar memsys3 en proyecto existente
+
+- **`/deploy-memsys3`** — Desplegar memsys3 en proyecto nuevo. Crea scaffold canónico (ADR-023): agents, prompts, templates, memory/full vacíos, backlog, `PRINCIPLES.md` (ADR-022), bridge `MEMORY.md` opcional para Claude Code (ADR-020), `.gitignore` con consulta interactiva.
+- **`/actualizar-memsys3`** — Actualizar memsys3 en proyecto desplegado. Sustitución diferencial de templates schema (ADR-018, Paso 6.4) + deprecation contextualizada (ADR-019, Paso 6.4.5) + sincronización `PRINCIPLES.md` (Paso 6.6) + preservación de archivos custom del usuario.
 
 Se instalan en `~/.claude/commands/` y Claude Code los reconoce automáticamente.
 
@@ -82,7 +83,13 @@ git clone https://github.com/iv0nis/memsys3 memsys3_temp
 
 Ejecuta: `@memsys3_temp/memsys3_templates/prompts/deploy.md`
 
-(El prompt contiene todas las instrucciones para deployment: verificación, briefing, personalización, estructura, .gitignore, etc.)
+El prompt cubre el deployment completo:
+- Scaffold canónico (ADR-023): agents, prompts, templates, memory/full vacíos, backlog scaffold
+- Propagación de `PRINCIPLES.md` (ADR-022)
+- Bridge `MEMORY.md` opcional para usuarios Claude Code (ADR-020)
+- Configuración `.gitignore` con AskUserQuestion (incluir/excluir memsys3/)
+- Briefing del proyecto (nombre, stack, fase, idioma) y personalización de project-status.yaml
+- Verificación del inventario canónico post-deploy
 
 ## 3. Limpieza temporal (EJECUTAR AL TERMINAR deployment)
 
@@ -122,7 +129,15 @@ git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
 
 Ejecuta: `@memsys3_update_temp/memsys3_templates/prompts/actualizar.md`
 
-(El prompt contiene todas las instrucciones para actualización segura: detección estructura antigua, backups, copiar archivos, verificaciones, etc.)
+El prompt cubre actualización segura completa:
+- Detección de estructura antigua incompatible (PASO 0)
+- Backups automáticos antes de tocar nada
+- **Sustitución diferencial de templates schema** (Paso 6.4, ADR-018): compara `file_version` upstream vs destino, sustituye condicionalmente
+- **Detección de campos deprecated y huérfanos** (Paso 6.4.5, ADR-019, modo Extendido)
+- **Sincronización `PRINCIPLES.md`** vía sustitución diferencial (Paso 6.6, ADR-022)
+- **Preservación de archivos custom** del usuario (no sobrescribe sus edits, ISSUE-018)
+- Bumping de `file_version` solo aquí (regla dura, ADR-017)
+- Validaciones finales: archivos existen, schemas íntegros, hooks operativos
 
 ## 3. Limpieza temporal (EJECUTAR AL TERMINAR actualización)
 
