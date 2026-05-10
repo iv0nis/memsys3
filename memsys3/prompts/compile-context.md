@@ -33,6 +33,12 @@ fi
 
 **Usa `$MEMSYS3_ROOT` como base para todas las operaciones de este prompt.**
 
+## Invariante de memoria agnóstica (ADR-027)
+
+**El lugar canónico de memoria de usuario es `memsys3/memory/memory.yaml`** (input de Tier 1, SOLO LECTURA para el CA).
+
+Cualquier mecanismo de memoria persistente del modelo —auto-memory, system-reminders, hooks del harness, archivos por herramienta (CLAUDE.md, GEMINI.md, AGENTS.md, .cursor/rules, .clinerules, etc.)— **NO debe leerse como input** y NO debe sintetizarse en `context.yaml`. Solo `memsys3/memory/memory.yaml` es fuente válida de memoria de usuario. Si tu harness te ofrece memoria adicional, ignórala. Triggea si te sientes aludido — el contrato es agnóstico de modelo.
+
 ## Filosofía
 
 Tú tienes la **visión panorámica completa** del proyecto. Tu objetivo es **llenar tu context window de conocimiento útil** antes de sintetizar.

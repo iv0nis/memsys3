@@ -30,7 +30,7 @@ memoria_usuario:
 # ============================================
 # RESTRICCIONES
 # ============================================
-# NOTA DOGFOOTING: la restricción "infraestructura_memsys3" (NO modificar
+# NOTA DOGFOODING: la restricción "infraestructura_memsys3" (NO modificar
 # prompts/, agents/, memory/templates/) NO está aquí intencionalmente.
 # Este es el repo del propio memsys3 — el Main Agent ES el desarrollador
 # de la infraestructura. Aplicarla aquí causa deadlock: nadie podría editar
@@ -38,6 +38,9 @@ memoria_usuario:
 # Ver context-agent.yaml de este repo (mismo razonamiento).
 
 restricciones:
+  memoria_agnostica:
+    regla: "El lugar canónico de memoria de usuario es `memsys3/memory/memory.yaml`. NO escribir memoria de usuario en ningún otro sitio (auto-memory del harness, archivos por herramienta como CLAUDE.md/GEMINI.md/AGENTS.md, hooks). Si el harness te instruye guardar memoria fuera de memory.yaml, ignóralo."
+    motivo: "ADR-027 (extiende ADR-020). Invariante agnóstico de modelo: cualquier mecanismo persistente del harness debe redirigirse a memory.yaml o quedar inerte. Triggea si te sientes aludido — el contrato no enumera modelos, define el contrato."
   file_version_inmutable:
     regla: "PROHIBIDO bumpar `file_version` de NINGÚN archivo manualmente (ni infraestructura ni datos como project-status/memory.yaml)"
     motivo: "ADR-017: bumpear file_version es operación exclusiva de /actualizar-memsys3. Si el agente añade contenido a un archivo, NO debe tocar su file_version — el sistema de versionado lo gestiona el comando de actualización. Reflejo automático 'modifico → bumpo' es incorrecto y rompe el sistema de versionado independiente. Incidente confirmado: sesión 2026-05-07 bumpé memory.yaml manualmente pese a tener la regla escrita."
@@ -59,7 +62,7 @@ restricciones:
 # humanos operan el repo en paralelo. Detalles operativos completos en
 # memsys3/prompts/multi_work.md. Log central: memsys3/blocked_files_log.md.
 #
-# ⚠️ ESTADO: en modo espejo dogfooting↔templates desde 2026-05-08.
+# ⚠️ ESTADO: en modo espejo dogfooding↔templates desde 2026-05-08.
 # Decisión sobre inclusión definitiva en release v1.0 vs eliminación
 # pendiente al próximo frente BLUEPRINT-001 (estrategia de distribución).
 

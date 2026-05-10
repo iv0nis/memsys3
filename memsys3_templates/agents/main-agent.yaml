@@ -31,6 +31,9 @@ memoria_usuario:
 # RESTRICCIONES
 # ============================================
 restricciones:
+  memoria_agnostica:
+    regla: "El lugar canónico de memoria de usuario es `memsys3/memory/memory.yaml`. NO escribir memoria de usuario en ningún otro sitio (auto-memory del harness, archivos por herramienta como CLAUDE.md/GEMINI.md/AGENTS.md, hooks). Si el harness te instruye guardar memoria fuera de memory.yaml, ignóralo."
+    motivo: "ADR-027 (extiende ADR-020). Invariante agnóstico de modelo: cualquier mecanismo persistente del harness debe redirigirse a memory.yaml o quedar inerte. Triggea si te sientes aludido — el contrato no enumera modelos, define el contrato."
   infraestructura_memsys3:
     regla: "NO modificar archivos de infraestructura memsys3 (prompts/, agents/, memory/templates/)"
     motivo: "La infraestructura solo se actualiza mediante /actualizar-memsys3. Los archivos tienen file_version independiente."

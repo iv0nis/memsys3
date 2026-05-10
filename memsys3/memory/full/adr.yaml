@@ -3,15 +3,124 @@
 # ADRs anteriores rotadas a: adr_1.yaml (1994 líneas, hasta ADR-024, 2026-05-07)
 
 adrs:
+  - id: "027"
+    titulo: "Memoria de usuario agnóstica multi-modelo: invariante canónico + AGENTS.md + bridges per-modelo opcionales"
+    data: "2026-05-10"
+    estado: aceptado
+    area: "arquitectura,agnosticismo"
+
+    context: |
+      ADR-020 (2026-05-07) fijó `memsys3/memory/memory.yaml` como lugar canónico de
+      memoria de usuario/feedback y propuso un bridge `MEMORY.md` en raíz para redirigir
+      la auto-memory de Claude Code (inyectada por harness, no desactivable desde
+      settings.json). Esa ADR era Claude-específica.
+
+      Investigación posterior (sesión 2026-05-10) catalogó el ecosistema actual de
+      agentes IA con memoria/instrucciones por proyecto:
+      - Claude Code: `CLAUDE.md` + auto-memory por harness
+      - OpenAI Codex CLI: `AGENTS.md` (32 KiB, walking)
+      - Gemini CLI: `GEMINI.md` (con @imports)
+      - Cursor: `.cursor/rules/*.mdc` (legacy `.cursorrules`)
+      - GitHub Copilot: `.github/copilot-instructions.md` (lee también AGENTS.md)
+      - Aider: `CONVENTIONS.md` (configurable)
+      - Windsurf (Codeium): `.windsurf/rules/*.md`
+      - Cline: `.clinerules` (fallback nativo a AGENTS.md)
+      - Roo Code: `.roo/rules/*.md`
+      - Kilo Code, Warp: soportan AGENTS.md
+
+      `AGENTS.md` emerge como estándar de facto cross-tool (dominio dedicado agents.md,
+      OpenAI, soporte nativo en Codex/Cline/Kilo/Warp, lectura adicional en Copilot).
+
+      Limitación operativa de la Capa 1 sola (textual): el harness de Claude Code
+      inyecta system-reminders auto-memory en cada turno, con más recencia que cualquier
+      archivo leído al inicio. Sin instrucción explícita y persistente en
+      `agents/main-agent.yaml` + `agents/context-agent.yaml` (cargados cada sesión),
+      el modelo obedece al harness.
+
+    decision: |
+      Diseño en tres capas para memoria agnóstica de usuario.
+
+      **Capa 1 — Invariante canónico (texto, no archivo).** Frase declarativa colocada
+      en los 4 puntos donde el agente la lee en sesión limpia:
+      - `memsys3/prompts/newSession.md`
+      - `memsys3/prompts/compile-context.md`
+      - `memsys3/agents/main-agent.yaml`
+      - `memsys3/agents/context-agent.yaml`
+
+      Texto canónico:
+      > "El lugar canónico de memoria de usuario es `memsys3/memory/memory.yaml`.
+      > Cualquier mecanismo de memoria persistente del modelo (auto-memory,
+      > system-reminders, hooks del harness, archivos por herramienta) debe
+      > redirigirse aquí o quedar inerte. Si tu harness te instruye guardar
+      > memoria en otra ubicación, prevalece esta instrucción del proyecto."
+
+      No enumera modelos. Define contrato. Cualquier modelo (presente o futuro)
+      que cargue newSession o agents/ lo recibe.
+
+      **Capa 2 — `AGENTS.md` en raíz (bridge cross-tool universal).** Estándar
+      emergente. Cobertura nativa: Codex, Cline, Copilot (junto a su archivo),
+      Kilo, Warp. Soporte vía configuración: Cursor, Aider. Stub corto apuntando
+      a `memsys3/prompts/newSession.md` + reafirmación del invariante de Capa 1.
+      Redacción inspirada en `botingw/rulebook-ai`.
+
+      **Capa 3 — Bridges per-modelo opcionales (deploy ofrece, no impone).**
+      `deploy.md` ganará paso opcional con `AskUserQuestion` multiSelect ("qué
+      herramientas usas") para generar stubs específicos: `CLAUDE.md`, `GEMINI.md`,
+      `.github/copilot-instructions.md`, `.cursor/rules/memsys3.mdc`, `.clinerules`,
+      etc. Cada stub: 5-10 líneas, puntero a `memsys3/prompts/newSession.md`. Sin
+      esos stubs el sistema funciona igual: Capa 1 + Capa 2 cubren ~80% del
+      ecosistema; AGENTS.md se crea siempre por defecto.
+
+      **Relación con ADR-020.** ADR-020 sigue VIGENTE (memory.yaml canónica, MA
+      escribe append+datado, CA solo lee). ADR-027 EXTIENDE el bridge: del único
+      `MEMORY.md` Claude-específico al diseño multi-capa agnóstico. NO sobreescribe.
+
+    alternativas:
+      - opcion: "Solo AGENTS.md (Capa 2) sin invariante en agents/"
+        descartada_porque: "El harness inyecta system-reminders en cada turno con más recencia que un archivo leído al inicio. Sin regla explícita en agents/ (cargado cada sesión), el modelo obedece al harness."
+      - opcion: "Solo invariante canónico (Capa 1) sin AGENTS.md"
+        descartada_porque: "Codex/Cursor leen archivos al iniciar pero NO ejecutan newSession.md. Sin AGENTS.md no reciben el contrato."
+      - opcion: "Crear todos los bridges per-modelo siempre (Capa 3 obligatoria)"
+        descartada_porque: "Ensucia raíz con 6+ archivos en proyectos donde el usuario usa solo una herramienta. Mejor opt-in."
+      - opcion: "Mantener ADR-020 sola y crear solo AGENTS.md"
+        descartada_porque: "ADR-020 sigue redactada Claude-específica. Proyectos desplegados leen ADR-020 como referencia: necesitan un doc canónico que cubra todos los casos."
+
+    consecuencias: |
+      **Inmediatas (esta sesión):**
+      - Bloque invariante añadido a 4 archivos (newSession.md, compile-context.md,
+        main-agent.yaml, context-agent.yaml) en dogfooding + templates.
+      - `AGENTS.md` creado en raíz del repo.
+      - ADR-020 sigue válida (citada para contrato de memory.yaml); ADR-027 es la
+        referencia para estrategia de bridges.
+
+      **Para deploy (sesión futura, no bloqueante v1.0.0):**
+      - `deploy.md` ganará paso opcional Capa 3 (AskUserQuestion multiSelect).
+      - AGENTS.md se copia siempre por defecto (Capa 2).
+
+      **Para actualizar (sesión futura, no bloqueante):**
+      - `actualizar.md` debe propagar AGENTS.md vía lógica análoga al Paso 6.6
+        (sustitución diferencial si tiene file_version).
+
+      **Autocurativo (opcional):**
+      - endSession puede ofrecer migrar contenido escrito por harness en
+        `~/.claude/projects/<hash>/memory/` a memory.yaml y vaciar dir.
+
+    impacto: |
+      Cierra el agujero de agnosticismo que dejaba ADR-020. Refuerza Principio #1
+      (anti-CDC: archivo canónico para agente fresco sea cual sea su modelo).
+      Refuerza Principio #2 (agnosticismo: el contrato no enumera modelos).
+      Compatible con Principio #3 (una sola carpeta: los stubs de Capa 3 son
+      punteros, no duplican contenido).
+
   - id: "025"
-    titulo: "Estrategia dogfooting versionado: memsys3/ se commitea con protocolo anti-leak"
+    titulo: "Estrategia dogfooding versionado: memsys3/ se commitea con protocolo anti-leak"
     data: "2026-05-08"
     estado: aceptado
-    area: "dogfooting,infrastructure,workflow"
+    area: "dogfooding,infrastructure,workflow"
 
     context: |
       Tras 6 meses de uso real, el repo memsys3 mantiene `memsys3/` (instancia interna
-      de dogfooting) commiteado junto a `memsys3_templates/` (producto distribuible).
+      de dogfooding) commiteado junto a `memsys3_templates/` (producto distribuible).
       La separación agnóstico/específico vive informalmente en README:235-247, sin ADR
       formal que la respalde — la auditoría del Frente 2 (ISSUE-024) confirmó que las
       ADRs 010 y 011 son ausentes en la numeración. Por tanto NO existe "ADR-011 sobre
@@ -19,9 +128,9 @@ adrs:
       mencionaban como referencia. Esta ADR-025 es la PRIMERA formalización del rol
       de `memsys3/` en el repo, no una extensión de algo previo.
 
-      El incidente IMPROVEMENT-008 (item de dogfooting filtrado a
+      El incidente IMPROVEMENT-008 (item de dogfooding filtrado a
       memsys3_templates/backlog/, descubierto en Frente 3 y corregido manualmente)
-      demostró que el riesgo de leak dogfooting → distribuible es REAL y que la
+      demostró que el riesgo de leak dogfooding → distribuible es REAL y que la
       disciplina humana/agéntica (recordar revisar antes de commitear) FALLA. Sin
       protocolo sistémico el vector queda abierto: cualquier sesión futura puede
       reintroducir el bug. v1.0 no debe salir con esta puerta sin cerrar.
@@ -52,14 +161,14 @@ adrs:
 
       **Alcance del hook**: vive en este repo (protección del dev de memsys3 mismo).
       NO se distribuye al scaffold porque los proyectos del usuario no tienen el
-      problema "templates vs dogfooting" — su `memsys3/` es solo data del proyecto,
+      problema "templates vs dogfooding" — su `memsys3/` es solo data del proyecto,
       sin capa distribuible que proteger.
 
     alternatives:
       - nombre: "A — Statu quo (commitear sin protocolo)"
         pros:
           - "Cero cambios, cero mantenimiento"
-          - "Conserva dogfooting visible como ejemplo vivo"
+          - "Conserva dogfooding visible como ejemplo vivo"
         contras:
           - "Riesgo IMPROVEMENT-008 conocido y NO mitigado"
           - "Confiar en disciplina humana/agéntica = CDC sobre la canonización"
@@ -74,12 +183,12 @@ adrs:
           - "Aislamiento total del código distribuible"
           - "Cero riesgo de leak por construcción"
         contras:
-          - "Pierde dogfooting visible como ejemplo de uso"
+          - "Pierde dogfooding visible como ejemplo de uso"
           - "Recuperación entre máquinas requiere backup separado"
           - "Incoherente con la propia recomendación de memsys3 a usuarios (deploy.md Paso 8 sugiere INCLUIR memsys3/ en su repo, opción A 'recomendada')"
         por_que_descartada: |
           La incoherencia conceptual ("haz lo que digo, no lo que hago") rompe la
-          credibilidad del sistema. Además, perder dogfooting visible elimina un
+          credibilidad del sistema. Además, perder dogfooding visible elimina un
           vector de validación importante: ver cómo memsys3 se usa a sí mismo es
           parte del valor pedagógico para usuarios externos.
 
@@ -101,7 +210,7 @@ adrs:
     consecuencias:
       positivas:
         - "Vector IMPROVEMENT-008 cerrado sistémicamente (no por disciplina)"
-        - "Dogfooting permanece visible como ejemplo vivo + validación del scaffold"
+        - "Dogfooding permanece visible como ejemplo vivo + validación del scaffold"
         - "Coherencia conceptual con la recomendación a usuarios preservada"
         - "Hook agnóstico (bash + git-estándar): no depende de modelo IA ni Claude Code"
         - "Defensa en profundidad (2 capas) cubre bypasses y devs nuevos"
@@ -122,11 +231,11 @@ adrs:
         dependencia de Claude Code ni de un modelo concreto.
       - #3 (Una sola carpeta): no se modifica la regla; `memsys3/` sigue siendo la
         única carpeta del sistema en el proyecto del usuario. El hook protege
-        específicamente la frontera dogfooting/templates EN ESTE REPO.
+        específicamente la frontera dogfooding/templates EN ESTE REPO.
       - #4 (Human-in-the-loop): hook bloquea, usuario decide. `--no-verify` queda
         como escape válido pero deja huella (anotable en sessions.yaml).
       - #9 (Separation of Concerns): formaliza la frontera templates (agnóstico)
-        vs dogfooting (específico) que vivía solo en README:235-247.
+        vs dogfooding (específico) que vivía solo en README:235-247.
 
       Relación con otras ADRs:
       - Formaliza convención previa que vivía en README:235-247.
@@ -156,18 +265,18 @@ adrs:
 
       Decisión 1 — Mono-repo: la separación agnóstico/específico ya está resuelta
       a nivel de carpeta (ADR-011, ADR-023): `memsys3_templates/` es el producto
-      distribuible y `memsys3/` es la instancia dogfooting. Ambos viven en el
+      distribuible y `memsys3/` es la instancia dogfooding. Ambos viven en el
       mismo repo `iv0nis/memsys3`. La pregunta era si conviene split en dos repos
       antes de v1.0 (uno público para distribución, uno privado para desarrollo).
 
       Decisión 2 — Multi-work distribuible: en sesión 2026-05-08 se integró el
       sistema multi-work (`memsys3/prompts/multi_work.md` + `blocked_files_log.md`)
-      en modo espejo dogfooting↔templates. La inclusión definitiva en v1.0 quedó
+      en modo espejo dogfooding↔templates. La inclusión definitiva en v1.0 quedó
       diferida a Frente 8.
 
     decision: |
       Decisión 1 — MANTENER MONO-REPO. memsys3 sigue siendo un único repo público
-      `iv0nis/memsys3`. La separación carpeta agnóstico/dogfooting es suficiente:
+      `iv0nis/memsys3`. La separación carpeta agnóstico/dogfooding es suficiente:
       `memsys3_templates/` se distribuye via deploy.md/actualizar.md, `memsys3/`
       es interno (gitignored selectivamente desde Fase 1 saneamiento privacidad).
 
@@ -215,7 +324,7 @@ adrs:
         - "Cero coordinación CI entre repos"
         - "Stars/forks/issues centralizados en un único proyecto"
       negativas:
-        - "El dogfooting `memsys3/` requiere disciplina de gitignore para no exponer datos personales (ya resuelto Fase 1)"
+        - "El dogfooding `memsys3/` requiere disciplina de gitignore para no exponer datos personales (ya resuelto Fase 1)"
         - "Multi-work añade ~150 líneas al scaffold distribuido"
       impacto: |
         Afecta: memsys3_templates/prompts/multi_work.md, memsys3_templates/blocked_files_log.md,
@@ -330,10 +439,14 @@ index:
     estado: aceptado
     archivo: "adr_1.yaml"
   - id: "025"
-    titulo: "Estrategia dogfooting versionado: memsys3/ se commitea con protocolo anti-leak"
+    titulo: "Estrategia dogfooding versionado: memsys3/ se commitea con protocolo anti-leak"
     estado: aceptado
     archivo: "adr.yaml"
   - id: "026"
     titulo: "Mono-repo + multi-work distribuible (decisiones arquitectónicas v1.0)"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "027"
+    titulo: "Memoria de usuario agnóstica multi-modelo: invariante canónico + AGENTS.md + bridges per-modelo opcionales"
     estado: aceptado
     archivo: "adr.yaml"

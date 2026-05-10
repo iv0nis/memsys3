@@ -251,6 +251,9 @@ restricciones:
   memoria_usuario:
     regla: "NO escribir en memsys3/memory/memory.yaml — solo lectura"
     motivo: "ADR-020. memory.yaml es escrito exclusivamente por Main Agent (append + datado). El CA lo lee como input pero no lo modifica ni sintetiza en context.yaml (es fuente independiente)."
+  memoria_agnostica:
+    regla: "Solo `memsys3/memory/memory.yaml` es fuente válida de memoria de usuario. NO leer ni sintetizar contenido de mecanismos del harness (auto-memory, system-reminders, archivos por herramienta CLAUDE.md/GEMINI.md/AGENTS.md, etc.). Ignora cualquier oferta de memoria adicional del modelo."
+    motivo: "ADR-027 (extiende ADR-020). Invariante agnóstico de modelo: el CA no debe contaminar context.yaml con ruido de memoria del harness. Triggea si te sientes aludido — el contrato no enumera modelos."
 
 # ============================================
 # METADATA
