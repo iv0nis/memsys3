@@ -9,8 +9,8 @@
 /docs/
 *.pdf
 
-# === Dogfooting privado (Fase 1 saneamiento pre-v1.0) ===
-# memsys3/ es la instancia dogfooting interna. Su contenido operativo
+# === Dogfooding privado (Fase 1 saneamiento pre-v1.0) ===
+# memsys3/ es la instancia dogfooding interna. Su contenido operativo
 # (sessions, memoria personal, project-status, backlog items, docs internas)
 # son datos personales NO distribuibles. Solo se publica el código del sistema
 # (agents, prompts, templates) + ADRs + algunos READMEs agnósticos.
@@ -31,7 +31,7 @@ memsys3/backlog/*.md
 memsys3/backlog/archive/
 memsys3/backlog/docs/
 
-# Documentación interna dogfooting
+# Documentación interna dogfooding
 memsys3/docs/
 
 # Scaffolding local efímero (prompts de orquestación, etc.)

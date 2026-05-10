@@ -2,7 +2,7 @@
 
 Gracias por tu interés en contribuir a memsys3. Esta guía cubre el flujo básico para reportar bugs, proponer cambios y mantener la calidad del código.
 
-Para entender la **arquitectura interna** del repositorio (estructura, dogfooting/templates split, sistema de rutas), consulta [`DEVELOPMENT.md`](DEVELOPMENT.md).
+Para entender la **arquitectura interna** del repositorio (estructura, dogfooding/templates split, sistema de rutas), consulta [`DEVELOPMENT.md`](DEVELOPMENT.md).
 
 ---
 
@@ -10,13 +10,13 @@ Para entender la **arquitectura interna** del repositorio (estructura, dogfootin
 
 1. **Lee [`PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md)** — los 10 principios sistémicos invariantes que rigen memsys3 (anti-CDC, agnosticismo, una sola carpeta, etc.). Cualquier cambio debe poder justificarse desde uno de ellos.
 
-2. **Activa los git hooks anti-leak** (protección dogfooting → distribuible, ADR-025):
+2. **Activa los git hooks anti-leak** (protección dogfooding → distribuible, ADR-025):
    ```bash
    git config core.hooksPath .githooks
    ```
-   Esto se hace una sola vez tras clonar el repo. Sin esto, los commits no validan que items de dogfooting no se filtren al scaffold distribuible.
+   Esto se hace una sola vez tras clonar el repo. Sin esto, los commits no validan que items de dogfooding no se filtren al scaffold distribuible.
 
-3. **Familiarízate con la estructura** del repo: `DEVELOPMENT.md` explica la separación `memsys3_templates/` (distribuible agnóstico) vs `memsys3/` (instancia dogfooting).
+3. **Familiarízate con la estructura** del repo: `DEVELOPMENT.md` explica la separación `memsys3_templates/` (distribuible agnóstico) vs `memsys3/` (instancia dogfooding).
 
 ---
 
@@ -126,7 +126,7 @@ git log -5 --format="%B" | grep -i "co-authored" && echo "❌ FIRMA DETECTADA" |
 
 - [ ] He activado los hooks (`git config core.hooksPath .githooks`)
 - [ ] El cambio respeta los 10 principios de `PRINCIPLES.md`
-- [ ] Si es cambio de templates, he sincronizado dogfooting (`memsys3/`) con distribuible (`memsys3_templates/`)
+- [ ] Si es cambio de templates, he sincronizado dogfooding (`memsys3/`) con distribuible (`memsys3_templates/`)
 - [ ] Mensaje de commit con prefijo correcto, en español, sin firma `Co-Authored-By:`
 - [ ] Si hay decisión arquitectónica, he creado/actualizado ADR
 - [ ] Si toco scripts bash, son agnósticos de SO

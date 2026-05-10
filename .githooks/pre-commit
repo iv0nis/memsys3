@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Anti-leak dogfooting → memsys3_templates/backlog/
+# Anti-leak dogfooding → memsys3_templates/backlog/
 # ADR-025. Permitido en memsys3_templates/backlog/: solo README.md + docs/.gitkeep
 #
 # Activación (una sola vez por dev):

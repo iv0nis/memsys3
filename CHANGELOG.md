@@ -19,7 +19,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [0.24.0] - 2026-05-08
 ### Added
-- **Integración multi-work dogfooting** (temporal pre-v1.0): sistema de coordinación entre agentes paralelos con locks explícitos.
+- **Integración multi-work dogfooding** (temporal pre-v1.0): sistema de coordinación entre agentes paralelos con locks explícitos.
 - `memsys3/prompts/multi_work.md`: workflow 5 pasos (pre-plan check, append, trabajo libre, cleanup, caducidad >4h).
 - `memsys3/blocked_files_log.md`: log central operacional de bloqueos.
 - Bloque `coordinacion_paralela` inline en `main-agent.yaml`.
@@ -28,7 +28,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [0.23.1] - 2026-05-08
 ### Added
-- **ADR-025**: estrategia dogfooting versionado formalizada (primera ADR sobre el tema).
+- **ADR-025**: estrategia dogfooding versionado formalizada (primera ADR sobre el tema).
 - **Hook anti-leak** `.githooks/pre-commit` (bash agnóstico): veta items `[A-Z]+-[0-9]+-*.md` en `memsys3_templates/backlog/`. Activación opt-in vía `git config core.hooksPath .githooks`.
 - Auditoría PASO 6.5 en `comprobar_alineamiento.md`: capa 2 de defensa anti-leak.
 - README raíz: instrucción de activación de hooks para contribuidores.
@@ -50,7 +50,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 - ADR-019: política de evolución de schema (deprecation contextualizada).
 - Lógica nueva en `actualizar.md` Paso 6.4 (sustitución diferencial) y 6.4.5 (detección deprecated/huérfanos).
 ### Fixed
-- ISSUE-023: fugas dogfooting en archivos legacy operativos.
+- ISSUE-023: fugas dogfooding en archivos legacy operativos.
 ### Changed
 - Limpieza scaffolds `memsys3_templates/memory/` (4 archivos vaciados a Modelo D).
 - `.gitignore`: `docs/` excluido (material local no distribuible).
@@ -66,7 +66,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 - Wiki GitHub creada: Home, Prompts Reference, Workflow, Agents + sidebar.
 ### Fixed
 - Terminología agnóstica: `Development Agent`/`DevAI` erradicado de templates y docs (15 archivos).
-- Restricción infraestructura quitada del `main-agent` dogfooting (deadlock).
+- Restricción infraestructura quitada del `main-agent` dogfooding (deadlock).
 - `github.md`: warning obligatorio con `AskUserQuestion` para confirmar tag.
 
 ## [0.20.0] - 2026-04-15
@@ -144,7 +144,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 ### Fixed
 - **Fix crítico `github.md`**: defensa en profundidad 4 capas para prevención firmas Co-Authored-By (margen error: 70% → 5%).
 ### Changed
-- Arquitectura dogfooting: `docs/` → `memsys3/docs/` (14 archivos, consistencia).
+- Arquitectura dogfooding: `docs/` → `memsys3/docs/` (14 archivos, consistencia).
 
 ## [0.10.0] - 2026-02-03
 ### Added
@@ -169,7 +169,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [0.7.0–0.7.1] - 2025-11-14 / 2025-12-02
 ### Changed
-- Backlog consolidado en `memsys3/backlog/` (dogfooting); `memsys3_templates/backlog/` solo README distribuible.
+- Backlog consolidado en `memsys3/backlog/` (dogfooding); `memsys3_templates/backlog/` solo README distribuible.
 - `context.yaml` v1.9 compilado: 403 líneas, reducción 76% tokens.
 
 ## [0.5.0–0.6.1] - 2025-11-12

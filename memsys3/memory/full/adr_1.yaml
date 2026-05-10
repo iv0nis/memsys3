@@ -1626,7 +1626,7 @@ adrs:
 
     context: |
       Tras 6 meses de iteración, los principios sistémicos de memsys3 están dispersos:
-      CDC vive en `memory.yaml` dogfooting, agnosticismo en ADR-016 y README, una sola
+      CDC vive en `memory.yaml` dogfooding, agnosticismo en ADR-016 y README, una sola
       carpeta y human-in-the-loop solo en README, criterio inteligente en ADR-001, etc.
 
       Hallazgo del informe BLUEPRINT-001 sec 3.1: detectados 10 principios pero NO existe
@@ -1648,7 +1648,7 @@ adrs:
       - `memsys3_templates/PRINCIPLES.md` = fuente única (SSoT, distribuible).
       - `PRINCIPLES.md` raíz repo = stub corto pointer al template (descubrimiento OSS,
         solo existe en este repo dev).
-      - `memsys3/PRINCIPLES.md` (dogfooting + proyectos desplegados) = copia real del
+      - `memsys3/PRINCIPLES.md` (dogfooding + proyectos desplegados) = copia real del
         template, distribuida por `deploy.md` y sincronizada por `actualizar.md`.
 
       Régimen de infraestructura. PRINCIPLES.md es infraestructura, NO datos:
@@ -1657,7 +1657,7 @@ adrs:
       - Hereda ADR-018: actualizar.md Paso 6.6 sincroniza con sustitución diferencial
         (comparar file_version upstream vs destino, sustituir condicionalmente).
       - Aplica regla "MA y CA NO modifican infraestructura en proyectos destino"
-        (excepción dogfooting documentada en main-agent.yaml).
+        (excepción dogfooding documentada en main-agent.yaml).
 
       Carga: newSession.md instruye al agente leer @memsys3/PRINCIPLES.md si existe.
 
@@ -1671,7 +1671,7 @@ adrs:
           - "Genera CDC: el agente desplegado opera sin saber qué principios rigen el sistema"
         por_que_descartada: "Viola el propósito anti-CDC del propio documento"
 
-      - nombre: "Tres copias paralelas (raíz + templates + dogfooting), todas completas"
+      - nombre: "Tres copias paralelas (raíz + templates + dogfooding), todas completas"
         pros:
           - "Cada ubicación auto-contenida"
         contras:
@@ -1679,7 +1679,7 @@ adrs:
           - "Riesgo de divergencia silenciosa"
         por_que_descartada: "El usuario explícitamente rechazó esta opción durante planning"
 
-      - nombre: "Symlinks desde raíz/dogfooting hacia templates"
+      - nombre: "Symlinks desde raíz/dogfooding hacia templates"
         pros:
           - "Una sola fuente real, sin duplicación"
         contras:
@@ -1691,22 +1691,22 @@ adrs:
       positivas:
         - "Anti-CDC: agente fresco tiene archivo canónico de principios desde la primera sesión"
         - "Foundational para BLUEPRINT-001: define la vara de medir la auditoría ADRs (Frente 2)"
-        - "CDC formalmente documentada como principio #1 (no solo en memory.yaml dogfooting)"
+        - "CDC formalmente documentada como principio #1 (no solo en memory.yaml dogfooding)"
         - "Cada principio enlaza a las ADRs que lo formalizan (trazabilidad)"
         - "Single source of truth: cambios solo en `memsys3_templates/PRINCIPLES.md`"
       negativas:
         - "deploy.md y actualizar.md ganan complejidad (un paso adicional cada uno)"
         - "actualizar.md debe extender helper extract_version a formato .md (HTML comment)"
-        - "Dogfooting requiere copia real (no stub), implica mantener sincronizado memsys3/PRINCIPLES.md"
+        - "Dogfooding requiere copia real (no stub), implica mantener sincronizado memsys3/PRINCIPLES.md"
       impacto: |
         Afecta: PRINCIPLES.md (3 ubicaciones nuevas), README.md raíz (link),
         memsys3_templates/memory/README.md (link), deploy.md (Paso 2 copia),
         actualizar.md (Paso 6.6 sustitución diferencial), newSession.md
-        (templates + dogfooting: instrucción de carga).
+        (templates + dogfooding: instrucción de carga).
 
     notes: |
       Origen: BLUEPRINT-001 Frente 1 (release memsys3 v1.0).
-      Sesión 2026-05-07 articuló el principio CDC (en memory.yaml dogfooting). Esta ADR
+      Sesión 2026-05-07 articuló el principio CDC (en memory.yaml dogfooding). Esta ADR
       cierra el "pendiente" anotado en la sec notes de ADR-021.
 
       Relacionado / hereda de:
@@ -1728,7 +1728,7 @@ adrs:
       BLUEPRINT-001 Frente 2 (informe_BLUEPRINT-001-auditoria.md §4.3) detectó dos brechas
       en el scaffold producido por deploy.md:
 
-      1) Leak de dogfooting: `memsys3_templates/backlog/IMPROVEMENT-008-deploy-agnostico-memoria-antes-agente.md`
+      1) Leak de dogfooding: `memsys3_templates/backlog/IMPROVEMENT-008-deploy-agnostico-memoria-antes-agente.md`
          filtrado al template distribuible. El scaffold backlog debe contener únicamente
          `README.md` + `docs/.gitkeep`.
 
@@ -1764,7 +1764,7 @@ adrs:
          Heredocs eliminados.
 
       3. `memsys3_templates/backlog/` distribuye únicamente `README.md` + `docs/.gitkeep`.
-         NUNCA items concretos (los items en `memsys3/backlog/` son dogfooting interno).
+         NUNCA items concretos (los items en `memsys3/backlog/` son dogfooding interno).
 
       4. Templates copy también incluye `*.md` (informe-template, plan-template), no solo
          `*.yaml`.
@@ -1798,7 +1798,7 @@ adrs:
         - "Pérdida del placeholder `[NOMBRE_PROYECTO]` en headers de adr.yaml/sessions.yaml — trade-off aceptado, los archivos están vacíos y se llenarán con datos reales en su uso"
       impacto: |
         Afecta: memsys3_templates/prompts/deploy.md (Paso 2 refactorizado),
-        memsys3/prompts/deploy.md (sync dogfooting),
+        memsys3/prompts/deploy.md (sync dogfooding),
         memsys3_templates/backlog/ (eliminado leak IMPROVEMENT-008),
         memsys3_templates/memory/full/operations.log (eliminado "memsys3" hardcoded en header).
 
@@ -1844,7 +1844,7 @@ adrs:
 
       Side-finding: `memsys3/memory/templates/context-template.yaml` estaba desincronizado
       con el distribuible — L3 usaba "DevAI" (viola ADR-015) y L13 tenía placeholder
-      menos informativo. Sync forward (templates → dogfooting) ejecutado.
+      menos informativo. Sync forward (templates → dogfooding) ejecutado.
 
     decision: |
       1. **Criterio data-vs-as-is** (handle citable):
@@ -1863,7 +1863,7 @@ adrs:
          "Aplicamos el criterio data-vs-as-is (ADR-024): X es Y, por tanto Z."
 
       2. **Crear `operations-template.log`** en `memsys3_templates/memory/templates/` y
-         `memsys3/memory/templates/` (sync dogfooting). Schema: `# version: 0.1.0` +
+         `memsys3/memory/templates/` (sync dogfooding). Schema: `# version: 0.1.0` +
          doc inline (campos: timestamp, operacion, resultado, version_*, resumen) +
          ejemplos comentados de actualizar/compilar + `operations: []` final.
 
@@ -1899,13 +1899,13 @@ adrs:
         - "Cada archivo data del scaffold tiene template equivalente (1:1 verificable)"
         - "Criterio data-vs-as-is queda en el léxico del proyecto, citable como ADR-024"
         - "Pendiente prioritario 3 de project-status.yaml cerrado"
-        - "Side-finding sync context-template.yaml (DevAI → Main Agent) corrige brecha ADR-015 latente en dogfooting"
+        - "Side-finding sync context-template.yaml (DevAI → Main Agent) corrige brecha ADR-015 latente en dogfooding"
         - "operations.log queda completamente especificado: data + template ambos canónicos"
       negativas:
         - "Un archivo más que /actualizar-memsys3 debe sustituir diferencialmente (Paso 6.4)"
       impacto: |
         Afecta: memsys3_templates/memory/templates/operations-template.log (NUEVO),
-        memsys3/memory/templates/operations-template.log (sync dogfooting),
+        memsys3/memory/templates/operations-template.log (sync dogfooding),
         memsys3/memory/templates/context-template.yaml (sync 2 líneas).
 
     notes: |

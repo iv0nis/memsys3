@@ -223,7 +223,7 @@ fi
 # Check 2: ningún archivo PREFIJO-NNN-*.md en todo memsys3_templates/
 LEAK_ITEMS=$(find memsys3_templates -name '[A-Z]*-[0-9]*-*.md' -type f 2>/dev/null || true)
 if [ -n "$LEAK_ITEMS" ]; then
-  echo "❌ Items de backlog dogfooting filtrados al distribuible:"
+  echo "❌ Items de backlog dogfooding filtrados al distribuible:"
   echo "$LEAK_ITEMS" | sed 's/^/    /'
 else
   echo "✅ Sin items de backlog en memsys3_templates/"
@@ -232,7 +232,7 @@ fi
 echo "=== AUDITORÍA COMPLETADA ==="
 ```
 
-Si hay hits, son **leaks de dogfooting → distribuible** (escenario IMPROVEMENT-008). Acción inmediata: mover el archivo a `memsys3/backlog/` (o eliminarlo si fue creación errónea), commitear corrección, y anotar incidente en sessions.yaml.
+Si hay hits, son **leaks de dogfooding → distribuible** (escenario IMPROVEMENT-008). Acción inmediata: mover el archivo a `memsys3/backlog/` (o eliminarlo si fue creación errónea), commitear corrección, y anotar incidente en sessions.yaml.
 
 ---
 

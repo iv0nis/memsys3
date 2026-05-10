@@ -20,7 +20,7 @@ memsys3/                  # repo raíz (https://github.com/iv0nis/memsys3)
 │   ├── README.md
 │   ├── PRINCIPLES.md      # fuente única
 │   ├── agents/, memory/, prompts/, backlog/
-├── memsys3/               # instancia dogfooting (NO se distribuye)
+├── memsys3/               # instancia dogfooding (NO se distribuye)
 │   ├── agents/, memory/, prompts/, prompts-dev/, backlog/, docs/, blocked_files_log.md
 ```
 

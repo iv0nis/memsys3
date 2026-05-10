@@ -102,7 +102,7 @@ Las features específicas de un modelo (ej. comandos `/deploy-memsys3` de Claude
 
 **Regla dura.** Aunque un agente añada contenido a un archivo de infraestructura, **NO debe tocar su `file_version`**. El reflejo automático "modifico → bumpo" es incorrecto y rompe el sistema de versionado independiente. Esto está formalizado como restricción dura en `agents/main-agent.yaml`.
 
-**Excepción documentada.** En el repo dogfooting de memsys3 mismo, la restricción se levanta para evitar deadlock (el desarrollador del sistema necesita poder editar la infraestructura).
+**Excepción documentada.** En el repo dogfooding de memsys3 mismo, la restricción se levanta para evitar deadlock (el desarrollador del sistema necesita poder editar la infraestructura).
 
 **ADRs relacionados:** ADR-017 (file_version), ADR-018 (sustitución diferencial).
 
@@ -148,7 +148,7 @@ Las features específicas de un modelo (ej. comandos `/deploy-memsys3` de Claude
 
 **Quién sí puede modificar infraestructura.**
 - `/actualizar-memsys3` (operación explícita del usuario).
-- En el repo dogfooting de memsys3 (excepción documentada — sin esta excepción, el desarrollador del sistema no podría iterar).
+- En el repo dogfooding de memsys3 (excepción documentada — sin esta excepción, el desarrollador del sistema no podría iterar).
 
 **Datos vs infraestructura.**
 - **Datos** (escribibles por agents): `memory/full/sessions.yaml`, `memory/full/adr.yaml`, `memory/project-status.yaml`, `memory/memory.yaml`, `memory/context.yaml`, `backlog/`.
