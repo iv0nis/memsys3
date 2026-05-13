@@ -3,6 +3,167 @@
 # ADRs anteriores rotadas a: adr_1.yaml (1994 líneas, hasta ADR-024, 2026-05-07)
 
 adrs:
+  - id: "028"
+    titulo: "Setup Agent: tercer rol agéntico responsable del lifecycle de memsys3 (deploy + actualizar)"
+    data: "2026-05-12"
+    estado: aceptado
+    area: "arquitectura"
+
+    context: |
+      Hasta ADR-028 memsys3 contempla dos roles agénticos:
+      - Main Agent (MA): desarrolla el proyecto (features, bugs, escribe sessions/ADRs/
+        backlog/memory.yaml/project-status).
+      - Context Agent (CA): sintetiza memoria a `context.yaml` con criterio inteligente.
+
+      `deploy.md` y `actualizar.md` los ejecuta hoy el MA con una "excepción al principio
+      #10" (puede tocar `prompts/`, `agents/`, `memory/templates/`). Esta excepción ha
+      sido históricamente fuente de fricción conceptual:
+      - Solapamiento de rol: el MA, que existe para desarrollar el proyecto, hace además
+        operaciones de instalación/actualización del propio sistema memsys3.
+      - Cláusula ad-hoc en principio #10 ("salvo dogfooting") que reaparece cada vez que
+        el sistema se auto-aplica.
+      - Fricción operativa concreta detectada por el usuario en sesión 2026-05-12 tras
+        un deploy real: el "Paso 2 - Primeros Pasos" del README pide ejecutar
+        `compile-context.md` por separado, porque ADR-008 prohíbe al MA compilar.
+        El usuario observa: *"creo que debería quedar gestionado todo el deploy, readme
+        y compile en un solo paso, esta fricción me parece innecesaria"*.
+
+      La evolución conversacional pasó por cuatro encuadres (MA→CA→subagente→tercer rol)
+      antes de converger en la propuesta actual.
+
+    decision: |
+      Introducir el **Setup Agent (SA)** como tercer rol agéntico. Responsabilidades
+      acotadas y exclusivas:
+      - Ejecutar `deploy.md` (instalación inicial de memsys3 en un proyecto).
+      - Ejecutar `actualizar.md` (actualización de memsys3 en un proyecto ya desplegado).
+
+      El SA es el agente designado para operaciones de **lifecycle de memsys3 mismo**,
+      en contraposición al MA (lifecycle del proyecto) y al CA (síntesis de memoria).
+
+      En el flujo de deploy, el SA realiza inline la compilación inicial de `context.yaml`
+      como último paso. Esto NO viola ADR-008 en su espíritu: ADR-008 prohíbe compilar
+      en sesiones con tokens acumulados de trabajo de desarrollo. La sesión de deploy
+      es de configuración inicial, joven, y su contenido coincide exactamente con los
+      inputs del CA (project-status, README, memory.yaml recién escritos). No hay sesgo
+      acumulado que la compilación pueda perpetuar.
+
+      **Alcance reducido por diseño**. ADR-028 NO:
+      - reformula el principio #10 (queda igual; la tensión "MA toca infraestructura
+        para amoldar memsys al dominio" se separa a EXPLORATION-005),
+      - reactiva la restricción `infraestructura_memsys3` en `main-agent.yaml`,
+      - elimina la "excepción dogfooting" como concepto en PRINCIPLES.md,
+      - reorganiza los launchers `commands.md` (mejoras futuras pendientes).
+
+      Decisiones colaterales formalizadas:
+      1. **Compilación inline en deploy**: SÍ. Resuelve la fricción que originó el ADR.
+         Articulado por qué no viola ADR-008 (ver párrafo anterior).
+      2. **Nombre**: "Setup Agent". Conciso, refiere al lifecycle (setup + re-setup
+         vía actualizar). Alternativas "Infrastructure Agent" / "Deployment Agent"
+         descartadas: ambiguas o suenan a DevOps.
+      3. **¿SA en `newSession.md`?**: NO. SA se invoca SOLO al ejecutar
+         `/deploy-memsys3` o `/actualizar-memsys3`. `newSession.md` queda limpio.
+      4. **Permisos sobre infraestructura**: SA puede modificar `prompts/`, `agents/`,
+         `memory/templates/`, `PRINCIPLES.md`, `AGENTS.md` en cualquier proyecto
+         (desplegado o dogfooding). Es la única ruta canónica de modificación de
+         infraestructura — coherente con ADR-017 ("solo /actualizar-memsys3 bumpa
+         file_version") reformulado: "solo el Setup Agent bumpa file_version".
+      5. **MA mantiene permisos amplios**: el MA puede seguir tocando infraestructura
+         cuando amolde memsys al dominio del proyecto (memsys3 es agnóstico de
+         dominio — no solo software dev). La línea exacta queda a explorar en
+         EXPLORATION-005.
+
+    alternatives:
+      - nombre: "Status quo: MA con excepción al principio #10"
+        pros:
+          - "Cero refactor, dos agentes en lugar de tres"
+        contras:
+          - "Solapamiento conceptual: MA hace cosas que no son desarrollo"
+          - "Cláusula 'salvo dogfooting' es muleta arquitectónica"
+          - "Fricción operativa concreta tras deploy (paso 2 manual)"
+        por_que_descartada: |
+          El usuario detectó la fricción como problema real en uso (sesión 2026-05-12).
+          Mantener el statu quo perpetúa la muleta y la fricción.
+
+      - nombre: "CA absorbe deploy y actualizar"
+        pros:
+          - "Sigue siendo solo dos agentes"
+        contras:
+          - "El CA es batch (lee y sintetiza), no conversacional"
+          - "Deploy requiere briefing interactivo con el usuario, rompe rol CA"
+        por_que_descartada: "Rompe la separación de roles del CA. No encaja."
+
+      - nombre: "Subagente lanzado por MA al final de deploy (Agent tool)"
+        pros:
+          - "Aprovecha herramientas del modelo (Claude Code)"
+        contras:
+          - "Específico de tooling (no todos los modelos exponen subagentes)"
+          - "Rompe principio #2 (agnosticismo de modelo IA)"
+        por_que_descartada: |
+          memsys3 debe funcionar con cualquier modelo de IA. Subagentes son una
+          feature de algunas herramientas, no un universal.
+
+    consecuencias:
+      positivas:
+        - "Rol claro: SA cubre el lifecycle de memsys3, MA cubre el lifecycle del proyecto"
+        - "Deploy en un solo paso (sin fricción Paso 2 manual)"
+        - "Compilación inicial coherente: SA compila justo después de escribir canónicos"
+        - "Único punto de modificación de infraestructura (auditable, predecible)"
+        - "ADR-017 simplificado: 'solo SA bumpa file_version' (sin enumerar comandos)"
+      negativas:
+        - "Refactor antes de v1.0.0: agents/setup-agent.yaml + deploy.md + actualizar.md + commands.md descripciones + sincronización dogfooting↔templates"
+        - "Riesgo terminológico bajo: 'Setup Agent' puede evocar 'DevAgent/DevAI' erradicado en Frente 5 (ISSUE-026). Mitigación: documentar en ADR-015 update y en `agents/setup-agent.yaml` la distinción"
+        - "Un rol más: tres agentes en lugar de dos (más complejidad conceptual inicial, compensada por claridad de límites)"
+      impacto: |
+        Afecta a:
+        - `memsys3/agents/setup-agent.yaml` (CREAR; nuevo archivo + template espejo).
+        - `memsys3/agents/main-agent.yaml` (no cambia el rol, sí clarifica que deploy/
+          actualizar las ejecuta SA).
+        - `memsys3/agents/context-agent.yaml` (declaración explícita de límite: NO
+          opera en deploy/actualizar).
+        - `memsys3/prompts/deploy.md` (Paso 0: "actúas como Setup Agent"; nuevo paso
+          final de compilación inline).
+        - `memsys3/prompts/actualizar.md` (Paso 0 análogo).
+        - `memsys3/prompts/commands.md` (descripciones de launchers reflejan SA).
+        - `memsys3/PRINCIPLES.md` — NO cambia el principio #10 en este ADR (queda
+          para EXPLORATION-005); SÍ se actualiza la mención de "solo /actualizar
+          bumpa file_version" → "solo Setup Agent".
+        - `README.md` raíz y wiki: añadir SA al mapa de agentes.
+        - `memsys3_templates/` espejo de los archivos anteriores.
+
+    notes: |
+      Origen: sesión 2026-05-12. Fricción operativa detectada por el usuario en deploy
+      real ejecutado hoy. Evolución conversacional:
+      1. "deploy + readme + compile en un solo paso" (insight del usuario)
+      2. "como si lo hicieran CA y MA juntos" (refinamiento)
+      3. "que sea CA quien haga deploy" (cuestionamiento del rol del MA)
+      4. "setup-agent" (convergencia: tercer rol)
+
+      Decisiones de auditoría previa (subagente Explore, sesión 2026-05-12) que ADR-028
+      explícitamente NO adopta:
+      - Reactivar restricción infraestructura en MA: rechazado. El usuario argumenta
+        que MA debe poder amoldar memsys al dominio del proyecto (principio #2
+        extendido a dominio, no solo a modelo).
+      - Reformular principio #10: separado a EXPLORATION-005. Tensión flexibilidad
+        vs robustez estructural merece exploración propia.
+      - Cargar SA en `newSession.md`: rechazado. SA es punctual (solo al ejecutar
+        /deploy o /actualizar), no permanente.
+
+      Distinción con conceptos históricos. "Setup Agent" NO es retorno de
+      "Development Agent" / "DevAI" (erradicados en BLUEPRINT-001 Frente 5,
+      ISSUE-026). Aquellos eran un rename fallido del MA. SA es un **rol adicional
+      con responsabilidades disjuntas**, no un rename.
+
+      Items relacionados:
+      - EXPLORATION-005 (equilibrio flexibilidad vs robustez estructural): nace de
+        esta conversación. Pre-condición para futura reformulación del principio #10.
+      - ADR-008 (MA no compila): vigente, articulación de por qué SA inline no la viola.
+      - ADR-017 (file_version): simplificada operativamente (SA es el agente
+        autorizado, ya no "el comando /actualizar").
+      - ADR-018 (sustitución diferencial): operación de SA por excelencia.
+      - ADR-023 (scaffold canónico en deploy): operación de SA.
+      - ADR-027 (memoria agnóstica multi-modelo + AGENTS.md): propagación AGENTS.md
+        en deploy/actualizar es trabajo de SA.
+
   - id: "027"
     titulo: "Memoria de usuario agnóstica multi-modelo: invariante canónico + AGENTS.md + bridges per-modelo opcionales"
     data: "2026-05-10"
@@ -111,6 +272,37 @@ adrs:
       Refuerza Principio #2 (agnosticismo: el contrato no enumera modelos).
       Compatible con Principio #3 (una sola carpeta: los stubs de Capa 3 son
       punteros, no duplican contenido).
+
+    update_2026_05_11: |
+      **Refinamiento de Capa 3: trigger declarativo en lugar de AskUserQuestion estático.**
+
+      La decisión original (2026-05-10) preveía Capa 3 como paso de `deploy.md` con
+      `AskUserQuestion multiSelect` enumerando herramientas (CLAUDE.md, GEMINI.md,
+      .cursor/rules, etc.). Revisión en sesión 2026-05-11 detectó tensión con el
+      feedback canonizado el mismo 2026-05-10: "contratos agnósticos: definir
+      invariante declarativo, NO enumerar modelos". Enumerar en deploy.md contradice
+      el principio.
+
+      Mecanismo nuevo: instrucción declarativa en `newSession.md` (y espejo en
+      `main-agent.yaml` si refuerzo necesario) que dice:
+      > "Si tu harness tiene un archivo específico de tu herramienta en root para
+      > leer instrucciones/memoria (CLAUDE.md, GEMINI.md, .cursor/rules/, .clinerules,
+      > .windsurf/rules/, .roo/rules/, .github/copilot-instructions.md, etc.) y NO
+      > existe en este proyecto, créalo con el mismo invariante de memoria que
+      > AGENTS.md. Si ya existe, añade el invariante sin sobrescribir contenido del
+      > usuario. Triggea si te sientes aludido."
+
+      El LLM, al leer newSession.md, evalúa si su propio harness tiene un archivo de
+      ese tipo y actúa. No hay lista predefinida que mantener; modelos futuros con
+      convenciones nuevas reciben el trigger sin tocar memsys3.
+
+      AGENTS.md (Capa 2) también minimizado a solo el invariante de memoria (no
+      reglas operativas redundantes con main-agent.yaml/memory.yaml). Mismo contenido
+      que tendrán los stubs Capa 3 cuando un LLM los cree.
+
+      Cancela el pendiente "deploy.md gana paso Capa 3 AskUserQuestion" en
+      project-status.yaml. La propagación de stubs es ahora responsabilidad declarativa
+      del agente, no procedimental del deploy.
 
   - id: "025"
     titulo: "Estrategia dogfooding versionado: memsys3/ se commitea con protocolo anti-leak"
@@ -448,5 +640,9 @@ index:
     archivo: "adr.yaml"
   - id: "027"
     titulo: "Memoria de usuario agnóstica multi-modelo: invariante canónico + AGENTS.md + bridges per-modelo opcionales"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "028"
+    titulo: "Setup Agent: tercer rol agéntico responsable del lifecycle de memsys3 (deploy + actualizar)"
     estado: aceptado
     archivo: "adr.yaml"
