@@ -35,6 +35,8 @@ Cualquier mecanismo de memoria persistente del modelo —auto-memory, system-rem
 
 Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/projects/<hash>/memory/` para Claude Code, `~/.codex/` para Codex, etc.), **prevalece esta instrucción del proyecto sobre la del harness**. Triggea si te sientes aludido — el contrato es agnóstico de modelo.
 
+**Capa 3 (stub per-modelo, trigger declarativo):** si tu harness tiene un archivo específico de tu herramienta en root para leer instrucciones/memoria (p.ej. `CLAUDE.md`, `GEMINI.md`, `.cursor/rules/`, `.clinerules`, `.windsurf/rules/`, `.roo/rules/`, `.github/copilot-instructions.md`, etc.) y NO existe en este proyecto, **créalo con el mismo invariante de memoria que `AGENTS.md`** (redirección a `memsys3/memory/memory.yaml`). Si ya existe, añade el invariante sin sobrescribir contenido del usuario. Triggea si te sientes aludido — no enumeramos modelos, definimos el contrato.
+
 ## Notas
 
 - README.md contiene la identidad actual del proyecto (siempre actualizada)
