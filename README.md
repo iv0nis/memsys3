@@ -58,15 +58,14 @@ El workflow es:
 
 ### 2. Primeros Pasos
 
-Una vez desplegado:
+Una vez desplegado, el deploy ya ha compilado `context.yaml` v0.1.0 inline (ADR-028). No hay paso manual posterior — directamente:
 
 ```bash
-# 1. Compila el contexto inicial
-@memsys3/prompts/compile-context.md
-
-# 2. Comienza a trabajar
-@memsys3/prompts/newSession.md
+# Comienza a trabajar
+memsys3/prompts/newSession.md
 ```
+
+> En harnesses con auto-expansión `@-mention` (Claude Code, Cursor, Cline) puedes prefijar con `@` para inyección inline. La forma neutra funciona en todos los harnesses.
 
 ### 3. Uso con AI Agents
 

@@ -1,0 +1,40 @@
+# deploy-config-template.yaml — fallback declarativo para deploy.md
+#
+# Uso: si tu harness LLM NO soporta preguntas estructuradas al usuario en
+# tiempo real (ej: pegar prompt a mano en playground, agentes batch sin
+# interacción), rellena este archivo en la raíz de tu proyecto como
+# `deploy-config.yaml` ANTES de invocar deploy.md. El Setup Agent (ADR-028)
+# lo detectará y procederá sin briefing conversacional.
+#
+# Si tu harness SÍ soporta briefing interactivo (Claude Code, Cursor, Codex,
+# Gemini CLI con prompts), puedes ignorar este archivo: el SA capturará los
+# datos conversacionalmente.
+#
+# Schema agnóstico: solo naturaleza del proyecto. El stack técnico (framework,
+# lenguaje, deploy platform) es irrelevante para memsys3 — el SA NO lo pregunta.
+
+proyecto:
+  nombre: ""                # Nombre corto del proyecto
+  dominio: ""               # ¿Qué área/sector? (ej: "fintech B2B", "herramienta CLI dev", "investigación académica")
+  objetivo: ""              # Goal principal en 1-2 frases
+  audiencia: ""             # ¿Quién lo usa/lee? (ej: "desarrolladores senior", "estudiantes CLIENT_E", "equipo interno 5 personas")
+  fase: ""                  # Planificación / MVP / Beta / Producción
+  idioma: ""                # Idioma de UI, código y memoria (ej: "español", "english", "català")
+
+# Decisiones de deploy (opt-in/out explícitos)
+gitignore_memsys3: false    # true = excluir memsys3/ de git (privacidad). false = incluir (recomendado, anti-pérdida)
+memory_bridge: false        # true = crear MEMORY.md raíz como puntero (útil si tu harness inyecta auto-memory). false = omitir.
+
+# Opcional — solo si quieres que aparezcan en project-status.yaml inicial
+urls:
+  production: ""            # URL en producción (si existe)
+  staging: ""               # URL de staging (si existe)
+  repository: ""            # URL del repo
+
+# Opcional — pendientes iniciales del proyecto que el SA debe registrar
+pendientes_iniciales: []
+  # - prioridad: 1
+  #   tarea: "Descripción de la tarea"
+  #   detalle: "Contexto adicional"
+
+# version: 0.1.0
