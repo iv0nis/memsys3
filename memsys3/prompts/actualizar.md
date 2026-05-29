@@ -202,6 +202,8 @@ git ls-remote --tags https://github.com/iv0nis/memsys3 | tail -5
 
 **Identifica la última versión estable (tag más reciente):** `[VERSIÓN_NUEVA]`
 
+> ⚠️ **La fuente de verdad de la versión es el último tag** (`git tag --sort=-v:refname | head -1` tras `git fetch --tags`). `CHANGELOG.md` puede estar desactualizado respecto a tags publicados — NO uses su última entrada como `[VERSIÓN_NUEVA]`. Caso documentado: informe `docs/reports/2026-05-27_actualizar_memsys3_v0.20.0_v0.28.0_experiencia_agente.md` §4.5.
+
 **¿Vale la pena actualizar?**
 - Si la diferencia es < 2 versiones patch (ej: v0.5.1 → v0.5.2): actualización menor
 - Si la diferencia es >= 1 versión minor (ej: v0.4.0 → v0.5.0): actualización importante

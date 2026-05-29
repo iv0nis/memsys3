@@ -7,6 +7,64 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.28.1] - 2026-05-29
+### Changed
+- `github.md`: el workflow de release ahora actualiza `CHANGELOG.md` en cada tag — Paso 4 ampliado + nuevo sub-paso 4.1 (formato Keep-a-Changelog). Corrige un hueco sistémico: el workflow no contemplaba el CHANGELOG, por lo que v0.25.0–v0.28.0 se publicaron sin entrada (sesión 2026-05-27).
+- `actualizar.md`: callout en Paso 2 — el CHANGELOG no es fuente de verdad de versión (lo es el tag git).
+- `compile-context.md`: Fase 3 lee la especificación del template literalmente.
+### Fixed
+- ISSUE-024: `adr.yaml` restaura ADR-010 y ADR-011 al índice como entradas vacantes documentadas (existieron pero desaparecieron del índice en el reset de versionado v1.9→v0.8.0); neutraliza referencias colgantes y una contradicción interna del índice (sesión 2026-05-29).
+### Docs
+- Reconstrucción de las entradas de CHANGELOG para v0.25.0–v0.28.0 (estaban ausentes).
+
+## [0.28.0] - 2026-05-21
+### Added
+- **`newSession.md` v0.3.0 — imperatividad cross-harness** (sesión 2026-05-21): refactor del prompt crítico tras reunión investigación con Agent Gemini (`memsys3/docs/meets/20260521_1.md`). Tres mejoras estructurales que suben imperatividad sin romper agnosticismo:
+  - §0.5 contrato de idioma explícito (ningún archivo canónico instruía sobre idioma de respuesta — defaults del harness ganaban).
+  - §1 carga de contexto imperativa numerada con condición de completitud.
+  - §2 Capa 3 instrucción imperativa primero (DEBES) + justificación después.
+- Stubs Capa 3 commiteados como artefactos canónicos: `CLAUDE.md`, `GEMINI.md` (junto a `AGENTS.md` ya existente).
+- Smoke tests cross-harness validados: codex CLI 2026-05-20 + gemini CLI 2026-05-21 pre-fix y post-fix. Tres backends ortogonales (OpenAI gpt-5.5, Google gemini-2.5-flash, Anthropic dev).
+### Fixed
+- Bug cross-harness: redacción declarativa en bullets era interpretada por LLMs prudentes (Gemini confirmado) como referencias diferidas, no como protocolo a ejecutar.
+- Bug idioma: defaults del harness ganaban sin contrato canónico.
+- Gotchas canonizados: `gemini-cli-no-pollea`, `protocolo-declarativo-vs-imperativo`.
+
+## [0.27.0] - 2026-05-19
+### Added
+- **Setup Agent operativo** (ADR-028, BLUEPRINT-002 Bloque A 2026-05-16): tercer rol agéntico del sistema, responsable del lifecycle memsys3 (deploy + actualizar). `agents/setup-agent.yaml` en dogfooding + template, file_version 0.1.0. Permisos amplios sobre infraestructura + datos; único autorizado a bumpear `file_version`. 5 restricciones (alcance acotado, firma commits, datos de sesión, memoria agnóstica, operaciones git).
+- **`deploy.md` agnóstico desde nacimiento** (BLUEPRINT-002 Bloque B refactor 2026-05-18): no agnostificado a posteriori, escrito agnóstico desde el primer commit. Eliminadas tools propietarias del core.
+  - Paso 0 SA + contrato de ejecución agnóstico (sin `AskUserQuestion` ni `@-mention`).
+  - Detección `deploy-config.yaml` (modo declarativo opt-in).
+  - Briefing por naturaleza del proyecto (dominio/objetivo/audiencia, no stack).
+  - Propagación `AGENTS.md` a raíz del proyecto destino.
+  - Compilación inline de `context.yaml` v0.1.0 (justificación ADR-028 vs ADR-008).
+- `AGENTS.md` SSoT en `memsys3_templates/` (estándar agents.md cross-tool).
+- `deploy-config-template.yaml`: fallback declarativo opt-in agnóstico.
+### Changed
+- Convención de commits: atómicos por bloque vía workflow `github.md` (no acumular hacia v1.0.0). Anula convención previa.
+### BREAKING
+- `deploy.md` elimina `AskUserQuestion`/comandos globales del core (agnóstico). Compatibilidad: harnesses propietarios siguen funcionando vía contrato declarativo.
+
+## [0.26.0] - 2026-05-13
+### Added
+- **ADR-028 Setup Agent** (sesión 2026-05-12): declaración del tercer rol agéntico responsable del lifecycle memsys3 (deploy + actualizar). Alcance reducido por diseño. Implementación pendiente en BLUEPRINT-002.
+- **EXPLORATION-005**: tensión flexibilidad MA amoldando memsys3 al dominio vs robustez principio #10. Separada para no acoplar a ADR-028.
+- **BLUEPRINT-002**: implementación de ADR-028 en 5 bloques ejecutables (item + informe + plan, gitignored en `memsys3/backlog/`).
+- `memsys3/README.md` scaffold-mirror dogfooding añadido.
+### Changed
+- **ADR-027 UPDATE Capa 3 — trigger declarativo** (sesión 2026-05-11): refinamiento de `AskUserQuestion` estático a trigger declarativo en `newSession.md`. No enumera modelos (coherente con principio de agnosticismo). `AGENTS.md` root minimizado a solo invariante de memoria agnóstica.
+
+## [0.25.0] - 2026-05-10
+### Added
+- **ADR-027 memoria agnóstica multi-modelo** (sesión 2026-05-10): extiende ADR-020 sin invalidarla. Diseño en 3 capas:
+  - Capa 1: invariante canónico textual en 4 archivos × 2 (`newSession.md`, `compile-context.md`, `main-agent.yaml`, `context-agent.yaml`, en dogfooding + templates).
+  - Capa 2: `AGENTS.md` en raíz del repo (estándar agents.md; cobertura nativa Codex/Cline/Copilot/Kilo/Warp; vía config Cursor/Aider).
+  - Capa 3: bridges per-modelo opcionales (pendiente en `deploy.md`, no bloqueante v1.0.0).
+- ADR-020 sigue vigente (`memory.yaml` canónica); ADR-027 generaliza el bridge sin invalidarla.
+### Fixed
+- Typo sistémico `dogfooting → dogfooding` (13 archivos, 56 ocurrencias, todas las variantes incluyendo mayúsculas).
+
 ## [0.24.1] - 2026-05-08
 ### Added
 - **BLUEPRINT-001 Frente 7 completado**: 6 smoke tests end-to-end para deploy/actualizar/commands y hook anti-leak validados.

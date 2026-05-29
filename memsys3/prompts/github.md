@@ -114,19 +114,46 @@ AskUserQuestion(
 
 1. **README.md** (línea `**Versión**: X.Y`)
 2. **memsys3/memory/project-status.yaml** (`memsys3_version`)
-3. Commit estos cambios de versión
+3. **CHANGELOG.md** (añadir entrada para v0.X.Y desde el análisis del paso 2 — ver 4.1)
+4. Commit estos cambios de versión
 
 ```bash
 # Editar archivos con nueva versión
 # ...
 
 # ⚠️ Commit SIN Co-Authored-By (NO añadir firma de Claude)
-git add README.md memsys3/memory/project-status.yaml
+git add README.md memsys3/memory/project-status.yaml CHANGELOG.md
 git commit -m "chore: bump version to v0.X.Y"
 
 # Verificar que NO contiene firma
 git log -1 --format="%B"
 ```
+
+### 4.1. Actualizar CHANGELOG.md
+
+**Obligatorio si se va a crear tag.** El CHANGELOG vive solo en este repo dogfooding (no se distribuye); mantener este paso aquí evita que las versiones queden sin entrada (precedente: v0.25.0 → v0.28.0 se publicaron sin actualizar el CHANGELOG porque el workflow no lo contemplaba).
+
+**Procedimiento:**
+
+1. Verificar que `CHANGELOG.md` existe en root del repo. Si no existe, avisar al usuario y saltar el paso.
+2. Reutilizar el análisis del paso 2 (sesiones, features, fixes, ADRs, breaking changes desde el último tag).
+3. Insertar entrada nueva justo debajo del marcador `## [Unreleased]`, siguiendo el formato Keep-a-Changelog ya presente en el archivo:
+
+```markdown
+## [Unreleased]
+
+## [0.X.Y] - YYYY-MM-DD
+### Added
+- [feature 1] (sesión YYYY-MM-DD)
+- [feature 2] (sesión YYYY-MM-DD)
+### Changed
+- [cambio relevante]
+### Fixed
+- [fix 1]
+```
+
+4. Si faltan entradas de versiones anteriores ya tageadas pero ausentes del CHANGELOG, **avisar al usuario** y preguntar si reconstruirlas en la misma operación o diferir a tarea aparte. No reconstruir silenciosamente.
+5. NO tocar el marcador `## [Unreleased]` (queda vacío arriba para la siguiente).
 
 ### 5. Ejecutar commits y push
 
