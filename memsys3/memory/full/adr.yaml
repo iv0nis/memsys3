@@ -578,6 +578,28 @@ index:
     titulo: "Templates como documentación activa permanent + gotchas en sessions"
     estado: aceptado
     archivo: "adr_1.yaml"
+  - id: "010"
+    titulo: "VACANTE — fue 'consulta .gitignore en deploy' (numeración temprana)"
+    estado: vacante
+    archivo: "—"
+    nota: |
+      Número usado en la numeración temprana (nov 2025) para la ADR de consulta
+      .gitignore durante deployment. Se perdió del índice en la renumeración posterior
+      (reset versionado v1.9→v0.8.0) y nunca se reescribió como cuerpo formal. La
+      DECISIÓN sobrevive en deploy.md Paso 8 (gitignore A/B). Referencias antiguas a
+      "ADR-010" (p.ej. sessions_1/sessions_3) apuntan a esto. NO reutilizar el número
+      (rompería trazabilidad histórica). Resuelto por ISSUE-024 (2026-05-29).
+  - id: "011"
+    titulo: "VACANTE — fue 'separación agnóstico/específico' (numeración temprana)"
+    estado: vacante
+    archivo: "—"
+    nota: |
+      Número usado en la numeración temprana para la separación agnóstico/específico
+      (prompts específicos van a /prompts/, no a memsys3_templates/). No tiene ADR formal
+      propia: la decisión vive en README:235-247 y fue formalizada por ADR-016
+      (agnosticismo) + ADR-025 (dogfooding versionado). Las citas a "ADR-011" en cuerpos
+      vivos (p.ej. ADR-026 de este archivo) refieren a este CONCEPTO, no a un cuerpo ADR
+      existente. NO reutilizar el número. Resuelto por ISSUE-024 (2026-05-29).
   - id: "012"
     titulo: "README como lectura directa vs duplicado en context.yaml"
     estado: aceptado
