@@ -7,6 +7,14 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-06-03
+### Added
+- **Disciplina de ciclo de vida de ADRs** (ADR-029): convención Nygard adaptada — inmutabilidad de `id/titulo/data/context/decision/alternatives` + test del tipo de cambio (refinamiento aditivo vía clave fechada `update_YYYY_MM_DD` vs ADR nuevo + `superseded_by` cuando la decisión cambia). Disciplina única dogfooding=producción. Canonizada en `adr.md` §3 + cabecera de `adr-template.yaml`.
+- **Reconciliación activa de auto-memory del harness** (ADR-030): `newSession.md` §2 pasa de verbo pasivo ("quedar inerte") a activo-condicional — el agente reconcilia su auto-memory (migra a `memory.yaml` + vacía si está poblada; nada si está inerte) + tabla de rutas conocidas incremental. Corrige la ubicación del bridge `MEMORY.md`-en-root de ADR-020 e implementa la pasada autocurativa que ADR-027 dejó pendiente.
+- **Corolario anti-CDC de detectabilidad asimétrica** (ADR-031): `PRINCIPLES.md` §1 — la CDC es más peligrosa en su forma positiva (el agente acierta por azar de contexto → falsa sensación de seguridad) que en la negativa; espejo-observador del corolario de meta-amnesia.
+### Changed
+- `update_` forward-pointer aditivo en ADR-027 (refina su verbo pasivo→activo sin reescribir la decisión, según ADR-029).
+
 ## [0.28.1] - 2026-05-29
 ### Changed
 - `github.md`: el workflow de release ahora actualiza `CHANGELOG.md` en cada tag — Paso 4 ampliado + nuevo sub-paso 4.1 (formato Keep-a-Changelog). Corrige un hueco sistémico: el workflow no contemplaba el CHANGELOG, por lo que v0.25.0–v0.28.0 se publicaron sin entrada (sesión 2026-05-27).
