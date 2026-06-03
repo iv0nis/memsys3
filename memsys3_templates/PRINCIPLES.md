@@ -26,7 +26,9 @@ Confundir estos gaps con CDC convierte el principio en esponja conceptual y le q
 
 **Corolario disposicional (meta-amnesia agéntica).** Los agentes LLM no solo olvidan al cambiar de turno: NO SABEN que están olvidando. La conversación se "siente" continua aunque no lo sea. Por eso el comportamiento por defecto NO es canonizar — es proseguir, como si el insight ya estuviera guardado por haberse pronunciado. Combatir CDC requiere reformular el default mental ("tu estado por defecto es el olvido; lo no canonizado se pierde ahora"), no solo añadir reglas de detección. Ver EXPLORATION-004.
 
-**ADRs relacionados:** ADR-008 (compile-context en sesión limpia), ADR-020 (memory.yaml), ADR-021 (backlog docs anti-CDC). **Exploraciones:** EXPLORATION-004 (canonización proactiva).
+**Corolario de detectabilidad asimétrica (falsa sensación de seguridad).** La CDC es más peligrosa en su cara positiva (el agente *acierta* por azar de contexto) que en la negativa (falla por falta de él). El fallo se autodelata —se nota y se corrige—; el acierto casual no deja rastro, y el observador (humano o agente) lo lee como prueba de que el sistema funciona. Esa lucidez fortuita *enmascara* la ausencia de garantía canónica: nadie canoniza lo que parece funcionar, y la sesión siguiente —sin ese contexto fortuito— falla sin causa visible. Es el espejo-observador de la meta-amnesia: si aquélla impide que el *agente* sienta que olvida, ésta impide que el *humano* exija la canonización. Operacionalización: desconfía del éxito de una sesión hasta verificar que su lucidez está garantizada por archivo canónico y no por el contexto eventual —valida en frío y contra la fuente de verdad, no en el calor del contexto que la produjo. Ver ADR-031.
+
+**ADRs relacionados:** ADR-008 (compile-context en sesión limpia), ADR-020 (memory.yaml), ADR-021 (backlog docs anti-CDC), ADR-031 (detectabilidad asimétrica). **Exploraciones:** EXPLORATION-004 (canonización proactiva).
 
 ---
 

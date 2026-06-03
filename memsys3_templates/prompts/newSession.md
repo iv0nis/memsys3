@@ -53,6 +53,21 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 
 **Justificación (por qué este paso):** el contrato es agnóstico de modelo — no enumeramos exhaustivamente los harnesses, pero el patrón es claro: si tu herramienta lee un archivo específico de root, ese archivo debe contener el invariante de memoria de este proyecto, redirigiendo a `memsys3/memory/memory.yaml`. Aplica también a herramientas futuras que sigan el mismo patrón.
 
+**Reconciliación de auto-memory del harness (ADR-030). Ejecuta AHORA:**
+
+"Quedar inerte" NO basta si tu harness YA guardó memoria de usuario en su propia ubicación en una sesión previa: ese contenido competiría con `memory.yaml`. Además de no escribir ahí, DEBES reconciliar activamente tu propio mecanismo de auto-memory, viva donde viva:
+
+1. Localiza dónde guarda memoria persistente TU harness (tú conoces la tuya; si no, usa la tabla de rutas conocidas abajo).
+2. Si está VACÍA o no existe → no hagas nada (es el caso normal; no pre-escribas punteros en una ubicación inerte).
+3. Si contiene memoria de usuario → migra lo canónico a `memsys3/memory/memory.yaml` (append + datado), avisa al usuario de qué moviste, y vacía la ubicación del harness para que no queden dos fuentes.
+
+**Rutas conocidas (tabla incremental — amplíala cuando descubras la de otro harness):**
+- **Claude Code:** `~/.claude/projects/<hash>/memory/` — el `<hash>` es el path absoluto del cwd con cada `/` convertida en `-`. Índice del harness: `MEMORY.md` dentro de esa carpeta (NO en root del proyecto).
+- **Codex CLI:** `~/.codex/` · **Gemini CLI:** `~/.gemini/` *(ubicaciones aproximadas, confirmar al operar desde ahí)*.
+- **Otros:** si conoces la tuya y no está aquí, reconcíliala igual y propón al usuario añadirla a esta tabla.
+
+**Por qué reconciliación condicional y no pre-escribir un puntero:** verificación empírica (2026-06-03) mostró que el harness de Claude Code NO auto-puebla esas carpetas — están inertes salvo que una instancia escriba en ellas. Pre-escribir un puntero ensuciaría una ubicación limpia y podría entrar en conflicto si el harness regenera su índice. Actúa solo si hay algo que reconciliar.
+
 ## Notas
 
 - README.md contiene la identidad actual del proyecto (siempre actualizada)

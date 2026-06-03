@@ -57,17 +57,27 @@ Si el usuario quiere crear un ADR:
 5. Añade al final de `adr.yaml` (NO borres ADRs antiguas)
 6. Actualiza el índice al final del archivo
 
-## 3. Actualizar ADR Existente
+## 3. Actualizar un ADR existente
 
-Si el usuario quiere actualizar un ADR:
-1. Lee `memsys3/memory/full/adr.yaml`
-2. Localiza la ADR por ID
-3. Actualiza el campo correspondiente:
-   - **estado**: Si cambió de accepted → deprecated/superseded_by
-   - **notes**: Agregar información adicional
-   - **consequencies**: Actualizar impacto real tras implementación
-4. NO cambies: id, titulo, data, context, decision, alternatives (son históricos)
-5. Si una decisión fue sustituida, usa `superseded_by: "XXX"` apuntando al nuevo ADR
+**Principio de inmutabilidad (convención Nygard, ADR-029).** Un ADR aceptado es un registro histórico: captura *por qué* decidimos algo *en su momento*. Por eso `id`, `titulo`, `data`, `context`, `decision`, `alternatives` son **inmutables** — nunca se editan para borrar, reescribir o contradecir lo decidido. Editarlos destruye la trazabilidad del razonamiento, que es el valor del ADR.
+
+Antes de tocar un ADR aplica el **test del tipo de cambio**: *¿lo que voy a escribir contradice lo que el ADR ya decidió?*
+
+- **NO contradice (refinamiento aditivo)** → patrón `update_YYYY_MM_DD`. Para aclarar, registrar impacto real tras implementar, o enlazar trabajo derivado. Añade una **clave fechada** al final del cuerpo del ADR, sin tocar `decision`/`context`:
+  ```yaml
+  update_2026_06_03: |
+    Aclaración o dato nuevo que NO contradice lo decidido.
+  ```
+
+- **SÍ contradice (la decisión cambia)** → **ADR nuevo**, nunca editar el viejo. Crea el ADR con el siguiente ID (sección 2); en su cuerpo indica a quién supersede; en el ADR viejo cambia SOLO su `estado` a `superseded_by: "NNN"` apuntando al nuevo. La contradicción vive *entre* ADRs (cadena de supersesión), jamás *dentro* de uno.
+
+Pasos:
+1. Lee `memsys3/memory/full/adr.yaml` y localiza la ADR por ID.
+2. Aplica el test del tipo de cambio para elegir camino.
+3. Cambios in-place permitidos: `estado` (aceptado → deprecated / superseded_by) y `consecuencias` (impacto real tras implementación). Refinamientos textuales → clave `update_YYYY_MM_DD`.
+4. NUNCA edites `id`, `titulo`, `data`, `context`, `decision`, `alternatives`.
+
+> Disciplina **única** (dogfooding y proyectos desplegados): el híbrido es superconjunto del Nygard puro. Un proyecto que nunca use `update_` y siempre supersede ya es 100% estricto — el rigor extra es elección local, no una convención distinta.
 
 ---
 

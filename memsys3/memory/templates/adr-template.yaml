@@ -7,6 +7,9 @@
 # - No borres ADRs antiguas, márcalas como deprecated
 # - Sé conciso: máximo 200-300 palabras por ADR
 # - Estados: accepted | deprecated | superseded_by
+# - INMUTABILIDAD (convención Nygard, ADR-029): un ADR aceptado no reescribe
+#   id/titulo/data/context/decision/alternatives. Refinamiento que NO contradice →
+#   clave fechada update_YYYY_MM_DD. Cambio que contradice → ADR nuevo + superseded_by.
 
 adrs:
   - id: "001"

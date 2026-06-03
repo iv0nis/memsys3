@@ -3,6 +3,320 @@
 # ADRs anteriores rotadas a: adr_1.yaml (1994 líneas, hasta ADR-024, 2026-05-07)
 
 adrs:
+  - id: "031"
+    titulo: "Extensión del corolario anti-CDC: detectabilidad asimétrica (la lucidez casual da falsa sensación de seguridad)"
+    data: "2026-06-03"
+    estado: aceptado
+    area: "process,documentación"
+
+    context: |
+      El principio #1 (Anti-CDC) define la CDC como lucidez agéntica casual (que el agente
+      "acierte" por el contexto eventual de la sesión, no por archivo canónico) e incluye un
+      corolario disposicional: la meta-amnesia agéntica (el agente no sabe que olvida → su
+      default es proseguir sin canonizar). Ese corolario describe la CARA DEL AGENTE.
+
+      En sesión 2026-06-03, durante una conversación sobre dos drifts detectados (el bug
+      sistémico del CHANGELOG en github.md y un pendiente stale en project-status), el usuario
+      articuló una cara complementaria no canonizada: la CDC es MÁS peligrosa en su forma
+      positiva (acierto casual) que negativa (fallo), por ASIMETRÍA DE DETECTABILIDAD. El
+      fallo se autodelata y se corrige; el acierto casual no deja rastro y el observador
+      humano lo lee como prueba de que el sistema funciona → falsa sensación de seguridad →
+      no se canoniza → la sesión siguiente falla sin causa visible. Es el espejo-observador
+      de la meta-amnesia (cara del HUMANO).
+
+      Varias reglas operativas del proyecto ya son curas de esta cara sin nombrarla: validación
+      cross-harness (memory.yaml 2026-05-14, "probar solo donde se desarrolló no aporta
+      evidencia") y verificar contra código/git en vez del resumen (memory.yaml 2026-05-29).
+      Pero el insight general no estaba articulado en §1.
+
+    decision: |
+      Extender el principio #1 con un corolario nuevo —"detectabilidad asimétrica / falsa
+      sensación de seguridad"— como espejo-observador del corolario de meta-amnesia. Se edita
+      `PRINCIPLES.md` §1 (SSoT en memsys3_templates/ + copia dogfooding; el stub raíz del repo
+      es puntero y no se toca). `file_version` NO se bumpa (diferido a /actualizar-memsys3).
+
+      Esta ADR-031 es el artefacto que el protocolo de evolución de PRINCIPLES.md exige
+      ("se crea/actualiza una ADR que justifique el cambio") antes de editar el documento.
+
+    alternatives:
+      - nombre: "Capturarlo como regla en memory.yaml"
+        pros:
+          - "Barato: append datado, sin protocolo ni bump"
+        contras:
+          - "memory.yaml acumula reglas OPERATIVAS sin poda ni promoción → driftan"
+          - "Un corolario conceptual se enterraría entre reglas y nunca alcanzaría estatus de principio"
+          - "El puntero 'promover después' crea el limbo donde las cosas mueren (cf. consecuencia autocurativa de ADR-027, nunca implementada)"
+        por_que_descartada: |
+          Esto es teoría del sistema, no procedimiento. Su hogar es PRINCIPLES.md, que no
+          drifta igual porque describe invariantes (no apunta a estado mutable). El propio
+          temor del usuario al drift de memory.yaml fue la señal de que era el sitio equivocado.
+
+      - nombre: "No canonizar (dejarlo implícito en las reglas operativas existentes)"
+        pros:
+          - "Cero trabajo; las curas operativas ya existen"
+        contras:
+          - "El insight general queda sin paraguas conceptual"
+          - "Es exactamente la CDC que el corolario describe: lucidez de esta sesión que la meta-amnesia perdería"
+        por_que_descartada: "Auto-contradictorio: no canonizar el corolario sobre no-canonizar."
+
+    consecuencias:
+      positivas:
+        - "El principio fundacional #1 queda completo: cara-agente (meta-amnesia) + cara-humano (falsa seguridad)"
+        - "Da paraguas conceptual a reglas operativas dispersas (cross-harness, verificar contra git)"
+        - "Léxico citable: 'detectabilidad asimétrica (ADR-031)' / 'falsa sensación de seguridad'"
+      negativas:
+        - "PRINCIPLES.md gana un párrafo (~6 líneas; justificado: es el principio fundacional)"
+      impacto: |
+        Afecta:
+        - `memsys3/PRINCIPLES.md` §1 (copia dogfooding) + `memsys3_templates/PRINCIPLES.md` (SSoT).
+        - `./PRINCIPLES.md` (stub raíz): NO se toca (es puntero).
+        - Convención conceptual aplicable a todo el sistema y a proyectos desplegados.
+
+    notes: |
+      Origen: sesión 2026-06-03. Insight del usuario ("casualidad de contexto sería también
+      que el agente actúe de forma muy lúcida por casualidad... eso da falsa sensación de
+      seguridad").
+
+      Dogfooding de ADR-029 (disciplina de ciclo de vida de ADRs): se EXTIENDE el principio #1
+      añadiendo un corolario (aditivo, no reescribe la decisión original) y se respalda con
+      ADR nueva en lugar de editar destructivamente. No contradice el corolario de meta-amnesia:
+      lo complementa (otra cara del mismo fenómeno).
+
+      Reglas operativas derivadas ya canónicas: memory.yaml 2026-05-14 (validación cross-harness)
+      y 2026-05-29 (verificar contra código/git, no el resumen).
+
+      Anclaje a PRINCIPLES.md: #1 (Anti-CDC, este ADR lo extiende).
+
+  - id: "030"
+    titulo: "Reconciliación activa de auto-memory del harness: verbo activo-condicional + tabla de rutas conocidas"
+    data: "2026-06-03"
+    estado: aceptado
+    area: "arquitectura,agnosticismo"
+
+    context: |
+      ADR-020 propuso un bridge `MEMORY.md` en la RAÍZ del proyecto para redirigir la
+      auto-memory de Claude Code a `memory.yaml`. ADR-027 lo extendió a un diseño multi-capa
+      (invariante textual + AGENTS.md + stubs per-modelo) cuyo verbo es PASIVO: el mecanismo
+      de auto-memory del harness "debe redirigirse o quedar inerte".
+
+      Dos problemas detectados en sesión 2026-06-03:
+      1. **Mala ubicación del bridge original.** La auto-memory de Claude Code NO vive en
+         `<root>/MEMORY.md`; vive en `~/.claude/projects/<hash>/memory/` (índice `MEMORY.md`
+         DENTRO de esa carpeta). Un puntero en root nunca lo lee el harness. El bridge de
+         ADR-020 asumía una ubicación sin verificarla.
+      2. **El verbo pasivo no cubre la contaminación heredada.** "Quedar inerte" no resuelve
+         el caso en que una sesión PREVIA dejó memoria de usuario en la ubicación del harness:
+         ese contenido competiría con `memory.yaml`. ADR-027 previó en sus consecuencias una
+         pasada "autocurativa" en endSession (migrar + vaciar) que NUNCA se implementó (grep
+         0 hits en endSession.md, 2026-06-03).
+
+      Verificación empírica (2026-06-03): las 8 carpetas `~/.claude/projects/*/memory/` de
+      esta máquina están VACÍAS, incluso en proyectos de hace meses. El harness NO auto-puebla
+      esas carpetas; solo se llenan si una instancia escribe en ellas. Conclusión: el riesgo
+      no es un harness que rellena solo, sino una instancia que obedece al harness en vez del
+      invariante. El invariante textual lleva meses conteniendo (0 incidentes).
+
+    decision: |
+      Sustituir el verbo PASIVO ("quedar inerte") por un verbo ACTIVO-CONDICIONAL de
+      reconciliación, implementado en `newSession.md` §2:
+
+      1. **Reconciliación condicional.** El agente localiza dónde guarda memoria persistente
+         SU harness (viva donde viva). Si está vacía → no hace nada (caso normal). Si contiene
+         memoria de usuario → migra lo canónico a `memory.yaml` (append + datado), avisa al
+         usuario, y vacía la ubicación del harness. NO pre-escribe punteros en ubicaciones
+         inertes (sería ensuciar una carpeta limpia; evidencia: el harness no la puebla solo).
+
+      2. **Tabla de rutas conocidas (incremental).** Ayuda para quien no conoce su propia
+         ubicación. Hoy: Claude Code = `~/.claude/projects/<hash>/memory/` (hash = path del
+         cwd con `/`→`-`). Codex/Gemini aproximadas, por confirmar. Se amplía a medida que se
+         descubre cómo gestiona la memoria cada harness. La tabla es scaffolding, no ley: el
+         invariante declarativo ("reconcilia tu auto-memory esté donde esté") manda.
+
+      **Relación con ADRs previas (ver disciplina ADR-029).** ADR-030 NO marca `superseded_by`
+      global en ADR-020 ni ADR-027 — ambas son multi-decisión y su núcleo (`memory.yaml`
+      canónica, MA escribe / CA lee, invariante declarativo agnóstico) sigue VIGENTE. ADR-030:
+      - EXTIENDE ADR-027: refina la Capa 1 de pasivo a activo-condicional y cubre la CARPETA
+        de auto-memory (ADR-027 Capa 3 solo cubría archivos de INSTRUCCIONES en root).
+      - COMPLETA la consecuencia "autocurativa" que ADR-027 prometió y no implementó.
+      - DEJA ATRÁS el bridge `MEMORY.md`-en-root original de ADR-020 (mal ubicado), ya
+        de facto superado por la migración a AGENTS.md de ADR-027.
+      Se añade un `update_` forward-pointer en ADR-027 (aditivo, permitido por ADR-029).
+
+    alternatives:
+      - nombre: "Pre-escribir un puntero MEMORY.md en la carpeta del harness"
+        pros:
+          - "Barandilla proactiva: cualquier inyección futura del harness reafirmaría el invariante con recencia"
+        contras:
+          - "Añade un artefacto a una carpeta que la evidencia muestra inerte"
+          - "Persistencia/inyección no verificada: el harness podría regenerar su índice y pisar el puntero"
+        por_que_descartada: |
+          Defensa contra un fantasma (anti over-defensive scaffolding, memory.yaml 2026-05-16):
+          el harness no auto-puebla las carpetas. Reconciliar solo si hay contenido es el
+          coste-beneficio correcto.
+
+      - nombre: "Solo reforzar el invariante textual (no tocar carpetas)"
+        pros:
+          - "Cambio mínimo; el invariante lleva meses funcionando (0 incidentes)"
+        contras:
+          - "No resuelve la contaminación heredada de una sesión previa que sí escribió"
+          - "Deja sin cerrar la consecuencia autocurativa prometida por ADR-027"
+        por_que_descartada: |
+          Cubre el caso común pero no el de reconciliación. El coste de la pasada condicional
+          es un `ls` (no hace nada si está vacío), así que el caso borde se cubre barato.
+
+    consecuencias:
+      positivas:
+        - "Cierra el caso de contaminación heredada (memoria de usuario dejada por sesión previa)"
+        - "Corrige la mala ubicación del bridge ADR-020 (carpeta del harness, no root)"
+        - "Implementa la pasada autocurativa que ADR-027 dejó pendiente"
+        - "Tabla de rutas conocidas: agnóstica (invariante manda) + práctica (ayuda incremental)"
+        - "Condicional: cero ruido cuando las carpetas están limpias (caso normal)"
+      negativas:
+        - "newSession.md gana ~20 líneas (justificado: contenido anti-CDC, no scaffolding)"
+        - "La tabla de rutas requiere mantenimiento incremental al descubrir nuevos harnesses"
+      impacto: |
+        Afecta:
+        - `memsys3/prompts/newSession.md` §2 (verbo activo-condicional + tabla rutas) + espejo templates.
+        - `memsys3/memory/full/adr.yaml` (este ADR-030 + `update_` forward-pointer en ADR-027).
+        - NO toca `adr_1.yaml` (ADR-020 rotada): su evolución pasa por ADR-027.
+
+    notes: |
+      Origen: sesión 2026-06-03. El usuario detectó que el auto-memory de Claude no vive en
+      root ("no hemos caído en que vive en su carpeta, no en la root") y propuso "instar al
+      modelo a modificar su auto-memory, viva donde viva + rutas conocidas incrementales". La
+      verificación empírica (carpetas vacías) reorientó el verbo de "pre-escribir" a
+      "reconciliar condicionalmente".
+
+      Es el primer dogfooding de ADR-029 (disciplina de ciclo de vida de ADRs): se aplicó el
+      test del tipo de cambio y se eligió ADR nueva + `update_` aditivo en lugar de reescribir
+      ADR-020/027.
+
+      Side-finding (no resuelto aquí): los ADRs multi-decisión (020, 026, 027) complican la
+      supersesión Nygard (no se puede marcar `superseded_by` global sin mentir sobre las
+      sub-decisiones vigentes). Candidato futuro: principio/convención "una decisión por ADR".
+
+      Anclaje a PRINCIPLES.md:
+      - #1 (Anti-CDC): la reconciliación evita que memoria heredada contamine sesiones nuevas.
+      - #2 (Agnosticismo): el invariante no enumera modelos; la tabla de rutas es ayuda, no ley.
+      - #3 (Una sola carpeta): refuerza que la única fuente de memoria de usuario es memory.yaml.
+
+  - id: "029"
+    titulo: "Disciplina de ciclo de vida de ADRs: inmutabilidad + UPDATE aditivo + supersesión (convención Nygard adaptada)"
+    data: "2026-06-03"
+    estado: aceptado
+    area: "process,documentación"
+
+    context: |
+      memsys3 distribuye un sistema de gestión de ADRs (prompt `adr.md` + `adr-template.yaml`)
+      pero NUNCA había fijado una disciplina explícita sobre cómo evoluciona un ADR una vez
+      aceptado. `adr.md` §3 ya decía "NO cambies id/titulo/data/context/decision/alternatives
+      (son históricos)" — coherente con el estándar Nygard — pero el repo usa de facto un
+      patrón contradictorio sin documentar: claves fechadas `update_YYYY_MM_DD:` que editan
+      el cuerpo del ADR tras su aceptación (ej. ADR-027 `update_2026_05_11`). Convivían una
+      regla escrita ("no toques") y una práctica ("toco vía update") sin árbitro, dejando a
+      cada agente fresco adivinar cuándo editar in-place y cuándo crear un ADR nuevo (CDC
+      operativa).
+
+      El estándar de industria (Michael Nygard, 2011) trata cada ADR aceptado como registro
+      histórico inmutable: la evolución se modela creando un ADR nuevo que *supersede* al
+      anterior (este cambia solo su estado a `superseded_by`), nunca editando el viejo.
+
+    decision: |
+      Adoptar una **disciplina híbrida con límite**, ÚNICA para dogfooding y proyectos
+      desplegados (sin bifurcar):
+
+      1. **Inmutabilidad.** `id`, `titulo`, `data`, `context`, `decision`, `alternatives`
+         de un ADR aceptado NUNCA se editan para borrar, reescribir o contradecir.
+
+      2. **Test del tipo de cambio** (antes de tocar un ADR): *¿lo que voy a escribir
+         contradice lo que el ADR ya decidió?*
+
+      3. **NO contradice → UPDATE aditivo.** Refinamientos que aclaran, registran impacto
+         real o enlazan trabajo derivado se añaden como clave fechada `update_YYYY_MM_DD: |`
+         al final del cuerpo, sin tocar `decision`/`context`. Formaliza el patrón ya usado.
+
+      4. **SÍ contradice → ADR nuevo + supersesión.** La decisión que cambia genera un ADR
+         nuevo (siguiente ID) que indica a quién supersede; el ADR viejo cambia SOLO su
+         `estado` a `superseded_by: "NNN"`. La contradicción vive ENTRE ADRs (cadena de
+         supersesión), jamás DENTRO de uno.
+
+      5. **Disciplina única (no bifurcar dogfooding vs producción).** El híbrido es
+         superconjunto del Nygard puro: un proyecto que nunca use `update_` y siempre
+         supersede ya es 100% estricto. El rigor extra es opt-in del proyecto, no una
+         divergencia de la infraestructura.
+
+      Canonización operativa: la disciplina se escribe en `adr.md` §3 y en la cabecera de
+      `adr-template.yaml` (lo que disciplina a producción, por ser infraestructura
+      distribuible). Este ADR-029 registra el porqué (no viaja al scaffold: es dato).
+
+    alternatives:
+      - nombre: "Nygard puro (erradicar el patrón update_)"
+        pros:
+          - "Estándar estricto, sin ambigüedad sobre qué se puede editar"
+          - "Toda evolución trazable como cadena de ADRs"
+        contras:
+          - "Más verboso: un ADR nuevo por cada aclaración menor"
+          - "Obligaría a migrar ADR-027 (y futuros update_) a ADRs separados"
+        por_que_descartada: |
+          El refinamiento aditivo no-contradictorio es barato y legible como clave fechada
+          in-place; forzar un ADR nuevo para "registrar impacto real tras implementar" infla
+          el índice sin aportar trazabilidad real. El híbrido ya contiene al puro.
+
+      - nombre: "Disciplina distinta: híbrida en dogfooding, Nygard puro en producción"
+        pros:
+          - "Dogfooding conserva sus update_ sin migrar; producción nace estricta"
+        contras:
+          - "Rompe la fidelidad del dogfooding (debe comportarse como producción)"
+          - "Exigiría divergir adr.md/adr-template.yaml (hoy idénticos) → doble mantenimiento + CDC"
+          - "La única excepción dogfooding documentada (restricción infraestructura) tiene un deadlock real detrás; aquí solo hay deuda"
+        por_que_descartada: |
+          El valor del dogfooding está en comportarse igual que producción. La deuda
+          (tener update_ previos) no justifica divergir. Además el híbrido ya permite
+          rigor en producción como elección local del proyecto.
+
+      - nombre: "Status quo (regla escrita 'no toques' + práctica update_ sin documentar)"
+        pros:
+          - "Cero trabajo"
+        contras:
+          - "Contradicción viva entre regla y práctica"
+          - "Cada agente fresco adivina cuándo editar vs crear ADR (CDC)"
+        por_que_descartada: "Es exactamente el agujero anti-CDC que este ADR cierra."
+
+    consecuencias:
+      positivas:
+        - "Regla y práctica reconciliadas: el patrón update_ queda legitimado con barandilla"
+        - "El test del tipo de cambio elimina la adivinación (anti-CDC) sobre editar vs supersedir"
+        - "Disciplina única preserva la fidelidad del dogfooding y el SSoT adr.md/template"
+        - "Léxico citable: 'híbrido con límite (ADR-029)' como handle para futuras decisiones"
+      negativas:
+        - "Los agentes deben aplicar el test antes de tocar un ADR (coste cognitivo mínimo)"
+      impacto: |
+        Afecta:
+        - `memsys3/prompts/adr.md` §3 (reescrito con principio + test + dos caminos) + espejo templates.
+        - `memsys3/memory/templates/adr-template.yaml` (cabecera de instrucciones) + espejo templates.
+        - Convención aplicable a todos los ADRs futuros de este repo y de proyectos desplegados.
+
+    notes: |
+      Origen: sesión 2026-06-03, derivada de una conversación sobre cómo arreglar el bridge
+      de auto-memory (ADR-020/ADR-027). Al detectar que el arreglo "contradice" una decisión
+      previa, surgió la pregunta de si los ADRs son inmutables → se decidió formalizar la
+      disciplina ANTES de aplicarla. El arreglo del auto-memory (verbo pasivo→activo) será un
+      ADR posterior que estrena esta disciplina superseando el bridge de ADR-020.
+
+      Anclaje a PRINCIPLES.md:
+      - #1 (Anti-CDC): un agente fresco ya no adivina cuándo editar un ADR; tiene archivo canónico.
+      - #8 (Datos siempre preservados): la inmutabilidad del razonamiento histórico es una
+        instancia de la preservación de datos.
+      - #9 (Separation of Concerns): la disciplina vive en infraestructura (adr.md/template),
+        el porqué en datos (este ADR).
+
+      Referencia externa: Michael Nygard, "Documenting Architecture Decisions" (2011).
+
+      Side-findings detectados (NO resueltos aquí, para no inflar scope):
+      - adr.md/template usan estados en inglés (accepted|deprecated|superseded_by) pero el
+        adr.yaml real usa español (aceptado) + un estado 'vacante' no listado en la leyenda.
+      - adr.md/template dicen "añade nuevas ADRs al final" pero el repo las inserta al principio.
+
   - id: "028"
     titulo: "Setup Agent: tercer rol agéntico responsable del lifecycle de memsys3 (deploy + actualizar)"
     data: "2026-05-12"
@@ -303,6 +617,18 @@ adrs:
       Cancela el pendiente "deploy.md gana paso Capa 3 AskUserQuestion" en
       project-status.yaml. La propagación de stubs es ahora responsabilidad declarativa
       del agente, no procedimental del deploy.
+
+    update_2026_06_03: |
+      **El verbo pasivo de la Capa 1 se refina a activo-condicional (ver ADR-030).**
+
+      La Capa 1 de esta ADR dice que la auto-memory del harness "debe redirigirse o quedar
+      inerte" (pasivo) y la Capa 3 cubre archivos de INSTRUCCIONES en root. ADR-030 (2026-06-03)
+      extiende esto: el agente además RECONCILIA su carpeta de auto-memory (la del harness, no
+      root) — si está poblada con memoria de usuario, migra a memory.yaml + vacía; si está
+      inerte, no hace nada. Implementa la pasada "autocurativa" que esta ADR previó en sus
+      consecuencias y que nunca se implementó. El núcleo de ADR-027 (invariante declarativo
+      agnóstico + AGENTS.md + stubs Capa 3) sigue vigente; ADR-030 solo refina el verbo y añade
+      tabla de rutas conocidas. Implementación en newSession.md §2.
 
   - id: "025"
     titulo: "Estrategia dogfooding versionado: memsys3/ se commitea con protocolo anti-leak"
@@ -666,5 +992,17 @@ index:
     archivo: "adr.yaml"
   - id: "028"
     titulo: "Setup Agent: tercer rol agéntico responsable del lifecycle de memsys3 (deploy + actualizar)"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "029"
+    titulo: "Disciplina de ciclo de vida de ADRs: inmutabilidad + UPDATE aditivo + supersesión (convención Nygard adaptada)"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "030"
+    titulo: "Reconciliación activa de auto-memory del harness: verbo activo-condicional + tabla de rutas conocidas"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "031"
+    titulo: "Extensión del corolario anti-CDC: detectabilidad asimétrica (la lucidez casual da falsa sensación de seguridad)"
     estado: aceptado
     archivo: "adr.yaml"
