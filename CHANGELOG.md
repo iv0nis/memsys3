@@ -7,6 +7,13 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.29.1] - 2026-06-18
+### Added
+- **Contrato de idioma en `endSession.md` y `deploy.md`** (BLUEPRINT-003, mini-bloque D-only): propaga el patrón de `newSession §0.5` a los prompts de cierre de sesión y de onboarding — el gap transversal que originó BP-003 (Gemini defaulteaba a inglés). `endSession` §0.5 detecta el idioma de los archivos canónicos (fallback bitácora→README) y obliga a redactar sessions/adr/project-status + resumen final en ese idioma; `deploy` añade sección "Contrato de idioma" con orden de detección (idioma del usuario → README/docs del destino → campo `idioma` del briefing/`deploy-config.yaml` como autoritativo), ya que durante el deploy aún no existen archivos canónicos.
+- Smoke test cross-harness en Gemini (OAuth): `endSession` validado empíricamente — el contrato fuerza español pese al framing en inglés. (`deploy` pendiente por agotamiento de cuota free-tier, no por fallo de contenido.)
+### Changed
+- `file_version`: `endSession.md` 0.1.0→0.2.0, `deploy.md` 0.2.0→0.3.0.
+
 ## [0.29.0] - 2026-06-03
 ### Added
 - **Disciplina de ciclo de vida de ADRs** (ADR-029): convención Nygard adaptada — inmutabilidad de `id/titulo/data/context/decision/alternatives` + test del tipo de cambio (refinamiento aditivo vía clave fechada `update_YYYY_MM_DD` vs ADR nuevo + `superseded_by` cuando la decisión cambia). Disciplina única dogfooding=producción. Canonizada en `adr.md` §3 + cabecera de `adr-template.yaml`.
