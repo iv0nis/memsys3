@@ -40,6 +40,12 @@ fi
 
 **⚠️ Importante:** Las variables bash NO persisten entre tool calls. Cada bloque de código redefine `MEMSYS3_ROOT` con `"$(pwd)/memsys3"`.
 
+### 0.5. Idioma de la documentación y del resumen (ejecutar AHORA, antes de producir output)
+
+Detecta el idioma predominante de los archivos canónicos del proyecto (`README.md`, `$MEMSYS3_ROOT/memory/project-status.yaml`, `$MEMSYS3_ROOT/memory/memory.yaml`). DEBES redactar TODO el output de este prompt —las entradas que escribas en `sessions.yaml` / `adr.yaml` / `project-status.yaml` y el resumen final al usuario (paso 6)— en ESE idioma, NO en el default de tu harness. Si los archivos están en idiomas mixtos, prioriza el idioma de las sesiones ya presentes en `sessions.yaml` (consistencia de la bitácora); si la bitácora está vacía, prioriza `README.md`. Si tienes dudas explícitas, pregunta al usuario antes de documentar.
+
+**Por qué esta sección**: distintos harnesses tienen defaults distintos (algunos a inglés pese al contexto en otro idioma). Sin contrato explícito, una sesión documentada en el idioma equivocado rompe la consistencia de la bitácora y degrada la lucidez del próximo agente (anti-CDC).
+
 ### 1. Recopilar Evidencias Objetivas
 
 Recopila evidencias de qué se ha hecho:
@@ -330,4 +336,4 @@ Próximos pasos: [Top 2-3 tareas pendientes]
 ---
 
 **Comienza ahora la documentación de la sesión actual.**
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->

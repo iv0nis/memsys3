@@ -20,6 +20,18 @@ Este prompt es ejecutable por cualquier LLM con tooling estándar (lectura/escri
 
 > **Apéndice (auditoría):** este prompt fue refactorizado a agnóstico en BLUEPRINT-002 Bloque B (sesión 2026-05-18). Tabla de invariantes en `backlog/docs/informe_BLUEPRINT-002.md` §3. Si añades una tool propietaria nueva, documéntala como invariante declarativo equivalente.
 
+## Contrato de idioma (agnóstico de modelo)
+
+A diferencia de una sesión de trabajo, durante el deploy NO existen todavía archivos canónicos del proyecto (`project-status.yaml`, `memory.yaml`, `context.yaml` se crean en este mismo flujo). DEBES determinar el idioma de trabajo así, en este orden:
+
+1. Responde al usuario en el idioma en que él se dirige a ti, desde el primer mensaje, NO en el default de tu harness.
+2. Si el proyecto destino ya tiene `README.md` o `docs/` poblados (Paso 4), su idioma predomina para el contenido que generes.
+3. El campo `idioma` del briefing (Paso 4) o de `deploy-config.yaml` (Paso 3) es la fuente AUTORITATIVA una vez captado: úsalo para todo el output al usuario Y para personalizar `project-status.yaml`, `newSession.md` y `context.yaml`.
+
+Si estas señales entran en conflicto, pregunta al usuario antes de escribir el scaffold.
+
+**Por qué esta sección**: distintos harnesses tienen defaults distintos (algunos a inglés pese al contexto en otro idioma). El deploy es el primer contacto cross-harness; sin contrato explícito, un proyecto puede nacer con su memoria en el idioma equivocado y arrastrarlo en cada sesión futura (anti-CDC desde el día 0).
+
 ---
 
 ## Workflow de Deployment
@@ -287,4 +299,4 @@ Escalabilidad automática (ya activa):
 ---
 
 **Deployment completado. Sistema operativo end-to-end.**
-<!-- version: 0.2.0 -->
+<!-- version: 0.3.0 -->
