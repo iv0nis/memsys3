@@ -7,6 +7,13 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-08-20
+### Added
+- **ADR-032 — Gobernanza de personalización de infraestructura**: prompts/ y agents/ son personalizables por proyecto con AUTORIZACIÓN EXPLÍCITA del usuario (file_version intocado + divergencia documentada en sessions.yaml); `memory/templates/` y `PRINCIPLES.md` siguen siendo contrato sin excepción. Incluye carve-out `excepcion_dogfooding` para file_version en el repo dogfooding (bump en cambios sustantivos, siempre con confirmación del usuario). Cierra ISSUE-033 y el pendiente "ADR estrategia prompts/agents personalizables". Precedentes: ISSUE-018 gitkigai + caso 2026-08-20 (gitkigai newSession §3).
+### Changed
+- `memsys3_templates/agents/main-agent.yaml` (0.3.0 → 0.4.0): restricción `infraestructura_memsys3` reformulada — de prohibición absoluta a "no por iniciativa propia; con autorización explícita del usuario, personalización permitida en prompts/agents".
+- `PRINCIPLES.md` #10 (SSoT + copia dogfooding, sin bump — precedente ADR-031): añadida la personalización autorizada a "Quién sí puede modificar infraestructura".
+
 ## [0.29.2] - 2026-08-20
 ### Fixed
 - **README §1 Quick Start — bootstrap agnóstico del deploy** (ISSUE-032, decisión canonizada 2026-06-01): la invocación primaria pasa a ser la frase agnóstica (descargar `deploy.md` raw con `curl -sL` y ejecutarlo literalmente); `@memsys3/prompts/deploy.md` y `/deploy-memsys3` degradados a "Atajo (solo Claude Code)" con aviso explícito de que el `@`-mention no sirve para el primer deploy (referencia un archivo local que aún no existe — chicken-egg).
