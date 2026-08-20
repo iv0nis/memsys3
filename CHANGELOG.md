@@ -7,6 +7,15 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.29.2] - 2026-08-20
+### Fixed
+- **README §1 Quick Start — bootstrap agnóstico del deploy** (ISSUE-032, decisión canonizada 2026-06-01): la invocación primaria pasa a ser la frase agnóstica (descargar `deploy.md` raw con `curl -sL` y ejecutarlo literalmente); `@memsys3/prompts/deploy.md` y `/deploy-memsys3` degradados a "Atajo (solo Claude Code)" con aviso explícito de que el `@`-mention no sirve para el primer deploy (referencia un archivo local que aún no existe — chicken-egg).
+- README: referencias rotas a `/prompts/` raíz corregidas a `memsys3/prompts-dev/` (sección dog-fooding).
+### Changed
+- README: bullet de propuesta de valor "Basado en @ mentions" (Claude-céntrico) reemplazado por "Sin CLI ni instalador — el instalador ES tu agente" (coherente con principio #2).
+- **Wiki de GitHub stub-ificada** (repo `memsys3.wiki`, commit `63d8830`): las 5 páginas reducidas a punteros hacia memsys3.org + README. Decisión: reducir superficies públicas en vez de sincronizarlas (la wiki llevaba desde 2026-04-16 sin mantenerse y publicaba un Quick Start roto). Cierra ISSUE-030 por supersesión.
+- **memsys3.org corregida** (repo `memsys3_web`, commit `ac45cf3`): misma frase agnóstica de bootstrap en Home + Quick Start; eliminado el paso "Primer contexto" (compile-context manual post-deploy, obsoleto desde ADR-028 — el Setup Agent compila inline); invocaciones post-deploy en forma neutra.
+
 ## [0.29.1] - 2026-06-18
 ### Added
 - **Contrato de idioma en `endSession.md` y `deploy.md`** (BLUEPRINT-003, mini-bloque D-only): propaga el patrón de `newSession §0.5` a los prompts de cierre de sesión y de onboarding — el gap transversal que originó BP-003 (Gemini defaulteaba a inglés). `endSession` §0.5 detecta el idioma de los archivos canónicos (fallback bitácora→README) y obliga a redactar sessions/adr/project-status + resumen final en ese idioma; `deploy` añade sección "Contrato de idioma" con orden de detección (idioma del usuario → README/docs del destino → campo `idioma` del briefing/`deploy-config.yaml` como autoritativo), ya que durante el deploy aún no existen archivos canónicos.
