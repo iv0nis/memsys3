@@ -9,7 +9,7 @@
 - **Una sola carpeta** — sin base de datos, sin servidor, sin dependencias. Copias `memsys3/` y funciona
 - **Agnóstico** — funciona con cualquier modelo de IA (Claude, Gemini, Codex, etc.)
 - **Workflow sencillo pero flexible** — 3 prompts para el día a día (empezar, trabajar, acabar)
-- **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas
+- **Sin CLI ni instalador** — el instalador ES tu agente: los prompts son archivos Markdown que cualquier AI agent ejecuta directamente, sin herramientas externas
 - **Deploy y actualización triviales** — un comando para instalar, un comando para actualizar
 - **Human in the loop** — tú decides cuándo empezar y acabar sesión, cuándo compilar contexto, cuándo actualizar. El sistema no hace nada sin ti
 - **Límites de contexto configurables** — diseñado respetando los límites reales de las herramientas (2K líneas, 25K tokens por lectura), con rotación y archivado automático cuando crece
@@ -39,13 +39,15 @@ Cuando despliegas memsys3 en un proyecto, `PRINCIPLES.md` se copia a `memsys3/PR
 
 ### 1. Deployment
 
-Desde la raíz de tu proyecto, con tu AI agent ejecuta:
+Desde la raíz de tu proyecto, dile a tu AI agent (Claude, Gemini, Codex, o cualquier otro):
 
-```bash
-# El agent clonará temporalmente el repo, copiará la estructura,
-# te hará un briefing y personalizará el deployment
-@memsys3/prompts/deploy.md
-```
+> Despliega memsys3 en este proyecto: descarga con `curl -sL` el archivo
+> `https://raw.githubusercontent.com/iv0nis/memsys3/master/memsys3_templates/prompts/deploy.md`
+> a un fichero temporal y ejecuta sus instrucciones literalmente.
+
+El agent clonará temporalmente el repo, copiará la estructura, te hará un briefing y personalizará el deployment.
+
+> **Atajo (solo Claude Code, opcional)**: si ya tienes instalado el comando global, `/deploy-memsys3` hace lo mismo. Nota: `@memsys3/prompts/deploy.md` NO sirve para el primer deploy — el `@`-mention referencia un archivo local que todavía no existe en un proyecto fresco.
 
 El workflow es:
 1. Clone temporal de memsys3 desde GitHub
@@ -235,14 +237,14 @@ Los cambios/mejoras se aplican primero en `memsys3_templates/` y luego se prueba
 
 Al crear nuevos archivos, pregúntate: **"¿Tiene sentido esto en CUALQUIER proyecto con memsys3?"**
 - **SI SÍ** → Agnóstico: va en `memsys3_templates/` (se distribuye a otros proyectos)
-- **SI NO** → Específico: va en `/prompts/` raíz (solo desarrollo memsys3, NO se distribuye)
+- **SI NO** → Específico: va en `memsys3/prompts-dev/` (solo desarrollo memsys3, NO se distribuye)
 
 **Ejemplos de archivos específicos (NO se distribuyen):**
-- `prompts/comprobar_alineamiento.md` - Solo memsys3 tiene dog-fooding
+- `memsys3/prompts-dev/comprobar_alineamiento.md` - Solo memsys3 tiene dog-fooding
 
 **Práctica recomendada:**
 
-Al finalizar sesiones donde modificaste archivos agnósticos (prompts, agents, templates), ejecutar `@prompts/comprobar_alineamiento.md` ANTES de endSession para verificar sincronización dog-fooding ↔ templates.
+Al finalizar sesiones donde modificaste archivos agnósticos (prompts, agents, templates), ejecutar `memsys3/prompts-dev/comprobar_alineamiento.md` ANTES de endSession para verificar sincronización dog-fooding ↔ templates.
 
 ## 🤝 Contribuciones
 
