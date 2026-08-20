@@ -151,6 +151,7 @@ Las features específicas de un modelo (ej. comandos `/deploy-memsys3` de Claude
 **Quién sí puede modificar infraestructura.**
 - `/actualizar-memsys3` (operación explícita del usuario).
 - En el repo dogfooding de memsys3 (excepción documentada — sin esta excepción, el desarrollador del sistema no podría iterar).
+- El Main Agent con **autorización explícita del usuario**, SOLO sobre `prompts/` y `agents/` (personalización por proyecto, ADR-032): `file_version` intocado + divergencia documentada en `sessions.yaml`. `memory/templates/` y este documento siguen siendo contrato sin excepción.
 
 **Datos vs infraestructura.**
 - **Datos** (escribibles por agents): `memory/full/sessions.yaml`, `memory/full/adr.yaml`, `memory/project-status.yaml`, `memory/memory.yaml`, `memory/context.yaml`, `backlog/`.
@@ -158,7 +159,7 @@ Las features específicas de un modelo (ej. comandos `/deploy-memsys3` de Claude
 
 **Por qué importa.** La infraestructura define cómo opera memsys3. Si los agents la modifican silenciosamente, el sistema deriva impredeciblemente y se rompe la promesa anti-CDC.
 
-**ADRs relacionados:** ADR-017 (file_version + restricciones), ADR-018 (sustitución diferencial vía actualizar.md).
+**ADRs relacionados:** ADR-017 (file_version + restricciones), ADR-018 (sustitución diferencial vía actualizar.md), ADR-032 (personalización autorizada de prompts/agents).
 
 ---
 

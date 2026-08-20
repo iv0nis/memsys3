@@ -3,6 +3,91 @@
 # ADRs anteriores rotadas a: adr_1.yaml (1994 líneas, hasta ADR-024, 2026-05-07)
 
 adrs:
+  - id: "032"
+    titulo: "Gobernanza de personalización de infraestructura: prompts/agents modificables con autorización explícita del usuario + disciplina file_version en dogfooding"
+    data: "2026-08-20"
+    estado: aceptado
+    area: "process,arquitectura"
+
+    context: |
+      La restricción `infraestructura_memsys3` de main-agent.yaml (template) prohíbe de forma
+      ABSOLUTA modificar prompts/, agents/ y memory/templates/. Pero el sistema ya reconocía
+      en tres sitios que prompts/agents NO son inmutables: ADR-018 los excluye de la
+      sustitución diferencial por "personalizables (precedente ISSUE-018 gitkigai)", el propio
+      template dice "PERSONALIZA este archivo según tu proyecto", y existía el pendiente P4
+      ("ADR sobre estrategia para prompts/agents personalizables — reconocer que NO son
+      inmutables"). Contradicción latente entre la letra del guardrail y el contrato real.
+
+      Caso detonante (2026-08-20, gitkigai): el usuario tiene un criterio de priorización
+      propio canonizado en memory.yaml que newSession.md §3 (personalizado) contradecía con su
+      "orden estricto" por fecha. El fix correcto era editar §3, el agente tenía el OK
+      explícito del usuario, y aun así la prohibición absoluta le obligó a interrumpir y
+      escalar. El guardrail existe contra la DERIVA SILENCIOSA (principio #10: "si los agents
+      la modifican silenciosamente, el sistema deriva impredeciblemente"), no contra la
+      personalización autorizada — que es HITL (principio #4) funcionando.
+
+      Paralelo pendiente: ISSUE-033 — contradicción sobre file_version en dogfooding entre
+      main-agent.yaml (prohibición sin excepción) y PRINCIPLES.md #7 (excepción dogfooding),
+      con regla interina en memory.yaml (2026-06-18) y práctica inconsistente documentada.
+      Su opción 2 ya proponía fusionarlo con el P4 en una ADR de gobernanza única.
+
+    decision: |
+      1. **Personalización autorizada de prompts/agents.** prompts/ y agents/ son
+         personalizables por proyecto. Modificarlos requiere AUTORIZACIÓN EXPLÍCITA del
+         usuario (HITL, #4); con ella: `file_version` INTOCADO (marca la base del template
+         que actualizar.md necesitará para reconciliar) + divergencia documentada en
+         sessions.yaml del proyecto. `memory/templates/` y `PRINCIPLES.md` siguen siendo
+         CONTRATO sin excepción (ADR-018).
+      2. **Carve-out file_version en dogfooding.** En el repo dogfooding de memsys3, el bump
+         de file_version en cambios sustantivos de infraestructura está permitido SIEMPRE con
+         confirmación del usuario (PRINCIPLES.md #7 + #4). Cierra ISSUE-033 (fusión de sus
+         opciones 1+2) y canoniza la regla interina de memory.yaml 2026-06-18.
+      3. **PRINCIPLES.md #10 se refina** añadiendo la personalización autorizada a la lista
+         "Quién sí puede modificar infraestructura".
+
+      Fuera de scope (explícitamente diferido): mecanismo de DETECCIÓN de modificaciones
+      locales (hash al deploy, *.dev.md, merge inteligente en actualizar.md) → BP-002
+      Bloque C / post-v1.0.
+
+    alternatives:
+      - nombre: "Mantener la prohibición absoluta"
+        pros:
+          - "Regla simple, sin matices que interpretar"
+        contras:
+          - "Contradice ADR-018 y la práctica real (newSession de gitkigai ya personalizado)"
+          - "Obliga a interrumpir incluso con OK explícito del usuario (fricción sin beneficio)"
+        por_que_descartada: "El guardrail protege contra deriva silenciosa, no contra HITL. La prohibición absoluta convierte una personalización legítima en una violación formal."
+      - nombre: "Dos ADRs separadas (personalización + file_version dogfooding)"
+        pros:
+          - "Scopes más pequeños por ADR"
+        contras:
+          - "Misma área de gobernanza partida en dos artefactos adyacentes"
+          - "ISSUE-033 opción 2 ya sugería la fusión"
+        por_que_descartada: "Una sola ADR cierra P4 + ISSUE-033 con menos superficie documental."
+
+    consecuencias:
+      positivas:
+        - "Contrato coherente: main-agent.yaml ↔ ADR-018 ↔ PRINCIPLES.md #7/#10 dejan de contradecirse"
+        - "Personalización legítima sin fricción: OK explícito → editar, sin escalada"
+        - "file_version intocado en proyectos = señal fiable de base template para actualizar.md"
+        - "Cierra P4 y ISSUE-033; retira la ambigüedad que interrumpió el mini-bloque D-only"
+      negativas:
+        - "actualizar.md aún no detecta divergencias formalmente (diferido a BP-002 Bloque C)"
+        - "La doc pública (wiki/web) no refleja el matiz todavía (post-v1.0)"
+      impacto: |
+        memsys3_templates/agents/main-agent.yaml (regla infraestructura_memsys3 reformulada),
+        memsys3/agents/main-agent.yaml (carve-out file_version dogfooding),
+        PRINCIPLES.md #10 (SSoT + copia dogfooding; stub raíz no se toca),
+        memory.yaml (nota datada que cierra la regla interina), ISSUE-033 (Completado →
+        archive), project-status P4 (resuelto).
+
+    notes: |
+      context-agent.yaml NO cambia: el CA sigue siendo read-only total sobre infraestructura
+      (no tiene caso de uso de personalización). Precedentes: ISSUE-018 (gitkigai,
+      actualizar.md vs archivos custom), personalización previa de newSession gitkigai
+      (§3, §3.5, ADR-001 local), caso 2026-08-20 (criterio "distancia a la v2" en §3,
+      documentado en sessions de gitkigai).
+
   - id: "031"
     titulo: "Extensión del corolario anti-CDC: detectabilidad asimétrica (la lucidez casual da falsa sensación de seguridad)"
     data: "2026-06-03"
@@ -1004,5 +1089,9 @@ index:
     archivo: "adr.yaml"
   - id: "031"
     titulo: "Extensión del corolario anti-CDC: detectabilidad asimétrica (la lucidez casual da falsa sensación de seguridad)"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "032"
+    titulo: "Gobernanza de personalización de infraestructura: prompts/agents con autorización explícita + file_version dogfooding"
     estado: aceptado
     archivo: "adr.yaml"

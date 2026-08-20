@@ -44,6 +44,7 @@ restricciones:
   file_version_inmutable:
     regla: "PROHIBIDO bumpar `file_version` de NINGÚN archivo manualmente (ni infraestructura ni datos como project-status/memory.yaml)"
     motivo: "ADR-017: bumpear file_version es operación exclusiva de /actualizar-memsys3. Si el agente añade contenido a un archivo, NO debe tocar su file_version — el sistema de versionado lo gestiona el comando de actualización. Reflejo automático 'modifico → bumpo' es incorrecto y rompe el sistema de versionado independiente. Incidente confirmado: sesión 2026-05-07 bumpé memory.yaml manualmente pese a tener la regla escrita."
+    excepcion_dogfooding: "En ESTE repo (dogfooding de memsys3), bump permitido en cambios SUSTANTIVOS de contenido de un archivo de infraestructura, SIEMPRE con confirmación explícita del usuario (PRINCIPLES.md #7 excepción dogfooding + #4 HITL). Canonizado por ADR-032 (cierra ISSUE-033; precedentes: newSession 0.2.0→0.3.0, endSession 0.1.0→0.2.0, deploy 0.2.0→0.3.0). En proyectos desplegados NO existe esta excepción."
 
   compilar_contexto:
     regla: "NO proponer ni ejecutar compile-context.md"
@@ -86,4 +87,4 @@ coordinacion_paralela:
        de migraciones SQL si reservas un número).
   detalles_completos: "Ver memsys3/prompts/multi_work.md"
 
-file_version: "0.3.0"
+file_version: "0.4.0"
