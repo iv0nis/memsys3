@@ -37,3 +37,4 @@ memsys3/docs/
 # Scaffolding local efímero (prompts de orquestación, etc.)
 agent*_prompt_*.txt
 informe_*.html
+notas.md
