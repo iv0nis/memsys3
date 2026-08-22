@@ -63,9 +63,12 @@ restricciones:
 # humanos operan el repo en paralelo. Detalles operativos completos en
 # memsys3/prompts/multi_work.md. Log central: memsys3/blocked_files_log.md.
 #
-# ⚠️ ESTADO: en modo espejo dogfooding↔templates desde 2026-05-08.
-# Decisión sobre inclusión definitiva en release v1.0 vs eliminación
-# pendiente al próximo frente BLUEPRINT-001 (estrategia de distribución).
+# ESTADO: DECIDIDO por ADR-026 (2026-05-10) — multi-work SE DISTRIBUYE en v1.0.
+# Descartadas por escrito las alternativas "eliminar del scaffold" y "opt-in".
+# El bloque vive también en memsys3_templates/agents/main-agent.yaml desde
+# 2026-08-22 (portado en versión agnóstica: agent_id_path opt-in comentado,
+# sin referencias a un harness concreto). Esta copia dogfooding SÍ es
+# Claude-específica a propósito: es el entorno real de este repo.
 
 coordinacion_paralela:
   log_central: "memsys3/blocked_files_log.md"
