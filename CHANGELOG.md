@@ -7,6 +7,14 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-08-23
+### Added
+- **Bloque `coordinacion_paralela` en el scaffold distribuible** (`memsys3_templates/agents/main-agent.yaml`, 0.4.0 → 0.5.0): cierra la brecha de implementación de ADR-026, que daba el bloque por "ya distribuible" cuando en realidad solo existía en la instancia dogfooding. Hasta ahora los proyectos desplegados recibían `prompts/multi_work.md` y `blocked_files_log.md` en su scaffold sin ningún agente que supiera de su existencia: sistema instalado e inerte por defecto (caso ADR-031 — el fallo no genera reportes porque quien lo sufre no sabe que le falta algo). Portado en versión agnóstica (principio #2 + patrón ADR-016): `agent_id_path` degradado a comentario opt-in con placeholder, `scope` sin referencias a un CLI concreto, `precondicion` nombra la capacidad ("un modo de planificación previa") en vez del producto y contempla explícitamente harnesses sin plan mode nativo.
+### Changed
+- `memsys3/agents/main-agent.yaml` (dogfooding, `file_version` intacto en 0.4.0): reemplazado el rótulo `⚠️ ESTADO`, que anunciaba "decisión sobre inclusión definitiva en release v1.0 vs eliminación pendiente" desde 2026-05-08 — obsoleto desde que ADR-026 (2026-05-10) decidió distribuir multi-work. Ese rótulo era el origen del pendiente (e) del Frente 8 de BLUEPRINT-001: la señal de "decisión pendiente" sobrevivió tres meses a la decisión.
+### Fixed
+- `.gitignore`: añadido `notas.md` (buffer local efímero) para que deje de aparecer en `git status`.
+
 ## [0.30.0] - 2026-08-20
 ### Added
 - **ADR-032 — Gobernanza de personalización de infraestructura**: prompts/ y agents/ son personalizables por proyecto con AUTORIZACIÓN EXPLÍCITA del usuario (file_version intocado + divergencia documentada en sessions.yaml); `memory/templates/` y `PRINCIPLES.md` siguen siendo contrato sin excepción. Incluye carve-out `excepcion_dogfooding` para file_version en el repo dogfooding (bump en cambios sustantivos, siempre con confirmación del usuario). Cierra ISSUE-033 y el pendiente "ADR estrategia prompts/agents personalizables". Precedentes: ISSUE-018 gitkigai + caso 2026-08-20 (gitkigai newSession §3).
