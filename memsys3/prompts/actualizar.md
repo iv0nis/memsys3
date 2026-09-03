@@ -10,7 +10,9 @@ Para este prompt actúas como **Setup Agent (SA)** — el rol responsable del **
 
 **Disposición del rol — máxima atención antes de destruir nada.** Este prompt escribe sobre infraestructura que el proyecto puede haber personalizado legítimamente (ADR-032: prompts y agents son personalizables con autorización explícita del usuario, con `file_version` intocado y la divergencia documentada en `sessions.yaml`). Tu criterio contextualizado —no una lista de archivos— es lo que separa una actualización de una regresión. Regla canónica:
 
-> **La pérdida silenciosa es peor que el conflicto ruidoso.** Toda personalización que detectes se reporta, aunque se decida sobrescribirla.
+> **La pérdida silenciosa es peor que el conflicto ruidoso.** Toda personalización que detectes se reporta, aunque el usuario decida descartarla.
+
+**El verbo de este prompt es MODIFICAR, no sustituir.** memsys3 se instala en proyectos cuya naturaleza no conocemos; sus prompts y agents son un punto de partida que cada proyecto amolda. Actualizar es llevarle al proyecto las mejoras de upstream **editando sus archivos**, no pisándolos con una copia. Solo se copia donde no hay destino (archivos nuevos) o donde el contrato lo dice (`memory/templates/`, `PRINCIPLES.md` — ADR-018).
 
 **Contrato de ejecución agnóstico:** este prompt asume solo tooling estándar (lectura/escritura de archivos, shell, git). Donde se menciona una herramienta de pregunta estructurada, es opcional: si tu harness no la tiene, presenta las opciones al usuario en texto y espera respuesta.
 
@@ -369,7 +371,7 @@ cd ..
 | Categoría | Qué incluye (regla, no lista) | Tratamiento |
 |---|---|---|
 | 🚫 **DATOS del proyecto** | **Todo** lo que cuelgue de `memsys3/memory/` **salvo** `memory/templates/`, más `memsys3/backlog/` y lo que viva en `memsys3/docs/` sin equivalente en el template (backups, actas, informes) | **NUNCA SOBRESCRIBIR.** Única excepción: el bloque `metadata` de `project-status.yaml` (Paso 7). |
-| 🔄 **INFRAESTRUCTURA RECONCILIABLE** | **Todo** archivo de `memsys3/prompts/` y `memsys3/agents/` | **Reconciliar contra la base** (Paso 6.2): sin personalización → sobrescribir; con personalización → merge a 3 bandas + reporte. |
+| 🔄 **INFRAESTRUCTURA ADAPTABLE** | **Todo** archivo de `memsys3/prompts/` y `memsys3/agents/` | **El SA MODIFICA el destino** (Paso 6.2): lee origen, destino y base, aplica al destino los cambios de upstream y conserva lo que es del proyecto. Nunca se sustituye por copia. |
 | 📐 **SCHEMA / CONTRATO** | `memsys3/memory/templates/*`, `memsys3/PRINCIPLES.md`, `AGENTS.md` raíz y stubs Capa 3 | **Sustitución diferencial** por `file_version` (Pasos 6.4, 6.6, 6.6.5, 6.6.6). El proyecto no los edita por contrato. |
 | 📄 **DOCUMENTACIÓN DEL SISTEMA** | `memsys3/memory/README.md` y los archivos de `memsys3/docs/` que **sí** existen en el template (p. ej. `docs/reference.md`) | Copiar (Paso 6.1 fila "resto" / 6.7). Sin merge: son documentación de memsys3, no del proyecto. |
 | 🧩 **CUSTOM del proyecto** | Archivos que existen en el proyecto y **no** en el template | **Preservar intactos** (detectados en Paso 5.5). |
@@ -575,7 +577,7 @@ Archivos eliminados upstream (D): Z
 | Estado | Categoría del archivo (Paso 4) | Acción |
 |---|---|---|
 | **A** | cualquiera | ¿Ya existe en el proyecto? **No** → copiar. **Sí** → es un custom del proyecto con el mismo nombre: **preservar el del proyecto** y reportar `⚠️ CONFLICTO: [archivo] existe en tu proyecto Y en el template nuevo. Se preserva tu versión.` |
-| **M** | 🔄 `prompts/` o `agents/` | **Paso 6.2** (base-recovery + 3-way merge). NUNCA copiar directo. |
+| **M** | 🔄 `prompts/` o `agents/` | **Paso 6.2**: el SA edita el destino aplicándole los cambios de upstream. NUNCA `cp`. |
 | **M** | 📐 `memory/templates/`, `PRINCIPLES.md` | Pasos 6.4 / 6.6 (sustitución diferencial por `file_version`). |
 | **M** | 🚫 datos | No tocar (no debería aparecer: el template no contiene datos del proyecto). |
 | **M** | resto (`memory/README.md`, `docs/`) | Copiar al path equivalente en `memsys3/`. |
@@ -598,7 +600,7 @@ RECONCILIACIÓN
 
 **Fallback: copia dinámica (SOLO si git diff falla — error de salida, versión no encontrada)**
 
-Sin `git diff` no hay diff upstream, pero **sigue habiendo base**: el Paso 6.2 la recupera igualmente desde `$CURRENT_VERSION` o desde el `file_version` local. Por eso el fallback **no copia prompts ni agents a ciegas** — los pasa por 6.2 igual que la ruta principal.
+Sin `git diff` no sabes qué cambió upstream, pero el Paso 6.2 no lo necesita: lee origen y destino (y la base si `recover_base` la trae) y edita. Por eso el fallback **no copia prompts ni agents** — los pasa por 6.2 uno a uno, igual que la ruta principal.
 
 ```bash
 # Prompts y agents: NO se copian aquí. Recórrelos y aplícales el Paso 6.2 uno a uno.
@@ -617,13 +619,13 @@ echo "Docs actualizados (sin borrar custom)"
 
 > **⚠️ NUNCA hacer `rm -f memsys3/docs/*.md` ni borrar carpetas enteras.** Eso destruye archivos custom del proyecto. Solo sobrescribir archivos que vienen del template.
 
-### 6.2 Reconciliar `prompts/` y `agents/` — base-recovery + merge a 3 bandas
+### 6.2 Actualizar `prompts/` y `agents/` — el SA MODIFICA el destino, no lo sustituye
 
-**Aplica a TODO archivo `M` de `prompts/` o `agents/`, sin excepciones ni listas.** Es el paso que convierte este prompt en un merge de verdad.
+**Aplica a TODO archivo `M` de `prompts/` o `agents/`, sin excepciones ni listas.**
 
-Un diff de dos puntos (local vs upstream) no puede distinguir "línea que añadió el proyecto" de "línea que eliminó upstream": son la misma diferencia vista desde lados opuestos. Necesitas un tercer punto, la **BASE**: el archivo del template tal como se entregó en el último deploy/actualización.
+**La idea de memsys3, aplicada a este paso.** memsys3 se instala en proyectos cuya naturaleza no conocemos de antemano; los prompts y agents son un punto de partida que cada proyecto amolda, y esa adaptación es lo valioso. El template trae **mejoras**; el destino tiene **sentido**. Por eso aquí el verbo nunca es *copiar*: es **leer el origen y el destino, entender qué cambió upstream y qué es del proyecto, y editar el destino para llevarle las mejoras sin quitarle el sentido**. Eso solo lo hace un agente que entiende el proyecto (Paso 0.5), no un script que compara bytes.
 
-**1. Recuperar la BASE** con el helper `recover_base` (Paso 6.0), y **2. decidir con ella:**
+**1. Consigue los tres puntos de vista.** Un diff de dos puntos (destino vs origen) no distingue "línea que añadió el proyecto" de "línea que eliminó upstream". La **BASE** —el template tal como se entregó— es lo que te permite leer el diff con sentido. El helper `recover_base` (Paso 6.0) la trae; **es contexto para tu lectura, no un decisor**:
 
 ```bash
 REL="prompts/endSession.md"          # ruta relativa dentro del template (ejemplo)
@@ -631,35 +633,35 @@ SRC="memsys3_update_temp/memsys3_templates/$REL"
 DST="$MEMSYS3_ROOT/$REL"
 
 echo "▶ $REL"
-if ! recover_base "$REL"; then
-  echo "🛑 $REL — sin base recuperable: NO sobrescribir. Revisión asistida:"
-  diff "$DST" "$SRC"          # local vs upstream, para que el usuario decida
-elif cmp -s "$DST" "$BASE_FILE"; then
-  # local == base → el proyecto no tocó el archivo → sobrescribir es seguro
-  cp "$SRC" "$DST"
-  echo "⬆️ $REL — sin personalización local, actualizado"
+if recover_base "$REL"; then
+  diff "$BASE_FILE" "$DST" ; echo "--- (arriba: lo que el PROYECTO cambió sobre la base) ---"
+  diff "$BASE_FILE" "$SRC" ; echo "--- (arriba: lo que UPSTREAM cambió sobre la base) ---"
 else
-  # local != base → HAY personalización → 3-way merge, nunca sobrescritura ciega
-  echo "🔀 $REL — PERSONALIZADO: requiere merge a 3 bandas"
-  diff "$BASE_FILE" "$DST" ; echo "--- (arriba: lo que añadió el proyecto) ---"
-  diff "$BASE_FILE" "$SRC" ; echo "--- (arriba: lo que cambió upstream) ---"
+  echo "ℹ️ sin base recuperable — lees con dos puntos de vista; extrema la cautela"
+  diff "$DST" "$SRC"        ; echo "--- (arriba: destino vs origen, sin base) ---"
 fi
 ```
 
-- **Sin base recuperable** (`memsys3_version` que no resuelve, archivo sin `file_version`, deployment a mano): **NO sobrescribas**. Muestra el diff local↔upstream al usuario, explica que no hay base, y deja que decida archivo por archivo. Anótalo en el registro de reconciliación.
-- `cmp` compara byte a byte: diferencias de fin de línea (CRLF) o de newline final cuentan como "personalizado". Es ruido del lado seguro — si el diff solo muestra eso, trátalo como `local == base`.
+**2. Lee y entiende antes de tocar.** Con los dos diffs delante y el contexto del Paso 0.5:
 
-**3. Ejecutar el merge (`local != base`).** No es una operación mecánica: es donde tu contexto del Paso 0.5 hace el trabajo.
+- Lee la **divergencia documentada** de ese archivo en `sessions.yaml`: te dice **por qué** existe cada cambio del proyecto. Si no está documentada, no por eso es ruido — pregúntate qué necesidad del proyecto resuelve.
+- Identifica qué trae upstream: nuevas secciones, pasos reordenados, fixes, texto reescrito.
+- Identifica qué es del proyecto: pasos añadidos, redacciones adaptadas a su dominio, reglas propias, idioma.
 
-- Lee la **divergencia documentada** de ese archivo en `sessions.yaml` (Paso 0.5): te dice **por qué** existe la personalización, que es lo que necesitas para no borrarla por parecer ruido.
-- Construye la versión resultante: **estructura y mejoras de upstream + intención de la personalización preservada**. Si la personalización toca una zona que upstream reescribió, adapta el parche a la estructura nueva en lugar de descartarlo.
-- Si la personalización y el cambio upstream son genuinamente incompatibles, **pregunta al usuario** con las dos versiones delante. No decidas tú una pérdida.
-- **Nunca** resuelvas el conflicto "en favor del template porque es lo canónico": el template siempre se puede recuperar del repo, la personalización del proyecto puede no existir en ningún otro sitio.
-- El archivo resultante lleva el **`file_version` de upstream** (es la versión del template sobre la que ahora se asienta la personalización); así la próxima actualización recupera la base correcta. La divergencia sigue documentada en `sessions.yaml` — si el merge la reubicó o adaptó, añade una línea en la entrada del Paso 10 diciéndolo.
+**3. Edita el destino.** Aplícale al archivo del proyecto los cambios de upstream, **conservando lo que es del proyecto**:
 
-**4. Reportar SIEMPRE (obligatorio, aunque hayas sobrescrito).** Toda personalización detectada entra en el registro de reconciliación con: ruta, qué añadía el proyecto (diff concreto), qué se hizo, y ruta del backup del Paso 5. Esa información viaja después al resumen final, al Checklist, a `operations.log` (Paso 11) y a `sessions.yaml` del proyecto (Paso 10). *La pérdida silenciosa es peor que el conflicto ruidoso.*
+- Si el proyecto no cambió nada sobre la base (el primer diff está vacío), el resultado de aplicar upstream coincide con el origen — es el único caso en que el destino acaba idéntico al template, y llegas ahí editando, no pisando.
+- Si el cambio del proyecto toca una zona que upstream reescribió, **adapta** el cambio del proyecto a la estructura nueva; no lo descartes por incómodo.
+- Si un cambio del proyecto y uno de upstream son genuinamente incompatibles, **pregunta al usuario** con ambos delante. No decidas tú una pérdida.
+- **Nunca** resuelvas "a favor del template porque es lo canónico": el template siempre se recupera del repo; lo del proyecto puede no existir en ningún otro sitio.
+- Sin base recuperable, la misma operación con menos certeza: ante cualquier duda de a quién pertenece una línea, conserva y pregunta.
+- El archivo resultante lleva el **`file_version` de upstream** (la versión del template sobre la que ahora se asienta la adaptación del proyecto), para que la próxima actualización recupere la base correcta. Si reubicaste o adaptaste una personalización, dilo en la entrada del Paso 10.
+
+**4. Reporta SIEMPRE.** Todo cambio del proyecto que hayas encontrado entra en el registro de reconciliación con: ruta, qué era (diff concreto), qué hiciste con él (conservado / adaptado / preguntado al usuario), y ruta del backup del Paso 5. Esa información viaja al resumen final, al Checklist, a `operations.log` (Paso 11) y a `sessions.yaml` del proyecto (Paso 10). *La pérdida silenciosa es peor que el conflicto ruidoso.*
 
 > **Nota:** los archivos custom de `prompts/` y `agents/` detectados en el Paso 5.5 (no existen en el template) no entran aquí — se preservan intactos.
+>
+> **Sobre `cmp` y bytes:** si comparas base y destino byte a byte, diferencias de fin de línea (CRLF) o de newline final aparecen como cambios. Léelas como lo que son.
 
 ### 6.3 Eliminaciones upstream (`D`) — leak vs custom
 
@@ -871,20 +873,18 @@ else
         eq) echo "✅ stub $f sincronizado ($v_up)"; continue ;;
         lt) echo "🚨 stub $f destino ($v_dst) > upstream ($v_up) — preguntar al usuario"; continue ;;
       esac
-      # gt: hay versión nueva. ¿El proyecto añadió contenido propio a su stub?
-      if [ "$(wc -c < "$f")" -le "$(wc -c < "$SRC")" ]; then
-        cp "$SRC" "$f"; echo "⬆️ stub $f actualizado ($v_dst → $v_up)"
-      else
-        echo "🔀 stub $f — más contenido que la plantilla: posible personalización"
-        echo "   → NO sobrescribir a ciegas. Aplicar criterio del Paso 6.2 y reportar."
-      fi
+      # gt: hay versión nueva. Un stub es un archivo que el harness lee siempre: el
+      # proyecto puede haberle añadido reglas propias. Mismo verbo que en 6.2: EDITAR.
+      echo "🔀 stub $f — plantilla $v_dst → $v_up: aplicar los cambios de la plantilla"
+      echo "   al stub del proyecto conservando lo que el proyecto añadió (criterio del Paso 6.2)."
+      diff "$f" "$SRC"
     done
 fi
 ```
 
 > **Exclusiones deliberadas del escaneo:** `AGENTS.md` (es Capa 2, tiene su propio Paso 6.6.5) y todo lo que cuelgue de `memsys3/` (incluida la copia local de la plantilla, que se actualiza por la matriz del Paso 6.1). Sin estas exclusiones el detector se traga sus propias fuentes: ambas llevan la marca canónica y `file_version`.
 >
-> **Cuidado:** un stub Capa 3 puede llevar contenido propio del proyecto añadido debajo del invariante (es un archivo que el harness lee siempre, tentador para reglas locales). Si al comparar ves más que el invariante, **no sustituyas a ciegas**: aplica el Paso 6.2. Si el proyecto no tiene ningún stub que matchee, el paso es silencioso.
+> Si el proyecto no tiene ningún stub que matchee, el paso es silencioso.
 
 ### 6.7 Actualizar Documentación del Sistema
 
@@ -1132,7 +1132,7 @@ rm -rf memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 
 **Causa:** `memsys3_version` ausente o inexacto en `project-status.yaml`, tag inexistente en upstream, o deployment hecho a mano.
 
-**Solución:** **NO sobrescribas**. Muestra el diff local↔upstream al usuario explicando que no hay base recuperable y deja que decida archivo por archivo. Anótalo en el registro de reconciliación: es información valiosa sobre la salud del deployment.
+**Solución:** la misma operación del Paso 6.2 con menos certeza: lees destino y origen, entiendes qué es de cada uno, y editas el destino conservando ante cualquier duda. Cuando no sepas a quién pertenece una línea, pregunta al usuario. Anótalo en el registro de reconciliación: es información valiosa sobre la salud del deployment.
 
 ### Problema: "context.yaml no compila - errores de campos"
 
@@ -1189,7 +1189,7 @@ Antes de dar por terminada la actualización, verifica:
 - [ ] Contexto del proyecto ingerido ANTES de tocar nada (Paso 0.5), incluidas las divergencias documentadas en `sessions.yaml`
 - [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
 - [ ] `memsys3/docs/backups/` excluido en `.gitignore` del proyecto (Paso 5, ISSUE-006) — `git check-ignore memsys3/docs/backups/x`
-- [ ] **Ningún archivo de `prompts/` o `agents/` se sobrescribió sin comparar contra la BASE** (Paso 6.2)
+- [ ] **Ningún archivo de `prompts/` o `agents/` se sustituyó por copia: todos se editaron leyendo origen, destino y base** (Paso 6.2)
 - [ ] **Ninguna eliminación `D` se ejecutó sin el criterio leak-vs-custom** (Paso 6.3)
 - [ ] **Toda personalización detectada quedó reportada en los TRES sitios**: resumen final, `operations.log` y `sessions.yaml` del proyecto — con diff concreto y ruta del backup
 - [ ] Archivos del sistema actualizados (prompts, agents, templates)
