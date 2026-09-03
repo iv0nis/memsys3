@@ -56,6 +56,9 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 
    Si esa plantilla no existe en tu deployment (versiones anteriores a su introducción), crea el archivo con el mismo contenido que `AGENTS.md`.
 3. Si ya existe, DEBES añadir el invariante de memoria agnóstica sin sobrescribir contenido previo del usuario.
+4. **Si ya existe y ha crecido más allá del invariante** (reglas de comportamiento, doctrina del dominio, contexto del proyecto), DEBES avisar al usuario en el arranque: ese contenido solo lo ve tu harness — es invisible para otros agentes y para `compile-context`. Propón migrarlo: reglas y preferencias del usuario → `memsys3/memory/memory.yaml`; doctrina del dominio → un documento en `memsys3/docs/` que ESTE `newSession.md` cargue (personalización autorizada, ADR-032); hechos del proyecto → `project-status.yaml`. NO migres sin OK explícito; un puntero al documento de doctrina puede quedarse en el stub como refuerzo.
+
+**Por qué el paso 4 (reconciliación del stub):** es el mismo patrón que ADR-030 aplica a la carpeta de auto-memory del harness, un archivo más. Caso real: un proyecto acumuló 174 líneas de doctrina comercial en su `CLAUDE.md` porque es el archivo que el harness lee siempre — y esa doctrina quedó fuera de la memoria canónica y fuera del alcance de cualquier otro agente.
 
 **Por qué desde plantilla y no redactado a mano:** el stub lleva `file_version`, y eso permite que `actualizar.md` (Paso 6.6.6) lo mantenga sincronizado en futuras versiones. Un stub escrito a mano queda huérfano y drifta.
 

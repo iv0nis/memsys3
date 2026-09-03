@@ -23,4 +23,14 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 
 Ejecuta `memsys3/prompts/newSession.md` al iniciar la sesión.
 
+## Qué NO va en este archivo
+
+Este archivo lo lee **un solo harness**. Cualquier regla del proyecto que escribas aquí es invisible para cualquier otro agente y para `compile-context`. No es el sitio para reglas de comportamiento, preferencias del usuario ni doctrina del dominio:
+
+- Reglas y preferencias del usuario → `memsys3/memory/memory.yaml` (feedback).
+- Doctrina del dominio (marcos, criterios, normas de estilo) → un documento en `memsys3/docs/`, cargado desde `memsys3/prompts/newSession.md` del proyecto (personalizable con autorización explícita, ADR-032).
+- Hechos del proyecto (qué es, a quién sirve, estado) → `memsys3/memory/project-status.yaml`.
+
+Si este archivo crece más allá del invariante, `newSession.md` §2 lo detecta y propone migrar el contenido.
+
 <!-- version: 0.1.0 -->
