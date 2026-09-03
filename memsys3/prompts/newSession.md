@@ -48,8 +48,16 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 **Capa 3 (stub per-modelo). Ejecuta AHORA, antes de continuar:**
 
 1. Identifica el harness desde el que operas (Claude Code, Codex CLI, Gemini CLI, Cursor, Cline, Aider, Copilot, Windsurf, Roo, Kilo, Warp, u otro).
-2. Si tu harness usa un archivo específico de instrucciones/memoria en root del proyecto (`CLAUDE.md`, `GEMINI.md`, `.cursor/rules/`, `.clinerules`, `.windsurf/rules/`, `.roo/rules/`, `.github/copilot-instructions.md`, etc.) y ese archivo NO existe aquí, DEBES crearlo ahora con el mismo contenido que `AGENTS.md`.
+2. Si tu harness usa un archivo específico de instrucciones/memoria en root del proyecto (`CLAUDE.md`, `GEMINI.md`, `.cursor/rules/`, `.clinerules`, `.windsurf/rules/`, `.roo/rules/`, `.github/copilot-instructions.md`, etc.) y ese archivo NO existe aquí, DEBES crearlo ahora **copiando la plantilla canónica** y renombrándola al nombre que requiera tu harness:
+
+   ```bash
+   cp memsys3/per-tool-stub-template.md <RUTA_QUE_REQUIERE_TU_HARNESS>
+   ```
+
+   Si esa plantilla no existe en tu deployment (versiones anteriores a su introducción), crea el archivo con el mismo contenido que `AGENTS.md`.
 3. Si ya existe, DEBES añadir el invariante de memoria agnóstica sin sobrescribir contenido previo del usuario.
+
+**Por qué desde plantilla y no redactado a mano:** el stub lleva `file_version`, y eso permite que `actualizar.md` (Paso 6.6.6) lo mantenga sincronizado en futuras versiones. Un stub escrito a mano queda huérfano y drifta.
 
 **Justificación (por qué este paso):** el contrato es agnóstico de modelo — no enumeramos exhaustivamente los harnesses, pero el patrón es claro: si tu herramienta lee un archivo específico de root, ese archivo debe contener el invariante de memoria de este proyecto, redirigiendo a `memsys3/memory/memory.yaml`. Aplica también a herramientas futuras que sigan el mismo patrón.
 
@@ -76,4 +84,4 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 - memory.yaml contiene perfil del usuario + feedback (reglas/correcciones aprendidas)
 - Juntos proporcionan contexto completo para trabajar efectivamente
 
-<!-- version: 0.3.0 -->
+<!-- version: 0.4.0 -->

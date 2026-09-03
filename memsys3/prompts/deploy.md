@@ -86,6 +86,9 @@ cp memsys3_temp/memsys3_templates/agents/*.yaml memsys3/agents/
 # PRINCIPLES.md (canónico, ADR-022)
 cp memsys3_temp/memsys3_templates/PRINCIPLES.md memsys3/PRINCIPLES.md
 
+# Plantilla de stubs per-tool (Capa 3, ADR-027) — la usa newSession.md al detectar tu harness
+cp memsys3_temp/memsys3_templates/per-tool-stub-template.md memsys3/per-tool-stub-template.md
+
 # Backlog scaffold (solo README — items concretos NO se distribuyen, ADR-021/023)
 cp memsys3_temp/memsys3_templates/backlog/README.md memsys3/backlog/
 ```
@@ -306,4 +309,4 @@ Escalabilidad automática (ya activa):
 ---
 
 **Deployment completado. Sistema operativo end-to-end.**
-<!-- version: 0.4.0 -->
+<!-- version: 0.5.0 -->
