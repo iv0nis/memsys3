@@ -1,10 +1,24 @@
 # Actualizar memsys3 - Prompt de Actualización Segura
 
-**AHORA ACTÚAS COMO MAIN AGENT realizando una actualización de memsys3**
+## Paso 0: Rol — Setup Agent (ADR-028)
 
-- Tu misión es **actualizar la versión de memsys3** en este proyecto de forma segura
-- **IMPORTANTE: Trabaja en ESPAÑOL siempre**
-- Este prompt complementa `deploy.md` (que es para deployment inicial)
+Para este prompt actúas como **Setup Agent (SA)** — el rol responsable del **lifecycle de memsys3** en el proyecto. Tu misión es actualizar la versión instalada **sin perder nada** de lo que el proyecto haya construido encima.
+
+- **Operaciones autorizadas del rol:** `deploy.md` (instalación inicial) + `actualizar.md` (este prompt).
+- **Fuera de alcance:** sesiones de desarrollo del proyecto, `endSession.md`, backlog y ADRs (Main Agent); compilación de `context.yaml` fuera de deploy (Context Agent).
+- **Referencia del rol:** `memsys3/agents/setup-agent.yaml`. **NO cargues `agents/main-agent.yaml`** — es otro rol.
+
+**Disposición del rol — máxima atención antes de destruir nada.** Este prompt escribe sobre infraestructura que el proyecto puede haber personalizado legítimamente (ADR-032: prompts y agents son personalizables con autorización explícita del usuario, con `file_version` intocado y la divergencia documentada en `sessions.yaml`). Tu criterio contextualizado —no una lista de archivos— es lo que separa una actualización de una regresión. Regla canónica:
+
+> **La pérdida silenciosa es peor que el conflicto ruidoso.** Toda personalización que detectes se reporta, aunque se decida sobrescribirla.
+
+**Contrato de ejecución agnóstico:** este prompt asume solo tooling estándar (lectura/escritura de archivos, shell, git). Donde se menciona una herramienta de pregunta estructurada, es opcional: si tu harness no la tiene, presenta las opciones al usuario en texto y espera respuesta.
+
+**Contrato de idioma:** documenta y responde en el idioma predominante de los canónicos del proyecto destino (`README.md`, `memsys3/memory/project-status.yaml`, `memsys3/memory/memory.yaml`), no en el default de tu harness.
+
+**Compilación inline NO aplica aquí** (cf. `setup-agent.yaml`, sección `compilacion_inline_en_deploy`): una sesión de actualización puede llegar cargada de tokens y sesgaría la síntesis del Context Agent. `actualizar.md` cierra sin compilar — el usuario decide cuándo ejecutar `compile-context.md` en sesión nueva.
+
+Este prompt complementa `deploy.md` (que es para deployment inicial).
 
 ---
 
@@ -168,7 +182,45 @@ proyecto/
 
 **Diagnóstico:** Estructura correcta, deployment hecho correctamente.
 
-**Acción:** ✅ Continuar con **Paso 1** normalmente.
+**Acción:** ✅ Continuar con **Paso 0.5** normalmente.
+
+---
+
+## Paso 0.5: Contexto del proyecto — ingesta tipo Context Agent
+
+**DEBES ejecutar este paso AHORA, antes de tocar ningún archivo.** Sin contexto del proyecto, las operaciones inteligentes de este prompt (sustitución diferencial ADR-018, deprecation contextualizada ADR-019, reconciliación de personalizaciones ADR-032) degradan a sustitución ciega — que es exactamente el fallo que este prompt existe para evitar.
+
+Hazte una ingesta del proyecto destino con criterio inteligente, equivalente a lo que hace el Context Agent, **solo para tu propio uso en esta ejecución**: NO compilas `context.yaml`, NO escribes nada en `memory/`.
+
+```bash
+# Identidad del proyecto destino
+cat "$PROJECT_ROOT/README.md" 2>/dev/null
+
+# Estado y memoria del proyecto
+cat "$MEMSYS3_ROOT/memory/project-status.yaml"
+cat "$MEMSYS3_ROOT/memory/memory.yaml" 2>/dev/null
+
+# Principios y decisiones locales (overrides si existen)
+[ -f "$MEMSYS3_ROOT/PRINCIPLES.md" ] && cat "$MEMSYS3_ROOT/PRINCIPLES.md"
+[ -f "$MEMSYS3_ROOT/memory/full/adr.yaml" ] && cat "$MEMSYS3_ROOT/memory/full/adr.yaml"
+```
+
+**Divergencias documentadas (ADR-032) — lectura OBLIGATORIA.** Cuando un proyecto personaliza un prompt o un agent con autorización explícita, el contrato le exige documentar esa divergencia en su bitácora. Ahí está el **por qué** de cada personalización que vas a encontrar en el Paso 6:
+
+```bash
+# Buscar divergencias / personalizaciones declaradas en la bitácora del proyecto
+grep -niE "divergencia|personaliza|ADR-032|parche local" \
+  "$MEMSYS3_ROOT/memory/full/sessions.yaml" \
+  "$MEMSYS3_ROOT/memory/full/sessions_"*.yaml 2>/dev/null | head -40
+```
+
+**NO leer:** `agents/main-agent.yaml` (SA es otro rol; cargar MA cruza alcance).
+
+**Criterio, no calculadora.** Con este contexto juzgarás en los Pasos 6.x qué adaptar de lo nuevo agnóstico al perfil específico de ESTE proyecto. No uses heurísticas de "peso de actualización" para decidir por ti: el agente contextualizado decide mejor que un calculador (principio #5).
+
+**Salida del paso** (entendimiento interno, no archivo): (a) qué archivos de `prompts/`/`agents/` declara el proyecto como personalizados y por qué; (b) ADRs locales que puedan conflictuar con cambios agnósticos entrantes; (c) campos de `project-status.yaml` personalizados; (d) deprecations upstream que estén en uso real en `memory/full/`; (e) preferencias en `memory.yaml` que afecten a cómo aplicar los cambios.
+
+> **Nota coop (multi-usuario).** Un proyecto puede tener varias personas trabajando en ramas distintas. No asumas un único usuario ni una rama concreta: las convenciones de identidad, rama y tag pertenecen al proyecto, no a este prompt.
 
 ---
 
@@ -178,10 +230,14 @@ Lee el archivo del proyecto:
 
 ```bash
 cat "$MEMSYS3_ROOT/memory/project-status.yaml" | grep -A2 "metadata:"
+
+# Fijar la versión desplegada como variable — se usa en los Pasos 2.5, 6.1 y 6.2
+CURRENT_VERSION=$(grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml" | head -1 | sed 's/.*: "\(.*\)"/\1/')
+echo "CURRENT_VERSION=$CURRENT_VERSION"
 ```
 
 **Busca los campos:**
-- `memsys3_version`: Versión actual instalada
+- `memsys3_version`: Versión actual instalada — **es la señal que permite recuperar la BASE** de cada archivo del template tal como se entregó (Paso 6.2). Si falta o es inexacta, la reconciliación pierde precisión: anótalo y avisa al usuario.
 - `memsys3_deployed`: Fecha del último deployment/actualización
 
 **Si NO existen estos campos:**
@@ -202,7 +258,7 @@ git ls-remote --tags https://github.com/iv0nis/memsys3 | tail -5
 
 **Identifica la última versión estable (tag más reciente):** `[VERSIÓN_NUEVA]`
 
-> ⚠️ **La fuente de verdad de la versión es el último tag** (`git tag --sort=-v:refname | head -1` tras `git fetch --tags`). `CHANGELOG.md` puede estar desactualizado respecto a tags publicados — NO uses su última entrada como `[VERSIÓN_NUEVA]`. Caso documentado: informe `docs/reports/2026-05-27_actualizar_memsys3_v0.20.0_v0.28.0_experiencia_agente.md` §4.5.
+> ⚠️ **La fuente de verdad de la versión es el último tag** (`git tag --sort=-v:refname | head -1` tras `git fetch --tags`). `CHANGELOG.md` puede estar desactualizado respecto a tags publicados — NO uses su última entrada como `[VERSIÓN_NUEVA]`. Caso documentado: informe de campo `2026-05-27` §4.5.
 
 **¿Vale la pena actualizar?**
 - Si la diferencia es < 2 versiones patch (ej: v0.5.1 → v0.5.2): actualización menor
@@ -213,17 +269,29 @@ git ls-remote --tags https://github.com/iv0nis/memsys3 | tail -5
 
 ## Paso 2.5: Elegir Modo de Actualización
 
-Usa `AskUserQuestion` para preguntar al usuario:
+**Antes de preguntar, calcula el salto y muestra una recomendación** (el usuario decide, principio #4):
+
+```bash
+# Salto entre la versión desplegada y la última publicada
+git -C memsys3_update_temp rev-list --count "$CURRENT_VERSION..HEAD" 2>/dev/null \
+  | xargs -I{} echo "Commits upstream desde $CURRENT_VERSION: {}"
+git -C memsys3_update_temp tag --sort=v:refname --contains "$CURRENT_VERSION" 2>/dev/null | wc -l \
+  | xargs -I{} echo "Tags publicados en el intervalo: {}"
+```
+
+**Criterio orientativo** (no bloqueante): salto < 2 versiones minor → *Rápida* suele bastar. Salto ≥ 2 minor, o cualquier major → recomienda *Extendida*: hay más superficie donde una personalización puede colisionar con un cambio estructural.
+
+Pregunta al usuario (si tu harness tiene preguntas estructuradas, úsalas; si no, presenta las dos opciones en texto):
 
 ```
-AskUserQuestion(
-  question: "¿Qué modo de actualización prefieres?",
-  header: "Modo",
-  options: [
-    { label: "Rápida (Recomendado)", description: "Usa git diff para detectar cambios. Eficiente en tokens." },
-    { label: "Extendida", description: "Lanza un subagente que se contextualiza con el memsys3 de desarrollo (lee sessions, ADRs, context.yaml del repo) para entender QUÉ cambió y POR QUÉ. Habilita evaluación contextualizada de deprecations y campos huérfanos en schema (ADR-019). Consume más tokens pero da mejor comprensión de los cambios." }
-  ]
-)
+Pregunta: "¿Qué modo de actualización prefieres?"
+Opciones:
+  - "Rápida": usa git diff para detectar cambios. Eficiente en tokens.
+  - "Extendida": lanza un subagente que se contextualiza con el memsys3 de desarrollo
+    (lee sessions, ADRs, context.yaml del repo) para entender QUÉ cambió y POR QUÉ.
+    Habilita evaluación contextualizada de deprecations y campos huérfanos (ADR-019).
+    Consume más tokens pero da mejor comprensión de los cambios.
+Recomendación: [la calculada arriba, con el salto medido]
 ```
 
 **Si el usuario elige "Extendida":**
@@ -279,61 +347,20 @@ cd ..
 
 ---
 
-## Paso 4: Categorizar Archivos Según Estrategia
+## Paso 4: Categorizar Archivos — regla por categoría, NO lista por nombre
 
-### 🚫 NUNCA SOBRESCRIBIR (datos del proyecto actual)
+**La categoría de un archivo se deduce de DÓNDE VIVE, nunca de una lista de nombres.** Una lista hardcodeada envejece con cada release y, peor, decide a priori que un archivo "no está personalizado" cuando el único modo de saberlo es comprobarlo (Paso 6.2). Ese fue el mecanismo por el que actualizaciones anteriores borraron personalizaciones legítimas en silencio.
 
-Estos archivos contienen el histórico y estado del proyecto. **JAMÁS los toques:**
+| Categoría | Qué incluye (regla, no lista) | Tratamiento |
+|---|---|---|
+| 🚫 **DATOS del proyecto** | **Todo** lo que cuelgue de `memsys3/memory/` **salvo** `memory/templates/`, más `memsys3/backlog/` y `memsys3/docs/` | **NUNCA SOBRESCRIBIR.** Única excepción: el bloque `metadata` de `project-status.yaml` (Paso 7). |
+| 🔄 **INFRAESTRUCTURA RECONCILIABLE** | **Todo** archivo de `memsys3/prompts/` y `memsys3/agents/` | **Reconciliar contra la base** (Paso 6.2): sin personalización → sobrescribir; con personalización → merge a 3 bandas + reporte. |
+| 📐 **SCHEMA / CONTRATO** | `memsys3/memory/templates/*`, `memsys3/PRINCIPLES.md`, `AGENTS.md` raíz y stubs Capa 3 | **Sustitución diferencial** por `file_version` (Pasos 6.4, 6.6, 6.6.5, 6.6.6). El proyecto no los edita por contrato. |
+| 🧩 **CUSTOM del proyecto** | Archivos que existen en el proyecto y **no** en el template | **Preservar intactos** (detectados en Paso 5.5). |
 
-- `memsys3/memory/full/adr.yaml`
-- `memsys3/memory/full/sessions.yaml`
-- `memsys3/memory/full/sessions_*.yaml` (si hay rotaciones)
-- `memsys3/memory/full/adr_*.yaml` (si hay rotaciones)
-- `memsys3/memory/project-status.yaml` (excepto metadata de versión)
-- `memsys3/memory/context.yaml` (se regenera con compile-context)
-- `memsys3/memory/full/operations.log` (log de operaciones)
-- `memsys3/memory/full/operations_*.log` (si hay rotaciones)
-- `memsys3/memory/history/*` (si existe)
+**Por qué DATOS es una regla y no una lista:** así cubre por construcción los archivos de datos que aún no existen cuando lees esto (rotaciones `sessions_N.yaml`, `adr_N.yaml`, `operations_N.log`, `history/`, y cualquier fichero de datos que versiones futuras añadan a `memory/`, p. ej. configuración de equipo). Si dudas de si algo es dato o infraestructura, pregúntate quién lo escribe: **si lo escribe el proyecto trabajando, es dato.**
 
-### ✅ ACTUALIZAR SIEMPRE (lógica del sistema)
-
-Estos son parte del "motor" de memsys3, se pueden sobrescribir:
-
-**Prompts:**
-- `memsys3/prompts/compile-context.md`
-- `memsys3/prompts/endSession.md`
-- `memsys3/prompts/github.md`
-- `memsys3/prompts/deploy.md`
-- `memsys3/prompts/actualizar.md` ← (este mismo archivo)
-- `memsys3/prompts/adr.md`
-- `memsys3/prompts/backlog.md`
-- `memsys3/prompts/commands.md`
-- `memsys3/prompts/meet.md`
-- `memsys3/prompts/agent-identity.md`
-
-**Agents:**
-- `memsys3/agents/context-agent.yaml`
-
-**Templates:**
-- `memsys3/memory/templates/adr-template.yaml`
-- `memsys3/memory/templates/sessions-template.yaml`
-- `memsys3/memory/templates/context-template.yaml`
-- `memsys3/memory/templates/project-status-template.yaml`
-
-**Documentación del sistema:**
-- `memsys3/memory/README.md`
-
-### 🔍 REVISAR MANUALMENTE (puede haber personalizaciones)
-
-Estos archivos pueden haber sido personalizados por el usuario:
-
-- `memsys3/prompts/newSession.md` → Puede tener contexto específico del proyecto
-- `memsys3/agents/main-agent.yaml` → Puede tener responsabilidades personalizadas
-
-**Estrategia:**
-1. Hacer diff entre versión actual y nueva
-2. Si NO hay cambios del usuario → sobrescribir
-3. Si HAY cambios del usuario → hacer merge manual (conservar personalizaciones + aplicar mejoras)
+**Por qué `prompts/` y `agents/` van enteros a RECONCILIABLE:** ADR-032 los declara personalizables con autorización explícita del usuario (`file_version` intocado + divergencia documentada en `sessions.yaml`). Un proyecto que cumplió el contrato a la perfección **no puede** perder su trabajo aquí. Incluye `newSession.md`, `main-agent.yaml`, `context-agent.yaml` y **todos** los demás prompts sin distinción.
 
 ---
 
@@ -393,6 +420,15 @@ cp -r memsys3/docs/backups/memsys3_backup_$TIMESTAMP memsys3_restored
 echo "=== Detectando archivos custom del proyecto ==="
 echo "MEMSYS3_ROOT=$MEMSYS3_ROOT"
 
+# Pasada 0: raíz de memsys3/ NO recursiva (customs sueltos en la raíz quedaban ciegos)
+for f in "$MEMSYS3_ROOT"/*.md "$MEMSYS3_ROOT"/*.yaml; do
+  [ -f "$f" ] || continue
+  relative="${f#$MEMSYS3_ROOT/}"
+  if [ ! -f "memsys3_update_temp/memsys3_templates/$relative" ]; then
+    echo "  CUSTOM (raíz): $relative"
+  fi
+done
+
 for dir in prompts agents docs; do
   if [ -d "$MEMSYS3_ROOT/$dir" ]; then
     find "$MEMSYS3_ROOT/$dir" -type f | while read f; do
@@ -410,6 +446,8 @@ echo "=== Fin detección ==="
 ```
 
 **Si hay archivos custom:** No requiere acción. La actualización solo tocará archivos del template.
+
+> ⚠️ **Punto ciego de este paso — cúbrelo en el Paso 6.2.** Aquí se detectan **ficheros** custom (existen en el proyecto y no en el template), no **contenido** custom. Un archivo del template con 40 líneas añadidas por el proyecto pasa este filtro como si estuviera intacto. Detectar eso es trabajo del Paso 6.2 (comparación contra la base), y es donde se perdían las personalizaciones antes de esta versión.
 
 **Si detectas un archivo que existe tanto en el proyecto como en el template nuevo, pero NO existía en la versión anterior del template** (puedes verificar en el backup): es un potencial conflicto. En ese caso:
 
@@ -443,38 +481,48 @@ if [ ! -d "$MEMSYS3_ROOT/backlog/docs" ]; then
 fi
 ```
 
-### 6.1 Actualizar Prompts y Docs
+### 6.1 Matriz A / M / D — qué hacer con cada archivo que cambió upstream
 
-**Estrategia principal: git diff --name-status**
+**Estrategia principal: `git diff --name-status`**
 
 ```bash
-CURRENT_VERSION=$(grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml" | head -1 | sed 's/.*: "\(.*\)"/\1/')
-echo "Versión actual: $CURRENT_VERSION"
+echo "Versión desplegada: $CURRENT_VERSION"
 
-# Ver qué archivos cambiaron, con estado (A=añadido, M=modificado, D=eliminado)
-git -C memsys3_update_temp diff --name-status $CURRENT_VERSION HEAD -- memsys3_templates/
+# Qué archivos cambiaron upstream, con estado (A=añadido, M=modificado, D=eliminado)
+git -C memsys3_update_temp diff --name-status "$CURRENT_VERSION" HEAD -- memsys3_templates/
 ```
 
-**Resumen antes de ejecutar (checkpoint):**
-Cuenta y muestra al moderador:
+> ⚠️ Este diff responde a *"¿qué cambió upstream?"*, **nunca** a *"¿qué cambió el proyecto?"*. Por sí solo describe una sincronización unidireccional. La segunda pregunta la responde el Paso 6.2 comparando contra la BASE; sin él, esto no es un merge por mucho que lo llamemos así.
+
+**Checkpoint antes de ejecutar.** Cuenta y muestra al usuario:
+
 ```
-Archivos a copiar (A/M): X
-Archivos a borrar (D): Y
+Archivos a añadir (A): X
+Archivos a reconciliar (M): Y
+Archivos eliminados upstream (D): Z
 ```
 
-**Para cada archivo listado:**
-- **A (añadido):** verificar primero si ya existe en `memsys3/` del proyecto.
-  - Si existe → es un archivo custom del usuario con el mismo nombre → **CONFLICTO**: preservar del usuario y avisar `⚠️ CONFLICTO: [archivo] existe en tu proyecto Y en el template nuevo. Se preserva tu versión.`
-  - Si no existe → copiar normalmente.
-- **M (modificado):** cópialo al directorio correspondiente en `memsys3/`
-  - `memsys3_templates/prompts/X` → `memsys3/prompts/X`
-  - `memsys3_templates/docs/X` → `memsys3/docs/X`
-  - `memsys3_templates/agents/X` → `memsys3/agents/X`
-  - `memsys3_templates/memory/X` → `memsys3/memory/X`
-  - **Excepto** `newSession.md` y `main-agent.yaml` → ver pasos 6.2 y 6.3
-- **D (eliminado):** borra el archivo correspondiente en `memsys3/`
+**Tabla de despacho — para cada archivo del diff:**
 
-**IMPORTANTE:** Los archivos custom detectados en Paso 5.5 NO se tocan en ningún caso.
+| Estado | Categoría del archivo (Paso 4) | Acción |
+|---|---|---|
+| **A** | cualquiera | ¿Ya existe en el proyecto? **No** → copiar. **Sí** → es un custom del proyecto con el mismo nombre: **preservar el del proyecto** y reportar `⚠️ CONFLICTO: [archivo] existe en tu proyecto Y en el template nuevo. Se preserva tu versión.` |
+| **M** | 🔄 `prompts/` o `agents/` | **Paso 6.2** (base-recovery + 3-way merge). NUNCA copiar directo. |
+| **M** | 📐 `memory/templates/`, `PRINCIPLES.md` | Pasos 6.4 / 6.6 (sustitución diferencial por `file_version`). |
+| **M** | 🚫 datos | No tocar (no debería aparecer: el template no contiene datos del proyecto). |
+| **M** | resto (`memory/README.md`, `docs/`) | Copiar al path equivalente en `memsys3/`. |
+| **D** | cualquiera | **Paso 6.3** (leak vs custom). NUNCA borrar directo. |
+
+Mapeo de rutas para las copias: `memsys3_templates/prompts/X` → `memsys3/prompts/X`; ídem `docs/`, `agents/`, `memory/`. Los archivos en la **raíz** del template (p. ej. `per-tool-stub-template.md`) van a la raíz de `memsys3/`; excepciones con paso propio: `PRINCIPLES.md` (6.6) y `AGENTS.md`, que va a la raíz del **proyecto** (6.6.5).
+
+**IMPORTANTE:** los archivos custom detectados en el Paso 5.5 NO se tocan en ningún caso.
+
+**Acumula un registro de reconciliación** mientras recorres la matriz — lo necesitarás en el resumen final, en `operations.log` (Paso 11) y en `sessions.yaml` (Paso 10):
+
+```
+RECONCILIACIÓN
+  <ruta> · <A|M|D> · <sin-personalización | personalizado> · <acción tomada> · <ruta del backup>
+```
 
 **Si git diff funciona, NO ejecutes el fallback. Son mutuamente excluyentes.**
 
@@ -482,17 +530,13 @@ Archivos a borrar (D): Y
 
 **Fallback: copia dinámica (SOLO si git diff falla — error de salida, versión no encontrada)**
 
+Sin `git diff` no hay diff upstream, pero **sigue habiendo base**: el Paso 6.2 la recupera igualmente desde `$CURRENT_VERSION` o desde el `file_version` local. Por eso el fallback **no copia prompts ni agents a ciegas** — los pasa por 6.2 igual que la ruta principal.
+
 ```bash
-# Copiar prompts recursivamente (excepto newSession.md → merge manual en 6.2)
-find memsys3_update_temp/memsys3_templates/prompts/ -type f | while read f; do
-  relative="${f#memsys3_update_temp/memsys3_templates/}"
-  fname=$(basename "$f")
-  if [ "$fname" != "newSession.md" ]; then
-    mkdir -p "$MEMSYS3_ROOT/$(dirname "$relative")"
-    cp "$f" "$MEMSYS3_ROOT/$relative"
-  fi
-done
-echo "Prompts actualizados (dinámico)"
+# Prompts y agents: NO se copian aquí. Recórrelos y aplícales el Paso 6.2 uno a uno.
+find memsys3_update_temp/memsys3_templates/prompts/ memsys3_update_temp/memsys3_templates/agents/ -type f \
+  | sed "s|memsys3_update_temp/memsys3_templates/||" \
+  | sed 's/^/  RECONCILIAR (Paso 6.2): /'
 
 # Copiar docs (sin borrar — preserva archivos custom del proyecto)
 find memsys3_update_temp/memsys3_templates/docs/ -type f | while read f; do
@@ -505,37 +549,80 @@ echo "Docs actualizados (sin borrar custom)"
 
 > **⚠️ NUNCA hacer `rm -f memsys3/docs/*.md` ni borrar carpetas enteras.** Eso destruye archivos custom del proyecto. Solo sobrescribir archivos que vienen del template.
 
-### 6.2 Revisar newSession.md
+### 6.2 Reconciliar `prompts/` y `agents/` — base-recovery + merge a 3 bandas
+
+**Aplica a TODO archivo `M` de `prompts/` o `agents/`, sin excepciones ni listas.** Es el paso que convierte este prompt en un merge de verdad.
+
+Un diff de dos puntos (local vs upstream) no puede distinguir "línea que añadió el proyecto" de "línea que eliminó upstream": son la misma diferencia vista desde lados opuestos. Necesitas un tercer punto, la **BASE**: el archivo del template tal como se entregó en el último deploy/actualización.
+
+**1. Recuperar la BASE.** Dos señales, ninguna requiere artefacto nuevo:
 
 ```bash
-# Comparar versiones
-diff "$MEMSYS3_ROOT/prompts/newSession.md" memsys3_update_temp/memsys3_templates/prompts/newSession.md
+REL="prompts/endSession.md"          # ruta relativa dentro del template (ejemplo)
+SRC="memsys3_update_temp/memsys3_templates/$REL"
+DST="$MEMSYS3_ROOT/$REL"
+
+# Señal 1 (principal): el tag desplegado que anotó project-status
+git -C memsys3_update_temp show "$CURRENT_VERSION:memsys3_templates/$REL" > /tmp/ms3_base.$$ 2>/dev/null \
+  && echo "BASE recuperada desde $CURRENT_VERSION" \
+  || echo "⚠️ BASE no recuperable desde el tag — usa la Señal 2"
+
+# Señal 2 (respaldo / desempate): último commit upstream cuyo file_version coincide
+# con el file_version del archivo LOCAL. Sobrevive a actualizaciones parciales,
+# en las que el tag de project-status no describe bien lo instalado.
 ```
 
-**Si hay diferencias:**
-- Lee ambas versiones
-- Conserva personalizaciones del proyecto (descripciones específicas, contexto único)
-- Aplica mejoras estructurales de la nueva versión
-- Edita manualmente si es necesario
+- Si **ambas señales fallan** (proyecto sin `memsys3_version` fiable, tag inexistente): **NO sobrescribas**. Degrada a revisión asistida: muestra el diff local↔upstream al usuario, explica que no hay base recuperable, y deja que decida. Anótalo en el registro de reconciliación.
+- Varios commits upstream pueden compartir `file_version` (fixes editoriales sin bump). Desempata con el tag desplegado.
 
-**Si NO hay diferencias (archivo base sin personalizar):**
+**2. Decidir con la base:**
+
 ```bash
-cp memsys3_update_temp/memsys3_templates/prompts/newSession.md "$MEMSYS3_ROOT/prompts/"
+if cmp -s "$DST" /tmp/ms3_base.$$; then
+  # local == base → el proyecto no tocó el archivo → sobrescribir es seguro
+  cp "$SRC" "$DST"
+  echo "⬆️ $REL — sin personalización local, actualizado"
+else
+  # local != base → HAY personalización → 3-way merge, nunca sobrescritura ciega
+  echo "🔀 $REL — PERSONALIZADO: requiere merge a 3 bandas"
+  diff /tmp/ms3_base.$$ "$DST" ; echo "--- (arriba: lo que añadió el proyecto) ---"
+  diff /tmp/ms3_base.$$ "$SRC" ; echo "--- (arriba: lo que cambió upstream) ---"
+fi
+rm -f /tmp/ms3_base.$$
 ```
 
-### 6.3 Actualizar Agents
+**3. Ejecutar el merge (`local != base`).** No es una operación mecánica: es donde tu contexto del Paso 0.5 hace el trabajo.
+
+- Lee la **divergencia documentada** de ese archivo en `sessions.yaml` (Paso 0.5): te dice **por qué** existe la personalización, que es lo que necesitas para no borrarla por parecer ruido.
+- Construye la versión resultante: **estructura y mejoras de upstream + intención de la personalización preservada**. Si la personalización toca una zona que upstream reescribió, adapta el parche a la estructura nueva en lugar de descartarlo.
+- Si la personalización y el cambio upstream son genuinamente incompatibles, **pregunta al usuario** con las dos versiones delante. No decidas tú una pérdida.
+- **Nunca** resuelvas el conflicto "en favor del template porque es lo canónico": el template siempre se puede recuperar del repo, la personalización del proyecto puede no existir en ningún otro sitio.
+
+**4. Reportar SIEMPRE (obligatorio, aunque hayas sobrescrito).** Toda personalización detectada entra en el registro de reconciliación con: ruta, qué añadía el proyecto (diff concreto), qué se hizo, y ruta del backup del Paso 5. Esa información viaja después al resumen final, al Checklist, a `operations.log` (Paso 11) y a `sessions.yaml` del proyecto (Paso 10). *La pérdida silenciosa es peor que el conflicto ruidoso.*
+
+> **Nota:** los archivos custom de `prompts/` y `agents/` detectados en el Paso 5.5 (no existen en el template) no entran aquí — se preservan intactos.
+
+### 6.3 Eliminaciones upstream (`D`) — leak vs custom
+
+Que upstream elimine un archivo **no** significa que el del proyecto sea desechable: puede ser el mismo fichero con una personalización encima. Antes de borrar, compara contra la base.
 
 ```bash
-# Context Agent (siempre actualizar)
-cp memsys3_update_temp/memsys3_templates/agents/context-agent.yaml "$MEMSYS3_ROOT/agents/"
+REL="prompts/meet.md"                 # ejemplo de archivo eliminado upstream
+DST="$MEMSYS3_ROOT/$REL"
 
-# Main Agent (revisar personalizaciones)
-diff "$MEMSYS3_ROOT/agents/main-agent.yaml" memsys3_update_temp/memsys3_templates/agents/main-agent.yaml
+git -C memsys3_update_temp show "$CURRENT_VERSION:memsys3_templates/$REL" > /tmp/ms3_base.$$ 2>/dev/null
+
+if [ -s /tmp/ms3_base.$$ ] && cmp -s "$DST" /tmp/ms3_base.$$; then
+  echo "🗑️ $REL — idéntico a la versión entregada: resto del scaffold viejo, se puede borrar"
+else
+  echo "🛑 $REL — DIFIERE de la versión entregada (o no hay base): personalización del proyecto"
+  echo "   → NO borrar. Preservar y reportar al usuario para que decida."
+fi
+rm -f /tmp/ms3_base.$$
 ```
 
-**Estrategia main-agent.yaml:** igual que newSession.md (conservar personalizaciones + aplicar mejoras)
-
-> **Nota:** Los archivos custom en `agents/` detectados en Paso 5.5 (ej: `dev-agent.yaml`) no se tocan.
+- **Idéntico bit a bit a la base** → el proyecto nunca lo tocó: es residuo del scaffold anterior, bórralo.
+- **Distinto, o base no recuperable** → **no borres**. Preserva, reporta en el registro de reconciliación y deja la decisión al usuario.
 
 ### 6.4 Actualizar Templates de schema (sustitución diferencial)
 
@@ -583,7 +670,7 @@ done
 ```
 
 **Si aparece `🚨` (destino > upstream) en algún archivo:**
-Usa `AskUserQuestion` para cada caso:
+Pregunta al usuario para cada caso (con preguntas estructuradas si tu harness las tiene; si no, en texto):
 - "El template `<archivo>` tiene en tu proyecto la versión `<v_dst>`, mayor que upstream `<v_up>`. ¿Sobrescribir con upstream / preservar destino?"
 - Si sobrescribir → `cp "$src" "$dst"`. Si preservar → no tocar.
 
@@ -603,7 +690,7 @@ grep -rEn "^\s*#\s*DEPRECATED" "$MEMSYS3_ROOT/memory/templates/" || echo "(sin d
 Para cada `# DEPRECATED` encontrado:
 1. Identifica qué campo está deprecado (línea siguiente al comentario o campo asociado).
 2. Lee datos vivos relacionados (`memsys3/memory/project-status.yaml`, `memsys3/memory/full/sessions.yaml`, etc.) y verifica si el campo está en uso.
-3. Si está en uso → `AskUserQuestion`: "Campo `<X>` marcado deprecated por upstream. Motivo: `<razón>`. ¿Mantener / migrar a `<alternativa>` / eliminar de tus datos vivos?"
+3. Si está en uso → pregunta al usuario: "Campo `<X>` marcado deprecated por upstream. Motivo: `<razón>`. ¿Mantener / migrar a `<alternativa>` / eliminar de tus datos vivos?"
 4. Si no está en uso → solo informar al usuario, sin acción.
 
 **2. Detectar campos huérfanos en datos vivos:**
@@ -618,10 +705,29 @@ Lee cada template de schema (`*-template.yaml`) y compara sus claves top-level c
 | `sessions-template.yaml` | `memsys3/memory/full/sessions.yaml` |
 
 Para cada clave top-level presente en datos vivos pero NO en template upstream:
-- Si la clave tiene contenido (no vacío) → `AskUserQuestion`: "Campo `<Y>` existe en tus datos pero no en el schema canónico. ¿Mantener (puede ser personalización legítima) / eliminar?"
+- Si la clave tiene contenido (no vacío) → pregunta al usuario: "Campo `<Y>` existe en tus datos pero no en el schema canónico. ¿Mantener (puede ser personalización legítima) / eliminar?"
 - Si está vacío → eliminar silenciosamente.
 
 **Importante:** Esta evaluación NUNCA elimina automáticamente. La filosofía memsys3 es human-in-the-loop: solo el usuario, contextualizado por el agente, decide qué es legítimo en su proyecto (ver ADR-019).
+
+### 6.4.6 Detección de drift de cabecera (read-only)
+
+Los archivos de datos creados **antes** de ADR-017 no llevan la cabecera `# version:` que sus scaffolds sí tienen hoy. No es un error del proyecto ni algo que debas arreglar por tu cuenta: es deriva histórica entre el scaffold y el output vivo. **Este paso solo reporta.**
+
+```bash
+for f in "$MEMSYS3_ROOT/memory/project-status.yaml" \
+         "$MEMSYS3_ROOT/memory/context.yaml" \
+         "$MEMSYS3_ROOT/memory/memory.yaml"; do
+  [ -f "$f" ] || continue
+  if grep -qE "^\s*#\s*version:|^\s*file_version:" "$f"; then
+    echo "✅ $(basename "$f") — cabecera de versión presente"
+  else
+    echo "ℹ️ $(basename "$f") — sin cabecera de versión (dato creado pre-ADR-017)"
+  fi
+done
+```
+
+**NO auto-corrijas.** Informa al usuario del listado y sigue: añadir cabeceras a datos vivos es una decisión suya, no una consecuencia de actualizar.
 
 ### 6.5 Crear history/ si no existe
 
@@ -665,7 +771,78 @@ fi
 
 > **Nota:** reutiliza el helper `compare_versions` definido en el Paso 6.4. Si por orden de ejecución no estuviera definido aún, define ambos (`extract_md_version` + `compare_versions`) en este bloque.
 >
-> **Si aparece `🚨` (destino > upstream)**: usar `AskUserQuestion` con la misma lógica que el Paso 6.4 (sobrescribir / preservar).
+> **Si aparece `🚨` (destino > upstream)**: preguntar al usuario con la misma lógica que el Paso 6.4 (sobrescribir / preservar).
+
+### 6.6.5 Sincronizar `AGENTS.md` raíz (Capa 2 de ADR-027)
+
+`AGENTS.md` vive en la **raíz del proyecto**, no dentro de `memsys3/` — es el estándar cross-tool que los harnesses auto-descubren. Misma lógica de sustitución diferencial que el Paso 6.6.
+
+```bash
+SRC="memsys3_update_temp/memsys3_templates/AGENTS.md"   # SSoT distribuible
+DST="$PROJECT_ROOT/AGENTS.md"                           # raíz del proyecto destino
+
+if [ ! -f "$SRC" ]; then
+  echo "⚠️ AGENTS.md SSoT no encontrado en upstream — skip Capa 2"
+elif [ ! -f "$DST" ]; then
+  cp "$SRC" "$DST"
+  echo "🆕 AGENTS.md creado en la raíz del proyecto (Capa 2, ADR-027)"
+else
+  v_up=$(extract_md_version "$SRC")
+  v_dst=$(extract_md_version "$DST")
+  if [ -z "$v_dst" ]; then
+    echo "⚠️ AGENTS.md destino sin file_version (legacy pre-ADR-027) → sustituyendo"
+    cp "$SRC" "$DST"
+  else
+    case "$(compare_versions "$v_up" "$v_dst")" in
+      gt) cp "$SRC" "$DST"; echo "⬆️ AGENTS.md actualizado ($v_dst → $v_up)" ;;
+      eq) echo "✅ AGENTS.md sincronizado ($v_up)" ;;
+      lt) echo "🚨 AGENTS.md destino ($v_dst) > upstream ($v_up) — anómalo, preguntar al usuario" ;;
+    esac
+  fi
+fi
+```
+
+> Reutiliza `extract_md_version` y `compare_versions` (Pasos 6.4 y 6.6). Si el proyecto añadió contenido propio a su `AGENTS.md`, trátalo como personalización: aplica el criterio del Paso 6.2 antes de sustituir.
+
+### 6.6.6 Sincronizar stubs per-tool (Capa 3 de ADR-027)
+
+Los stubs Capa 3 (`CLAUDE.md`, `GEMINI.md`, `.cursor/rules/…`, `.clinerules`, etc.) los crea `newSession.md` por trigger declarativo. Aquí solo se **sincroniza** su contenido contra la SSoT genérica. **Este paso no enumera modelos**: detecta por la marca canónica del invariante, así que cubre harnesses que aún no existen.
+
+```bash
+SRC="memsys3_update_temp/memsys3_templates/per-tool-stub-template.md"
+MARCA_CANONICA="Invariante de memoria agnóstica (ADR-027)"
+
+if [ ! -f "$SRC" ]; then
+  echo "⚠️ per-tool-stub-template.md no encontrado upstream — skip Capa 3"
+else
+  v_up=$(extract_md_version "$SRC")
+  find "$PROJECT_ROOT" -maxdepth 3 \
+       \( -name "*.md" -o -path "*/rules/*" -o -name ".clinerules" \) -type f \
+       -not -path "*/memsys3_update_temp/*" -not -path "*/.git/*" \
+       -not -path "$MEMSYS3_ROOT/*" -not -path "*/memsys3_templates/*" \
+       -not -name "AGENTS.md" 2>/dev/null \
+  | while read -r f; do
+      grep -q "$MARCA_CANONICA" "$f" 2>/dev/null || continue
+      grep -qE "<!--\s*version:\s*[0-9]+\.[0-9]+\.[0-9]+\s*-->" "$f" || continue
+      v_dst=$(extract_md_version "$f")
+      case "$(compare_versions "$v_up" "$v_dst")" in
+        eq) echo "✅ stub $f sincronizado ($v_up)"; continue ;;
+        lt) echo "🚨 stub $f destino ($v_dst) > upstream ($v_up) — preguntar al usuario"; continue ;;
+      esac
+      # gt: hay versión nueva. ¿El proyecto añadió contenido propio a su stub?
+      if [ "$(wc -c < "$f")" -le "$(wc -c < "$SRC")" ]; then
+        cp "$SRC" "$f"; echo "⬆️ stub $f actualizado ($v_dst → $v_up)"
+      else
+        echo "🔀 stub $f — más contenido que la plantilla: posible personalización"
+        echo "   → NO sobrescribir a ciegas. Aplicar criterio del Paso 6.2 y reportar."
+      fi
+    done
+fi
+```
+
+> **Exclusiones deliberadas del escaneo:** `AGENTS.md` (es Capa 2, tiene su propio Paso 6.6.5) y todo lo que cuelgue de `memsys3/` (incluida la copia local de la plantilla, que se actualiza por la matriz del Paso 6.1). Sin estas exclusiones el detector se traga sus propias fuentes: ambas llevan la marca canónica y `file_version`.
+>
+> **Cuidado:** un stub Capa 3 puede llevar contenido propio del proyecto añadido debajo del invariante (es un archivo que el harness lee siempre, tentador para reglas locales). Si al comparar ves más que el invariante, **no sustituyas a ciegas**: aplica el Paso 6.2. Si el proyecto no tiene ningún stub que matchee, el paso es silencioso.
 
 ### 6.7 Actualizar Documentación del Sistema
 
@@ -733,9 +910,7 @@ Ejecuta en una **NUEVA INSTANCIA** (para no saturar tokens):
 - ✅ context.yaml tiene < 2000 líneas
 - ✅ notas_compilacion documenta el proceso
 
-- ✅ Las 4 pestañas funcionan (Overview, ADRs, Sessions, Gotchas)
-
-### 9.3 Probar newSession
+### 9.2 Probar newSession
 
 En una **NUEVA INSTANCIA**:
 
@@ -778,11 +953,19 @@ Usa el template de sessions para documentar esta actualización:
       solucion: "[CÓMO_LO_RESOLVISTE]"
       criticidad: "media"
 
+  personalizaciones_reconciliadas:   # OBLIGATORIO si el Paso 6.2/6.3 detectó alguna
+    - archivo: "[ruta]"
+      detectado: "[qué añadía el proyecto respecto a la base]"
+      accion: "[merge aplicado | sobrescrito con OK del usuario | preservado]"
+      backup: "[ruta del backup del Paso 5]"
+
   proximos_pasos:
     - "Validar funcionamiento en próximas sesiones de desarrollo"
 ```
 
 **Añade esta entry al principio de `memsys3/memory/full/sessions.yaml`**
+
+> **Por qué `personalizaciones_reconciliadas` es obligatorio.** `sessions.yaml` es un archivo que el proyecto **sí lee al iniciar sesión**: es el único sitio donde una sobrescritura queda a la vista de quien trabaja después. Un resumen en pantalla se pierde al cerrar la terminal; `operations.log` no se lee en `newSession`. Si algo se pierde, que se pierda a la vista. Si no hubo ninguna personalización, omite la clave.
 
 ---
 
@@ -838,6 +1021,11 @@ operations:
       eliminados: "[N archivos (lista)]"
       merge_manual: "[archivos con merge manual, si los hubo]"
       preservados: "[archivos custom preservados]"
+      personalizaciones:   # OBLIGATORIO — una entrada por archivo divergente del Paso 6.2/6.3
+        - archivo: "[ruta]"
+          diff: "[qué difería respecto a la base, concreto]"
+          accion: "[merge | sobrescrito | preservado]"
+          backup: "[ruta del backup]"
       backup: "[ruta del backup creado]"
       pendientes_validacion:
         - "[pendiente 1]"
@@ -856,13 +1044,13 @@ Si el proyecto usa git:
 git add memsys3/
 git commit -m "actualizar: memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA]
 
-- Prompts actualizados (compile-context, endSession, etc.)
-- Agents actualizados (context-agent.yaml)
-- Templates actualizados
-- Visualizador actualizado
+- Prompts y agents reconciliados (base + merge donde había personalización)
+- Templates de schema y PRINCIPLES.md sincronizados
 - history/ creado (Plan Contingencia)
-- Metadata versión actualizada en project-status.yaml"
+- Metadata de versión actualizada en project-status.yaml"
 ```
+
+> **Coop / multi-usuario:** no asumas rama, identidad ni convención de tags. Quién commitea, sobre qué rama y si se tagea son convenciones **del proyecto** — si tiene un workflow de git propio (`memsys3/prompts/github.md` o equivalente), ejecútalo en lugar de este bloque. Nunca hardcodees una rama: `git push origin HEAD` respeta la rama activa.
 
 ---
 
@@ -887,13 +1075,20 @@ rm -rf memsys3/docs/backups/memsys3_backup_$TIMESTAMP
 2. Añade campos faltantes manualmente (siguiendo estructura del template)
 3. NO copies todo el template (perderías datos del proyecto)
 
-### Problema: "Conflicto en newSession.md - personalizaciones vs mejoras"
+### Problema: "Conflicto en un prompt o agent — personalizaciones vs mejoras"
 
-**Solución:**
-1. Lee ambas versiones completas
-2. Identifica qué líneas son personalizaciones del proyecto (descripciones únicas)
-3. Identifica qué líneas son mejoras estructurales (nuevas instrucciones)
-4. Crea versión híbrida: conserva personalizaciones + aplica mejoras
+**Solución:** es el caso normal del Paso 6.2, no una excepción.
+1. Recupera la BASE (`git show "$CURRENT_VERSION:memsys3_templates/<ruta>"`) — sin ella no distingues "añadido por el proyecto" de "eliminado por upstream".
+2. `diff base local` te da **qué añadió el proyecto**; `diff base upstream` te da **qué cambió upstream**.
+3. Busca en `sessions.yaml` la divergencia documentada: te da el **por qué** de la personalización.
+4. Crea la versión híbrida: estructura y mejoras de upstream + intención de la personalización preservada.
+5. Si son incompatibles, pregunta al usuario con las dos versiones delante. Reporta siempre lo que hiciste.
+
+### Problema: "No puedo recuperar la BASE de un archivo"
+
+**Causa:** `memsys3_version` ausente o inexacto en `project-status.yaml`, tag inexistente en upstream, o deployment hecho a mano.
+
+**Solución:** **NO sobrescribas**. Muestra el diff local↔upstream al usuario explicando que no hay base recuperable y deja que decida archivo por archivo. Anótalo en el registro de reconciliación: es información valiosa sobre la salud del deployment.
 
 ### Problema: "context.yaml no compila - errores de campos"
 
@@ -947,10 +1142,17 @@ operations:
 
 Antes de dar por terminada la actualización, verifica:
 
+- [ ] Contexto del proyecto ingerido ANTES de tocar nada (Paso 0.5), incluidas las divergencias documentadas en `sessions.yaml`
 - [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
 - [ ] `memsys3/docs/backups/` excluido en `.gitignore` del proyecto (Paso 5, ISSUE-006) — `git check-ignore memsys3/docs/backups/x`
+- [ ] **Ningún archivo de `prompts/` o `agents/` se sobrescribió sin comparar contra la BASE** (Paso 6.2)
+- [ ] **Ninguna eliminación `D` se ejecutó sin el criterio leak-vs-custom** (Paso 6.3)
+- [ ] **Toda personalización detectada quedó reportada en los TRES sitios**: resumen final, `operations.log` y `sessions.yaml` del proyecto — con diff concreto y ruta del backup
 - [ ] Archivos del sistema actualizados (prompts, agents, templates)
 - [ ] `PRINCIPLES.md` sincronizado (Paso 6.6, sustitución diferencial — ADR-022 + ADR-018)
+- [ ] `AGENTS.md` raíz sincronizado (Paso 6.6.5, Capa 2 ADR-027)
+- [ ] Stubs Capa 3 sincronizados o paso silencioso si no hay (Paso 6.6.6)
+- [ ] Drift de cabecera reportado sin auto-corregir (Paso 6.4.6)
 - [ ] `docs/` copiada (`ls memsys3/docs/reference.md`)
 - [ ] `backlog/` existe (`ls memsys3/backlog/`)
 - [ ] history/ creado (si no existía)
@@ -966,15 +1168,26 @@ Antes de dar por terminada la actualización, verifica:
 
 ---
 
+## 📣 Resumen final al usuario (obligatorio)
+
+Antes de dar por cerrada la actualización, presenta al usuario:
+
+1. Versión: `[VERSIÓN_ACTUAL]` → `[VERSIÓN_NUEVA]`.
+2. Recuento de archivos añadidos / reconciliados / eliminados / preservados.
+3. **Sección destacada "Personalizaciones detectadas"** con el registro de reconciliación completo: una línea por archivo divergente, qué añadía el proyecto, qué se hizo y dónde está el backup. **Si no hubo ninguna, dilo explícitamente** ("ninguna personalización local detectada") — el silencio es ambiguo.
+4. Pendientes de validación (compile-context en sesión nueva, `newSession` de prueba).
+
+---
+
 ## 🔗 Referencias
 
-- Prompt relacionado: `@memsys3/prompts/deploy.md` (para deployment inicial)
-- ADR relacionada: ADR-009 (templates permanentes, estructura)
-- Backlog: FEATURE-002 (este prompt)
+- Prompt relacionado: `memsys3/prompts/deploy.md` (para deployment inicial)
+- ADRs: ADR-009 (templates permanentes), ADR-017 (`file_version`), ADR-018 (sustitución diferencial), ADR-019 (deprecation contextualizada), ADR-022 (PRINCIPLES.md), ADR-027 (memoria agnóstica, Capas 2 y 3), ADR-028 (Setup Agent), ADR-032 (personalización autorizada de `prompts/` y `agents/`).
+- **Por qué existen los Pasos 6.2 y 6.3:** auditoría del contrato de actualización (2026-08-23) — tres vectores de pérdida: sobrescritura incondicional por lista hardcodeada, borrado de `D` sin verificar, y merge a 2 bandas sin base. Evidencia de campo: informe de actualización real `2026-05-27` (§3.2, §4.1-4.2) y caso de pérdida silenciosa de un parche local reportado el 2026-08-27.
 
 ---
 
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.3.0 -->
+<!-- version: 0.4.0 -->
