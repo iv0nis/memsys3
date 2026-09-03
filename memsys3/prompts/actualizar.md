@@ -71,11 +71,12 @@ echo "MEMSYS3_ROOT=$MEMSYS3_ROOT"
 
 ```bash
 git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
-cp memsys3_update_temp/memsys3_templates/prompts/actualizar.md "$MEMSYS3_ROOT/prompts/actualizar.md"
-echo "actualizar.md actualizado a la versión del repo"
+echo "Bootstrap: la versión más reciente de este prompt está en memsys3_update_temp/memsys3_templates/prompts/actualizar.md"
 ```
 
-**Ahora lee `memsys3/prompts/actualizar.md` y continúa desde el Paso 1 de ese archivo.** El resto de este prompt puede estar desactualizado.
+**Ahora lee `memsys3_update_temp/memsys3_templates/prompts/actualizar.md` y continúa desde el Paso 1 de ESE archivo.** El resto de este prompt puede estar desactualizado.
+
+> **Por qué el bootstrap NO sobrescribe `memsys3/prompts/actualizar.md`:** este prompt es infraestructura de `prompts/` como cualquier otro y ADR-032 lo hace personalizable. Sobrescribirlo aquí, antes de recuperar su base, sería exactamente la pérdida silenciosa que el Paso 6.2 prohíbe. La copia local se reconcilia en la matriz del Paso 6.1 como todos los demás; para ejecutar, se lee directamente del clone.
 
 ---
 
@@ -231,13 +232,27 @@ Lee el archivo del proyecto:
 ```bash
 cat "$MEMSYS3_ROOT/memory/project-status.yaml" | grep -A2 "metadata:"
 
-# Fijar la versión desplegada como variable — se usa en los Pasos 2.5, 6.1 y 6.2
-CURRENT_VERSION=$(grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml" | head -1 | sed 's/.*: "\(.*\)"/\1/')
-echo "CURRENT_VERSION=$CURRENT_VERSION"
+# Fijar la versión desplegada como variable — se usa en los Pasos 2.5, 6.1 y 6.2.
+# El campo aparece en formatos distintos según la versión que lo escribió:
+#   "v0.29.0" · "v0.31.0-8-gbf0bff9" (git describe) · "v0.28.0 (commit: 93cde0f)"
+# Solo los dos primeros son commit-ish válidos. Normalizar: si hay hash de commit
+# explícito, es la señal más precisa (lo que se entregó de verdad); si no, el describe/tag.
+RAW_VERSION=$(grep "memsys3_version" "$MEMSYS3_ROOT/memory/project-status.yaml" | head -1 | sed 's/.*: "\(.*\)"/\1/')
+CURRENT_VERSION=$(echo "$RAW_VERSION" | grep -oE 'commit: [0-9a-f]{7,40}' | sed 's/commit: //')
+[ -z "$CURRENT_VERSION" ] && CURRENT_VERSION=$(echo "$RAW_VERSION" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+-g[0-9a-f]+)?')
+echo "memsys3_version bruto: '$RAW_VERSION' → CURRENT_VERSION='$CURRENT_VERSION'"
+```
+
+Tras el Paso 0b (clone disponible), **verifica que resuelve** antes de seguir:
+
+```bash
+git -C memsys3_update_temp cat-file -e "$CURRENT_VERSION^{commit}" 2>/dev/null \
+  && echo "✅ CURRENT_VERSION resuelve en upstream" \
+  || echo "🚨 CURRENT_VERSION NO resuelve — la base no será recuperable (ver Paso 6.2 §1)"
 ```
 
 **Busca los campos:**
-- `memsys3_version`: Versión actual instalada — **es la señal que permite recuperar la BASE** de cada archivo del template tal como se entregó (Paso 6.2). Si falta o es inexacta, la reconciliación pierde precisión: anótalo y avisa al usuario.
+- `memsys3_version`: Versión actual instalada — **es la señal que permite recuperar la BASE** de cada archivo del template tal como se entregó (Paso 6.2). Si falta, no resuelve o es inexacta, la reconciliación degrada a revisión asistida: anótalo y avisa al usuario.
 - `memsys3_deployed`: Fecha del último deployment/actualización
 
 **Si NO existen estos campos:**
@@ -275,8 +290,8 @@ git ls-remote --tags https://github.com/iv0nis/memsys3 | tail -5
 # Salto entre la versión desplegada y la última publicada
 git -C memsys3_update_temp rev-list --count "$CURRENT_VERSION..HEAD" 2>/dev/null \
   | xargs -I{} echo "Commits upstream desde $CURRENT_VERSION: {}"
-git -C memsys3_update_temp tag --sort=v:refname --contains "$CURRENT_VERSION" 2>/dev/null | wc -l \
-  | xargs -I{} echo "Tags publicados en el intervalo: {}"
+git -C memsys3_update_temp tag --sort=v:refname --contains "$CURRENT_VERSION" 2>/dev/null \
+  | grep -vxF "$CURRENT_VERSION" | wc -l | xargs -I{} echo "Tags publicados después de $CURRENT_VERSION: {}"
 ```
 
 **Criterio orientativo** (no bloqueante): salto < 2 versiones minor → *Rápida* suele bastar. Salto ≥ 2 minor, o cualquier major → recomienda *Extendida*: hay más superficie donde una personalización puede colisionar con un cambio estructural.
@@ -353,9 +368,10 @@ cd ..
 
 | Categoría | Qué incluye (regla, no lista) | Tratamiento |
 |---|---|---|
-| 🚫 **DATOS del proyecto** | **Todo** lo que cuelgue de `memsys3/memory/` **salvo** `memory/templates/`, más `memsys3/backlog/` y `memsys3/docs/` | **NUNCA SOBRESCRIBIR.** Única excepción: el bloque `metadata` de `project-status.yaml` (Paso 7). |
+| 🚫 **DATOS del proyecto** | **Todo** lo que cuelgue de `memsys3/memory/` **salvo** `memory/templates/`, más `memsys3/backlog/` y lo que viva en `memsys3/docs/` sin equivalente en el template (backups, actas, informes) | **NUNCA SOBRESCRIBIR.** Única excepción: el bloque `metadata` de `project-status.yaml` (Paso 7). |
 | 🔄 **INFRAESTRUCTURA RECONCILIABLE** | **Todo** archivo de `memsys3/prompts/` y `memsys3/agents/` | **Reconciliar contra la base** (Paso 6.2): sin personalización → sobrescribir; con personalización → merge a 3 bandas + reporte. |
 | 📐 **SCHEMA / CONTRATO** | `memsys3/memory/templates/*`, `memsys3/PRINCIPLES.md`, `AGENTS.md` raíz y stubs Capa 3 | **Sustitución diferencial** por `file_version` (Pasos 6.4, 6.6, 6.6.5, 6.6.6). El proyecto no los edita por contrato. |
+| 📄 **DOCUMENTACIÓN DEL SISTEMA** | `memsys3/memory/README.md` y los archivos de `memsys3/docs/` que **sí** existen en el template (p. ej. `docs/reference.md`) | Copiar (Paso 6.1 fila "resto" / 6.7). Sin merge: son documentación de memsys3, no del proyecto. |
 | 🧩 **CUSTOM del proyecto** | Archivos que existen en el proyecto y **no** en el template | **Preservar intactos** (detectados en Paso 5.5). |
 
 **Por qué DATOS es una regla y no una lista:** así cubre por construcción los archivos de datos que aún no existen cuando lees esto (rotaciones `sessions_N.yaml`, `adr_N.yaml`, `operations_N.log`, `history/`, y cualquier fichero de datos que versiones futuras añadan a `memory/`, p. ej. configuración de equipo). Si dudas de si algo es dato o infraestructura, pregúntate quién lo escribe: **si lo escribe el proyecto trabajando, es dato.**
@@ -481,6 +497,58 @@ if [ ! -d "$MEMSYS3_ROOT/backlog/docs" ]; then
 fi
 ```
 
+### 6.0 Helpers (definir una vez, ANTES de 6.1)
+
+Los pasos 6.2 a 6.6.6 los usan. Defínelos aquí para que el orden de ejecución no importe:
+
+```bash
+# file_version de un archivo, sea cual sea su formato:
+#   .md → "<!-- version: X.Y.Z -->" · agents/*.yaml → 'file_version: "X.Y.Z"' · templates → "# version: X.Y.Z"
+extract_any_version() {
+  { grep -E "<!--\s*version:" "$1" 2>/dev/null | head -1 | sed -E 's/.*version:\s*([0-9.]+).*/\1/'
+    grep -E "^file_version:" "$1" 2>/dev/null | head -1 | sed -E 's/.*:\s*//' | tr -d '"'
+    grep -E "^#\s*version:" "$1" 2>/dev/null | head -1 | sed -E 's/^#\s*version:\s*//' | tr -d '"'
+  } | grep . | head -1
+}
+extract_version()    { extract_any_version "$1"; }   # alias histórico (Paso 6.4)
+extract_md_version() { extract_any_version "$1"; }   # alias histórico (Pasos 6.6, 6.6.5, 6.6.6)
+
+# Comparar versiones (devuelve "gt", "eq", "lt": v1 respecto a v2)
+compare_versions() {
+  local v1="$1" v2="$2"
+  if [ "$v1" = "$v2" ]; then echo "eq"; return; fi
+  local sorted=$(printf "%s\n%s" "$v1" "$v2" | sort -V | head -1)
+  if [ "$sorted" = "$v1" ]; then echo "lt"; else echo "gt"; fi
+}
+
+# Recuperar la BASE de un archivo del template (ruta relativa, p.ej. prompts/endSession.md)
+# en $BASE_FILE. Devuelve 0 si la recuperó, 1 si no hay base fiable.
+#   Señal 1: el commit desplegado ($CURRENT_VERSION) → lo que se entregó de verdad.
+#   Señal 2: si la señal 1 no resuelve, el último commit upstream cuyo file_version
+#            coincide con el del archivo LOCAL (sobrevive a actualizaciones parciales,
+#            en las que project-status no describe bien lo instalado).
+BASE_FILE="memsys3_update_temp/.base.tmp"
+recover_base() {
+  local rel="$1" local_file="$MEMSYS3_ROOT/$1" c v_local v_c
+  rm -f "$BASE_FILE"
+  if git -C memsys3_update_temp show "$CURRENT_VERSION:memsys3_templates/$rel" > "$BASE_FILE" 2>/dev/null \
+     && [ -s "$BASE_FILE" ]; then
+    echo "   base: señal 1 ($CURRENT_VERSION)"; return 0
+  fi
+  v_local=$(extract_any_version "$local_file")
+  if [ -n "$v_local" ]; then
+    for c in $(git -C memsys3_update_temp log --format=%H -- "memsys3_templates/$rel"); do
+      git -C memsys3_update_temp show "$c:memsys3_templates/$rel" > "$BASE_FILE" 2>/dev/null || continue
+      v_c=$(extract_any_version "$BASE_FILE")
+      if [ "$v_c" = "$v_local" ]; then echo "   base: señal 2 (file_version $v_local → ${c:0:7})"; return 0; fi
+    done
+  fi
+  rm -f "$BASE_FILE"; echo "   base: NO recuperable"; return 1
+}
+```
+
+> Varios commits upstream pueden compartir `file_version` (fixes editoriales sin bump): la señal 2 toma el más reciente, que puede no ser exactamente el entregado → posibles falsos "personalizado" (ruido, nunca pérdida). Por eso la señal 1 es la principal.
+
 ### 6.1 Matriz A / M / D — qué hacer con cada archivo que cambió upstream
 
 **Estrategia principal: `git diff --name-status`**
@@ -555,41 +623,31 @@ echo "Docs actualizados (sin borrar custom)"
 
 Un diff de dos puntos (local vs upstream) no puede distinguir "línea que añadió el proyecto" de "línea que eliminó upstream": son la misma diferencia vista desde lados opuestos. Necesitas un tercer punto, la **BASE**: el archivo del template tal como se entregó en el último deploy/actualización.
 
-**1. Recuperar la BASE.** Dos señales, ninguna requiere artefacto nuevo:
+**1. Recuperar la BASE** con el helper `recover_base` (Paso 6.0), y **2. decidir con ella:**
 
 ```bash
 REL="prompts/endSession.md"          # ruta relativa dentro del template (ejemplo)
 SRC="memsys3_update_temp/memsys3_templates/$REL"
 DST="$MEMSYS3_ROOT/$REL"
 
-# Señal 1 (principal): el tag desplegado que anotó project-status
-git -C memsys3_update_temp show "$CURRENT_VERSION:memsys3_templates/$REL" > /tmp/ms3_base.$$ 2>/dev/null \
-  && echo "BASE recuperada desde $CURRENT_VERSION" \
-  || echo "⚠️ BASE no recuperable desde el tag — usa la Señal 2"
-
-# Señal 2 (respaldo / desempate): último commit upstream cuyo file_version coincide
-# con el file_version del archivo LOCAL. Sobrevive a actualizaciones parciales,
-# en las que el tag de project-status no describe bien lo instalado.
-```
-
-- Si **ambas señales fallan** (proyecto sin `memsys3_version` fiable, tag inexistente): **NO sobrescribas**. Degrada a revisión asistida: muestra el diff local↔upstream al usuario, explica que no hay base recuperable, y deja que decida. Anótalo en el registro de reconciliación.
-- Varios commits upstream pueden compartir `file_version` (fixes editoriales sin bump). Desempata con el tag desplegado.
-
-**2. Decidir con la base:**
-
-```bash
-if cmp -s "$DST" /tmp/ms3_base.$$; then
+echo "▶ $REL"
+if ! recover_base "$REL"; then
+  echo "🛑 $REL — sin base recuperable: NO sobrescribir. Revisión asistida:"
+  diff "$DST" "$SRC"          # local vs upstream, para que el usuario decida
+elif cmp -s "$DST" "$BASE_FILE"; then
   # local == base → el proyecto no tocó el archivo → sobrescribir es seguro
   cp "$SRC" "$DST"
   echo "⬆️ $REL — sin personalización local, actualizado"
 else
   # local != base → HAY personalización → 3-way merge, nunca sobrescritura ciega
   echo "🔀 $REL — PERSONALIZADO: requiere merge a 3 bandas"
-  diff /tmp/ms3_base.$$ "$DST" ; echo "--- (arriba: lo que añadió el proyecto) ---"
-  diff /tmp/ms3_base.$$ "$SRC" ; echo "--- (arriba: lo que cambió upstream) ---"
+  diff "$BASE_FILE" "$DST" ; echo "--- (arriba: lo que añadió el proyecto) ---"
+  diff "$BASE_FILE" "$SRC" ; echo "--- (arriba: lo que cambió upstream) ---"
 fi
-rm -f /tmp/ms3_base.$$
 ```
+
+- **Sin base recuperable** (`memsys3_version` que no resuelve, archivo sin `file_version`, deployment a mano): **NO sobrescribas**. Muestra el diff local↔upstream al usuario, explica que no hay base, y deja que decida archivo por archivo. Anótalo en el registro de reconciliación.
+- `cmp` compara byte a byte: diferencias de fin de línea (CRLF) o de newline final cuentan como "personalizado". Es ruido del lado seguro — si el diff solo muestra eso, trátalo como `local == base`.
 
 **3. Ejecutar el merge (`local != base`).** No es una operación mecánica: es donde tu contexto del Paso 0.5 hace el trabajo.
 
@@ -597,6 +655,7 @@ rm -f /tmp/ms3_base.$$
 - Construye la versión resultante: **estructura y mejoras de upstream + intención de la personalización preservada**. Si la personalización toca una zona que upstream reescribió, adapta el parche a la estructura nueva en lugar de descartarlo.
 - Si la personalización y el cambio upstream son genuinamente incompatibles, **pregunta al usuario** con las dos versiones delante. No decidas tú una pérdida.
 - **Nunca** resuelvas el conflicto "en favor del template porque es lo canónico": el template siempre se puede recuperar del repo, la personalización del proyecto puede no existir en ningún otro sitio.
+- El archivo resultante lleva el **`file_version` de upstream** (es la versión del template sobre la que ahora se asienta la personalización); así la próxima actualización recupera la base correcta. La divergencia sigue documentada en `sessions.yaml` — si el merge la reubicó o adaptó, añade una línea en la entrada del Paso 10 diciéndolo.
 
 **4. Reportar SIEMPRE (obligatorio, aunque hayas sobrescrito).** Toda personalización detectada entra en el registro de reconciliación con: ruta, qué añadía el proyecto (diff concreto), qué se hizo, y ruta del backup del Paso 5. Esa información viaja después al resumen final, al Checklist, a `operations.log` (Paso 11) y a `sessions.yaml` del proyecto (Paso 10). *La pérdida silenciosa es peor que el conflicto ruidoso.*
 
@@ -610,16 +669,17 @@ Que upstream elimine un archivo **no** significa que el del proyecto sea desecha
 REL="prompts/meet.md"                 # ejemplo de archivo eliminado upstream
 DST="$MEMSYS3_ROOT/$REL"
 
-git -C memsys3_update_temp show "$CURRENT_VERSION:memsys3_templates/$REL" > /tmp/ms3_base.$$ 2>/dev/null
-
-if [ -s /tmp/ms3_base.$$ ] && cmp -s "$DST" /tmp/ms3_base.$$; then
+if [ ! -f "$DST" ]; then
+  echo "· $REL — ya no existe en el proyecto, nada que hacer"
+elif recover_base "$REL" && cmp -s "$DST" "$BASE_FILE"; then
   echo "🗑️ $REL — idéntico a la versión entregada: resto del scaffold viejo, se puede borrar"
 else
   echo "🛑 $REL — DIFIERE de la versión entregada (o no hay base): personalización del proyecto"
   echo "   → NO borrar. Preservar y reportar al usuario para que decida."
 fi
-rm -f /tmp/ms3_base.$$
 ```
+
+> Ojo con la señal 2 aquí: si upstream eliminó el archivo, `git log -- <ruta>` sigue devolviendo su historial, así que `recover_base` funciona igual.
 
 - **Idéntico bit a bit a la base** → el proyecto nunca lo tocó: es residuo del scaffold anterior, bórralo.
 - **Distinto, o base no recuperable** → **no borres**. Preserva, reporta en el registro de reconciliación y deja la decisión al usuario.
@@ -633,19 +693,7 @@ rm -f /tmp/ms3_base.$$
 **Lógica por cada template:**
 
 ```bash
-# Helper para extraer file_version (cabecera "# version: X.Y.Z" en .yaml)
-extract_version() {
-  grep -E "^#\s*version:" "$1" 2>/dev/null | head -1 | sed -E 's/^#\s*version:\s*//' | tr -d '"'
-}
-
-# Comparar versiones (devuelve "gt", "eq", "lt")
-compare_versions() {
-  local v1="$1" v2="$2"
-  if [ "$v1" = "$v2" ]; then echo "eq"; return; fi
-  local sorted=$(printf "%s\n%s" "$v1" "$v2" | sort -V | head -1)
-  if [ "$sorted" = "$v1" ]; then echo "lt"; else echo "gt"; fi
-}
-
+# Helpers extract_version / compare_versions definidos en el Paso 6.0
 for src in memsys3_update_temp/memsys3_templates/memory/templates/*.yaml; do
   fname=$(basename "$src")
   dst="$MEMSYS3_ROOT/memory/templates/$fname"
@@ -745,11 +793,7 @@ touch "$MEMSYS3_ROOT/memory/history/.gitkeep"
 src="memsys3_update_temp/memsys3_templates/PRINCIPLES.md"
 dst="$MEMSYS3_ROOT/PRINCIPLES.md"
 
-# Helper: extraer file_version desde "<!-- version: X.Y.Z -->" (formato .md)
-extract_md_version() {
-  grep -E "^\s*<!--\s*version:" "$1" 2>/dev/null | head -1 | sed -E 's/.*version:\s*([0-9.]+).*/\1/'
-}
-
+# Helpers extract_md_version / compare_versions definidos en el Paso 6.0
 v_up=$(extract_md_version "$src")
 v_dst=$(extract_md_version "$dst" 2>/dev/null)
 
@@ -769,8 +813,6 @@ else
 fi
 ```
 
-> **Nota:** reutiliza el helper `compare_versions` definido en el Paso 6.4. Si por orden de ejecución no estuviera definido aún, define ambos (`extract_md_version` + `compare_versions`) en este bloque.
->
 > **Si aparece `🚨` (destino > upstream)**: preguntar al usuario con la misma lógica que el Paso 6.4 (sobrescribir / preservar).
 
 ### 6.6.5 Sincronizar `AGENTS.md` raíz (Capa 2 de ADR-027)
@@ -802,7 +844,7 @@ else
 fi
 ```
 
-> Reutiliza `extract_md_version` y `compare_versions` (Pasos 6.4 y 6.6). Si el proyecto añadió contenido propio a su `AGENTS.md`, trátalo como personalización: aplica el criterio del Paso 6.2 antes de sustituir.
+> Helpers del Paso 6.0. Si el proyecto añadió contenido propio a su `AGENTS.md`, trátalo como personalización: aplica el criterio del Paso 6.2 antes de sustituir.
 
 ### 6.6.6 Sincronizar stubs per-tool (Capa 3 de ADR-027)
 
@@ -865,9 +907,11 @@ metadata:
   ultima_actualizacion: "[FECHA_HOY]"  # Formato: 2025-11-12
   actualizado_por: "Claude (Actualización memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA])"
   fase: "[FASE_ACTUAL_DEL_PROYECTO]"  # NO cambiar, conservar la del proyecto
-  memsys3_version: "[VERSIÓN_NUEVA]"  # Ejemplo: v0.5.0 (commit: abc1234)
+  memsys3_version: "[NEW_VERSION del Paso 3]"  # Ejemplo: v0.31.0-8-gbf0bff9 — salida literal de git describe
   memsys3_deployed: "[FECHA_HOY]"
 ```
+
+> ⚠️ **Formato de `memsys3_version`: la salida literal de `git describe --tags --always` del Paso 3, sin adornos.** Es un commit-ish: la próxima actualización lo usa como BASE con `git show`. Formatos como `"v0.5.0 (commit: abc1234)"` NO resuelven y dejan al siguiente updater sin base (el Paso 1 los tolera extrayendo el hash, pero no los generes).
 
 **IMPORTANTE:**
 - NO toques `visio_general`, `estat_actual`, `features`, `stack_tecnologic`, etc.
