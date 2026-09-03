@@ -7,6 +7,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 ### Fixed
+- **`endSession.md` (0.2.0 → 0.3.0): contador de sesiones sin compilar + estado git al cerrar** (ISSUE-034, ISSUE-037). §5 asumía ids entrecomillados (`awk -F'"'`), devolvía siempre 0 y el aviso de `compile-context` nunca se disparaba (causa del `context.yaml` stale durante 3,5 meses); ahora extrae la fecha con o sin comillas e incluye rotados. §5.5 nuevo: si el proyecto tiene repo, muestra rama, cambios sin commitear y commits sin pushear, y el resumen final lo reporta ofreciendo `github.md` (HITL: no commitea ni pushea solo; push a la rama actual, no a `master` hardcodeado). Sin repo, silencio. Cubre el P4 del INBOX 2026-08-27 (Soluzzia cerró sesión con commit sin push; gitkigai 2 meses sin commit).
 - **Backups de actualización protegidos en `.gitignore`** (ISSUE-006, abierto desde 2025-12-30): `actualizar.md` Paso 5 (0.2.0 → 0.3.0) añade de forma idempotente `<memsys3>/docs/backups/` al `.gitignore` de la raíz antes de crear el backup, con ruta derivada de `$MEMSYS3_ROOT` (monorepos) y omitido si el proyecto no usa git; `deploy.md` Paso 8 (0.3.0 → 0.4.0) pre-escribe la misma regla en la rama "incluir `memsys3/`" (default desde v0.27.0). Sin esto, un proyecto con `memsys3/` versionado commiteaba sus backups (sessions, memory, decisiones). Checklist final de `actualizar.md` ampliado con `git check-ignore`. Smoke test en 4 escenarios (raíz, monorepo, `.gitignore` preexistente, sin git).
 
 ## [0.31.0] - 2026-08-23
