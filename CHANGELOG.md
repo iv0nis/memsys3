@@ -6,6 +6,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/).
 Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- **Backups de actualización protegidos en `.gitignore`** (ISSUE-006, abierto desde 2025-12-30): `actualizar.md` Paso 5 (0.2.0 → 0.3.0) añade de forma idempotente `<memsys3>/docs/backups/` al `.gitignore` de la raíz antes de crear el backup, con ruta derivada de `$MEMSYS3_ROOT` (monorepos) y omitido si el proyecto no usa git; `deploy.md` Paso 8 (0.3.0 → 0.4.0) pre-escribe la misma regla en la rama "incluir `memsys3/`" (default desde v0.27.0). Sin esto, un proyecto con `memsys3/` versionado commiteaba sus backups (sessions, memory, decisiones). Checklist final de `actualizar.md` ampliado con `git check-ignore`. Smoke test en 4 escenarios (raíz, monorepo, `.gitignore` preexistente, sin git).
 
 ## [0.31.0] - 2026-08-23
 ### Added
