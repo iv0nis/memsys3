@@ -195,10 +195,17 @@ Edita `memsys3/prompts/newSession.md` añadiendo (en la sección 1 "Cargar conte
 Según la decisión del usuario (Paso 4):
 
 **Si INCLUIR `memsys3/` en git (recomendado):**
-- No modifiques `.gitignore`.
 - Verifica que `memsys3/` no esté excluido:
   ```bash
   grep -q "^memsys3" .gitignore 2>/dev/null && echo "⚠️ memsys3/ aparece en .gitignore — considera eliminarlo" || echo "✅ memsys3/ versionado"
+  ```
+- Excluye los backups que creará `actualizar.md` (contienen sessions/memory: nunca se versionan aunque `memsys3/` sí lo esté — ISSUE-006). Idempotente; solo si el proyecto usa git:
+  ```bash
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    grep -qxF "memsys3/docs/backups/" .gitignore 2>/dev/null || \
+      printf '\n# memsys3 — backups de actualización (temporales, nunca versionar)\nmemsys3/docs/backups/\n' >> .gitignore
+    echo "✅ memsys3/docs/backups/ excluido en .gitignore"
+  fi
   ```
 
 **Si EXCLUIR `memsys3/` de git:**
@@ -299,4 +306,4 @@ Escalabilidad automática (ya activa):
 ---
 
 **Deployment completado. Sistema operativo end-to-end.**
-<!-- version: 0.3.0 -->
+<!-- version: 0.4.0 -->

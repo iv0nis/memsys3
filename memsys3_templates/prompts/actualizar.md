@@ -340,6 +340,19 @@ Estos archivos pueden haber sido personalizados por el usuario:
 Antes de tocar NADA, crea un backup:
 
 ```bash
+# Proteger los backups en .gitignore ANTES de crearlos (ISSUE-006).
+# Los backups contienen sessions/memory/decisiones: NUNCA deben versionarse,
+# aunque memsys3/ sí lo esté. Idempotente; si el proyecto no usa git, se omite.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  BACKUPS_REL="${MEMSYS3_ROOT#$(pwd)/}/docs/backups/"
+  if grep -qxF "$BACKUPS_REL" .gitignore 2>/dev/null; then
+    echo "✅ $BACKUPS_REL ya está en .gitignore"
+  else
+    printf '\n# memsys3 — backups de actualización (temporales, nunca versionar)\n%s\n' "$BACKUPS_REL" >> .gitignore
+    echo "✅ Añadido $BACKUPS_REL a .gitignore"
+  fi
+fi
+
 # Crear directorio de backups si no existe
 mkdir -p "$MEMSYS3_ROOT/docs/backups"
 
@@ -933,6 +946,7 @@ operations:
 Antes de dar por terminada la actualización, verifica:
 
 - [ ] Backup creado en `memsys3/docs/backups/memsys3_backup_$TIMESTAMP`
+- [ ] `memsys3/docs/backups/` excluido en `.gitignore` del proyecto (Paso 5, ISSUE-006) — `git check-ignore memsys3/docs/backups/x`
 - [ ] Archivos del sistema actualizados (prompts, agents, templates)
 - [ ] `PRINCIPLES.md` sincronizado (Paso 6.6, sustitución diferencial — ADR-022 + ADR-018)
 - [ ] `docs/` copiada (`ls memsys3/docs/reference.md`)
@@ -961,4 +975,4 @@ Antes de dar por terminada la actualización, verifica:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.2.0 -->
+<!-- version: 0.3.0 -->
