@@ -293,16 +293,41 @@ Esto garantiza que tras un `/compact` o reinicio puedas recuperar tu identidad l
 ### 5. Verificar estado de compile-context
 
 ```bash
-ultima=$(grep "ultima_compilacion:" "$MEMSYS3_ROOT/memory/context.yaml" | head -1 | sed 's/.*"\(.*\)".*/\1/')
-sesiones_sin_compilar=$(grep "^  - id:" "$MEMSYS3_ROOT/memory/full/sessions.yaml" | awk -F'"' '{print $2}' | while read id; do
-  fecha=$(echo "$id" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
-  [ "$fecha" \> "$ultima" ] && echo "$id"
-done | wc -l)
-echo "Ultima compilacion: $ultima"
+# Fecha de la última compilación (vacía si context.yaml no existe o nunca se compiló)
+ultima=$(grep -m1 "ultima_compilacion:" "$MEMSYS3_ROOT/memory/context.yaml" 2>/dev/null | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+# Sesiones cuyo id (YYYY-MM-DD-titulo, con o sin comillas) es posterior a esa fecha.
+# Incluye rotados (sessions_N.yaml): una rotación posterior a la compilación no debe ocultar sesiones.
+sesiones_sin_compilar=$(cat "$MEMSYS3_ROOT/memory/full/sessions.yaml" "$MEMSYS3_ROOT"/memory/full/sessions_*.yaml 2>/dev/null \
+  | grep -E '^[[:space:]]*-[[:space:]]*id:' \
+  | sed -E 's/^[[:space:]]*-[[:space:]]*id:[[:space:]]*"?([0-9]{4}-[0-9]{2}-[0-9]{2}).*/\1/' \
+  | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' \
+  | awk -v u="$ultima" '$1 > u' | wc -l)
+echo "Ultima compilacion: ${ultima:-nunca}"
 echo "Sesiones sin compilar: $sesiones_sin_compilar"
 ```
 
 **SIEMPRE informar al usuario** del estado de compilación en el resumen final (paso 6).
+
+### 5.5. Estado git (ejecutar AHORA si el proyecto tiene repo; si no, omitir en silencio)
+
+memsys3 no requiere git. Pero si el proyecto lo usa, el commit ES la canonización del progreso: una sesión documentada y sin commitear vive solo en el working tree, y un commit sin pushear no existe para otras máquinas ni colaboradores. Este paso NO commitea ni pushea por su cuenta (human-in-the-loop): muestra el estado y lo lleva al resumen del paso 6.
+
+```bash
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Rama: $(git branch --show-current)"
+  echo "--- Cambios sin commitear:"; git status --short
+  if git rev-parse --abbrev-ref @{u} >/dev/null 2>&1; then
+    echo "--- Commits sin pushear:"; git log --oneline @{u}..HEAD
+  else
+    echo "--- Rama sin upstream: nada de esta rama está en el remoto"
+  fi
+fi
+```
+
+1. Si no hay repo, NO menciones git en el resumen.
+2. Si hay cambios sin commitear o commits sin pushear, DEBES incluirlo en el resumen (paso 6) y OFRECER ejecutar `memsys3/prompts/github.md` (si el proyecto no lo tiene, ofrece commit + push directos). No ejecutes `git commit`/`git push` sin que el usuario lo pida.
+3. Si el usuario acepta, el push va a la rama actual (`git push origin HEAD`), nunca a una rama hardcodeada.
+4. Quién commitea, quién tagea y por qué rama va cada persona son convenciones del proyecto (memory.yaml o configuración de equipo), no de este paso.
 
 ### 6. Informar al Usuario
 
@@ -316,6 +341,8 @@ Resumen breve de qué se ha documentado:
 ✅ Rotación hecha (si hacía falta): sessions.yaml → sessions_N.yaml
 📊 context.yaml: [N] sesiones sin compilar (ultima: YYYY-MM-DD)
    [Si N >= 5]: ⚠️ Recomendado ejecutar @memsys3/prompts/compile-context.md en una sesion nueva
+🔀 git (solo si hay repo): [rama] — [N] cambios sin commitear, [M] commits sin pushear
+   [Si N > 0 o M > 0]: ¿Ejecuto memsys3/prompts/github.md? Sin push, esta sesión no llega a otras máquinas ni colaboradores.
 
 Highlights de la sesión:
 - [Feature principal implementada]
@@ -336,4 +363,4 @@ Próximos pasos: [Top 2-3 tareas pendientes]
 ---
 
 **Comienza ahora la documentación de la sesión actual.**
-<!-- version: 0.2.0 -->
+<!-- version: 0.3.0 -->
