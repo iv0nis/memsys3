@@ -372,7 +372,7 @@ cd ..
 |---|---|---|
 | 🚫 **DATOS del proyecto** | **Todo** lo que cuelgue de `memsys3/memory/` **salvo** `memory/templates/`, más `memsys3/backlog/` y lo que viva en `memsys3/docs/` sin equivalente en el template (backups, actas, informes) | **NUNCA SOBRESCRIBIR.** Única excepción: el bloque `metadata` de `project-status.yaml` (Paso 7). |
 | 🔄 **INFRAESTRUCTURA ADAPTABLE** | **Todo** archivo de `memsys3/prompts/` y `memsys3/agents/` | **El SA MODIFICA el destino** (Paso 6.2): lee origen, destino y base, aplica al destino los cambios de upstream y conserva lo que es del proyecto. Nunca se sustituye por copia. |
-| 📐 **SCHEMA / CONTRATO** | `memsys3/memory/templates/*`, `memsys3/PRINCIPLES.md`, `AGENTS.md` raíz y stubs Capa 3 | **Sustitución diferencial** por `file_version` (Pasos 6.4, 6.6, 6.6.5, 6.6.6). El proyecto no los edita por contrato. |
+| 📐 **SCHEMA / CONTRATO** | `memsys3/memory/templates/*`, `memsys3/PRINCIPLES.md`, `AGENTS.md` raíz y stubs Capa 3 | **Sustitución diferencial** decidida por contenido y base — `file_version` es informativo (Pasos 6.4, 6.6, 6.6.5, 6.6.6). El proyecto no los edita por contrato. |
 | 📄 **DOCUMENTACIÓN DEL SISTEMA** | `memsys3/memory/README.md` y los archivos de `memsys3/docs/` que **sí** existen en el template (p. ej. `docs/reference.md`) | Copiar (Paso 6.1 fila "resto" / 6.7). Sin merge: son documentación de memsys3, no del proyecto. |
 | 🧩 **CUSTOM del proyecto** | Archivos que existen en el proyecto y **no** en el template | **Preservar intactos** (detectados en Paso 5.5). |
 
@@ -690,7 +690,7 @@ fi
 
 **Implementa ADR-018 (sustitución diferencial) + ADR-019 (deprecation contextualizada).**
 
-`memory/templates/*-template.yaml` son templates de schema canónicos: el usuario NO los edita por contrato. Por eso usamos sustitución directa condicionada a comparación de `file_version` (no merge). Los datos vivos del usuario nunca se tocan aquí.
+`memory/templates/*-template.yaml` son templates de schema canónicos: el usuario NO los edita por contrato. Por eso usamos sustitución directa (no merge), decidida por **contenido** — `file_version` se muestra pero no decide. Los datos vivos del usuario nunca se tocan aquí.
 
 **Lógica por cada template:**
 
@@ -712,12 +712,18 @@ for src in memsys3_update_temp/memsys3_templates/memory/templates/*.yaml; do
     cmp=$(compare_versions "$v_up" "$v_dst")
     case "$cmp" in
       gt) echo "⬆️ $fname — upstream $v_up > destino $v_dst, sustituyendo"; cp "$src" "$dst" ;;
-      eq) echo "✅ $fname — versiones iguales ($v_up), no se toca" ;;
+      eq) # Misma versión NO significa mismo contenido: decide el CONTENIDO (caso real 2026-09-13)
+          if cmp -s "$src" "$dst"; then echo "✅ $fname — idéntico ($v_up), no se toca"
+          elif recover_base "memory/templates/$fname" && cmp -s "$dst" "$BASE_FILE"; then
+            echo "⬆️ $fname — misma versión ($v_up) pero upstream cambió el contenido (sin bump); destino==base, sustituyendo"; cp "$src" "$dst"
+          else echo "🚨 $fname — misma versión ($v_up), contenido distinto y destino≠base. Preguntar al usuario."; fi ;;
       lt) echo "🚨 $fname — destino $v_dst > upstream $v_up. Estado anómalo." ;;
     esac
   fi
 done
 ```
+
+> `file_version` es **informativo**: sirve para leer, no para decidir. La decisión es siempre por contenido (upstream ≠ destino) y por base (destino == base → sustituir; destino ≠ base → preguntar). Motivo: el 2026-09-13 tres archivos de contrato cambiaron upstream sin bump y una lógica «versiones iguales → no tocar» los habría dejado desactualizados en silencio.
 
 **Si aparece `🚨` (destino > upstream) en algún archivo:**
 Pregunta al usuario para cada caso (con preguntas estructuradas si tu harness las tiene; si no, en texto):
@@ -809,7 +815,11 @@ else
   cmp=$(compare_versions "$v_up" "$v_dst")
   case "$cmp" in
     gt) echo "⬆️ PRINCIPLES.md — upstream $v_up > destino $v_dst, sustituyendo"; cp "$src" "$dst" ;;
-    eq) echo "✅ PRINCIPLES.md — versiones iguales ($v_up), no se toca" ;;
+    eq) # Decide el CONTENIDO, no la versión (misma regla que 6.4)
+        if cmp -s "$src" "$dst"; then echo "✅ PRINCIPLES.md — idéntico ($v_up), no se toca"
+        elif recover_base "PRINCIPLES.md" && cmp -s "$dst" "$BASE_FILE"; then
+          echo "⬆️ PRINCIPLES.md — misma versión ($v_up), contenido nuevo upstream (sin bump); destino==base, sustituyendo"; cp "$src" "$dst"
+        else echo "🚨 PRINCIPLES.md — misma versión ($v_up), contenido distinto y destino≠base. Preguntar al usuario."; fi ;;
     lt) echo "🚨 PRINCIPLES.md — destino $v_dst > upstream $v_up. Estado anómalo (preguntar al usuario)" ;;
   esac
 fi
@@ -839,7 +849,9 @@ else
   else
     case "$(compare_versions "$v_up" "$v_dst")" in
       gt) cp "$SRC" "$DST"; echo "⬆️ AGENTS.md actualizado ($v_dst → $v_up)" ;;
-      eq) echo "✅ AGENTS.md sincronizado ($v_up)" ;;
+      eq) if cmp -s "$SRC" "$DST"; then echo "✅ AGENTS.md sincronizado ($v_up)"
+          elif recover_base "AGENTS.md" && cmp -s "$DST" "$BASE_FILE"; then cp "$SRC" "$DST"; echo "⬆️ AGENTS.md — misma versión, contenido nuevo upstream (sin bump); destino==base, sustituido"
+          else echo "🚨 AGENTS.md — misma versión, contenido distinto y destino≠base: personalización del proyecto → criterio 6.2"; fi ;;
       lt) echo "🚨 AGENTS.md destino ($v_dst) > upstream ($v_up) — anómalo, preguntar al usuario" ;;
     esac
   fi
@@ -1234,4 +1246,4 @@ Antes de dar por cerrada la actualización, presenta al usuario:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.4.0 -->
+<!-- version: 0.5.0 -->
