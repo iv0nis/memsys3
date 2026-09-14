@@ -248,8 +248,18 @@ echo "memsys3_version bruto: '$RAW_VERSION' → CURRENT_VERSION='$CURRENT_VERSIO
 Tras el Paso 0b (clone disponible), **verifica que resuelve** antes de seguir:
 
 ```bash
+if ! git -C memsys3_update_temp cat-file -e "$CURRENT_VERSION^{commit}" 2>/dev/null; then
+  # El hash puede estar MUERTO aunque el deploy fuera correcto: un rewrite de historial
+  # upstream (caso real: saneamiento de privacidad 2026-05-26) cambia todos los SHA pero
+  # conserva los tags. Caer al tag/describe del mismo campo antes de darse por vencido.
+  TAG_VERSION=$(echo "$RAW_VERSION" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+-g[0-9a-f]+)?')
+  if [ -n "$TAG_VERSION" ] && git -C memsys3_update_temp cat-file -e "$TAG_VERSION^{commit}" 2>/dev/null; then
+    echo "⚠️ hash '$CURRENT_VERSION' no resuelve (¿historial reescrito?) → usando el tag $TAG_VERSION como base"
+    CURRENT_VERSION="$TAG_VERSION"
+  fi
+fi
 git -C memsys3_update_temp cat-file -e "$CURRENT_VERSION^{commit}" 2>/dev/null \
-  && echo "✅ CURRENT_VERSION resuelve en upstream" \
+  && echo "✅ CURRENT_VERSION='$CURRENT_VERSION' resuelve en upstream" \
   || echo "🚨 CURRENT_VERSION NO resuelve — la base no será recuperable (ver Paso 6.2 §1)"
 ```
 
@@ -1246,4 +1256,4 @@ Antes de dar por cerrada la actualización, presenta al usuario:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.5.0 -->
+<!-- version: 0.5.1 -->

@@ -7,6 +7,10 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.31.2] - 2026-09-14
+### Fixed
+- **`actualizar.md` (0.5.0 → 0.5.1) — Paso 1: si el hash de `memsys3_version` no resuelve, caer al tag/describe del mismo campo.** Hallazgo del meet 20260913_2 (gitkigai_system, `"v0.18.2 (commit: b777410)"`): el saneamiento de historial de BP-004 (2026-05-26, filter-repo) reescribió TODOS los SHA pero conservó los tags, así que cualquier deploy anterior a esa fecha con `commit: xxx` tiene el hash muerto — el Paso 1 prefería el hash, no resolvía y la base se perdía para todos los archivos (degradación a «conservar y preguntar» en 26 M). Con el fallback, la base se recupera por tag. Smoke: hash muerto → tag; hash vivo → intacto.
+
 ## [0.31.1] - 2026-09-14
 ### Added
 - **`memsys3_templates/per-tool-stub-template.md` (0.1.0)**: plantilla canónica de los stubs Capa 3 de ADR-027 (`CLAUDE.md`, `GEMINI.md`, `.cursor/rules/…`, `.clinerules`…). `deploy.md` la copia al scaffold y `newSession.md` instruye copiarla y renombrarla en vez de redactar el stub a mano — un stub escrito a mano no lleva `file_version` y queda huérfano del updater.
