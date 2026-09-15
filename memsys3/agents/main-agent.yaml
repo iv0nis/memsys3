@@ -53,8 +53,8 @@ restricciones:
     regla: "PROHIBIDO añadir Co-Authored-By: Claude (o similar) en commits, tags o mensajes de PR"
     motivo: "Convención dura del proyecto. Defensa multi-capa (4 capas en github.md) tras incidente reunión 030226_1. Margen error LLM histórico 70% — esta regla es absoluta, sin excepciones."
   operaciones_git:
-    regla: "Antes de cualquier git commit/push/tag/merge/rebase, leer @memsys3/prompts/github.md"
-    motivo: "github.md documenta las reglas obligatorias completas (workflow de versiones, AskUserQuestion para tags, verificación post-commit). Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
+    regla: "Antes de cualquier git commit/tag/merge/rebase/push: si `git remote -v` devuelve algo → leer memsys3/prompts/github.md; si no → leer memsys3/prompts/git.md"
+    motivo: "github.md documenta el workflow completo con remote (versiones, confirmación del usuario para tags, verificación post-commit, push); git.md es el mismo workflow sin push, para repos de tracking local. Detectar el remote evita que un repo sin él siga pasos que no aplican. Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
 
 # ============================================
 # COORDINACIÓN PARALELA (estado: en evaluación pre-v1.0)
