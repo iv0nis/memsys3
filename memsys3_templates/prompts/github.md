@@ -5,7 +5,6 @@
 - Sube el repo a GitHub en español, sin emojis ni firmas
 - Commits atómicos y descriptivos
 - **SIEMPRE propón crear tag** (usuario confirma)
-- No subas la versión más allá de la 0.x.x hasta que sea estable
 - Solo aumenta el minor si hay cambio relevante, en caso contrario aumenta el patch
 
 ## ⚠️ IMPORTANTE: Obligatorio usar AskUserQuestion
@@ -180,8 +179,7 @@ git log -1 --oneline
 - **Metadata rica:** Mensaje del tag incluye contexto (sesiones, ADRs, breaking changes)
 - **Trazabilidad:** Cada tag = snapshot navegable del proyecto
 - **actualizar.md:** Depende de tags para funcionar correctamente
-- **SemVer:** Mantener formato v0.X.Y (3 números) estándar
-- **No llegar a v1.0.0** hasta considerar el sistema "estable completo"
+- **SemVer:** formato vX.Y.Z (3 números) estándar
 
 ## Ejemplo Real
 
