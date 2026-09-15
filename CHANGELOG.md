@@ -17,6 +17,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 - **`agents/main-agent.yaml` (0.5.0 → 0.6.0): `operaciones_git` elige `github.md` o `git.md` según haya remote** (ISSUE-038, INBOX 2026-09-08 desde gitkigai raíz). La regla mandaba leer siempre `github.md`, cuyo workflow incluye `push`; en un repo sin remote el agente seguía pasos que no aplican aunque el scaffold ya distribuye `git.md` (mismo workflow sin push). Ahora detecta con `git remote -v`, en forma neutra sin `@`. Misma regla en el espejo dogfooding.
 
 ### Changed
+- `memsys3_templates/README.md`: la viñeta «Basado en @ mentions» añade que la misma ruta sin `@` funciona en herramientas sin auto-expansión. Las menciones `@` se conservan (origen del sistema).
 - **`multi_work.md` agnóstico de harness (marca `version: 0.1.0`, template + espejo)** — punto (k) de BLUEPRINT-001 Frente 8. Los 4 restos Claude-only (terminales con `claude`, `Agent` tool, plan mode vía `ExitPlanMode`, `agent_id` leído de `~/.claude/`) pasan a nombrar la capacidad y no el producto: sesión de agente por terminal, herramienta de sub-agentes del orquestador, plan aprobado por el usuario (o equivalente acordado si no hay plan mode nativo) y `agent_id` asignado al convocar la sesión o, opt-in, desde `agent_id_path`. Cierra la brecha del port de `coordinacion_paralela` (2026-08-22): el `main-agent.yaml` limpio apuntaba a un prompt que pedía `~/.claude/`.
 
 ## [0.31.2] - 2026-09-14

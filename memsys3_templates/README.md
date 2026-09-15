@@ -11,7 +11,7 @@
 - **Una sola carpeta** — sin base de datos, sin servidor, sin dependencias. Copias `memsys3/` y funciona
 - **Agnóstico** — funciona con cualquier modelo de IA (Claude, Gemini, Codex, etc.)
 - **Workflow sencillo pero flexible** — 3 prompts para el día a día (empezar, trabajar, acabar)
-- **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas
+- **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas (si tu herramienta no tiene `@`, la misma ruta sin arroba funciona igual)
 - **Deploy y actualización triviales** — un comando para instalar, un comando para actualizar
 - **Human in the loop** — tú decides cuándo empezar y acabar sesión, cuándo compilar contexto, cuándo actualizar. El sistema no hace nada sin ti
 - **Límites de contexto configurables** — diseñado respetando los límites reales de las herramientas (2K líneas, 25K tokens por lectura), con rotación y archivado automático cuando crece
