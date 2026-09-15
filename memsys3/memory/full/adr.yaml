@@ -951,6 +951,19 @@ adrs:
       Origen: BLUEPRINT-001 Frente 8 Bloque 1 decisiones. Sesión 2026-05-09 (continuación
       multi-día desde 2026-05-08).
 
+    update_2026_09_15: |
+      **La parte multi-work se APARCA fuera de v1.0 (la parte mono-repo sigue vigente).**
+
+      Revisión pre-v1.0 con Ivonis (2026-09-15): el uso que motivó multi-work (varios chats
+      en paralelo sobre un mismo proyecto) ha caído en desuso en la práctica del propio
+      mantenedor, y no hay evidencia de que sea usable y reproducible para otros. Se retira
+      del scaffold distribuible: `prompts/multi_work.md`, `blocked_files_log.md` y el bloque
+      `coordinacion_paralela` de `agents/main-agent.yaml` (template y dogfooding), junto con
+      `prompts/agent-identity.md` y `endSession.md` §4.7 (persistencia de agent_id).
+      NO es retirada definitiva: trackeado en FEATURE-014 con criterio de reincorporación
+      (usable y reproducible por terceros). Recuperable vía
+      `git show 9022b2e:memsys3_templates/prompts/multi_work.md`.
+
 # Índice rápido para encontrar ADRs (incluye rotadas en adr_1.yaml)
 index:
   - id: "001"

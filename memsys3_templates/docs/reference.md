@@ -100,15 +100,11 @@ Referencia completa: `@memsys3/prompts/meet.md`
 
 ## Agent Identity
 
-El `agent_id` es el nombre que el moderador asigna a una sesión: `Agent A`, `Agent B`, etc. Identidad conversacional, no ID técnico.
+El `agent_id` es el nombre que el moderador asigna a una sesión al convocarla: `Agent A`, `Agent B`, etc. Identidad conversacional, no ID técnico.
 
-**Uso:** reuniones, documentación de sesiones paralelas, trabajo multi-agente simultáneo.
+**Uso:** reuniones (`meet.md`).
 
-**Persistencia entre compacts:** `echo "Agent B" > /tmp/memsys3_agent_b.md`. Se verifica en `endSession` (paso 4.5). Si se pierde (reinicio), el moderador lo reasigna.
-
-**Alcance:** específico de la sesión, no del proyecto.
-
-Asignar con `@memsys3/prompts/agent-identity.md`.
+**Alcance:** específico de la sesión, no del proyecto. Si se pierde (compact, reinicio), el moderador lo reasigna.
 
 ---
 

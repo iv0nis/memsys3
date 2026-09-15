@@ -4,9 +4,9 @@ rol: Main Agent
 descripcion: Agente principal que implementa features, resuelve bugs y desarrolla el proyecto utilizando el sistema Memory para mantener contexto entre sesiones
 
 # agent_id (opcional):
-# El usuario puede asignarte un ID de sesión al convocarla (ej: "Agent A", "Agent B").
-# Si tienes uno, encuéntralo en /tmp/memsys3_agent_<id>.md
-# y úsalo para identificarte en reuniones y documentación.
+# El moderador puede asignarte un nombre de sesión al convocarla (ej: "Agent A", "Agent B").
+# Úsalo para identificarte en reuniones y documentación. Si lo pierdes (compact,
+# reinicio), el moderador lo reasigna.
 
 # PERSONALIZA este archivo según tu proyecto
 # Ejemplos:
@@ -55,39 +55,5 @@ restricciones:
   operaciones_git:
     regla: "Antes de cualquier git commit/tag/merge/rebase/push: si `git remote -v` devuelve algo → leer memsys3/prompts/github.md; si no → leer memsys3/prompts/git.md"
     motivo: "github.md documenta el workflow completo con remote (versiones, confirmación del usuario para tags, verificación post-commit, push); git.md es el mismo workflow sin push, para repos de tracking local. Detectar el remote evita que un repo sin él siga pasos que no aplican. Cargarlo solo cuando se va a operar git evita gasto innecesario de tokens en sesiones que no tocan git."
-
-# ============================================
-# COORDINACIÓN PARALELA (estado: en evaluación pre-v1.0)
-# ============================================
-# Sistema de locks explícitos para evitar colisiones cuando múltiples agentes
-# humanos operan el repo en paralelo. Detalles operativos completos en
-# memsys3/prompts/multi_work.md. Log central: memsys3/blocked_files_log.md.
-#
-# ESTADO: DECIDIDO por ADR-026 (2026-05-10) — multi-work SE DISTRIBUYE en v1.0.
-# Descartadas por escrito las alternativas "eliminar del scaffold" y "opt-in".
-# El bloque vive también en memsys3_templates/agents/main-agent.yaml desde
-# 2026-08-22 (portado en versión agnóstica: agent_id_path opt-in comentado,
-# sin referencias a un harness concreto). Esta copia dogfooding SÍ es
-# Claude-específica a propósito: es el entorno real de este repo.
-
-coordinacion_paralela:
-  log_central: "memsys3/blocked_files_log.md"
-  workflow: "memsys3/prompts/multi_work.md"
-  agent_id_path: "~/.claude/memsys3_agent_id"
-  scope: "Solo agentes lanzados por humanos en paralelo (varias terminales con `claude`). NO aplica a sub-agentes lanzados por IA orquestadora vía Agent tool — el orquestador coordina sus sub-agentes directamente."
-  precondicion: "Cada sesión humana implicada REQUIERE plan mode activo. Sin plan mode los pasos 1 (pre-plan) y 2 (post-aprobación) no tienen anclaje temporal y la coordinación se rompe."
-  reglas_resumen: |
-    1. Pre-plan: leer log central y verificar que ningún fichero que tu plan
-       ESCRIBIRÁ está bloqueado por OTRO agente. Lecturas siempre permitidas.
-       Si conflicto → STOP, avisar usuario con la línea conflictiva.
-    2. Post-aprobación plan: append líneas al log con tu agent_id (de
-       ~/.claude/memsys3_agent_id) y timestamp local YYYY-MM-DD HH:MM.
-    3. Trabajo: libre en ficheros reservados. No re-validar locks durante.
-    4. Post-completado (commit + push, o flujo completo con tag): elimina TUS
-       líneas del log. NUNCA toques líneas de otros agentes.
-    5. Caducidad >4h: NO eliminar tú solo. Avisar usuario y esperar OK.
-    6. Solo bloquea ESCRITURAS. Granularidad = fichero (excepción: directorio
-       de migraciones SQL si reservas un número).
-  detalles_completos: "Ver memsys3/prompts/multi_work.md"
 
 file_version: "0.4.0"

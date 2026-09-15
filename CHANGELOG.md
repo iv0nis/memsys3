@@ -7,6 +7,9 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+- **Multi-work y agent-identity aparcados fuera del scaffold** (revisión pre-v1.0, update aditivo en ADR-026). Se retiran `prompts/multi_work.md`, `blocked_files_log.md`, el bloque `coordinacion_paralela` de `agents/main-agent.yaml` (y su nota en `setup-agent.yaml`), `prompts/agent-identity.md` y `endSession.md` §4.7 (0.3.0 → 0.4.0). Nacieron para trabajar con varios chats en paralelo sobre un mismo proyecto, uso en desuso y sin evidencia de que sea reproducible por terceros; además `agent-identity.md` guardaba el id en un único archivo `~/.claude/memsys3_agent_id`, Claude-only y sobrescrito por la segunda sesión paralela. No es retirada definitiva: la versión agnóstica queda recuperable en el historial (`9022b2e`). Los proyectos desplegados los reciben como eliminación upstream (`actualizar.md` Paso 6.3: se retiran si no están personalizados, se preservan y reportan si lo están).
+
 ### Fixed
 - **`compile-context.md`: template y dogfooding vuelven a ser idénticos.** El fix de v0.28.1 (leer literalmente la spec de cada campo en `context-template.yaml` antes de asignar valor, en vez de inferirlo por el nombre) solo se había aplicado a la copia dogfooding; ahora llega al template. A la inversa, la copia dogfooding describía `version_context` como «versión del context.yaml generado», contradiciendo la plantilla: corregido al valor de `memsys3_version`.
 - **`agents/main-agent.yaml` (0.5.0 → 0.6.0): `operaciones_git` elige `github.md` o `git.md` según haya remote** (ISSUE-038, INBOX 2026-09-08 desde gitkigai raíz). La regla mandaba leer siempre `github.md`, cuyo workflow incluye `push`; en un repo sin remote el agente seguía pasos que no aplican aunque el scaffold ya distribuye `git.md` (mismo workflow sin push). Ahora detecta con `git remote -v`, en forma neutra sin `@`. Misma regla en el espejo dogfooding.

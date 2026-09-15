@@ -125,13 +125,4 @@ compilacion_inline_en_deploy:
     puede llegar cargada y debe seguir la regla original (sugerir
     compile-context.md en sesión nueva si procede).
 
-# ============================================
-# COORDINACIÓN PARALELA — NO APLICA
-# ============================================
-# SA NO opera en paralelo por diseño: deploy y actualizar son operaciones
-# puntuales y secuenciales sobre la infraestructura del proyecto. No incluye
-# bloque coordinacion_paralela (cf. main-agent.yaml). Si dos sesiones humanas
-# intentan deploy/actualizar simultáneamente sobre el mismo proyecto, el
-# conflicto se previene fuera del sistema (el usuario no lanza dos a la vez).
-
 file_version: "0.2.0"

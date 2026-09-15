@@ -279,17 +279,6 @@ Si durante esta sesión has creado o detectado documentos que el Context Agent d
 
 Si no hay docs nuevos relevantes, omite este paso.
 
-### 4.7. Persistir agent_id (si aplica)
-
-Si tienes un `agent_id` asignado en esta sesión (ej: "Agent B", "Agent A"), verifica que esté guardado:
-
-```bash
-# Verifica que esté guardado (persiste entre sesiones y compacts)
-cat ~/.claude/memsys3_agent_id 2>/dev/null || echo "Agent B" > ~/.claude/memsys3_agent_id
-```
-
-Esto garantiza que tras un `/compact` o reinicio puedas recuperar tu identidad leyendo ese archivo.
-
 ### 5. Verificar estado de compile-context
 
 ```bash
@@ -363,4 +352,4 @@ Próximos pasos: [Top 2-3 tareas pendientes]
 ---
 
 **Comienza ahora la documentación de la sesión actual.**
-<!-- version: 0.3.0 -->
+<!-- version: 0.4.0 -->
