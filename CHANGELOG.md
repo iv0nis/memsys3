@@ -7,6 +7,9 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **`multi_work.md` agnóstico de harness (marca `version: 0.1.0`, template + espejo)** — punto (k) de BLUEPRINT-001 Frente 8. Los 4 restos Claude-only (terminales con `claude`, `Agent` tool, plan mode vía `ExitPlanMode`, `agent_id` leído de `~/.claude/`) pasan a nombrar la capacidad y no el producto: sesión de agente por terminal, herramienta de sub-agentes del orquestador, plan aprobado por el usuario (o equivalente acordado si no hay plan mode nativo) y `agent_id` asignado al convocar la sesión o, opt-in, desde `agent_id_path`. Cierra la brecha del port de `coordinacion_paralela` (2026-08-22): el `main-agent.yaml` limpio apuntaba a un prompt que pedía `~/.claude/`.
+
 ## [0.31.2] - 2026-09-14
 ### Fixed
 - **`actualizar.md` (0.5.0 → 0.5.1) — Paso 1: si el hash de `memsys3_version` no resuelve, caer al tag/describe del mismo campo.** Hallazgo del meet 20260913_2 (gitkigai_system, `"v0.18.2 (commit: b777410)"`): el saneamiento de historial de BP-004 (2026-05-26, filter-repo) reescribió TODOS los SHA pero conservó los tags, así que cualquier deploy anterior a esa fecha con `commit: xxx` tiene el hash muerto — el Paso 1 prefería el hash, no resolvía y la base se perdía para todos los archivos (degradación a «conservar y preguntar» en 26 M). Con el fallback, la base se recupera por tag. Smoke: hash muerto → tag; hash vivo → intacto.

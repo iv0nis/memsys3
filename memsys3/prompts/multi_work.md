@@ -4,25 +4,25 @@ Sistema de **locks explícitos** para evitar conflictos cuando varios agentes tr
 
 ## ⚠️ Scope: agentes lanzados por humanos en paralelo
 
-Este sistema está diseñado para el escenario donde **el humano lanza varios agentes independientes** simultáneamente (ej. abre múltiples terminales con `claude`, cada uno con su propia sesión sin estado compartido). Cada sesión es una entidad autónoma que ignora las demás — necesita un mecanismo externo (este log) para coordinarse.
+Este sistema está diseñado para el escenario donde **el humano lanza varios agentes independientes** simultáneamente (ej. abre múltiples terminales, cada una con su propia sesión de agente sin estado compartido). Cada sesión es una entidad autónoma que ignora las demás — necesita un mecanismo externo (este log) para coordinarse.
 
-**NO aplica a sub-agentes lanzados por una IA orquestadora.** Cuando una IA usa el `Agent` tool para invocar sub-agentes (forks o subagent_type), la IA orquestadora YA ve qué hace cada sub-agente y puede evitar que dos de ellos editen el mismo fichero — la coordinación es responsabilidad del orquestador, no de un log externo.
+**NO aplica a sub-agentes lanzados por una IA orquestadora.** Cuando una IA usa su herramienta de sub-agentes para invocarlos, la IA orquestadora YA ve qué hace cada sub-agente y puede evitar que dos de ellos editen el mismo fichero — la coordinación es responsabilidad del orquestador, no de un log externo.
 
 Regla práctica:
-- ¿El humano abrió N terminales con `claude` en paralelo? → multi-work aplica a esas sesiones.
-- ¿Una IA está orquestando sub-agentes con `Agent` tool? → multi-work NO aplica a esos sub-agentes; el orquestador coordina directamente.
+- ¿El humano abrió N terminales, cada una con su propia sesión de agente, en paralelo? → multi-work aplica a esas sesiones.
+- ¿Una IA está orquestando sub-agentes con su herramienta de sub-agentes? → multi-work NO aplica a esos sub-agentes; el orquestador coordina directamente.
 
 ## ⚠️ Precondición: REQUIERE PLAN MODE (en cada sesión humana implicada)
 
-Las sesiones humanas que participen en el sistema **solo coordinan correctamente si operan con plan mode activo** (Claude Code: agente articula plan antes de ejecutar; usuario aprueba vía `ExitPlanMode`).
+Las sesiones humanas que participen en el sistema **solo coordinan correctamente si operan con plan mode activo** (el agente expone el plan y el usuario lo aprueba antes de ejecutar; si tu harness no ofrece plan mode nativo, acordad ese equivalente explícito).
 
 **Por qué:** los pasos del workflow tienen anclajes temporales que dependen de plan mode:
 - **Paso 1 (pre-plan)** = "después de definir qué hace el plan, antes de aprobarlo" — solo existe si hay un plan formal.
-- **Paso 2 (post-aprobación plan)** = "justo después de que el usuario apruebe el plan" — sin `ExitPlanMode` no hay este momento discreto.
+- **Paso 2 (post-aprobación plan)** = "justo después de que el usuario apruebe el plan" — sin esa aprobación explícita no hay este momento discreto.
 
 Sin plan mode, el agente improvisa escrituras sobre la marcha y NO hay un punto canónico donde registrar locks. La coordinación se rompe — agentes paralelos pueden pisarse trabajando en los mismos ficheros.
 
-**En la práctica:** si el usuario va a lanzar dos o más sesiones humanas simultáneamente que tocarán el mismo repo, debe activar plan mode en cada una de ellas (`/plan` o equivalente).
+**En la práctica:** si el usuario va a lanzar dos o más sesiones humanas simultáneamente que tocarán el mismo repo, debe activar plan mode en cada una de ellas (o el equivalente acordado).
 
 ## Fichero central
 
@@ -62,7 +62,7 @@ Lee `blocked_files_log.md`. Por cada fichero que tu plan **escribirá**:
 
 ### Paso 2 — Post-aprobación plan (justo antes de empezar a escribir)
 
-Append al log una línea por cada fichero del plan. Lee el `agent_id` de `~/.claude/memsys3_agent_id`. Timestamp `YYYY-MM-DD HH:MM` hora local.
+Append al log una línea por cada fichero del plan. Usa tu `agent_id`: el que el usuario te asignó al convocar la sesión o, si lo configuraste, el leído de `agent_id_path` (bloque `coordinacion_paralela` de `memsys3/agents/main-agent.yaml`). Timestamp `YYYY-MM-DD HH:MM` hora local.
 
 ### Paso 3 — Durante el trabajo
 
@@ -123,3 +123,5 @@ Hora actual: 2026-04-29 14:30 (>4h). Plan del nuevo agente quiere tocar `foo.py`
 > El lock de `backend/api/foo.py` por Agent A es de hace 5h 30min (>4h). Probablemente caducado. ¿Lo quito del log para continuar?
 
 Espera respuesta. Si OK, edita el log eliminando la línea, después añade la tuya.
+
+<!-- version: 0.1.0 -->
