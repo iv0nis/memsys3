@@ -323,7 +323,7 @@ Recomendación: [la calculada arriba, con el salto medido]
 
 **Si el usuario elige "Extendida":**
 
-Lanza un subagente (Agent tool) con este prompt:
+Lanza un subagente (con tu herramienta de sub-agentes) con este prompt:
 
 ```
 Carga el contexto del proyecto memsys3 desde el repo clonado en memsys3_update_temp/:
@@ -927,7 +927,7 @@ Edita `$MEMSYS3_ROOT/memory/project-status.yaml`:
 ```yaml
 metadata:
   ultima_actualizacion: "[FECHA_HOY]"  # Formato: 2025-11-12
-  actualizado_por: "Claude (Actualización memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA])"
+  actualizado_por: "[tu agente/modelo] (Actualización memsys3 [VERSIÓN_ACTUAL] → [VERSIÓN_NUEVA])"
   fase: "[FASE_ACTUAL_DEL_PROYECTO]"  # NO cambiar, conservar la del proyecto
   memsys3_version: "[NEW_VERSION del Paso 3]"  # Ejemplo: v0.31.0-8-gbf0bff9 — salida literal de git describe
   memsys3_deployed: "[FECHA_HOY]"

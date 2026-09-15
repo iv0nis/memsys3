@@ -255,7 +255,7 @@ Si creas ADR:
 
 **C. Actualizar `memsys3/memory/project-status.yaml`:**
 - `metadata.ultima_actualizacion`: Fecha de hoy
-- `metadata.actualizado_por`: "Claude (Session [Título])"
+- `metadata.actualizado_por`: "[tu agente/modelo] (Session [Título])"
 - `estado_actual.ultima_feature`: Si has completado feature
 - `features`: Cambiar `estado: operativo` si se ha completado
 - `historico_sesiones`: Añadir entrada resumida
