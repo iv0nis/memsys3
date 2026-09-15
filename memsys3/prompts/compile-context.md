@@ -219,7 +219,7 @@ Con todo el conocimiento ingerido:
 ### Fase 3: Compilación Normal (input < 150K tokens)
 
 1. **Sintetiza** manteniendo lo crítico
-2. **Genera** context.yaml siguiendo el template — para cada campo lee literalmente su spec en `memory/templates/context-template.yaml` antes de asignar valor; NO inventes un valor por inferencia léxica del nombre del campo (caso `version_context` documentado en informe `docs/reports/2026-05-27_actualizar_memsys3_v0.20.0_v0.28.0_experiencia_agente.md` §4.4)
+2. **Genera** context.yaml siguiendo el template — para cada campo lee literalmente su spec en `memory/templates/context-template.yaml` antes de asignar valor; NO inventes un valor por inferencia léxica del nombre del campo (caso real: `version_context` es el valor de `memsys3_version`, no un contador propio del context)
 3. **Comprueba** que no supera 2000 líneas
 4. **Añade notas** a `notas_compilacion` explicando criterios y tiers leídos
 
@@ -396,7 +396,7 @@ Usa **Edit tool** para añadir al PRINCIPIO del array `operations:`:
 operations:
   - timestamp: "[YYYY-MM-DDTHH:MM:SS]"
     operacion: "compilar"
-    version_context: "[versión del context.yaml generado]"
+    version_context: "[valor de memsys3_version en project-status.yaml]"
     resultado: "ok"
     resumen:
       lineas: [N]

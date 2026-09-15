@@ -8,6 +8,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- **`compile-context.md`: template y dogfooding vuelven a ser idénticos.** El fix de v0.28.1 (leer literalmente la spec de cada campo en `context-template.yaml` antes de asignar valor, en vez de inferirlo por el nombre) solo se había aplicado a la copia dogfooding; ahora llega al template. A la inversa, la copia dogfooding describía `version_context` como «versión del context.yaml generado», contradiciendo la plantilla: corregido al valor de `memsys3_version`.
 - **`agents/main-agent.yaml` (0.5.0 → 0.6.0): `operaciones_git` elige `github.md` o `git.md` según haya remote** (ISSUE-038, INBOX 2026-09-08 desde gitkigai raíz). La regla mandaba leer siempre `github.md`, cuyo workflow incluye `push`; en un repo sin remote el agente seguía pasos que no aplican aunque el scaffold ya distribuye `git.md` (mismo workflow sin push). Ahora detecta con `git remote -v`, en forma neutra sin `@`. Misma regla en el espejo dogfooding.
 
 ### Changed
