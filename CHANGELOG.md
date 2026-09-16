@@ -8,6 +8,7 @@ Versionado según [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Removed
+- **`prompts/migrate.md` retirado del scaffold** (superficie duplicada): la guía para mover un proyecto de carpeta preservando el historial de Claude Code ya vive íntegra en `docs/reference.md` §Migración de proyectos, que se sigue distribuyendo. Se retira el prompt, no la solución — un prompt específico de un harness menos en `prompts/`.
 - **Multi-work y agent-identity aparcados fuera del scaffold** (revisión pre-v1.0, update aditivo en ADR-026). Se retiran `prompts/multi_work.md`, `blocked_files_log.md`, el bloque `coordinacion_paralela` de `agents/main-agent.yaml` (y su nota en `setup-agent.yaml`), `prompts/agent-identity.md` y `endSession.md` §4.7 (0.3.0 → 0.4.0). Nacieron para trabajar con varios chats en paralelo sobre un mismo proyecto, uso en desuso y sin evidencia de que sea reproducible por terceros; además `agent-identity.md` guardaba el id en un único archivo `~/.claude/memsys3_agent_id`, Claude-only y sobrescrito por la segunda sesión paralela. No es retirada definitiva: la versión agnóstica queda recuperable en el historial (`9022b2e`). Los proyectos desplegados los reciben como eliminación upstream (`actualizar.md` Paso 6.3: se retiran si no están personalizados, se preservan y reportan si lo están).
 
 ### Fixed
