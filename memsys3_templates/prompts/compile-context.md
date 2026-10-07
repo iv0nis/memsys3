@@ -45,12 +45,12 @@ Tú tienes la **visión panorámica completa** del proyecto. Tu objetivo es **ll
 
 **"¿Qué debe saber CUALQUIER agent descontextualizado para trabajar en este proyecto?"**
 
-**Presupuesto de ingesta: ~150K tokens**
-Lee por tiers de prioridad hasta acercarte a ese límite. Si el proyecto es pequeño y solo llegas a 30-50K tokens con todo lo disponible, es completamente normal — el objetivo es leer TODO lo relevante, no fabricar contenido.
+**Presupuesto de ingesta: ~150K tokens, MEDIDOS EN BYTES (ADR-033)**
+No estimes tokens: mide con `wc -c`. La ratio bytes/token depende del idioma: en YAML/Markdown en español son ~2,1 bytes por token (medido en campo), en inglés ~4. Es decir, 150K tokens ≈ **300 KB en español** ≈ 600 KB en inglés. Un proyecto en español que use la regla "caracteres / 4" cree cumplir el presupuesto y gasta casi el doble. Lee por tiers de prioridad hasta acercarte a ese límite. Si el proyecto es pequeño y solo llegas a 60-100 KB con todo lo disponible, es completamente normal — el objetivo es leer TODO lo relevante, no fabricar contenido.
 
 ## Tiers de Ingesta (por prioridad)
 
-Lee en este orden. Estima tokens acumulados tras cada tier y para si superas ~150K.
+Lee en este orden. Suma bytes leídos tras cada tier (`wc -c`) y para si superas el presupuesto (~300 KB en español, ~600 KB en inglés).
 
 ### Tier 1 — OBLIGATORIO (memoria del proyecto)
 
@@ -115,16 +115,16 @@ git log --oneline -30 2>/dev/null || echo "Sin git"
 git log --format="%ad %s" --date=short -20 2>/dev/null || echo "Sin git log"
 ```
 
-## Estimación de tokens acumulados
+## Medición de lo ingerido (bytes, no tokens estimados)
 
-Tras cada tier, estima tokens leídos (aproximado: caracteres / 4):
+Tras cada tier, suma los bytes leídos. Convierte a tokens solo para informar, con el factor del idioma del proyecto (español ≈ 2,1 bytes/token; inglés ≈ 4):
 
 ```bash
-# Ejemplo para calcular tamaño de archivos
-wc -c "$MEMSYS3_ROOT/memory/full/"*.yaml 2>/dev/null
+# Tamaño real de lo que vas a leer / has leído
+wc -c "$MEMSYS3_ROOT/memory/project-status.yaml" "$MEMSYS3_ROOT/memory/full/"*.yaml 2>/dev/null
 ```
 
-Si al acabar Tier 1 ya estás cerca de 150K tokens (proyecto muy maduro con muchas rotaciones), los tiers siguientes son opcionales — usa tu criterio. En proyectos nuevos, lee todos los tiers disponibles.
+Si al acabar Tier 1 ya estás cerca del presupuesto (proyecto muy maduro con muchas rotaciones), los tiers siguientes son opcionales — usa tu criterio. En proyectos nuevos, lee todos los tiers disponibles.
 
 ## Output que debes generar
 
@@ -132,8 +132,8 @@ Genera `@memsys3/memory/context.yaml` siguiendo `@memsys3/memory/templates/conte
 
 ## Límites
 
-- **Input**: ~150K tokens de ingesta máxima (tiers 1-5)
-- **Output**: máximo 2000 líneas en context.yaml
+- **Input**: ~150K tokens de ingesta máxima (tiers 1-5), medidos en bytes: ~300 KB en español, ~600 KB en inglés
+- **Output**: máximo 2000 líneas en context.yaml, y debe caber en UNA lectura del arranque (ADR-033): mide el archivo generado con `wc -c` y anótalo en `notas_compilacion`
 
 El único límite rígido del output es 2000 líneas. El resto son decisiones tuyas basadas en criterio inteligente (ADR-001).
 
@@ -198,15 +198,15 @@ El único límite rígido del output es 2000 líneas. El resto son decisiones tu
 ### Fase 1: Ingesta por Tiers
 
 1. **Lee Tier 1** (obligatorio): project-status, adr.yaml, sessions.yaml + todos los rotados
-2. **Estima tokens** acumulados
-3. **Si < 150K → Lee Tier 2** (README.md)
-4. **Estima tokens** acumulados
-5. **Si < 150K → Lee Tier 3** (backlog completo)
-6. **Estima tokens** acumulados
-7. **Si < 150K → Lee Tier 4** (docs_contextuales si hay alguno listado)
-8. **Estima tokens** acumulados
-9. **Si < 150K → Lee Tier 5** (git log)
-10. **Documenta** qué tiers leíste y tokens estimados por tier
+2. **Suma bytes** leídos (`wc -c`)
+3. **Si < presupuesto → Lee Tier 2** (README.md)
+4. **Suma bytes** leídos
+5. **Si < presupuesto → Lee Tier 3** (backlog completo)
+6. **Suma bytes** leídos
+7. **Si < presupuesto → Lee Tier 4** (docs_contextuales si hay alguno listado)
+8. **Suma bytes** leídos
+9. **Si < presupuesto → Lee Tier 5** (git log)
+10. **Documenta** qué tiers leíste y bytes (y tokens aproximados) por tier
 
 ### Fase 2: Evaluación
 
@@ -216,11 +216,11 @@ Con todo el conocimiento ingerido:
 3. **Decide** qué es imprescindible para el context.yaml
 4. **Planifica** el output antes de escribir
 
-### Fase 3: Compilación Normal (input < 150K tokens)
+### Fase 3: Compilación Normal (input dentro del presupuesto)
 
 1. **Sintetiza** manteniendo lo crítico
 2. **Genera** context.yaml siguiendo el template — para cada campo lee literalmente su spec en `memory/templates/context-template.yaml` antes de asignar valor; NO inventes un valor por inferencia léxica del nombre del campo (caso real: `version_context` es el valor de `memsys3_version`, no un contador propio del context)
-3. **Comprueba** que no supera 2000 líneas
+3. **Comprueba** que no supera 2000 líneas y mide su tamaño real (`wc -c`); no estimes tokens
 4. **Añade notas** a `notas_compilacion` explicando criterios y tiers leídos
 
 ### Fase 4: Actualizar docs_contextuales (si procede)
@@ -229,9 +229,9 @@ Si durante la ingesta has detectado que el orden de `docs_contextuales` no es ó
 
 Esto permite que futuras compilaciones se beneficien de tu criterio sobre qué es más relevante leer primero.
 
-### Plan de Contingencia (> 150K tokens)
+### Plan de Contingencia (> presupuesto)
 
-Cuando el contexto total supera 150K tokens, hay que archivar entries irrelevantes para reducir a ~120K tokens.
+Cuando el total de Tier 1 supera el presupuesto (~300 KB en español / ~600 KB en inglés ≈ 150K tokens), hay que archivar entries irrelevantes para reducir a ~80% (~240 KB / ~480 KB ≈ 120K tokens).
 
 **Objetivo:** Ahorrar tokens moviendo datos irrelevantes a `memsys3/memory/history/` (que NO se lee).
 
@@ -268,15 +268,15 @@ Cuando el contexto total supera 150K tokens, hay que archivar entries irrelevant
    - Eliminar las entries movidas de `memsys3/memory/full/adr.yaml`
 
 5. **Verificar reducción:**
-   - Recontar tokens de los archivos `full/`
-   - Debería estar ~120K tokens ahora
+   - Recontar bytes de los archivos `full/` (`wc -c`)
+   - Debería estar en ~80% del presupuesto (~240 KB en español)
 
 6. **Continuar con Fase 2** (compilación normal)
 
 7. **Documentar en notas_compilacion:**
    - Cuántas sesiones archivadas
    - Cuántas ADRs archivadas
-   - Tokens antes y después del archivado
+   - Bytes antes y después del archivado (y tokens aproximados)
 
 **Notas importantes:**
 - `memsys3/memory/history/` **NO se lee** en futuras compilaciones → ahorro real de tokens
@@ -298,7 +298,7 @@ Usa tu criterio para mantener lo esencial.
 ## Importante
 
 - **NO inventes información** - solo compila lo que existe
-- **Puedes archivar** a `memsys3/memory/history/` si superas 150K tokens (Plan de Contingencia)
+- **Puedes archivar** a `memsys3/memory/history/` si superas el presupuesto de ingesta (Plan de Contingencia)
 - **SÍ puedes borrar** de `memsys3/memory/full/` después de archivar a `history/`
 - **SÍ actualiza** el timestamp y versión de compilación
 - **SÍ documenta** los criterios usados en notas_compilacion (incluyendo archivado si procede)
@@ -403,6 +403,7 @@ operations:
       adrs_incluidas: "[X de Y]"
       sesiones_incluidas: "[N (detalle por peso)]"
       gotchas: "[N críticos]"
+      bytes_context: "[wc -c del context.yaml generado]"
       reduccion_tokens: "[X%]"
       archivamiento: "[activado/no activado]"
 ```
@@ -411,4 +412,4 @@ operations:
 
 **COMIENZA AHORA LA COMPILACIÓN leyendo todos los archivos y aplicando tu criterio para generar `context.yaml`.**
 
-<!-- version: 0.2.0 -->
+<!-- version: 0.3.0 -->

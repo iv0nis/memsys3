@@ -2,7 +2,7 @@
 
 rol: Context Agent
 descripcion: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para Main Agent
-objetivo: Ingerir hasta ~150K tokens de conocimiento del proyecto y sintetizarlo en memsys3/memory/context.yaml (máximo 2000 líneas)
+objetivo: "Ingerir hasta ~150K tokens de conocimiento del proyecto (medidos en bytes, ADR-033: ~300 KB en español, ~600 KB en inglés) y sintetizarlo en memsys3/memory/context.yaml (máximo 2000 líneas, cabe en UNA lectura del arranque)"
 
 # ============================================
 # INPUTS - QUÉ LEER
@@ -71,7 +71,7 @@ output:
 # LÍMITES - ÚNICO LÍMITE RÍGIDO
 # ============================================
 limits:
-  ingesta_maxima: "~150K tokens (suma de todos los tiers leídos)"
+  ingesta_maxima: "~150K tokens (suma de todos los tiers leídos), MEDIDOS EN BYTES con wc -c: ~300 KB en español (2,1 bytes/token), ~600 KB en inglés (4). No estimar con caracteres/4 (ADR-033)."
   output_context_yaml: "máximo 2000 líneas"
   nota: |
     No hay límites por sección (ADRs, gotchas, sesiones, etc.).
@@ -103,33 +103,33 @@ instrucciones:
       - Carga memsys3/memory/full/sessions.yaml completo
       - Carga memsys3/memory/memory.yaml completo (SOLO LECTURA — perfil usuario + feedback, ADR-020)
       - Detecta archivos rotados (sessions_1.yaml, sessions_2.yaml, adr_1.yaml, ...) y léelos todos
-      - Estima tokens acumulados (caracteres / 4)
+      - Suma bytes leídos (wc -c); tokens solo como aproximación con el factor del idioma
 
   paso_2_ingesta_tier2:
     descripcion: "README del proyecto"
-    condicion: "Si tokens acumulados < 150K"
+    condicion: "Si bytes acumulados < presupuesto"
     acciones:
       - Carga README.md (raíz del proyecto) si existe
-      - Estima tokens acumulados
+      - Suma bytes leídos
 
   paso_3_ingesta_tier3:
     descripcion: "Backlog completo"
-    condicion: "Si tokens acumulados < 150K"
+    condicion: "Si bytes acumulados < presupuesto"
     acciones:
       - Carga memsys3/backlog/README.md si existe
       - Carga TODOS los items del backlog (no solo los referenciados)
-      - Estima tokens acumulados
+      - Suma bytes leídos
 
   paso_4_ingesta_tier4:
     descripcion: "Documentos contextuales adicionales"
-    condicion: "Si tokens acumulados < 150K y hay docs listados en compile-context.md"
+    condicion: "Si bytes acumulados < presupuesto y hay docs listados en compile-context.md"
     acciones:
       - Lee docs_contextuales de compile-context.md en orden de prioridad
-      - Estima tokens acumulados
+      - Suma bytes leídos
 
   paso_5_ingesta_tier5:
     descripcion: "Git log reciente"
-    condicion: "Si tokens acumulados < 150K"
+    condicion: "Si bytes acumulados < presupuesto"
     acciones:
       - Ejecuta git log --oneline -30
       - Ejecuta git log --format="%ad %s" --date=short -20
@@ -150,10 +150,10 @@ instrucciones:
     - Usar memsys3/memory/templates/context-template.yaml como base
     - Rellenar con datos sintetizados
     - Añadir metadata: compilado_por, ultima_compilacion, version_context
-    - Añadir notas_compilacion con tiers leídos, tokens estimados por tier, criterios
+    - Añadir notas_compilacion con tiers leídos, bytes por tier (tokens aproximados), criterios
 
   paso_9_validar:
-    - Contar líneas totales del context.yaml generado
+    - Contar líneas totales del context.yaml generado y medir su tamaño (wc -c), sin estimar
     - Si > 2000 líneas: sintetizar más (recortar sesiones bajo, condensar ADRs menores)
     - Si < 500 líneas con proyecto maduro: revisar si falta info crítica
     - Escribir en memsys3/memory/context.yaml
@@ -176,7 +176,7 @@ reglas:
     - SÍ actualizar timestamp y versión
 
   calidad:
-    - El CA debe LLENARSE de conocimiento antes de sintetizar (hasta ~150K tokens)
+    - El CA debe LLENARSE de conocimiento antes de sintetizar (hasta el presupuesto medido en bytes)
     - Leer todos los tiers disponibles antes de decidir qué incluir
     - Priorizar exhaustividad en ingesta, criterio inteligente en síntesis
     - Mantener coherencia con templates
@@ -263,4 +263,4 @@ creado: "2025-10-23"
 ultima_actualizacion: "2026-04-13"
 responsable: "System Design"
 
-file_version: "0.2.0"
+file_version: "0.3.0"
