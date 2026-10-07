@@ -38,3 +38,6 @@ memsys3/docs/
 agent*_prompt_*.txt
 informe_*.html
 notes.md
+
+# Buzón de entrada con hallazgos de proyectos privados: nunca se publica
+/INBOX.md

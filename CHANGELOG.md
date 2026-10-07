@@ -7,6 +7,18 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **ADR-033 — Memoria ligera: lo que lee el arranque cabe en UNA lectura.** Origen: dogfooding en gitkigai raíz (2026-10-07): el arranque costaba ~245K tokens antes de trabajar; con los cambios de abajo quedó en ~140K el mismo día. Corolario nuevo en `PRINCIPLES.md` #1 (0.1.0 → 0.2.0): leer a trozos incita a la CDC — si el estado no cabe en una lectura, cada arranque ve un estado distinto según los filtros que eligió.
+- **`memory.yaml` en dos capas** (`memory-template.yaml` 0.1.0 → 0.2.0): `memory/memory.yaml` es la capa ligera (una entrada por regla con `id` + regla condensada + fecha; lo único que lee el arranque) y `memory/full/memory_full.yaml` (scaffold nuevo) la capa completa con el contexto/origen, enlazadas por `id`. Un refinamiento reescribe la línea existente en la capa ligera en vez de apilar otra.
+- **`memory/full/tasks.yaml`** (scaffold nuevo): detalle de tareas sin expediente propio; no se lee al arrancar.
+
+### Changed
+- **`pendientes_prioritarios` pasa a ser un índice** (`project-status-template.yaml` y scaffold 0.1.0 → 0.2.0): una línea telegráfica ≤ 300 caracteres por tarea con `→ puntero` (README del expediente, item de backlog, sesión o `tasks.yaml#id`), solo para lo que tiene fecha o acción próxima. Lo cerrado se quita (consta en `sessions.yaml`), no se deja con ✅.
+- **`project-status.yaml` ya no lleva histórico de sesiones**: se retira `historico_sesiones` del template, del scaffold y del esqueleto de `deploy.md`; `actualizado_por` se sobrescribe, nunca se encadena. Cierra los puntos 1 y 3 de EXPLORATION-007.
+- **`endSession.md` (0.4.0 → 0.5.0)**: paso 4.C reescrito (sin `historico_sesiones`, índice de pendientes, dos capas de memoria en 2.7) y paso 4.D nuevo de higiene mecánica sin preguntar (quitar del índice lo cerrado en la sesión, llevar fuera lo sin fecha, acortar líneas largas, red de seguridad: si project-status supera ~30 KB, mover a `history/` lo que no sea estado vivo).
+- **`newSession.md` (0.4.0 → 0.5.0)**: el índice se lee en una pasada; la capa completa de memoria no se lee al arrancar (se consulta por `id`); los pendientes con fecha pasada sin cierre se resuelven en UNA pregunta agrupada — el único sitio donde se pregunta por higiene.
+- **Presupuestos del Context Agent en bytes, no en tokens estimados** (`compile-context.md` 0.2.0 → 0.3.0, `context-agent.yaml` 0.2.0 → 0.3.0, `context-template.yaml` 0.1.0 → 0.2.0): la regla «caracteres / 4» vale para inglés; medido en YAML/Markdown en español son ~2,1 bytes por token, así que un proyecto en español creía cumplir el presupuesto y gastaba casi el doble. Ahora se mide con `wc -c` (~300 KB en español ≈ ~600 KB en inglés ≈ 150K tokens) y las notas de compilación registran `bytes_iniciales`/`bytes_finales`. Adelanta el Bloque 1 de BLUEPRINT-006.
+
 ### Removed
 - **Versión catalana retirada** (`memsys3/prompts-dev/actualizar_cat.md`, nunca distribuible): sincronizaba `memsys3_templates/` español → catalán hacia un repo `memsys3_CAT` y una rama `catalan` que ya no existen. El contrato de idioma por proyecto (`newSession` §0.5, `deploy.md`, `endSession.md`) cubre los proyectos no castellanos. Recuperable en el historial.
 - **`prompts/migrate.md` retirado del scaffold** (superficie duplicada): la guía para mover un proyecto de carpeta preservando el historial de Claude Code ya vive íntegra en `docs/reference.md` §Migración de proyectos, que se sigue distribuyendo. Se retira el prompt, no la solución — un prompt específico de un harness menos en `prompts/`.
