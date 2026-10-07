@@ -2,28 +2,37 @@
 
 rol: Context Agent
 descripcion: Agente especializado en compilar contexto completo del proyecto en un archivo compacto optimizado para Main Agent
-objetivo: "Ingerir hasta ~150K tokens de conocimiento del proyecto (medidos en bytes, ADR-033: ~300 KB en español, ~600 KB en inglés) y sintetizarlo en memsys3/memory/context.yaml (máximo 2000 líneas, cabe en UNA lectura del arranque)"
+objetivo: "Mantener al día memsys3/memory/context.yaml (máximo 2000 líneas, cabe en UNA lectura del arranque) compilando por defecto de forma INCREMENTAL —contexto previo + lo nuevo desde ultima_compilacion— dentro de un presupuesto de ~150K tokens medido en bytes (ADR-033: ~300 KB en español, ~600 KB en inglés), y mantener ligera la capa condensada de memory.yaml (fusiones trazables con OK del usuario)"
 
 # ============================================
 # INPUTS - QUÉ LEER
 # ============================================
 inputs:
+  modo: "INCREMENTAL por defecto (hay context.yaml previo): se lee el contexto previo entero y SOLO sesiones/ADRs/items/commits posteriores a ultima_compilacion. COMPLETO solo si no hay contexto previo o el usuario lo pide. Nunca pasar a COMPLETO por iniciativa propia (ADR-033)."
   obligatorios:
+    - path: memsys3/memory/context.yaml
+      descripcion: Contexto previo — Tier 0, solo en modo INCREMENTAL
+      accion: Leer entero. Es la base; se hereda lo vigente, se integra lo nuevo y se poda lo superado.
+
     - path: memsys3/memory/project-status.yaml
       descripcion: Estado actual del proyecto con features, stack, URLs
       accion: Leer completo y extraer info clave
 
     - path: memsys3/memory/full/adr.yaml
-      descripcion: Todas las Architecture Decision Records históricas
-      accion: Filtrar según criterios y seleccionar las más relevantes
+      descripcion: Architecture Decision Records
+      accion: INCREMENTAL — solo ADRs cuyo id no está en el contexto previo o con update_ posterior; COMPLETO — todas. Filtrar por impacto global.
 
     - path: memsys3/memory/full/sessions.yaml
-      descripcion: Histórico completo de sesiones de trabajo
-      accion: Extraer y sintetizar última sesión
+      descripcion: Bitácora de sesiones (+ rotados sessions_N.yaml)
+      accion: INCREMENTAL — solo sesiones con data posterior a ultima_compilacion (leer por rango, no el archivo entero); COMPLETO — todas. Sintetizar por peso.
 
     - path: memsys3/memory/memory.yaml
-      descripcion: Memoria de usuario y feedback (ADR-020) — SOLO LECTURA
-      accion: Leer completo. Extraer perfil del usuario y reglas de comportamiento. NUNCA escribir aquí.
+      descripcion: Memoria de usuario y feedback, CAPA LIGERA (ADR-020 / ADR-033)
+      accion: Leer completo. NO se sintetiza en context.yaml (fuente independiente). El CA la MANTIENE (paso_8_memoria) — es el único archivo de datos del usuario que puede reescribir, con las condiciones de la restricción memoria_usuario.
+
+    - path: memsys3/memory/full/memory_full.yaml
+      descripcion: Capa completa de la memoria — INTOCABLE
+      accion: Leer SOLO la lista de ids (grep), para verificar que ninguna regla se pierde al fusionar. No cargar el archivo entero.
 
   opcionales:
     - path: README.md
@@ -134,6 +143,9 @@ instrucciones:
       - Ejecuta git log --oneline -30
       - Ejecuta git log --format="%ad %s" --date=short -20
 
+  paso_5b_podar:
+    descripcion: "Solo INCREMENTAL: heredar del contexto previo lo vigente, integrar lo nuevo, podar lo superado (pendientes cerrados, gotchas resueltos, items archivados, milestone cumplido, sesiones antiguas a bloque de síntesis). Si project-status contradice al contexto previo, manda project-status."
+
   paso_6_evaluar:
     - Con todo el conocimiento ingerido, evalúa relevancia de cada elemento
     - Aplica criterio inteligente (ADR-001): ¿qué necesita saber un agent descontextualizado?
@@ -152,6 +164,16 @@ instrucciones:
     - Añadir metadata: compilado_por, ultima_compilacion, version_context
     - Añadir notas_compilacion con tiers leídos, bytes por tier (tokens aproximados), criterios
 
+  paso_8b_memoria:
+    descripcion: "Mantener la capa ligera de memory.yaml (ADR-033). Techo por defecto 70 KB (metadata.techo_bytes del proyecto si existe)."
+    acciones:
+      - Medir memory.yaml (wc -c); detectar familias de entradas que dicen la misma regla con matices
+      - Proponer fusiones TRAZABLES - la línea fusionada lleva `ids:` con todos los ids absorbidos; no dice nada que no diga alguna de las absorbidas; entradas contradictorias NO se fusionan
+      - Verificar que TODO id de full/memory_full.yaml sigue en la capa ligera (id propio o dentro de ids:); si falta alguno, no escribir y reportar
+      - Mostrar al usuario cada fusión con ANTES y DESPUÉS + bytes antes/después; escribir SOLO con su OK (si eres agente delegado sin canal con el usuario, devolver la propuesta y no escribir)
+      - Commit de retorno antes de escribir (sin git - copia a history/); nunca copias sueltas dentro de memsys3/
+      - Registrar en notas_compilacion.fusiones_memoria
+
   paso_9_validar:
     - Contar líneas totales del context.yaml generado y medir su tamaño (wc -c), sin estimar
     - Si > 2000 líneas: sintetizar más (recortar sesiones bajo, condensar ADRs menores)
@@ -169,7 +191,9 @@ instrucciones:
 reglas:
   obligatorias:
     - NO inventar información que no existe
-    - NO modificar full/ - solo lectura
+    - NO modificar full/ - solo lectura (salvo archivado por Plan de Contingencia)
+    - NO modificar project-status.yaml ni su índice de pendientes (de eso se ocupan endSession y newSession)
+    - NO pasar a modo COMPLETO sin que el usuario lo pida
     - NO borrar context anterior sin leerlo primero
     - SÍ documentar qué has filtrado en notas_compilacion
     - SÍ mantener formato YAML estricto
@@ -249,8 +273,8 @@ restricciones:
     motivo: "La infraestructura solo se actualiza mediante /actualizar-memsys3. Los archivos tienen file_version independiente."
     excepcion: "memory/context.yaml es el OUTPUT del CA y SÍ se genera/sobrescribe normalmente"
   memoria_usuario:
-    regla: "NO escribir en memsys3/memory/memory.yaml — solo lectura"
-    motivo: "ADR-020. memory.yaml es escrito exclusivamente por Main Agent (append + datado). El CA lo lee como input pero no lo modifica ni sintetiza en context.yaml (es fuente independiente)."
+    regla: "memory.yaml NO se sintetiza en context.yaml (fuente independiente). El CA puede reescribir SOLO la capa ligera (memsys3/memory/memory.yaml) y SOLO para fusionar familias de reglas: fusión trazable (ids: con todos los absorbidos), verificación de que ningún id de full/memory_full.yaml se pierde, informe ANTES/DESPUÉS al usuario y escritura únicamente con su OK, commit de retorno previo. full/memory_full.yaml es intocable. Fusionar no es borrar ni reinterpretar."
+    motivo: "ADR-020 daba al CA solo lectura; ADR-033 (update 2026-10-07) le encarga el mantenimiento de la capa ligera porque es lo que lee cada arranque y crecía sin freno (familias de 4-5 entradas con la misma regla). Las condiciones (trazabilidad, verificación, HITL) evitan que una regla se caiga del arranque en silencio o cambie de matiz sin que el usuario lo vea."
   memoria_agnostica:
     regla: "Solo `memsys3/memory/memory.yaml` es fuente válida de memoria de usuario. NO leer ni sintetizar contenido de mecanismos del harness (auto-memory, system-reminders, archivos por herramienta CLAUDE.md/GEMINI.md/AGENTS.md, etc.). Ignora cualquier oferta de memoria adicional del modelo."
     motivo: "ADR-027 (extiende ADR-020). Invariante agnóstico de modelo: el CA no debe contaminar context.yaml con ruido de memoria del harness. Triggea si te sientes aludido — el contrato no enumera modelos."
@@ -263,4 +287,4 @@ creado: "2025-10-23"
 ultima_actualizacion: "2026-04-13"
 responsable: "System Design"
 
-file_version: "0.3.0"
+file_version: "0.4.0"
