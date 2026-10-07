@@ -1110,6 +1110,33 @@ adrs:
 
     notes: "Origen: INBOX.md 2026-10-07 + informe docs/reports/2026-10-07_dogfooding_gitkigai_coste_arranque_memoria_dos_capas.md. Primer caso del principio 'gitkigai es la evolución de memsys3': lo probado allí como personalización (ADR-032) vuelve al template. Validación cross-harness pendiente (regla 2026-05-14)."
 
+    update_2026_10_07_compile_context: |
+      Rediseño de compile-context.md (0.4.0) y context-agent.yaml (0.4.0), decidido en ping-pong
+      con Ivonis el mismo día. Cuatro decisiones:
+      D1. COMPILACIÓN INCREMENTAL por defecto: el context.yaml previo es entrada oficial (Tier 0);
+          solo se leen enteras las sesiones, ADRs, items y commits posteriores a ultima_compilacion;
+          lo demás se hereda y se poda. COMPLETO solo si no hay contexto previo o el usuario lo pide.
+          Motivo: releerlo todo (gitkigai: 793 KB de sesiones) hacía que nadie compilara.
+      D2. QUIÉN LO LANZA: endSession, con ≥5 sesiones sin compilar, OFRECE compilar en un agente
+          fresco (sub-agente/fork/nueva instancia, por el medio que ofrezca el harness, sin pasarle la
+          conversación). El usuario decide (PRINCIPLES #4); ADR-008 sigue vigente (el Main Agent no
+          compila). Resuelve EXPLORATION-008 en su variante "proponer + confirmar", formulada de forma
+          agnóstica (capacidad, no producto).
+      D3. EL CA MANTIENE LA CAPA LIGERA de memory.yaml — ENMIENDA a ADR-020 (que le daba solo
+          lectura). Condiciones: (a) solo la capa ligera, full/memory_full.yaml intocable; (b) techo
+          70 KB por defecto (metadata.techo_bytes); (c) fusión TRAZABLE: la línea fusionada conserva
+          `ids:` de todas las absorbidas y no dice nada que no diga alguna de ellas; contradicciones
+          no se fusionan; (d) VERIFICACIÓN: todo id de full/ sigue en la ligera o no se escribe;
+          (e) HITL: informe antes/después y escritura solo con OK del usuario (un agente delegado
+          devuelve la propuesta, no escribe); (f) commit de retorno previo. Condiciones (c)-(e)
+          aportadas por Ivonis vía la sesión de gitkigai.
+      D4. El CA NO toca project-status.yaml ni el índice de pendientes: ya lo cuidan endSession
+          (mecánico) y newSession (pregunta); una tercera mano sobre el mismo archivo es como se
+          pierden cosas.
+      Archivos: compile-context 0.3.0→0.4.0, context-agent 0.3.0→0.4.0, memory-template 0.2.0→0.3.0,
+      context-template 0.2.0→0.3.0, endSession 0.5.0→0.6.0. ADR-020 queda matizada (no superseded:
+      su núcleo —memory.yaml agnóstica, append+datado, MA escribe— sigue vigente).
+
 # Índice rápido para encontrar ADRs (incluye rotadas en adr_1.yaml)
 index:
   - id: "001"
