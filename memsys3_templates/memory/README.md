@@ -33,16 +33,20 @@ cp -r memsys3/ /path/to/nuevo/proyecto/
 memsys3/
 ├── memory/
 │   ├── context.yaml                    # ← Main Agent carga esto (compilado)
-│   ├── project-status.yaml             # ← Estado actual del proyecto
+│   ├── project-status.yaml             # ← Estado vivo (índice de pendientes, sin histórico)
+│   ├── memory.yaml                     # ← Memoria del usuario, capa ligera (se lee al arrancar)
 │   ├── README.md                       # ← Este archivo
 │   │
-│   ├── full/                           # ← Documentación completa (input CA)
+│   ├── full/                           # ← Datos completos (NO se leen al arrancar)
 │   │   ├── adr.yaml                    # Todas las ADRs históricas
-│   │   └── sessions.yaml               # Todas las sesiones de trabajo
+│   │   ├── sessions.yaml               # Todas las sesiones de trabajo
+│   │   ├── memory_full.yaml            # Memoria del usuario, capa completa (mismo id)
+│   │   └── tasks.yaml                  # Detalle de tareas sin expediente
 │   │
 │   └── templates/                      # ← Templates reutilizables
 │       ├── adr-template.yaml
 │       ├── context-template.yaml
+│       ├── memory-template.yaml
 │       ├── project-status-template.yaml
 │       └── sessions-template.yaml
 │
@@ -50,7 +54,6 @@ memsys3/
 │   └── context-agent.yaml              # Configuración formal del Context Agent
 │
 └── prompts/
-    ├── compile-context.md              # Prompt para ejecutar Context Agent
     └── compile-context.md              # Prompt para ejecutar Context Agent
 ```
 
@@ -88,10 +91,11 @@ Cuando el contexto crece demasiado o después de sesiones importantes:
 ```
 
 El CA hará:
-- Leer **TODO**: `memsys3/memory/full/adr.yaml`, `memsys3/memory/full/sessions.yaml`, `memsys3/memory/project-status.yaml`
-- Si > 150K tokens: archivar datos irrelevantes en `memsys3/memory/history/` (no leído)
+- Leer el `context.yaml` anterior y SOLO lo nuevo desde la última compilación (sesiones, ADRs, items); recompilar desde cero solo si se lo pides (ADR-033)
+- Si supera el presupuesto (medido en bytes, ~300 KB en español): archivar datos irrelevantes en `memsys3/memory/history/` (no leído)
 - Filtrar con criterio inteligente (impacto global, relevancia)
-- Generar `memsys3/memory/context.yaml` (máximo 2000 líneas)
+- Actualizar `memsys3/memory/context.yaml` (máximo 2000 líneas, cabe en una lectura)
+- Mantener ligera `memsys3/memory/memory.yaml`: fusionar reglas repetidas de forma trazable (`ids:`), con antes/después y tu OK
 
 ### 3. Desarrollar (Main Agent)
 
@@ -115,11 +119,11 @@ El CA tiene la **visión panorámica completa** del proyecto y decide con criter
 - **NO límites arbitrarios** para ADRs, sesiones, gotchas, etc.
 - El CA decide basándose en **relevancia e impacto global**
 
-### Plan de Contingencia (>150K tokens)
-Si los datos en `memsys3/memory/full/` superan 150K tokens:
+### Plan de Contingencia (presupuesto en bytes)
+Si lo que el CA tiene que leer supera su presupuesto (~300 KB en español / ~600 KB en inglés ≈ 150K tokens; se mide con `wc -c`, no se estima):
 1. CA identifica ADRs/sesiones **irrelevantes** con criterio
 2. Las mueve a `memsys3/memory/history/` (que **NO se lee**)
-3. Reduce a ~120K tokens
+3. Reduce a ~80% del presupuesto
 4. Continúa compilación normal
 
 **Resultado:** Ahorro real de tokens, datos preservados, sistema escalable.
@@ -192,11 +196,11 @@ Cuando `sessions.yaml` o `adr.yaml` superan 1800 líneas:
 - Crea nuevo archivo vacío para continuar
 - **No se pierden datos**, quedan en `sessions_1.yaml`, `sessions_2.yaml`, etc.
 
-**Context Agent lee todos los archivos** (`sessions.yaml` + `sessions_*.yaml`) hasta que total >150K tokens, entonces archiva irrelevantes en `history/`.
+**Context Agent lee los rotados que necesite** (solo los que contengan sesiones nuevas en modo incremental); si supera el presupuesto, archiva irrelevantes en `history/`.
 
-### Archivado Inteligente (>150K tokens)
+### Archivado Inteligente (presupuesto en bytes)
 
-Si el CA detecta >150K tokens totales:
+Si el CA supera el presupuesto de ingesta:
 - Mueve ADRs/sesiones irrelevantes a `memory/history/`
 - `history/` **NO se lee** → ahorro real
 - Datos preservados, recuperables si es necesario
@@ -205,7 +209,7 @@ Si el CA detecta >150K tokens totales:
 
 - **Context Agent**: Ejecuta después de sesiones importantes
 - **Rotación**: Automática cuando >1800 líneas
-- **Archivado**: Automático del CA cuando >150K tokens
+- **Archivado**: Automático del CA cuando se supera el presupuesto en bytes
 - **Revisión manual**: Opcional cada 6-12 meses para limpiar `history/`
 
 ## 📝 Ejemplos

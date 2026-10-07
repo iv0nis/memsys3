@@ -14,7 +14,7 @@
 - **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas (si tu herramienta no tiene `@`, la misma ruta sin arroba funciona igual)
 - **Deploy y actualización triviales** — un comando para instalar, un comando para actualizar
 - **Human in the loop** — tú decides cuándo empezar y acabar sesión, cuándo compilar contexto, cuándo actualizar. El sistema no hace nada sin ti
-- **Límites de contexto configurables** — diseñado respetando los límites reales de las herramientas (2K líneas, 25K tokens por lectura), con rotación y archivado automático cuando crece
+- **Todo lo que lee el arranque cabe en una lectura** — memoria en dos capas, estado vivo corto, presupuestos medidos en bytes (ADR-033); rotación y archivado automático cuando crece
 
 ## 🚀 Uso Diario
 
@@ -60,10 +60,13 @@ Cuando quieras actualizar el contexto compilado (en una **nueva instancia limpia
 ```
 
 El Context Agent:
-- Lee TODO el histórico (`memory/full/adr.yaml`, `memory/full/sessions.yaml`)
+- Compila de forma INCREMENTAL: parte del `context.yaml` anterior y lee solo lo nuevo desde la última compilación (desde cero solo si se lo pides)
 - Aplica criterio inteligente de filtrado
-- Genera `memory/context.yaml` compacto (máx 2000 líneas)
-- Aplica Plan de Contingencia si supera 150K tokens
+- Actualiza `memory/context.yaml` compacto (máx 2000 líneas, cabe en una lectura)
+- Mantiene ligera la capa condensada de `memory.yaml` (fusiones trazables, con tu OK)
+- Aplica Plan de Contingencia si supera el presupuesto (medido en bytes)
+
+`endSession` te lo ofrece en un agente fresco cuando hay 5 o más sesiones sin compilar.
 
 ## 📁 Estructura
 
@@ -75,23 +78,26 @@ memsys3/
 │   └── context-agent.yaml         # Configuración del Context Agent
 ├── memory/
 │   ├── context.yaml                # Context compilado (generado por CA)
-│   ├── project-status.yaml         # Estado actual del proyecto
+│   ├── project-status.yaml         # Estado vivo (índice de pendientes, sin histórico)
+│   ├── memory.yaml                 # Memoria del usuario, capa ligera (lo que lee el arranque)
 │   ├── README.md                   # Documentación detallada del sistema
-│   ├── full/                       # Documentación completa
+│   ├── full/                       # Datos completos (NO se leen al arrancar)
 │   │   ├── adr.yaml               # Architectural Decision Records
 │   │   ├── sessions.yaml          # Historial de sesiones
+│   │   ├── memory_full.yaml       # Memoria del usuario, capa completa (mismo id)
+│   │   ├── tasks.yaml             # Detalle de tareas sin expediente
 │   │   └── (archivos rotados: adr_N.yaml, sessions_N.yaml)
 │   ├── templates/                  # Templates YAML reutilizables
 │   │   ├── adr-template.yaml
 │   │   ├── context-template.yaml
+│   │   ├── memory-template.yaml
 │   │   ├── project-status-template.yaml
 │   │   └── sessions-template.yaml
 │   └── history/                    # Archivos archivados (NO se leen)
-│       └── (datos antiguos cuando >150K tokens)
+│       └── (datos antiguos cuando se supera el presupuesto)
 └── prompts/
     ├── newSession.md              # Cargar contexto al iniciar
     ├── endSession.md              # Documentar sesión
-    ├── compile-context.md         # Compilar contexto (Context Agent)
     └── compile-context.md         # Compilar contexto (Context Agent)
 ```
 
@@ -104,10 +110,10 @@ memsys3/
 - Se crean ADRs si hay decisiones arquitectónicas importantes
 
 ### 2. Compilar (Context Agent)
-- En nueva instancia limpia: `@memsys3/prompts/compile-context.md`
-- Lee TODO el histórico
+- En instancia limpia o agente fresco (endSession lo ofrece): `memsys3/prompts/compile-context.md`
+- Incremental: contexto anterior + lo nuevo
 - Aplica criterio inteligente
-- Genera `memory/context.yaml` compacto
+- Actualiza `memory/context.yaml` compacto y mantiene ligera `memory.yaml`
 
 ### 3. Desarrollar (Main Agent)
 - Nueva sesión: `@memsys3/prompts/newSession.md`
@@ -145,13 +151,19 @@ Cuando `sessions.yaml` o `adr.yaml` superan 1800 líneas:
 - `adr.yaml` → `adr_1.yaml`
 - Context Agent lee TODOS los archivos rotados
 
-### Plan de Contingencia (>150K tokens)
+### Plan de Contingencia (presupuesto en bytes)
 
-Cuando el total de `memory/full/` supera 150K tokens:
+Cuando lo que el Context Agent tiene que leer supera su presupuesto (~300 KB en español / ~600 KB en inglés ≈ 150K tokens, medido con `wc -c`):
 - Context Agent identifica datos irrelevantes
 - Los mueve a `memory/history/` (NO se lee → ahorro real)
-- Reduce a ~120K tokens
+- Reduce a ~80% del presupuesto
 - Datos preservados, no perdidos, recuperables
+
+### Todo lo que lee el arranque cabe en una lectura (ADR-033)
+
+- `memory.yaml` en dos capas: ligera (id + regla + fecha) y `full/memory_full.yaml` (contexto y origen, mismo id)
+- `project-status.yaml` = solo estado vivo: sin histórico, `pendientes_prioritarios` como índice de líneas ≤300 caracteres con `→ puntero`
+- `endSession` limpia sin preguntar; `newSession` agrupa los pendientes vencidos en una sola pregunta
 
 ## 📖 Documentación Detallada
 
@@ -168,7 +180,7 @@ Ver **[memory/README.md](memory/README.md)** para:
 ## 💡 Tips
 
 ### Para Main-Agent
-- NO ejecutes `compile-context.md` (consume muchos tokens)
+- NO ejecutes `compile-context.md` tú mismo (ADR-008); con ≥5 sesiones sin compilar, endSession ofrece lanzarlo en un agente fresco
 - Sugiere `endSession.md` al finalizar sesión
 - El user decide cuándo compilar el contexto
 

@@ -12,16 +12,16 @@
 - **Sin CLI ni instalador** — el instalador ES tu agente: los prompts son archivos Markdown que cualquier AI agent ejecuta directamente, sin herramientas externas
 - **Deploy y actualización triviales** — un comando para instalar, un comando para actualizar
 - **Human in the loop** — tú decides cuándo empezar y acabar sesión, cuándo compilar contexto, cuándo actualizar. El sistema no hace nada sin ti
-- **Límites de contexto configurables** — diseñado respetando los límites reales de las herramientas (2K líneas, 25K tokens por lectura), con rotación y archivado automático cuando crece
+- **Todo lo que lee el arranque cabe en una lectura** — memoria en dos capas, estado vivo corto, presupuestos medidos en bytes (ADR-033); rotación y archivado automático cuando crece
 
 ## ✨ Qué incluye
 
-- Context compilado en un único archivo (~3K tokens)
+- Context compilado en un único archivo, actualizado de forma incremental
 - Sistema de documentación estructurado (ADRs, sessions, status)
 - Context Agent que sintetiza automáticamente la información relevante
 - Prompts reutilizables (newSession, endSession, compile-context, deploy, actualizar, adr, backlog, github)
 - Rotación automática cuando supera límites (>1800 líneas)
-- Plan de contingencia con archivado inteligente (>150K tokens)
+- Plan de contingencia con archivado inteligente (presupuesto medido en bytes, ~300 KB en español)
 - Actualización segura en proyectos existentes (con detección de estructura antigua)
 - Sistema Backlog y ADRs gestionables con prompts dedicados
 - **PRINCIPLES.md canónico** — los 10 principios sistémicos que rigen memsys3 (anti-CDC, agnosticismo, una sola carpeta, etc.). Ver [`memsys3_templates/PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md).
@@ -100,14 +100,18 @@ memsys3/                          # Repositorio GitHub
 │   │   └── context-agent.yaml # Template del Context Agent
 │   ├── memory/
 │   │   ├── context.yaml        # Template de contexto (vacío)
-│   │   ├── project-status.yaml # Template de estado (genérico)
+│   │   ├── project-status.yaml # Estado vivo (índice de pendientes, sin histórico)
+│   │   ├── memory.yaml         # Memoria del usuario, capa ligera (lo que lee el arranque)
 │   │   ├── README.md          # Documentación detallada
-│   │   ├── full/              # Templates de documentación
-│   │   │   ├── adr.yaml      # Template de ADRs (vacío)
-│   │   │   └── sessions.yaml # Template de sessions (vacío)
+│   │   ├── full/              # Datos completos (no se leen al arrancar)
+│   │   │   ├── adr.yaml      # ADRs
+│   │   │   ├── sessions.yaml # Sesiones
+│   │   │   ├── memory_full.yaml # Memoria del usuario, capa completa (mismo id)
+│   │   │   └── tasks.yaml    # Detalle de tareas sin expediente
 │   │   └── templates/         # Templates YAML base
 │   │       ├── adr-template.yaml
 │   │       ├── context-template.yaml
+│   │       ├── memory-template.yaml
 │   │       ├── project-status-template.yaml
 │   │       └── sessions-template.yaml
 │   └── prompts/
@@ -131,10 +135,10 @@ memsys3/                          # Repositorio GitHub
 - Actualiza `memsys3/memory/project-status.yaml`
 
 ### 2. **Compilar** (Context Agent)
-- Ejecuta `@memsys3/prompts/compile-context.md`
-- Genera `memsys3/memory/context.yaml` compacto con criterio inteligente
-- Aplica rotación automática si supera 1800 líneas
-- Aplica Plan de Contingencia si supera 150K tokens
+- Ejecuta `memsys3/prompts/compile-context.md` (endSession lo ofrece en un agente fresco con ≥5 sesiones sin compilar)
+- Actualiza `memsys3/memory/context.yaml` de forma incremental con criterio inteligente
+- Mantiene ligera la capa condensada de `memory.yaml` (fusiones trazables, con tu OK)
+- Aplica Plan de Contingencia si supera el presupuesto (medido en bytes)
 
 ### 3. **Desarrollar** (Main Agent)
 - Carga `@memsys3/prompts/newSession.md`
@@ -147,21 +151,26 @@ memsys3/                          # Repositorio GitHub
 - Filosofía: "¿Qué debe saber CUALQUIER agent descontextualizado para trabajar aquí?"
 - Límite único: máx 2000 líneas en context.yaml
 - NO límites arbitrarios por ADRs/sessions
-- Lee TODO primero, después filtra con criterio
-- **README opcional**: acepta proyectos sin README o puede crear automáticamente desde project-status
+- Incremental por defecto: parte del `context.yaml` anterior y lee solo lo nuevo desde la última compilación; desde cero solo a petición
+- Mantiene la capa ligera de `memory.yaml`: fusiona reglas repetidas de forma trazable (`ids:`) y solo con OK del usuario
 
 ### Rotación Automática (>1800 líneas)
 - Detecta automáticamente cuando sessions.yaml o adr.yaml superan 1800 líneas
 - Rotación segura: copia → verifica → crea nuevo
 - sessions.yaml → sessions_N.yaml
 - adr.yaml → adr_N.yaml
-- CA lee todos los archivos rotados hasta detectar >150K tokens
+- CA lee los rotados que necesite (solo los nuevos en modo incremental)
 
-### Plan de Contingencia (>150K tokens)
-- Cuando contexto supera 150K tokens, CA archiva datos irrelevantes
-- Mueve a memsys3/memory/history/ (que NO se lee → ahorro real)
-- Reduce a ~120K tokens
+### Plan de Contingencia (presupuesto en bytes)
+- Presupuesto de ingesta medido con `wc -c`: ~300 KB en español, ~600 KB en inglés (≈150K tokens). La estimación por caracteres/4 se queda corta casi a la mitad en español
+- Si se supera, CA archiva datos irrelevantes a memsys3/memory/history/ (que NO se lee → ahorro real) hasta ~80%
 - Datos preservados, no perdidos
+
+### Todo lo que lee el arranque cabe en una lectura (ADR-033)
+- `memory.yaml` en dos capas: ligera (id + regla + fecha, lo que lee el arranque) y `full/memory_full.yaml` (contexto y origen)
+- `project-status.yaml` = solo estado vivo: sin histórico de sesiones, `pendientes_prioritarios` como índice de líneas cortas con puntero
+- `endSession` limpia sin preguntar (quita lo cerrado, acorta, mueve a `history/` si crece); `newSession` agrupa los vencidos en una sola pregunta
+- Medido en un proyecto real: arranque de ~245K a ~140K tokens
 
 ### Sistema de Templates YAML
 - Templates agnósticos reutilizables
