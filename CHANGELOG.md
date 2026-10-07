@@ -7,6 +7,8 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-10-07
+
 ### Added
 - **ADR-033 — Memoria ligera: lo que lee el arranque cabe en UNA lectura.** Origen: dogfooding en gitkigai raíz (2026-10-07): el arranque costaba ~245K tokens antes de trabajar; con los cambios de abajo quedó en ~140K el mismo día. Corolario nuevo en `PRINCIPLES.md` #1 (0.1.0 → 0.2.0): leer a trozos incita a la CDC — si el estado no cabe en una lectura, cada arranque ve un estado distinto según los filtros que eligió.
 - **`memory.yaml` en dos capas** (`memory-template.yaml` 0.1.0 → 0.2.0): `memory/memory.yaml` es la capa ligera (una entrada por regla con `id` + regla condensada + fecha; lo único que lee el arranque) y `memory/full/memory_full.yaml` (scaffold nuevo) la capa completa con el contexto/origen, enlazadas por `id`. Un refinamiento reescribe la línea existente en la capa ligera en vez de apilar otra.
