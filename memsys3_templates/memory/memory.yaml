@@ -3,7 +3,8 @@
 #
 # Una entrada por regla/dato: id (slug único) + regla condensada en 1-2 frases + fecha.
 # Sin contexto ni anécdota: eso vive en full/memory_full.yaml con el mismo id.
-# Toda entrada nueva se escribe en las dos capas. Main Agent escribe, Context Agent solo lee.
+# Toda entrada nueva se escribe en las dos capas. Main Agent escribe; el Context Agent solo
+# fusiona familias de reglas aquí (trazable, con OK del usuario) al compilar.
 
 metadata:
   ultima_actualizacion: ""

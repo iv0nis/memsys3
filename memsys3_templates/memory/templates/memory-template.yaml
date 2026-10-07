@@ -1,4 +1,4 @@
-# version: 0.2.0
+# version: 0.3.0
 # Template: memory.yaml (capa ligera) + full/memory_full.yaml (capa completa)
 #
 # Memoria de usuario y feedback agnóstica (ADR-020). Desde ADR-033 vive en DOS capas:
@@ -33,7 +33,11 @@
 #   - La capa ligera debe caber en UNA lectura del arranque (ADR-033). Fusionar familias de
 #     reglas y aplicar el techo de tamaño es mantenimiento del Context Agent al compilar.
 #   - Main Agent: lectura + escritura (ambas capas)
-#   - Context Agent: SOLO lectura
+#   - Context Agent: lee ambas; al compilar puede REESCRIBIR solo la capa ligera para
+#     fusionar familias de reglas (línea fusionada con `ids: [...]` de todas las absorbidas,
+#     verificación de que ningún id de full/ se pierde, informe antes/después y OK del
+#     usuario, commit de retorno). La capa completa es intocable para el CA.
+#   - metadata.techo_bytes (opcional): techo de la capa ligera; por defecto 70 KB.
 #   - file_version: solo se bumpa con /actualizar-memsys3 (ADR-017)
 #
 # BRIDGE (opcional):

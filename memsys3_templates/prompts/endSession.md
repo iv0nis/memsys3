@@ -305,6 +305,13 @@ echo "Sesiones sin compilar: $sesiones_sin_compilar"
 
 **SIEMPRE informar al usuario** del estado de compilación en el resumen final (paso 6).
 
+**Si hay 5 o más sesiones sin compilar, OFRECE compilar ahora** (ADR-033; ADR-008 sigue vigente: NO compiles tú, que llevas la sesión cargada). Es la única pregunta de este prompt y es opcional:
+
+1. Pregunta: «Hay N sesiones sin compilar. ¿Compilo ahora `context.yaml` en un agente fresco?».
+2. Si el usuario acepta y tu harness permite lanzar un agente con contexto limpio (sub-agente, fork, nueva instancia), lánzalo con la instrucción literal «ejecuta `memsys3/prompts/compile-context.md`» y SIN pasarle tu conversación. El agente compila en modo incremental y te devuelve: resumen, `context.yaml` escrito y, si propone fusiones en `memory.yaml`, la propuesta (no la escribe él). Muestra el resumen y las fusiones (antes/después) al usuario; aplica las fusiones solo con su OK.
+3. Si tu harness no puede lanzar un agente limpio, dilo y recuerda la vía manual: abrir una sesión nueva y ejecutar `memsys3/prompts/compile-context.md`.
+4. Si el usuario no acepta, no insistas: deja el aviso en el resumen.
+
 ### 5.5. Estado git (ejecutar AHORA si el proyecto tiene repo; si no, omitir en silencio)
 
 memsys3 no requiere git. Pero si el proyecto lo usa, el commit ES la canonización del progreso: una sesión documentada y sin commitear vive solo en el working tree, y un commit sin pushear no existe para otras máquinas ni colaboradores. Este paso NO commitea ni pushea por su cuenta (human-in-the-loop): muestra el estado y lo lleva al resumen del paso 6.
@@ -337,7 +344,7 @@ Resumen breve de qué se ha documentado:
 ✅ memsys3/memory/project-status.yaml actualizado (índice: [N] líneas cerradas quitadas, [M] movidas a expediente/tasks.yaml)
 ✅ Rotación hecha (si hacía falta): sessions.yaml → sessions_N.yaml
 📊 context.yaml: [N] sesiones sin compilar (ultima: YYYY-MM-DD)
-   [Si N >= 5]: ⚠️ Recomendado ejecutar @memsys3/prompts/compile-context.md en una sesion nueva
+   [Si N >= 5]: ⚠️ Recomendado compilar: ¿lo lanzo en un agente fresco? (o ejecuta memsys3/prompts/compile-context.md en una sesion nueva)
 🔀 git (solo si hay repo): [rama] — [N] cambios sin commitear, [M] commits sin pushear
    [Si N > 0 o M > 0]: ¿Ejecuto memsys3/prompts/github.md? Sin push, esta sesión no llega a otras máquinas ni colaboradores.
 
@@ -360,4 +367,4 @@ Próximos pasos: [Top 2-3 tareas pendientes]
 ---
 
 **Comienza ahora la documentación de la sesión actual.**
-<!-- version: 0.5.0 -->
+<!-- version: 0.6.0 -->
