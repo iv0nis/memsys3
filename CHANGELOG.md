@@ -7,6 +7,14 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.33.0] - 2026-10-07
+
+### Changed
+- **`compile-context.md` reescrito (0.3.0 → 0.4.0) + `context-agent.yaml` (0.3.0 → 0.4.0) + `context-template.yaml` (0.2.0 → 0.3.0)** — ADR-033 update. **Compilación incremental por defecto:** el `context.yaml` previo es entrada oficial (Tier 0) y solo se leen enteras las sesiones, ADRs, items de backlog y commits posteriores a `ultima_compilacion`; lo demás se hereda y se poda. Recompilación completa solo sin contexto previo o a petición del usuario. Motivo: releerlo todo (gitkigai: 793 KB de sesiones) hacía que nadie compilara.
+- **El Context Agent mantiene la capa ligera de `memory.yaml`** (enmienda a ADR-020, que le daba solo lectura; `memory-template.yaml` 0.2.0 → 0.3.0): techo 70 KB por defecto (`metadata.techo_bytes`), fusiones de familias de reglas **trazables** (la línea fusionada conserva `ids:` de todas las absorbidas y no dice nada que no diga alguna de ellas), verificación de que ningún id de `full/memory_full.yaml` se pierde, informe antes/después y escritura solo con OK del usuario, commit de retorno previo. `full/` intocable. No toca `project-status.yaml`.
+- **`endSession.md` (0.5.0 → 0.6.0): con ≥5 sesiones sin compilar OFRECE compilar en un agente fresco** (sub-agente/fork/nueva instancia, por el medio que ofrezca el harness, sin pasarle la conversación). El usuario decide; ADR-008 sigue vigente (el Main Agent no compila). Cierra EXPLORATION-008 en su variante «proponer + confirmar».
+- `compile-context.md` Paso 0 avisa si `$(pwd)` no es la raíz esperada (gotcha del cwd, 3 evidencias en gitkigai).
+
 ## [0.32.0] - 2026-10-07
 
 ### Added
