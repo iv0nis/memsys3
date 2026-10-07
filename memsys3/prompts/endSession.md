@@ -117,10 +117,10 @@ Antes de documentar, determina la importancia arquitectónica de esta sesión:
 Antes de documentar, hazte una pasada explícita por cada categoría:
 
 - **Principio general** aplicable más allá de esta sesión → candidato a `memsys3/PRINCIPLES.md` (en proyectos desplegados, registrar en sessions.yaml como observación para upstream; en este repo upstream, editar directamente con ADR de respaldo).
-- **Regla / feedback del usuario** (corrección recibida, validación no obvia, preferencia confirmada) → `memsys3/memory/memory.yaml` sección `feedback` (append + datado + motivo).
+- **Regla / feedback del usuario** (corrección recibida, validación no obvia, preferencia confirmada) → `memsys3/memory/memory.yaml` sección `feedback`, en DOS capas con el mismo `id` (slug único, ADR-033): en `memory.yaml` la regla condensada en 1-2 frases con todo lo operativo + `fecha`, sin anécdota; en `memsys3/memory/full/memory_full.yaml` la entrada completa con su `motivo`/`contexto`. Si refina una regla existente, REESCRIBE su línea en `memory.yaml` (no apiles otra) y añade el refinamiento a `full/` con id propio.
 - **Hecho del proyecto** (decisión, constraint, deadline, stakeholder) no documentado → `memsys3/memory/project-status.yaml` o sessions.yaml según naturaleza.
 - **Gotcha sutil** que un agente futuro NO podrá deducir del código → campo `gotchas:` de la sesión actual.
-- **Referencia externa** (URL, sistema, doc, dashboard) que el proyecto debería conocer → `memsys3/memory/memory.yaml` sección `referencias`.
+- **Referencia externa** (URL, sistema, doc, dashboard) que el proyecto debería conocer → `memsys3/memory/memory.yaml` sección `referencias` (misma regla de dos capas).
 
 Si la información parece "ya estar implícita en el diff o el commit": canonízala igualmente. Los commits no se leen al iniciar sesión; los archivos canónicos sí. La intuición "esto ya está claro" es síntoma de meta-amnesia, no señal de que se haya guardado.
 
@@ -227,7 +227,7 @@ new_string: "sessions:
 - ID y data: YYYY-MM-DD de hoy
 - Título descriptivo y conciso
 - **⚠️ NO crear archivos detallados en `memory/history/`** - toda la info va DIRECTAMENTE en sessions.yaml
-- **Importante**: `memory/history/` es SOLO para archivado del Plan de Contingencia (cuando full/ supera 150K tokens), NO para sesiones normales
+- **Importante**: `memory/history/` es SOLO para archivado (Plan de Contingencia del Context Agent y red de seguridad de tamaño de project-status, paso 4.D), NO para sesiones normales
 - **IMPORTANTE - Gotchas**: Si has encontrado errores críticos, warnings o traps:
   - Documentarlos en el campo `gotchas:` de la sesión
   - Incluir: `tipo`, `problema`, `solucion`, `criticidad` (alta|media|baja)
@@ -253,13 +253,21 @@ Si creas ADR:
 2. Usar `memsys3/memory/templates/adr-template.yaml`
 3. Linkear ADR desde sesión (campo `adr_relacionada`)
 
-**C. Actualizar `memsys3/memory/project-status.yaml`:**
+**C. Actualizar `memsys3/memory/project-status.yaml` (solo estado vivo, ADR-033):**
 - `metadata.ultima_actualizacion`: Fecha de hoy
-- `metadata.actualizado_por`: "[tu agente/modelo] (Session [Título])"
-- `estado_actual.ultima_feature`: Si has completado feature
+- `metadata.actualizado_por`: "[tu agente/modelo] (Session [Título])" — SOBRESCRIBE el valor anterior; nunca lo encadenes con `||` ni "ANTERIOR:"
+- `estado_actual.ultima_feature`: Si has completado feature (una línea; el detalle ya está en sessions.yaml)
 - `features`: Cambiar `estado: operativo` si se ha completado
-- `historico_sesiones`: Añadir entrada resumida
-- `pendientes_prioritarios`: Actualizar según próximos pasos
+- `pendientes_prioritarios`: es un ÍNDICE, no una bitácora. Una línea telegráfica por tarea (≤ 300 caracteres: `[<estado/fecha> · <TEMA>] <qué toca> → <puntero>`), solo para lo que tiene fecha, plazo o acción próxima. El detalle vive en el puntero: README del expediente, item de `memsys3/backlog/`, sesión, o `memsys3/memory/full/tasks.yaml#<id>` si la tarea no tiene expediente (entrada con `id`, `fecha`, `estado`, `detalle`).
+- NO hay `historico_sesiones` en project-status: el log es `sessions.yaml` (paso 4.A). Si el archivo todavía tiene esa clave (deploy anterior a ADR-033), no le añadas nada.
+
+**D. Higiene mecánica del estado (sin preguntar nada al usuario):**
+
+endSession no interactúa con el usuario: lo que exige criterio lo pregunta el próximo `newSession`. Aquí solo lo mecánico:
+1. Quitar del índice `pendientes_prioritarios` las líneas que ESTA sesión ha cerrado (su cierre ya consta en la entrada de sessions.yaml). Si estaban en `tasks.yaml`, marcar `estado: cerrado`. No dejes líneas con ✅.
+2. Llevar fuera del índice las líneas sin fecha ni acción próxima: a la sección de pendientes del README de su expediente si lo tiene, o a `full/tasks.yaml` con el texto íntegro. Antes de quitar cualquier línea, extrae las fechas futuras que contenga y comprueba que viven en el destino.
+3. Acortar a ≤ 300 caracteres, con `→ puntero`, cualquier línea nueva más larga. Acortar NO es reclasificar: no cambies estados en este paso.
+4. Red de seguridad de tamaño: `wc -c "$MEMSYS3_ROOT/memory/project-status.yaml"`. Si supera ~30 KB (ajústalo si el proyecto ha fijado otro techo), mueve a `memsys3/memory/history/project-status_historico_YYYY-MM-DD.yaml` todo lo que no sea estado vivo (histórico, cadenas de `actualizado_por`, narrativa) y deja el archivo por debajo. Se mueve, no se borra (PRINCIPLES #8). Repórtalo en el paso 6.
 
 ### 4.5. Referenciar documentos importantes (si aplica)
 
@@ -326,7 +334,7 @@ Resumen breve de qué se ha documentado:
 ✅ Sesión documentada en memsys3/memory/full/sessions.yaml
    Peso: [BAJO/MEDIO/ALTO] (~X líneas)
 ✅ [N] ADRs creadas (si las hay)
-✅ memsys3/memory/project-status.yaml actualizado
+✅ memsys3/memory/project-status.yaml actualizado (índice: [N] líneas cerradas quitadas, [M] movidas a expediente/tasks.yaml)
 ✅ Rotación hecha (si hacía falta): sessions.yaml → sessions_N.yaml
 📊 context.yaml: [N] sesiones sin compilar (ultima: YYYY-MM-DD)
    [Si N >= 5]: ⚠️ Recomendado ejecutar @memsys3/prompts/compile-context.md en una sesion nueva
@@ -352,4 +360,4 @@ Próximos pasos: [Top 2-3 tareas pendientes]
 ---
 
 **Comienza ahora la documentación de la sesión actual.**
-<!-- version: 0.4.0 -->
+<!-- version: 0.5.0 -->

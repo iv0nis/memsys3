@@ -1,4 +1,4 @@
-# version: 0.1.0
+# version: 0.2.0
 
 metadata:
   ultima_actualizacion: ""
@@ -30,5 +30,3 @@ decisiones_clave: {}
 convenciones_codigo: {}
 
 comandos_utiles: {}
-
-historico_sesiones: []

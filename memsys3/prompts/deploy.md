@@ -177,7 +177,6 @@ urls:
 pendientes_prioritarios: []  # rellenar si user indicó pendientes_iniciales
 
 decisiones_clave: {}
-historico_sesiones: []
 ```
 
 ### Paso 7 — Personalizar `prompts/newSession.md`

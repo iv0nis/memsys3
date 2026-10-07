@@ -1,0 +1,8 @@
+# version: 0.1.0
+# Detalle de tareas sin expediente propio (ADR-033). NO se lee al arrancar.
+# El índice vive en project-status.yaml → pendientes_prioritarios, una línea por tarea
+# con «→ full/tasks.yaml#<id>». Si la tarea tiene expediente (README, item de backlog),
+# su detalle va allí, no aquí.
+# Entrada: id (slug kebab-case) · fecha · estado (abierto | cerrado) · detalle.
+
+tasks: []

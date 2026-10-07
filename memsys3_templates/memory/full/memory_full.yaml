@@ -1,0 +1,16 @@
+# version: 0.1.0
+# Memoria de usuario y feedback — CAPA COMPLETA (NO se lee al arrancar; se consulta por id)
+# ADR-020 / ADR-033. Schema en memory/templates/memory-template.yaml.
+#
+# Cada entrada repite el id de memory.yaml y añade su contexto/origen (por qué existe).
+# Append + datado; nunca se sobreescriben entradas históricas.
+
+metadata:
+  ultima_actualizacion: ""
+  file_version: "0.1.0"
+
+usuario: []
+
+feedback: []
+
+referencias: []

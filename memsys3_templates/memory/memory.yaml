@@ -1,11 +1,13 @@
-# Memoria de usuario y feedback
-# ADR-020. Schema en memory/templates/memory-template.yaml.
+# Memoria de usuario y feedback — CAPA LIGERA (lo único que lee el arranque)
+# ADR-020 / ADR-033. Schema en memory/templates/memory-template.yaml.
 #
-# Append + datado. Main Agent escribe, Context Agent solo lee.
+# Una entrada por regla/dato: id (slug único) + regla condensada en 1-2 frases + fecha.
+# Sin contexto ni anécdota: eso vive en full/memory_full.yaml con el mismo id.
+# Toda entrada nueva se escribe en las dos capas. Main Agent escribe, Context Agent solo lee.
 
 metadata:
   ultima_actualizacion: ""
-  file_version: "0.1.0"
+  file_version: "0.2.0"
 
 usuario: []
 

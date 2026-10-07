@@ -30,12 +30,14 @@ Estos pasos NO son opcionales ni diferidos: ejecútalos como primer acto de la s
 
 1. Lee `README.md` del proyecto para entender su visión general y objetivo.
 2. Lee `memsys3/PRINCIPLES.md` si existe — referencia canónica de los principios sistémicos de memsys3 (ADR-022).
-3. Lee `memsys3/memory/project-status.yaml` para conocer el estado actual (fase, features, pendientes).
+3. Lee `memsys3/memory/project-status.yaml` para conocer el estado actual (fase, features, pendientes). `pendientes_prioritarios` es un índice de líneas cortas con `→ puntero` (ADR-033): léelo en UNA pasada y abre el puntero solo si hace falta para clasificar o para la tarea.
 4. Lee `memsys3/memory/context.yaml` para cargar la memoria histórica (ADRs, sessions, gotchas).
-5. Lee `memsys3/memory/memory.yaml` para conocer al usuario y reglas de comportamiento aprendidas (ADR-020).
+5. Lee `memsys3/memory/memory.yaml` para conocer al usuario y reglas de comportamiento aprendidas (ADR-020). Es la capa ligera; el porqué de cada regla está en `memsys3/memory/full/memory_full.yaml` con el mismo `id` — NO la leas al arrancar, consúltala por id solo si una regla te resulta ambigua (ADR-033).
 6. Lee `memsys3/agents/main-agent.yaml` y aplica sus restricciones desde este momento (incluyen reglas duras: no firmar commits, no bumpar `file_version`, no escribir memoria de usuario fuera de `memory.yaml`, etc.).
 
 Confirma al usuario en una línea que has completado la carga antes de proseguir.
+
+**Pendientes con fecha pasada y sin cierre (ADR-033).** Si el índice `pendientes_prioritarios` tiene líneas cuya fecha ya pasó y nadie cerró, NO las presentes una a una como vencidas. Agrúpalas en UNA sola pregunta al final de tu resumen de arranque («estos N tienen fecha pasada y nadie los ha cerrado: ¿cerrados, o cuáles siguen?»). Con la respuesta, quita del índice los cerrados (anota el cierre en la sesión) y renueva la fecha de los que siguen. Es el único sitio donde se pregunta por higiene: `endSession` no pregunta nada. Si no hay vencidos, omite esto en silencio.
 
 ## 2. Invariante de memoria agnóstica (ADR-027)
 
@@ -87,4 +89,4 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 - memory.yaml contiene perfil del usuario + feedback (reglas/correcciones aprendidas)
 - Juntos proporcionan contexto completo para trabajar efectivamente
 
-<!-- version: 0.4.0 -->
+<!-- version: 0.5.0 -->

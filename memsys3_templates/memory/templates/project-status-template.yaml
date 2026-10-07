@@ -1,11 +1,15 @@
-# version: 0.1.0
+# version: 0.2.0
 # Project Status Template
 # Template agnóstico para documentar el estado de cualquier proyecto
 # Copia este archivo y rellena los campos marcados con [RELLENAR]
+#
+# REGLA (ADR-033): project-status.yaml es SOLO estado vivo y debe caber en UNA lectura
+# del arranque. El histórico de sesiones vive en memory/full/sessions.yaml, no aquí.
+# `actualizado_por` se sobrescribe en cada cierre, nunca se encadena.
 
 metadata:
   ultima_actualizacion: "[FECHA]"  # Ejemplo: 2025-10-23
-  actualizado_por: "[NOMBRE]"  # Quién ha hecho la última actualización
+  actualizado_por: "[NOMBRE]"  # Quién ha hecho la última actualización (una línea; se SOBRESCRIBE, no se encadena)
   fase: "[FASE]"  # Ejemplos: Planificación, MVP, Beta, Producción, Mantenimiento
   memsys3_version: "[VERSION]"  # Versión de memsys3 desplegada (se rellena durante deployment)
   memsys3_deployed: "[FECHA]"  # Fecha de deployment de memsys3 (se rellena durante deployment)
@@ -73,18 +77,19 @@ urls:
   staging: "[URL_STAGING]"  # Opcional
   # Añade más URLs según necesidad
 
-# Tareas pendientes ordenadas por prioridad
+# ÍNDICE de pendientes (ADR-033): solo lo que tiene fecha, plazo o acción próxima.
+# Una línea telegráfica por tarea, ≤ 300 caracteres, con puntero al detalle:
+#   "[<estado/fecha clave> · <TEMA>] <qué toca, con cifras y fechas> → <puntero>"
+# El puntero lleva al sitio donde vive el detalle: README del expediente, item de
+# memsys3/backlog/, sesión de sessions.yaml o memory/full/tasks.yaml#<id> (tareas sin
+# expediente). Las ideas sin fecha NO entran aquí: van directas a su expediente o a tasks.yaml.
+# Al cerrar una tarea se QUITA la línea (su cierre consta en sessions.yaml); no se deja ✅.
+# Telegráfico sí (sin artículos ni conectores); críptico no (sin abreviaturas inventadas).
+# Se lee en UNA pasada: si crece hasta no caber, mover a tasks.yaml lo que no sea inmediato.
 pendientes_prioritarios:
-  - prioridad: 1
-    tarea: "[TAREA MAS IMPORTANTE]"
-    detalle: "[DETALLES O CONTEXTO]"  # Opcional
-
-  - prioridad: 2
-    tarea: "[SEGUNDA TAREA]"
-    detalle: "[DETALLES]"
-
-  # Añade más tareas según necesidad
-  # Mantén siempre las top 5-7 más importantes
+  - "[2026-06-15 · FACTURACIÓN] Enviar factura Q2 a CLIENTE antes del 15/06 → memsys3/memory/full/tasks.yaml#factura-q2"
+  - "[P1 · AUTH] Migrar login a OAuth; bloquea release 1.2 → memsys3/backlog/FEATURE-003-oauth.md"
+  # Añade más tareas según necesidad. Lo que no tiene fecha ni acción próxima, fuera del índice.
 
 # Decisiones técnicas importantes que hay que recordar
 # Documenta el "por qué" de decisiones no obvias
@@ -131,21 +136,5 @@ comandos_utiles:
   lint: "[COMANDO LINT]"  # Ejemplo: npm run lint
   # Añade más comandos según necesidad
 
-# Histórico de sesiones/sprints importantes
-# Añade una entrada para cada sesión de trabajo significativa
-historico_sesiones:
-  - fecha: "[YYYY-MM-DD]"
-    duracion: "[DURACION]"  # Opcional: 2h, 1 día, etc.
-    objetivo: "[OBJETIVO SESION]"  # Qué se quería conseguir
-    features_implementadas:
-      - "[FEATURE 1]"
-      - "[FEATURE 2]"
-    problemas_resueltos:
-      - "[PROBLEMA 1]"
-      - "[PROBLEMA 2]"
-    decisiones_tomadas:
-      - "[DECISION 1]"
-      - "[DECISION 2]"
-    notas: "[NOTAS ADICIONALES]"  # Opcional
-
-  # Añade más sesiones aquí manteniendo las más recientes al principio
+# NOTA (ADR-033): aquí NO hay histórico de sesiones. El log es memory/full/sessions.yaml;
+# duplicarlo aquí hacía crecer el estado hasta no caber en una lectura.

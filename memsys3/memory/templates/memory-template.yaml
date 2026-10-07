@@ -1,7 +1,16 @@
-# version: 0.1.0
-# Template: memory.yaml
+# version: 0.2.0
+# Template: memory.yaml (capa ligera) + full/memory_full.yaml (capa completa)
 #
-# Memoria de usuario y feedback agnóstica (ADR-020).
+# Memoria de usuario y feedback agnóstica (ADR-020). Desde ADR-033 vive en DOS capas:
+#   1. memory/memory.yaml — CAPA LIGERA. Una entrada por regla/dato, condensada en 1-2
+#      frases con todo lo operativo (qué hacer, qué no, condiciones, rutas, cifras) + fecha.
+#      Sin contexto ni anécdota. Es lo ÚNICO que lee el arranque (newSession).
+#   2. memory/full/memory_full.yaml — CAPA COMPLETA. La misma entrada con su contexto/origen
+#      (la anécdota de por qué existe). NO se lee al arrancar; se consulta por `id` cuando
+#      hace falta el porqué. Mismo patrón que sessions.yaml ↔ context.yaml.
+#
+# Las dos capas se enlazan por `id`: slug kebab-case, único, el mismo en ambas.
+# Los [[enlaces]] entre entradas apuntan a ids.
 #
 # QUÉ guarda:
 #   - usuario: perfil, rol, contexto profesional, preferencias de colaboración
@@ -15,40 +24,79 @@
 #   - Eventos de sesión → usar sessions.yaml
 #
 # REGLAS:
-#   - Append + datado, NUNCA sobreescribir entradas históricas
-#   - Schema flexible: las secciones de abajo son orientativas
-#   - Main Agent: lectura + escritura
+#   - Toda entrada nueva se escribe en LAS DOS capas con el mismo id (append + datado).
+#   - Un refinamiento de una regla existente REESCRIBE su línea en la capa ligera (no se
+#     apila otra entrada) y entra en full/ como entrada propia con su id. La capa completa
+#     NUNCA sobreescribe entradas históricas.
+#   - Estilo telegráfico sí (sin artículos ni conectores sobrantes); críptico no (sin
+#     abreviaturas inventadas: el usuario tiene que poder leer su propia memoria).
+#   - La capa ligera debe caber en UNA lectura del arranque (ADR-033). Fusionar familias de
+#     reglas y aplicar el techo de tamaño es mantenimiento del Context Agent al compilar.
+#   - Main Agent: lectura + escritura (ambas capas)
 #   - Context Agent: SOLO lectura
 #   - file_version: solo se bumpa con /actualizar-memsys3 (ADR-017)
 #
-# BRIDGE (opcional, Claude Code):
-#   Si el modelo es Claude, deploy.md crea MEMORY.md raíz con un puntero
-#   corto a este archivo (ADR-020). MEMORY.md NO contiene memoria real.
+# BRIDGE (opcional):
+#   deploy.md crea MEMORY.md raíz con un puntero corto a este archivo (ADR-020). Ocupa el
+#   sitio de la convención de memoria en raíz para que un agente que la siga encuentre la
+#   redirección en vez de crear una fuente rival. MEMORY.md NO contiene memoria real.
+
+# ---------------------------------------------------------------------------
+# CAPA LIGERA — memory/memory.yaml
+# ---------------------------------------------------------------------------
 
 metadata:
   ultima_actualizacion: "YYYY-MM-DD"
-  file_version: "0.1.0"
+  file_version: "0.2.0"
 
 usuario:
   # Notas sobre el usuario: rol, contexto, cómo colabora, qué le importa.
   # Ejemplo:
-  # - nota: "Senior Go developer, primera vez tocando React en este repo"
+  # - id: senior-go-primera-vez-react
+  #   nota: "Senior Go developer; primera vez con React en este repo: explicar hooks, no asumir."
   #   fecha: "2026-05-07"
   []
 
 feedback:
-  # Reglas y validaciones aprendidas durante el trabajo.
-  # Incluir SIEMPRE el motivo — permite juzgar casos límite.
+  # Reglas y validaciones aprendidas. La capa ligera lleva la regla con lo operativo;
+  # el motivo largo y el caso que la originó van en full/memory_full.yaml.
   # Ejemplo:
-  # - regla: "No firmar commits con Co-Authored-By"
-  #   motivo: "Convención del proyecto, ver github.md"
+  # - id: no-firmar-commits
+  #   regla: "No firmar commits con Co-Authored-By (convención del proyecto, ver github.md)."
   #   fecha: "2026-05-07"
   []
 
 referencias:
   # Punteros a sistemas externos relevantes para el trabajo.
   # Ejemplo:
-  # - nombre: "Linear INGEST"
+  # - id: linear-ingest
+  #   nombre: "Linear INGEST"
   #   url_o_path: "linear.app/.../INGEST"
   #   nota: "Bugs de pipeline se trackean aquí"
   []
+
+# ---------------------------------------------------------------------------
+# CAPA COMPLETA — memory/full/memory_full.yaml (mismas secciones, mismos ids)
+# ---------------------------------------------------------------------------
+#
+# metadata:
+#   ultima_actualizacion: "YYYY-MM-DD"
+#   file_version: "0.2.0"
+#
+# usuario:
+#   - id: senior-go-primera-vez-react
+#     nota: "Senior Go developer, primera vez tocando React en este repo"
+#     contexto: "Lo dijo al pedir ayuda con un useEffect; prefiere que se le expliquen los hooks."
+#     fecha: "2026-05-07"
+#
+# feedback:
+#   - id: no-firmar-commits
+#     regla: "No firmar commits con Co-Authored-By"
+#     motivo: "Convención del proyecto, ver github.md. El harness inyecta la firma; prevalece el proyecto."
+#     fecha: "2026-05-07"
+#
+# referencias:
+#   - id: linear-ingest
+#     nombre: "Linear INGEST"
+#     url_o_path: "linear.app/.../INGEST"
+#     nota: "Bugs de pipeline se trackean aquí"
