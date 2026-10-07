@@ -964,6 +964,152 @@ adrs:
       (usable y reproducible por terceros). Recuperable vía
       `git show 9022b2e:memsys3_templates/prompts/multi_work.md`.
 
+  - id: "033"
+    titulo: "Memoria ligera: lo que lee el arranque cabe en UNA lectura (capas ligera/completa, índice de pendientes, histórico fuera de project-status, medir en bytes)"
+    data: "2026-10-07"
+    estado: aceptado
+    area: "arquitectura,escalabilidad,workflow"
+
+    context: |
+      Medición en gitkigai raíz (proyecto desplegado, 2026-10-07; informe
+      docs/reports/2026-10-07_dogfooding_gitkigai_coste_arranque_memoria_dos_capas.md):
+      el arranque (newSession) consumía ~245K tokens antes de trabajar, para una sesión cuyo
+      trabajo real fue ~40K. Desglose: memory.yaml 158 KB (~67K), project-status.yaml 276 KB
+      (leído a trozos, ~50K), context.yaml 61 KB (~29K). Con modelos anteriores el mismo
+      arranque costaba ~18K.
+
+      Cuatro causas, todas de diseño o deriva del template:
+      1. memory.yaml guarda cada regla con su anécdota de origen (la mitad del peso) y se lee
+         entera en cada arranque. Append-only sin poda: familias de 4-5 entradas que dicen la
+         misma regla con matices.
+      2. pendientes_prioritarios mezcla vivos y cerrados, líneas de hasta 3.000 caracteres y
+         tareas sin fecha de hace meses. Con líneas largas y desiguales el agente no lee una
+         vez: hace 3-5 pasadas con filtros distintos (cut/head/grep). Reducir el número de
+         pendientes no bajó el coste; lo bajó acortar la forma de la línea.
+      3. project-status.yaml lleva histórico: endSession 4.C ordena "historico_sesiones:
+         añadir entrada resumida" (duplica sessions.yaml, EXPLORATION-007 punto 3) y
+         actualizado_por se encadenó con "||" sesión tras sesión (103 KB en una línea).
+      4. Los presupuestos del Context Agent se estiman a ~4 caracteres por token. Medido en
+         YAML/Markdown en español: ~2,1 bytes por token. context.yaml declaraba "~16K" y eran
+         ~29K. Un proyecto en español cree cumplir el presupuesto y gasta casi el doble.
+
+      Observación de Ivonis que fija el criterio: leer a trozos incita a la CDC. Si el estado
+      no cabe en una lectura, cada arranque elige filtros distintos y ve un estado distinto:
+      lucidez por azar de contexto, no garantizada por el archivo canónico (PRINCIPLES #1).
+
+      Decisión de diseño de Ivonis sobre quién hace la higiene: endSession no interactúa con
+      el usuario ("por algo es endSession"); lo que exige criterio lo pregunta newSession en
+      UNA pregunta; el mantenimiento de los archivos ligeros es del Context Agent al compilar.
+
+      Lo que NO se acepta como solución: dejar de leer context.yaml en el arranque ("eso sí
+      que rompe el flujo de memsys") y escribir en inglés o en clave para ahorrar tokens
+      (críptico sale caro y el usuario deja de poder leer su estado; el contrato de idioma
+      existe por una razón).
+
+    decision: |
+      Principio (corolario de PRINCIPLES #1): **todo archivo que el arranque lee debe caber
+      entero en una sola lectura; si no cabe, se rota o se reparte en capas, nunca se trocea.**
+      Lo que importa no es solo cuánto cuesta, sino que todos los arranques vean lo mismo.
+
+      Se aplica en cinco cambios al template:
+
+      1. **memory.yaml en dos capas.** memory/memory.yaml = capa ligera: una entrada por
+         regla/dato con `id` (slug kebab-case único), la regla condensada en 1-2 frases con
+         todo lo operativo y `fecha`; sin contexto ni anécdota. Es lo único que lee el
+         arranque. memory/full/memory_full.yaml = capa completa: la misma entrada con su
+         contexto/origen y el mismo `id`; se consulta por id cuando hace falta el porqué.
+         Toda entrada nueva se escribe en las dos capas. Un refinamiento REESCRIBE la línea
+         existente en la capa ligera (no apila otra) y entra en full/ con id propio. Mismo
+         patrón que sessions.yaml ↔ context.yaml.
+      2. **pendientes_prioritarios es un índice.** Solo lo que tiene fecha, plazo o acción
+         próxima. Una línea telegráfica ≤ 300 caracteres: estado/fecha · tema · qué toca ·
+         `→ puntero`. El detalle vive en el expediente al que apunta (README del expediente,
+         item de backlog, sesión) o, si no hay expediente, en memory/full/tasks.yaml (archivo
+         nuevo: id slug, fecha, estado abierto|cerrado, detalle; no se lee al arrancar). Al
+         cerrar algo se quita la línea del índice: el cierre ya consta en sessions.yaml.
+         Telegráfico sí (sin artículos ni conectores), críptico no (sin abreviaturas
+         inventadas).
+      3. **project-status.yaml = solo estado vivo.** Se elimina `historico_sesiones` del
+         template, del scaffold y del paso 4.C de endSession: el log es sessions.yaml.
+         `actualizado_por` se sobrescribe, nunca se encadena. Red de seguridad mecánica en
+         endSession: si al cerrar el archivo supera el umbral (≈30 KB por defecto), mover a
+         memory/history/ lo que no sea estado vivo, sin preguntar (PRINCIPLES #8: se mueve,
+         no se borra).
+      4. **Reparto de la higiene.** endSession: solo lo mecánico y sin preguntar (quitar del
+         índice lo cerrado en la sesión, llevar a su expediente o a tasks.yaml lo que no tiene
+         fecha, acortar líneas nuevas largas, red de seguridad de tamaño) + el aviso de
+         compilar que ya existe. newSession: los pendientes con fecha pasada y sin cierre no
+         se presentan como vencidos uno a uno; UNA pregunta agrupada ("¿cerrados o cuáles
+         siguen?") y se aplica la respuesta. Context Agent (compile-context): mantenimiento de
+         los archivos ligeros (fusionar familias de reglas en memory.yaml, aplicar techos de
+         tamaño, podar el índice). El rediseño de compile-context que lo haga queda fuera de
+         esta ADR (EXPLORATION-008 + INBOX 2026-09-25 P5).
+      5. **Medir en bytes, no estimar tokens.** Los límites y objetivos de compile-context.md,
+         context-agent.yaml y las notas de compilación se expresan en bytes (`wc -c`); los
+         tokens son orientativos con factor por idioma (español ≈ 2,1 bytes/token; inglés
+         ≈ 4). El CA mide el archivo resultante en vez de estimarlo. Matiza ADR-003 (el
+         umbral de contingencia pasa de "150K tokens" a su equivalente en bytes) y adelanta
+         el Bloque 1 de BLUEPRINT-006 (unidad correcta de los umbrales), que sigue abierto
+         para la parte de rotación por tamaño y estado del arte de harnesses.
+
+      Procedimiento para reescribir un archivo canónico entero (migraciones, consolidación):
+      commit de retorno ANTES, no backup en disco dentro de memsys3/ (el usuario vetó copias
+      sueltas; con git el cambio es reversible). Antes de borrar un pendiente cerrado,
+      extraer cualquier fecha futura que contenga y comprobar que vive en otro sitio.
+      "Acortar" y "reclasificar" son pasos separados.
+
+    alternatives:
+      - nombre: "Dejar de leer context.yaml en el arranque mientras esté desfasado"
+        pros:
+          - "~29K tokens menos de inmediato"
+        contras:
+          - "Rompe el flujo de memsys3: el arranque pierde la memoria histórica compilada"
+        por_que_descartada: "Rechazada por Ivonis: el arreglo de context.yaml es compilar, no saltárselo."
+      - nombre: "Reducir solo el NÚMERO de pendientes (poda), sin cambiar la forma de la línea"
+        pros:
+          - "Sin cambio de schema"
+        contras:
+          - "Medido: tras borrar 74 cerrados el arranque costó igual (178K); el agente seguía leyendo a trozos por las líneas largas"
+        por_que_descartada: "La forma de la línea manda más que el número de líneas."
+      - nombre: "Escribir críptico (abreviaturas propias) para ahorrar tokens"
+        pros:
+          - "Menos bytes"
+        contras:
+          - "Los tokens raros se parten en más trozos; el agente puede leerlos mal; el usuario deja de poder leer su propio estado"
+        por_que_descartada: "Telegráfico sí, críptico no."
+      - nombre: "Que endSession pregunte al usuario qué pendientes cerrar"
+        pros:
+          - "Higiene con criterio humano al cerrar"
+        contras:
+          - "Rompe el contrato de endSession (cero interacción)"
+        por_que_descartada: "Decisión de Ivonis: lo que exige criterio lo pregunta newSession, agrupado en una pregunta."
+      - nombre: "Backup en disco antes de reescribir memory.yaml"
+        pros:
+          - "No depende de git"
+        contras:
+          - "Basura dentro de memsys3/; el clasificador del harness bloqueó igualmente la sobrescritura hasta que hubo commit"
+        por_que_descartada: "Con git el commit de retorno es la copia; sin git, sigue valiendo el backup de actualizar.md (ADR-008 #8)."
+      - nombre: "Dos ADRs separadas (bytes aparte de capas/índice/histórico)"
+        pros:
+          - "Granularidad"
+        contras:
+          - "Los cinco cambios son la misma idea vista desde archivos distintos"
+        por_que_descartada: "Decisión de Ivonis 2026-10-07: una sola ADR."
+
+    consecuencias:
+      positivas:
+        - "Arranque de gitkigai: ~245K → ~140K tokens el mismo día (memory.yaml 158→64 KB; project-status 276→17,7 KB; índice 234→27 líneas)"
+        - "Todos los arranques ven el mismo estado (una lectura) — garantía canónica, no azar de filtros"
+        - "Cierra los puntos 1 y 3 de EXPLORATION-007 (actualizado_por, historico_sesiones) y da mecanismo al punto 4 (poda del índice)"
+        - "El porqué de cada regla se conserva íntegro en full/ (PRINCIPLES #8)"
+      negativas:
+        - "Migración de deploys existentes (memory.yaml → dos capas; project-status → sin histórico) vía /actualizar-memsys3: commit de retorno + copia a full/ con ids + capa ligera + verificación de conteos y fechas"
+        - "Techo de tamaño de la capa ligera y fusión de familias dependen del rediseño de compile-context (pendiente)"
+        - "Dos escrituras por entrada de memoria (ligera + full)"
+      impacto: "Template + espejo dogfooding: memory/templates/memory-template.yaml (id, dos capas), memory/templates/project-status-template.yaml y scaffold memory/project-status.yaml (formato de línea del índice; sin historico_sesiones), scaffolds nuevos memory/full/memory_full.yaml y memory/full/tasks.yaml (ADR-023: deploy los copia), prompts/endSession.md (4.C + higiene mecánica + red de seguridad), prompts/newSession.md (una pregunta por vencidos; leer el índice en una pasada), prompts/compile-context.md + agents/context-agent.yaml + templates/context-template.yaml (bytes). PRINCIPLES #1: nuevo corolario. Pendiente: compile-context como mantenedor de los archivos ligeros (EXPLORATION-008); formalizar 'proyecto laboratorio' (informe §4.3)."
+
+    notes: "Origen: INBOX.md 2026-10-07 + informe docs/reports/2026-10-07_dogfooding_gitkigai_coste_arranque_memoria_dos_capas.md. Primer caso del principio 'gitkigai es la evolución de memsys3': lo probado allí como personalización (ADR-032) vuelve al template. Validación cross-harness pendiente (regla 2026-05-14)."
+
 # Índice rápido para encontrar ADRs (incluye rotadas en adr_1.yaml)
 index:
   - id: "001"
@@ -1106,5 +1252,9 @@ index:
     archivo: "adr.yaml"
   - id: "032"
     titulo: "Gobernanza de personalización de infraestructura: prompts/agents con autorización explícita + file_version dogfooding"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "033"
+    titulo: "Memoria ligera: lo que lee el arranque cabe en una lectura (capas ligera/completa, índice de pendientes, histórico fuera de project-status, bytes)"
     estado: aceptado
     archivo: "adr.yaml"

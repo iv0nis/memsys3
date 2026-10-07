@@ -28,7 +28,9 @@ Confundir estos gaps con CDC convierte el principio en esponja conceptual y le q
 
 **Corolario de detectabilidad asimétrica (falsa sensación de seguridad).** La CDC es más peligrosa en su cara positiva (el agente *acierta* por azar de contexto) que en la negativa (falla por falta de él). El fallo se autodelata —se nota y se corrige—; el acierto casual no deja rastro, y el observador (humano o agente) lo lee como prueba de que el sistema funciona. Esa lucidez fortuita *enmascara* la ausencia de garantía canónica: nadie canoniza lo que parece funcionar, y la sesión siguiente —sin ese contexto fortuito— falla sin causa visible. Es el espejo-observador de la meta-amnesia: si aquélla impide que el *agente* sienta que olvida, ésta impide que el *humano* exija la canonización. Operacionalización: desconfía del éxito de una sesión hasta verificar que su lucidez está garantizada por archivo canónico y no por el contexto eventual —valida en frío y contra la fuente de verdad, no en el calor del contexto que la produjo. Ver ADR-031.
 
-**ADRs relacionados:** ADR-008 (compile-context en sesión limpia), ADR-020 (memory.yaml), ADR-021 (backlog docs anti-CDC), ADR-031 (detectabilidad asimétrica). **Exploraciones:** EXPLORATION-004 (canonización proactiva).
+**Corolario de la lectura única (leer a trozos incita a la CDC).** Todo archivo que el arranque lee debe caber entero en una sola lectura. Si no cabe, el agente elige filtros (`head`, `grep`, `cut`) y cada sesión ve un estado distinto según lo que eligió esa vez: lucidez por azar de contexto, no garantizada por el archivo canónico. Por eso los archivos de arranque se mantienen ligeros por diseño —`memory.yaml` en capa ligera con el porqué en `full/`, `project-status.yaml` como estado vivo con los pendientes en forma de índice y sin histórico— y cuando crecen se rotan o se reparten en capas, nunca se trocean al leer. Lo que importa no es solo cuánto cuesta leer, sino que todos los arranques vean lo mismo. Ver ADR-033.
+
+**ADRs relacionados:** ADR-008 (compile-context en sesión limpia), ADR-020 (memory.yaml), ADR-021 (backlog docs anti-CDC), ADR-031 (detectabilidad asimétrica), ADR-033 (memoria ligera, lectura única). **Exploraciones:** EXPLORATION-004 (canonización proactiva).
 
 ---
 
@@ -174,4 +176,4 @@ Estos principios son la spina dorsal del sistema, pero no son inmutables. Cuando
 
 No hay cambios silenciosos. La trazabilidad histórica vive en `memory/full/adr.yaml`.
 
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->
