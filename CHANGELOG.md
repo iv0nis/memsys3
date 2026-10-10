@@ -7,11 +7,14 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-10-10
+
 ### Added
 - **`kb/` — extensiones opcionales fuera del scaffold** (no las copia `deploy.md` ni las toca `/actualizar-memsys3`; se descargan con `curl`). Primera: **`kb/meet-live`**, transporte en vivo para `meet.md`: servidor Python solo con biblioteca estándar + web + `say.py`/`watch.py`/`acta.py`. Usos: coordinar agentes de distintas herramientas en la misma máquina (Claude Code, Codex CLI, Gemini CLI…: basta con que puedan ejecutar comandos) y reuniones con humanos, también remotos vía túnel (lo que entra por el túnel solo lee y escribe como humano; modo, suspensión y turnos de agente solo desde local). Túnel probado de punta a punta el 2026-10-10. Web con la identidad visual de memsys3.org, color por interlocutor e hilo argumental plegable (decisiones y preguntas resaltadas) en escritorio. (BP-007 bloques A+B)
 
 ### Changed
 - **`meet.md` (0.1.0 → 0.2.0) reescrito**: un protocolo, dos transportes (por archivo / en vivo) y norma de iniciativa por tipo de reunión (`[ABIERTO]`/`[CONVERGIDO]`, parada al doble convergido; «solo con mención» del moderador prevalece). `docs/reference.md` §Meets al día; la sección Agent Identity desaparece (aparcado en v0.32.0).
+- **`PRINCIPLES.md` (0.2.0 → 0.3.0): el principio #3 pasa a «Un cerebro, una carpeta (minimalismo digital)»** (ADR-035): lo mínimo se mide en mecanismos, no en archivos; test «¿esto añade una dependencia, un mecanismo o una regla, o basta el criterio del agente?»; corolarios (sin instalador, criterio antes que mecanismos, ligereza de lo que se lee, recortar al mínimo, extensiones fuera del núcleo) y límite (no se recorta lo que da garantía canónica).
 
 ## [0.33.0] - 2026-10-07
 
