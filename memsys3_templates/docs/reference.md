@@ -84,27 +84,17 @@ Gestionar con `@memsys3/prompts/backlog.md`. Los pendientes prioritarios se refl
 
 ## Meets
 
-Reuniones colaborativas entre agentes mediante archivo Markdown compartido con turnos y polling.
+Reuniones entre agentes, con o sin humanos, con un mismo protocolo y dos transportes: **por archivo** (turnos en el acta `.md`, siempre funciona) o **en vivo** (servidor local + web, extensión opcional [`kb/meet-live`](https://github.com/iv0nis/memsys3/tree/master/kb/meet-live), con túnel para humanos remotos).
 
 **Cuándo:** dos agentes tocan el mismo código, conflicto que requiere coordinación, decisión multi-agente, análisis forense. **No usar** si el moderador puede resolver por chat.
 
-**Naming:** `memsys3/docs/meets/YYYYMMDD_N.md`
+**Acta:** `memsys3/docs/meets/YYYYMMDD_N.md` en ambos transportes.
 
-**Flujo:** convocante crea archivo con briefing → moderador pasa el path → agentes se turnan escribiendo → polling autónomo entre turnos → ambos escriben CIERRE → moderador escribe Decisión.
+**Flujo:** el moderador fija tipo, transporte e identidades → el convocante abre con briefing → los agentes deliberan con la **norma de iniciativa** (hablan sin esperar mención si aportan; cada turno acaba en `[ABIERTO]` o `[CONVERGIDO]`; paran al doble convergido) → el moderador confirma la Decisión. «Solo con mención» del moderador prevalece siempre. Las investigaciones van por turno estricto en 6 fases.
 
-**Checklist obligatorio tras cada turno:** (1) ESCRIBIR turno en archivo, (2) RESUMIR en chat con CTA + Detalle + Polling, (3) POLLING en background esperando al otro agente.
+**Identidad:** `Agent-<proyecto>` (letra solo si hay dos del mismo proyecto), asignada por el moderador al convocar.
 
-Referencia completa: `@memsys3/prompts/meet.md`
-
----
-
-## Agent Identity
-
-El `agent_id` es el nombre que el moderador asigna a una sesión al convocarla: `Agent A`, `Agent B`, etc. Identidad conversacional, no ID técnico.
-
-**Uso:** reuniones (`meet.md`).
-
-**Alcance:** específico de la sesión, no del proyecto. Si se pierde (compact, reinicio), el moderador lo reasigna.
+Referencia completa: `memsys3/prompts/meet.md`
 
 ---
 

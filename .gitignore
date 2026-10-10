@@ -44,3 +44,7 @@ notes.md
 
 memsys3/memory/full/memory_full.yaml
 memsys3/memory/full/tasks.yaml
+
+# meet-live: turnos de reuniones en vivo (datos de sesión, no distribuibles)
+kb/**/meet_messages.json
+kb/**/__pycache__/

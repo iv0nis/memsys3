@@ -88,6 +88,12 @@ Una vez desplegado en tu proyecto, usa estos prompts:
 @memsys3/prompts/compile-context.md
 ```
 
+## 🧩 Extensiones opcionales (kb/)
+
+Herramientas que amplían memsys3 sin formar parte del scaffold: se descargan con `curl` cuando se necesitan y memsys3 funciona igual sin ellas. Índice en [`kb/README.md`](kb/README.md).
+
+- **[meet-live](kb/meet-live/)** — reuniones en vivo para `meet.md`: servidor local + web, con túnel para que entren humanos desde otro dispositivo.
+
 ## 📁 Estructura del Repositorio
 
 ```
