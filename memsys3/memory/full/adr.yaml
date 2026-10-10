@@ -1137,6 +1137,65 @@ adrs:
       context-template 0.2.0→0.3.0, endSession 0.5.0→0.6.0. ADR-020 queda matizada (no superseded:
       su núcleo —memory.yaml agnóstica, append+datado, MA escribe— sigue vigente).
 
+  - id: "035"
+    titulo: "PRINCIPLES #3 ampliado: «Un cerebro, una carpeta» (minimalismo digital) — lo mínimo se mide en mecanismos, no en archivos"
+    data: "2026-10-10"
+    estado: aceptado
+    area: "arquitectura,principios"
+
+    context: |
+      Observación de Ivonis (2026-10-10), tras meses siguiendo el estado del arte de la memoria
+      de agentes: la infraestructura de memsys3 es especialmente minimalista frente a lo que se
+      publica (bases vectoriales, servidores MCP de memoria, daemons, CLIs). «Todo en una carpeta.
+      Un cerebro, una carpeta.»
+
+      El valor ya existía pero disperso y sin nombre: PRINCIPLES #3 (solo la cara física: sin BD,
+      sin servidor, cp -r), ADR-005 (el agente es el instalador), #5 (criterio frente a cuotas),
+      ADR-033 (el arranque cabe en una lectura) y dos reglas de memory.yaml
+      (criterio-del-agente-antes-que-reglas, overkill-recortar-al-minimo). Ninguna de ellas daba
+      un test para decidir si una pieza nueva se añade o no.
+
+      Matiz del agente aceptado: el minimalismo de memsys3 no está en el número de archivos
+      (~20 prompts) sino en el número de mecanismos: nada que instalar, ejecutar o mantener
+      aparte del propio agente.
+
+    decision: |
+      Se amplía PRINCIPLES #3 (no se crea un #11) y pasa a llamarse «Un cerebro, una carpeta
+      (minimalismo digital)». Añade:
+      1. Definición extendida: lo mínimo se mide en mecanismos, no en archivos.
+      2. Test mental: «¿Esto añade una dependencia, un mecanismo o una regla, o el agente puede
+         resolverlo con criterio y lo que ya hay?».
+      3. Corolarios: sin instalador (ADR-005), criterio antes que mecanismos (#5), ligereza de lo
+         que se lee (ADR-033), recortar al mínimo, extensiones (kb/) fuera del núcleo.
+      4. Límites: minimalismo no es escatimar; no se recorta lo que da garantía canónica (manda #1)
+         ni lo que el usuario necesita leer (telegráfico sí, críptico no).
+      Se conservan la excepción de bridges opcionales y el «por qué importa», ampliado con la
+      menor superficie de fallo silencioso (ADR-031). Siguen siendo 10 principios.
+
+    alternatives:
+      - nombre: "Principio nuevo #11 «Minimalismo»"
+        pros:
+          - "Visibilidad propia"
+        contras:
+          - "Solapa con #3 (la carpeta es la cara física del mismo valor); viola #9 (sin duplicaciones)"
+        por_que_descartada: "Decisión de Ivonis: opción A, ampliar #3."
+      - nombre: "Dejarlo disperso como está"
+        pros:
+          - "Cero cambios"
+        contras:
+          - "El valor sigue sin nombre ni test operativo; cada decisión de añadir una pieza se juzga sin criterio común"
+        por_que_descartada: "El principio explica por qué existen las piezas sueltas; merece nombre."
+
+    consecuencias:
+      positivas:
+        - "Test explícito para rechazar mecanismos nuevos (ISSUE/FEATURE que proponen CLIs, servidores, listas o capas)"
+        - "Identidad pública más nítida frente al estado del arte (README, memsys3.org)"
+      negativas:
+        - "El test puede usarse para justificar recortes que rompen garantía canónica: por eso los Límites remiten a #1"
+      impacto: "memsys3_templates/PRINCIPLES.md §3 (0.2.0→0.3.0 con OK) + espejo memsys3/PRINCIPLES.md; README raíz y memsys3_templates/README.md (bullet y lista de principios); memsys3.org (reference/principios.md e index.mdx)."
+
+    notes: "Origen: deliberación con Ivonis 2026-10-10 (sesión monitor-memsys), antes de generar un HTML imprimible de los principios."
+
 # Índice rápido para encontrar ADRs (incluye rotadas en adr_1.yaml)
 index:
   - id: "001"
@@ -1283,5 +1342,9 @@ index:
     archivo: "adr.yaml"
   - id: "033"
     titulo: "Memoria ligera: lo que lee el arranque cabe en una lectura (capas ligera/completa, índice de pendientes, histórico fuera de project-status, bytes)"
+    estado: aceptado
+    archivo: "adr.yaml"
+  - id: "035"
+    titulo: "PRINCIPLES #3 ampliado: «Un cerebro, una carpeta» (minimalismo digital)"
     estado: aceptado
     archivo: "adr.yaml"

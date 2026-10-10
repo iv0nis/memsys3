@@ -49,16 +49,29 @@ Las features específicas de un modelo (ej. comandos `/deploy-memsys3` de Claude
 
 ---
 
-## 3. Una sola carpeta
+## 3. Un cerebro, una carpeta (minimalismo digital)
 
-**Definición.** El sistema completo cabe en `memsys3/` dentro del proyecto del usuario. Sin base de datos, sin servidor, sin dependencias externas obligatorias. Copiar la carpeta y funciona.
+**Definición.** Toda la memoria del proyecto cabe en `memsys3/` dentro del proyecto del usuario: sin base de datos, sin servidor, sin dependencias externas obligatorias. Copiar la carpeta y funciona. Y el minimalismo va más allá de lo físico: memsys3 no añade nada que haya que instalar, ejecutar o mantener aparte del propio agente. **Lo mínimo se mide en mecanismos, no en archivos.**
+
+**Test mental.** *"¿Esto añade una dependencia, un mecanismo o una regla, o el agente puede resolverlo con criterio y lo que ya hay?"* Si basta el criterio del agente con los archivos canónicos, no se añade mecanismo.
+
+**Corolarios.**
+- **Sin instalador:** el agente ES el instalador; los prompts son Markdown que cualquier agente ejecuta (ADR-005).
+- **Criterio antes que mecanismos:** ante un hueco del sistema, primero el criterio del agente con rol y contexto; mecanismos nuevos solo si dan contexto o visibilidad que el criterio no puede obtener (#5).
+- **Ligereza de lo que se lee:** todo lo que lee el arranque cabe en una lectura (ADR-033, corolario de #1).
+- **Recortar al mínimo:** el cambio justo que elimina la clase de fallo; lo demás queda como opción futura, no como pendiente.
+- **Extensiones fuera del núcleo:** las herramientas opcionales (`kb/`) se descargan cuando se necesitan y memsys3 funciona igual sin ellas.
+
+**Límites del principio.** Minimalismo no es escatimar. No se recorta lo que da garantía canónica (manda Anti-CDC, #1) ni lo que el usuario necesita leer: telegráfico sí, críptico no (ADR-033).
 
 **Excepción.** Bridges opcionales (ej. `MEMORY.md` raíz para auto-memory de Claude Code, ADR-020) se permiten **fuera** de `memsys3/` solo si:
 - son opt-in,
 - son punteros a algo dentro de `memsys3/`,
 - el sistema funciona igual sin ellos (graceful degradation).
 
-**Por qué importa.** Portabilidad. Versionable con git como el resto del código. Sin instalación. Sin permisos. Onboarding de un proyecto nuevo es un `cp -r` (o un deploy.md).
+**Por qué importa.** Portabilidad. Versionable con git como el resto del código. Sin instalación. Sin permisos. Onboarding de un proyecto nuevo es un `cp -r` (o un deploy.md). Y cada mecanismo que no se añade es una pieza menos que mantener y que pueda fallar en silencio (ADR-031).
+
+**ADRs relacionados:** ADR-005 (el agente es el instalador), ADR-033 (memoria ligera), ADR-035 (este principio ampliado a minimalismo digital).
 
 ---
 
@@ -176,4 +189,4 @@ Estos principios son la spina dorsal del sistema, pero no son inmutables. Cuando
 
 No hay cambios silenciosos. La trazabilidad histórica vive en `memory/full/adr.yaml`.
 
-<!-- version: 0.2.0 -->
+<!-- version: 0.3.0 -->

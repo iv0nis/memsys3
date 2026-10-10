@@ -8,7 +8,7 @@
 
 ## 💡 Por qué memsys3
 
-- **Una sola carpeta** — sin base de datos, sin servidor, sin dependencias. Copias `memsys3/` y funciona
+- **Un cerebro, una carpeta** — minimalismo digital: sin base de datos, sin servidor, sin dependencias, sin mecanismos que mantener aparte del propio agente. Copias `memsys3/` y funciona
 - **Agnóstico** — funciona con cualquier modelo de IA (Claude, Gemini, Codex, etc.)
 - **Workflow sencillo pero flexible** — 3 prompts para el día a día (empezar, trabajar, acabar)
 - **Basado en @ mentions** — ejecutas prompts directamente con `@memsys3/prompts/...`, sin CLIs ni herramientas externas (si tu herramienta no tiene `@`, la misma ruta sin arroba funciona igual)

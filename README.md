@@ -6,7 +6,7 @@
 
 ## 🎯 Por qué memsys3
 
-- **Una sola carpeta** — sin base de datos, sin servidor, sin dependencias. Copias `memsys3/` y funciona
+- **Un cerebro, una carpeta** — minimalismo digital: sin base de datos, sin servidor, sin dependencias, sin mecanismos que mantener aparte del propio agente. Copias `memsys3/` y funciona
 - **Agnóstico** — funciona con cualquier modelo de IA (Claude, Gemini, Codex, etc.)
 - **Workflow sencillo pero flexible** — 3 prompts para el día a día (empezar, trabajar, acabar)
 - **Sin CLI ni instalador** — el instalador ES tu agente: los prompts son archivos Markdown que cualquier AI agent ejecuta directamente, sin herramientas externas
@@ -24,14 +24,14 @@
 - Plan de contingencia con archivado inteligente (presupuesto medido en bytes, ~300 KB en español)
 - Actualización segura en proyectos existentes (con detección de estructura antigua)
 - Sistema Backlog y ADRs gestionables con prompts dedicados
-- **PRINCIPLES.md canónico** — los 10 principios sistémicos que rigen memsys3 (anti-CDC, agnosticismo, una sola carpeta, etc.). Ver [`memsys3_templates/PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md).
+- **PRINCIPLES.md canónico** — los 10 principios sistémicos que rigen memsys3 (anti-CDC, agnosticismo, un cerebro una carpeta, etc.). Ver [`memsys3_templates/PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md).
 
 ## 📐 Principios
 
 memsys3 se rige por 10 principios sistémicos documentados de forma canónica en **[`memsys3_templates/PRINCIPLES.md`](memsys3_templates/PRINCIPLES.md)** (fuente única). Cualquier comportamiento del sistema debe poder justificarse desde uno de ellos:
 
 1. **Anti-CDC** (Casualidad de Contexto) — el principio fundacional: lucidez agéntica garantizada por archivos canónicos, no por azar de sesión.
-2. Agnosticismo de modelo IA · 3. Una sola carpeta · 4. Human-in-the-loop · 5. Criterio inteligente vs límites arbitrarios · 6. Templates como documentación activa · 7. file_version inmutable salvo /actualizar-memsys3 · 8. Datos siempre preservados · 9. Separation of Concerns · 10. Restricciones de infraestructura en agents.
+2. Agnosticismo de modelo IA · 3. Un cerebro, una carpeta (minimalismo digital) · 4. Human-in-the-loop · 5. Criterio inteligente vs límites arbitrarios · 6. Templates como documentación activa · 7. file_version inmutable salvo /actualizar-memsys3 · 8. Datos siempre preservados · 9. Separation of Concerns · 10. Restricciones de infraestructura en agents.
 
 Cuando despliegas memsys3 en un proyecto, `PRINCIPLES.md` se copia a `memsys3/PRINCIPLES.md` y los agents lo leen al inicio de cada sesión.
 
