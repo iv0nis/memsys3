@@ -72,7 +72,12 @@ echo "MEMSYS3_ROOT=$MEMSYS3_ROOT"
 ### Paso 0b: Bootstrap — actualizar este prompt antes de continuar
 
 ```bash
-git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
+git clone --filter=blob:none --sparse https://github.com/iv0nis/memsys3 memsys3_update_temp
+git -C memsys3_update_temp sparse-checkout set memsys3_templates
+# Clone sparse: descarga solo memsys3_templates/ (lo distribuible) y los archivos de la raíz,
+# sin el dogfooding ni los extras del repo. Conserva historial y tags, así que git describe,
+# log, rev-list y show funcionan igual. Si tu git es anterior a 2.25 (sin --sparse), usa el
+# clone completo: git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
 echo "Bootstrap: la versión más reciente de este prompt está en memsys3_update_temp/memsys3_templates/prompts/actualizar.md"
 ```
 
@@ -356,7 +361,8 @@ Espera el resultado del subagente y úsalo para guiar los pasos siguientes con m
 if [ -d "memsys3_update_temp" ]; then
   echo "Reutilizando clone del bootstrap"
 else
-  git clone https://github.com/iv0nis/memsys3 memsys3_update_temp
+  git clone --filter=blob:none --sparse https://github.com/iv0nis/memsys3 memsys3_update_temp
+  git -C memsys3_update_temp sparse-checkout set memsys3_templates
 fi
 
 cd memsys3_update_temp
@@ -1256,4 +1262,4 @@ Antes de dar por cerrada la actualización, presenta al usuario:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.5.1 -->
+<!-- version: 0.5.2 -->

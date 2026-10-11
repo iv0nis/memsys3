@@ -51,8 +51,13 @@ fi
 # Limpiar memsys3_temp si quedó de una ejecución previa
 [ -d "memsys3_temp" ] && rm -rf memsys3_temp
 
-# Clonar repo
-git clone https://github.com/iv0nis/memsys3 memsys3_temp
+# Clonar repo (solo lo distribuible)
+git clone --filter=blob:none --sparse https://github.com/iv0nis/memsys3 memsys3_temp
+git -C memsys3_temp sparse-checkout set memsys3_templates
+# Clone sparse: descarga solo memsys3_templates/ (lo distribuible) y los archivos de la raíz,
+# sin el dogfooding ni los extras del repo. Conserva historial y tags, así que git describe,
+# log, rev-list y show funcionan igual. Si tu git es anterior a 2.25 (sin --sparse), usa el
+# clone completo: git clone https://github.com/iv0nis/memsys3 memsys3_temp
 ```
 
 ### Paso 2 — Copiar estructura a `memsys3/`
@@ -303,7 +308,7 @@ Escalabilidad automática (ya activa):
 
 ## Troubleshooting
 
-- **"git clone falla"** → verifica conexión + `git --version`.
+- **"git clone falla"** → verifica conexión + `git --version` (el clone sparse requiere git ≥ 2.25; con uno anterior, clone completo).
 - **"mkdir falla"** → directorio de trabajo correcto + permisos.
 - **"Templates no se copian"** → verifica que `memsys3_temp/memsys3_templates/` existe tras el clone.
 - **"compile-context genera context.yaml vacío"** → bug en el deploy (datos no llegaron al Context Agent), no en compile-context. Revisa que `project-status.yaml` quedó bien escrito en Paso 6.
@@ -311,4 +316,4 @@ Escalabilidad automática (ya activa):
 ---
 
 **Deployment completado. Sistema operativo end-to-end.**
-<!-- version: 0.5.1 -->
+<!-- version: 0.5.2 -->
