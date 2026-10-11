@@ -7,6 +7,14 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.34.1] - 2026-10-11
+
+### Changed
+- **Reglas duras de serie en los stubs de raíz** (`AGENTS.md` 0.1.0 → 0.2.0, `per-tool-stub-template.md` 0.1.0 → 0.2.0; IMPROVEMENT-014): además del invariante de memoria y de «ejecuta newSession», llevan las 4 reglas que valen aunque la sesión no haya cargado nada (sin `Co-Authored-By`, sin bumpar `file_version`, sin tocar infraestructura sin autorización, leer `github.md`/`git.md` antes de operar git). Hasta ahora una sesión sin newSession no las conocía (CDC). Se propagan con `/actualizar-memsys3` (Pasos 6.6.5 y 6.6.6).
+- **`deploy.md` y `actualizar.md` (0.5.2): clone sparse** de `memsys3_templates/` (`--filter=blob:none --sparse`): quien instala o actualiza ya no descarga el dogfooding, `kb/` ni hooks. Historial y tags se conservan (recuperación de base intacta; probado contra v0.28.0). Fallback a clone completo para git < 2.25.
+- **Confirmación de versión agnóstica de harness** en `github.md` y `git.md` (0.1.1): «pregunta de opciones cerradas» con la tool de selección si existe, opciones numeradas en texto si no. Feedback del grupo de testers.
+- `deploy.md`: aviso final de que el autocompletado con `@` del harness puede no ver los archivos nuevos hasta reiniciar. `commands.md`: mención ajustada.
+
 ## [0.34.0] - 2026-10-10
 
 ### Added
