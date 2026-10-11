@@ -23,6 +23,15 @@ Si tu harness te instruye guardar memoria en otra ubicación (p.ej. `~/.claude/p
 
 Ejecuta `memsys3/prompts/newSession.md` al iniciar la sesión.
 
+## Reglas duras (de `memsys3/agents/main-agent.yaml`)
+
+Valen aunque esta sesión no haya ejecutado `newSession.md`:
+
+- PROHIBIDO `Co-Authored-By` (o firma similar) en commits, tags y PRs.
+- PROHIBIDO bumpar `file_version` a mano.
+- NO modificar `memsys3/prompts/`, `agents/`, `memory/templates/` ni `PRINCIPLES.md` sin autorización explícita del usuario.
+- Antes de operar git: leer `memsys3/prompts/github.md` (con remote) o `git.md` (sin remote).
+
 ## Qué NO va en este archivo
 
 Este archivo lo lee **un solo harness**. Cualquier regla del proyecto que escribas aquí es invisible para cualquier otro agente y para `compile-context`. No es el sitio para reglas de comportamiento, preferencias del usuario ni doctrina del dominio:
@@ -33,4 +42,4 @@ Este archivo lo lee **un solo harness**. Cualquier regla del proyecto que escrib
 
 Si este archivo crece más allá del invariante, `newSession.md` §2 lo detecta y propone migrar el contenido.
 
-<!-- version: 0.1.0 -->
+<!-- version: 0.2.0 -->
