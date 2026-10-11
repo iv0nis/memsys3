@@ -7,9 +7,9 @@
 - **SIEMPRE propón crear tag** (usuario confirma)
 - Solo aumenta el minor si hay cambio relevante, en caso contrario aumenta el patch
 
-## ⚠️ IMPORTANTE: Obligatorio usar AskUserQuestion
+## ⚠️ IMPORTANTE: Confirmación interactiva de la versión
 
-**SIEMPRE usa la tool `AskUserQuestion` para confirmar la versión del tag.** No escribas las opciones en texto plano — invoca la tool. El usuario debe poder seleccionar la opción interactivamente.
+**SIEMPRE confirma la versión del tag con una pregunta de opciones cerradas.** Si tu harness tiene una tool de selección (`AskUserQuestion` en Claude Code y OpenCode, o equivalente), invócala. Si no la tiene, presenta las opciones NUMERADAS en texto y espera la respuesta antes de seguir. Lo que no vale es asumir la versión sin que el usuario elija.
 
 ## ⚠️ IMPORTANTE: Commits SIN Firma
 
@@ -88,7 +88,7 @@ Breaking changes: [Ninguno/Descripción]
 
 ```
 
-Tras mostrar el análisis, usa `AskUserQuestion` para confirmar:
+Tras mostrar el análisis, confirma con una pregunta de opciones cerradas (tool de selección del harness si existe; si no, opciones numeradas en texto):
 
 ```
 AskUserQuestion(
@@ -100,6 +100,16 @@ AskUserQuestion(
     { label: "Sin tag por ahora", description: "Solo hacer commit, sin crear tag" }
   ]
 )
+```
+
+Sin tool de selección, el equivalente en texto es:
+
+```
+¿Qué versión creamos?
+  1) v0.X.Y (patch) — confirmar la propuesta
+  2) v0.X+1.0 (minor) — subir minor
+  3) Sin tag por ahora — solo commit
+Responde 1, 2 o 3.
 ```
 
 **Criterios para Minor vs Patch:**
@@ -240,4 +250,4 @@ Breaking changes: Ninguno
 
 ❓ ¿Confirmas v0.8.0?
 ```
-<!-- version: 0.1.0 -->
+<!-- version: 0.1.1 -->

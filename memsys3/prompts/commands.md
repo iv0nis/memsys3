@@ -87,7 +87,7 @@ El prompt cubre el deployment completo:
 - Scaffold canónico (ADR-023): agents, prompts, templates, memory/full vacíos, backlog scaffold
 - Propagación de `PRINCIPLES.md` (ADR-022)
 - Bridge `MEMORY.md` opcional para usuarios Claude Code (ADR-020)
-- Configuración `.gitignore` con AskUserQuestion (incluir/excluir memsys3/)
+- Configuración `.gitignore` con pregunta de opciones cerradas (tool de selección del harness o numeración en texto): incluir/excluir memsys3/
 - Briefing del proyecto (nombre, stack, fase, idioma) y personalización de project-status.yaml
 - Verificación del inventario canónico post-deploy
 

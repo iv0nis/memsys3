@@ -84,7 +84,7 @@ Breaking changes: [Ninguno/Descripción]
 
 ```
 
-Tras mostrar el análisis, usa `AskUserQuestion` para confirmar:
+Tras mostrar el análisis, confirma con una pregunta de opciones cerradas (tool de selección del harness si existe; si no, opciones numeradas en texto):
 
 ```
 AskUserQuestion(
@@ -96,6 +96,16 @@ AskUserQuestion(
     { label: "Sin tag por ahora", description: "Solo hacer commit, sin crear tag" }
   ]
 )
+```
+
+Sin tool de selección, el equivalente en texto es:
+
+```
+¿Qué versión creamos?
+  1) v0.X.Y (patch) — confirmar la propuesta
+  2) v0.X+1.0 (minor) — subir minor
+  3) Sin tag por ahora — solo commit
+Responde 1, 2 o 3.
 ```
 
 **Criterios para Minor vs Patch:**
@@ -166,4 +176,4 @@ git log -1 --oneline
 - **actualizar.md:** Depende de tags para funcionar correctamente
 - **SemVer:** formato vX.Y.Z (3 números) estándar
 - **Solo local:** Este prompt NO hace push. Para subir a remoto, usa `@memsys3/prompts/github.md`
-<!-- version: 0.1.0 -->
+<!-- version: 0.1.1 -->

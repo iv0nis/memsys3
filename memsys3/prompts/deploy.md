@@ -282,6 +282,9 @@ Archivos en raíz (según decisiones del briefing):
 
 Próximo paso:
 → Ejecuta memsys3/prompts/newSession.md para comenzar a trabajar.
+  (Si tu harness autocompleta rutas con `@` y los archivos recién creados aún no
+  aparecen, reinicia la sesión del harness o escribe la ruta completa: el índice
+  de archivos se construye al arrancar.)
 
 Escalabilidad automática (ya activa):
 📈 Rotación: >1800 líneas → sessions_N.yaml, adr_N.yaml
@@ -308,4 +311,4 @@ Escalabilidad automática (ya activa):
 ---
 
 **Deployment completado. Sistema operativo end-to-end.**
-<!-- version: 0.5.0 -->
+<!-- version: 0.5.1 -->
