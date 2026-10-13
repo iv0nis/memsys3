@@ -7,6 +7,12 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **`actualizar.md` (0.5.2 → 0.6.0): Paso 6.8, migración de datos al formato ADR-033.** Hasta ahora el updater traía prompts y esqueleto nuevos sobre datos viejos: un deploy quedaba «en v0.33» con `memory.yaml` de una sola capa, `full/memory_full.yaml` vacío e índice de pendientes de cientos de líneas (caso de campo: arranque de ~200K tokens). El paso detecta las tres señales por separado (memoria de una capa; `histori*` en `project-status.yaml`; pendientes que no son índice — claves por prefijo, porque cambian con el idioma del proyecto), pregunta (migrar ahora / en sesión nueva / no ahora) y migra con el método validado en campo: respaldo durable (commit de retorno o `history/`), capa completa generada por script con ids, capa ligera condensada por el agente con muestra previa, verificación bloqueante posición a posición (id + fecha, recuento, prueba de que el verificador falla al intercambiar dos entradas), escritura por sustitución de bloque, histórico literal a `history/`, pendientes a índice ≤300 chars + `full/tasks.yaml`. No fusiona reglas (eso es del Context Agent). Sin parser YAML, pospone y avisa.
+
+### Fixed
+- `actualizar.md` 6.4.5 (modo Extendido) ya no trata `histori*`/`pend*` de `project-status.yaml` como campos huérfanos (podía ofrecer eliminar el histórico de sesiones). Paso 7: si `actualizado_por` venía encadenado (>400 B), guarda el literal en `history/` antes de sobrescribirlo.
+
 ## [0.34.1] - 2026-10-11
 
 ### Changed

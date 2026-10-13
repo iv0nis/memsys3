@@ -779,6 +779,7 @@ Lee cada template de schema (`*-template.yaml`) y compara sus claves top-level c
 Para cada clave top-level presente en datos vivos pero NO en template upstream:
 - Si la clave tiene contenido (no vacío) → pregunta al usuario: "Campo `<Y>` existe en tus datos pero no en el schema canónico. ¿Mantener (puede ser personalización legítima) / eliminar?"
 - Si está vacío → eliminar silenciosamente.
+- **Excepción:** las claves `histori*` (histórico de sesiones) y `pend*` (pendientes) de `project-status.yaml` NO son huérfanas aunque el template actual no las traiga: son datos pre-ADR-033 y los trata el Paso 6.8. Aquí nunca se ofrece eliminarlas.
 
 **Importante:** Esta evaluación NUNCA elimina automáticamente. La filosofía memsys3 es human-in-the-loop: solo el usuario, contextualizado por el agente, decide qué es legítimo en su proyecto (ver ADR-019).
 
@@ -920,6 +921,124 @@ fi
 cp memsys3_update_temp/memsys3_templates/memory/README.md "$MEMSYS3_ROOT/memory/"
 ```
 
+### 6.8 Migración de datos al formato ADR-033 (dos capas, índice, sin histórico)
+
+**Es el único paso que transforma datos vivos del proyecto.** Por eso tiene su propio respaldo, scripts de verificación bloqueantes y OK del usuario en cada escritura. Si no se detecta nada, es silencioso.
+
+> **Por qué existe este paso.** ADR-033 (v0.32.0) pasó `memory.yaml` a dos capas (ligera + `full/memory_full.yaml`, mismo `id`), convirtió `pendientes_prioritarios` en un índice de líneas ≤300 caracteres con puntero y sacó el histórico de sesiones de `project-status.yaml`. Dejó escrito que los deploys existentes migrarían «vía /actualizar-memsys3» — y no se implementó: el updater traía prompts y esqueleto nuevos sobre datos viejos. Caso de campo (2026-10): un deploy ya «en v0.33» conservaba un `memory.yaml` de una sola capa de ~170 KB (más de 150 reglas con su motivo), la capa completa vacía y un índice de ~500 líneas; su arranque costaba ~200K tokens, justo lo que ADR-033 venía a evitar. Se migró con este mismo método sin perder ninguna entrada.
+
+**Reglas del paso:** (1) respaldo antes de tocar nada; (2) ninguna entrada se pierde, verificado por script con recuento; (3) plan y OK antes de escribir; (4) **no se fusiona ninguna regla** (eso es del Context Agent, con OK); (5) reversible y documentado en `sessions.yaml`. Las claves del proyecto no se renombran (un proyecto puede tener `historic_sessions` o `pendents_prioritaris`: se detectan por prefijo y se conservan). Ficheros: abrir siempre con `newline=''` (o equivalente) y escribir con el mismo final de línea que tenían — hay deploys con CRLF. Temporales y scripts en `$PROJECT_ROOT/memsys3_migracion_temp/` (se borra en 6.8.10 y en el Paso 8). **Ejecución suelta:** si vienes a hacer solo este paso en una sesión nueva, define `PROJECT_ROOT`/`MEMSYS3_ROOT` como en el Paso 0a y empieza en 6.8.0; donde el paso cite el scaffold upstream (`memsys3_update_temp/memsys3_templates/memory/full/`), usa `memory/templates/memory-template.yaml` (sección «capa completa») como referencia.
+
+#### 6.8.0 Detección (solo lectura)
+
+```bash
+M="$MEMSYS3_ROOT/memory"; MEM="$M/memory.yaml"; FULL="$M/full/memory_full.yaml"; PS="$M/project-status.yaml"
+kb() { [ -f "$1" ] && echo "$(( $(wc -c < "$1") / 1024 )) KB" || echo "—"; }
+
+# (A) memoria en UNA capa: entradas con motivo/contexto en el archivo del arranque, ids que faltan o full/ sin ids
+A_ENT=0; A_IDS=0; A_MOT=0
+[ -f "$MEM" ] && read A_ENT A_IDS A_MOT < <(awk '
+  /^[A-Za-z_]+:/ { sec=$1; sub(/:.*/, "", sec) }
+  sec ~ /^(usuario|feedback|referencias)$/ {
+    if ($0 ~ /^[[:space:]]*-[[:space:]]+[A-Za-z_]+:/) ent++
+    if ($0 ~ /^[[:space:]]*-?[[:space:]]*ids?:/)      ids++
+    if ($0 ~ /^[[:space:]]+(motivo|contexto):/)       mot++
+  } END { print ent+0, ids+0, mot+0 }' "$MEM")
+F_IDS=0; [ -f "$FULL" ] && F_IDS=$(grep -cE '^[[:space:]]*-?[[:space:]]*id:' "$FULL"; true)
+A=no; [ "$A_ENT" -gt 0 ] && { [ "$A_MOT" -gt 0 ] || [ "$A_IDS" -lt "$A_ENT" ] || [ "${F_IDS:-0}" -eq 0 ]; } && A=SI
+
+# (B) histórico de sesiones dentro de project-status (la clave depende del idioma del proyecto)
+H_KEY=$(grep -oE '^histori[a-z_]*:' "$PS" | head -1 | tr -d ':')
+H_N=0; [ -n "$H_KEY" ] && H_N=$(awk -v k="^$H_KEY:" '$0~k{f=1;next} f&&/^[^[:space:]#-]/{f=0}
+  f&&/^[ ]{0,2}-[[:space:]]/{n++} END{print n+0}' "$PS")
+
+# (C) pendientes que no son índice: lista de dicts, mapping, líneas enormes o varias líneas por entrada
+P_KEY=$(grep -oE '^pend[a-z_]*:' "$PS" | head -1 | tr -d ':')
+read P_N P_DICT P_MAP P_LIN P_ENORMES < <(awk -v k="^$P_KEY:" '
+  $0~k{f=1;next} f&&/^[^[:space:]#-]/{f=0}
+  f && NF && !/^[[:space:]]*#/ { lin++
+    if ($0 ~ /^[ ]{0,2}-[[:space:]]/) { n++; if ($0 ~ /^[ ]{0,2}-[[:space:]]+[A-Za-z_]+:/) d++ }
+    if (n==0 && $0 ~ /^[ ]{2}[A-Za-z_]+:/) map=1
+    if (length($0) > 800) h++
+  } END{print n+0, d+0, map+0, lin+0, h+0}' "$PS")
+C=no; { [ "$P_DICT" -gt 0 ] || [ "$P_MAP" -eq 1 ] || [ "$P_ENORMES" -gt 0 ] || [ "$P_LIN" -gt $((2*P_N+2)) ]; } && C=SI
+
+# (D) actualizado_por encadenado (el Paso 7 lo sobrescribe: si es largo, se guarda antes el literal)
+AP_B=$(grep -m1 -E '^[[:space:]]+actualizado_por:' "$PS" | wc -c); D=no; [ "$AP_B" -gt 400 ] && D=SI
+
+echo "memory.yaml $(kb "$MEM") · entradas $A_ENT · ids $A_IDS · con motivo/contexto $A_MOT · ids en full/ ${F_IDS:-0} → A=$A"
+echo "project-status $(kb "$PS") · ${H_KEY:-sin histórico} ($H_N) → B=$([ "$H_N" -gt 0 ] && echo SI || echo no) · ${P_KEY:-pendientes} $P_N entradas ($P_LIN líneas, $P_DICT dicts, mapping=$P_MAP) → C=$C · actualizado_por ${AP_B} B → D=$D"
+```
+
+Lo que **no** dispara migración (`file_version` y tamaño no son señal: hay deploys migrados a mano que siguen en 0.1.0 y ligeras por encima del techo): capa ligera > `techo_bytes` → informar «la fusión de familias la hace compile-context»; ids de `full/` sin línea en la ligera → listarlos, no corregir; dos capas ya hechas pero `file_version 0.1.0` → ofrecer solo ese metadato (6.8.7).
+
+**Si A, B y C son `no`:** «✅ Datos ya en formato ADR-033» y sigue al Paso 7. **Si no**, muestra la tabla de arriba con el destino de cada cosa (A → ligera + `full/` con N ids · B → `history/project-status_historico_hasta_<FECHA>.yaml` · C → índice ≤300 chars + `full/tasks.yaml` · D → literal a `history/`) y pregunta (con preguntas estructuradas si tu harness las tiene; si no, en texto):
+
+```
+Pregunta: "Tus datos siguen en el formato anterior a ADR-033 (tabla). ¿Migrar?"
+Opciones:
+  - "Migrar ahora": respaldo → plan con cifras → tu OK → migración verificada por script. No se fusiona ni se borra nada.
+  - "En sesión nueva": queda registrado; luego ejecuta solo el Paso 6.8 de memsys3/prompts/actualizar.md.
+     Recomendado si hay más de ~60 entradas o la sesión ya va cargada: condensar necesita contexto limpio.
+  - "No ahora": no se toca ningún dato; queda en el resumen final y en sessions.yaml. La próxima actualización lo volverá a detectar.
+```
+
+Con «Migrar ahora» y más de un subobjetivo detectado, una segunda pregunta: «¿Qué partes? A / B / C» (por defecto, todas). «En sesión nueva» y «No ahora» → anota «migración ADR-033 pospuesta» con las cifras para la entrada de `sessions.yaml` (Paso 10) y el resumen final, y sigue al Paso 7. **No escribas nada en el índice de pendientes para recordarlo**: eso ya es tocar datos.
+
+#### 6.8.1 Requisito y plan
+
+Hace falta un intérprete con un parser YAML real (`python3 -c 'import yaml'`; o Node + js-yaml, Ruby…). **Sin parser, el paso aborta** («migración ADR-033 pospuesta: sin parser YAML», para sessions y resumen) y sigue al Paso 7: migrar a mano no es seguro (la capa completa la escribe un script, nunca el agente) y **nunca se parsea YAML con awk ni se condensa sin verificación**. Con parser: presenta el plan —archivos que se tocan, recuentos de antes, nombres de los respaldos y lo que NO se hace (fusionar, borrar, renombrar claves)— y espera el OK.
+
+#### 6.8.2 Respaldo y punto de retorno (antes de tocar nada)
+
+Para cada archivo que se va a tocar (`memory.yaml`, `full/memory_full.yaml`, `project-status.yaml`, `full/tasks.yaml`):
+- **Versionado** (`git ls-files --error-unmatch "$f"` funciona): con cambios sin commitear → commit de retorno con el workflow de git del proyecto (`github.md`/`git.md`, misma nota coop que el Paso 12) y OK; limpio → el retorno es HEAD, anota el hash.
+- **Ignorado o sin git** → copia a `memory/history/` con nombre fijo: `memory_<FECHA>_pre-dos-capas.yaml`, `project-status_<FECHA>_pre-indice.yaml`. Si el nombre ya existe, pregunta; no sobrescribas. Nunca copias sueltas fuera de `history/`.
+
+> **Por qué no basta el backup del Paso 5:** rota (máximo 3) y el Paso 13 lo borra. El retorno de una migración de datos tiene que ser durable (PRINCIPLES #8).
+
+#### 6.8.3 (A) Inventario e ids — el script lee, el agente propone lo que falte
+
+Script `inventario` (contrato): carga `memory.yaml` con un parser seguro; por sección (`usuario`, `feedback`, `referencias`) informa nº de entradas, claves presentes y cuántas **sin `id`**; lista las claves de primer nivel ajenas a `metadata/usuario/feedback/referencias` (se informan, no se tocan); lista los **comentarios dentro de los bloques** que el parser pierde (ahí suelen vivir marcas como «# SUPERADA por …»: el usuario decide si pasan a texto en la ligera o en full); vuelca las entradas por trozos de ~25 a `memsys3_migracion_temp/orig_<sec>_<n>.yaml` para no leer 170 KB de golpe.
+
+Faltar ids es lo normal en deploys antiguos. El agente escribe `ids.txt` (un id por línea; orden: usuario, feedback, referencias, y dentro de cada sección el del archivo; las entradas que ya tienen id lo conservan). Script `validar_ids`: nº de ids = nº de entradas; formato `^[a-z0-9]+(-[a-z0-9]+)*$`, solo ASCII, preferiblemente ≤40 caracteres (aviso, no bloqueo); únicos entre las tres secciones y frente a los que ya haya en `full/`.
+
+#### 6.8.4 (A) Capa completa — la genera el script, nunca el agente a mano
+
+Script `generar_full` (contrato): `full[i] = {id: ids[i]} + entrada original i literal` (todas sus claves —`motivo`, `contexto`, las propias del proyecto— en su orden); referencias tal cual con id; serializar con `sort_keys=False`, `allow_unicode=True` y ancho de línea grande (el estilo de comillas es libre: la verificación es semántica, no textual). Escribe sustituyendo los bloques de sección sobre el scaffold (conserva su cabecera); `metadata.ultima_actualizacion` = hoy y `file_version` el del scaffold (no lo inventes: solo la ligera pasa a 0.2.0 en 6.8.7). Si `full/memory_full.yaml` no existe → créalo desde el scaffold con el final de línea de `memory.yaml`; vacío (listas sin entradas) es el caso normal; si **ya tiene entradas** → aborta A y pregunta (estado mixto: alguien migró a medias).
+
+#### 6.8.5 (A) Capa ligera — la condensa el agente, con muestra previa
+
+Escribe `ligera_borrador.yaml` con las mismas secciones, **mismo orden y mismos ids**: usuario `{id, nota, fecha}`, feedback `{id, regla, fecha}`, referencias con `id`, `nombre` y `url_o_path` iguales a full (la `nota` puede resumirse). Los campos propios del proyecto se quedan en full; en la ligera solo si son cortos y el usuario lo pide. Lo que se cae al resumir y **no debe caerse**: (a) relaciones de prioridad («sustituye / completa / matiza a `<id>`», «SUPERADA por»); (b) excepciones y casos límite («también aplica cuando…», «única excepción…»); (c) cifras, nombres y rutas. El porqué sí puede quedarse solo en full. Telegráfico sí, críptico no. **Antes de condensar el resto, enseña 5-10 resúmenes de las reglas críticas** (prohibiciones, reglas con relaciones o excepciones) junto a su original y espera el OK. Si ves una familia fusionable, anótala como sugerencia para compile-context: **aquí no se fusiona**.
+
+#### 6.8.6 (A) Verificación por script — si algo falla, no se escribe
+
+Script `verificar_capas`, **bloqueante**: (1) recuento por sección original = full = ligera; (2) **posición a posición**: `ligera[i].id == full[i].id == ids[i]` y `str(ligera[i].fecha) == str(original[i].fecha)` (el parser convierte fechas sin comillas en objetos: compara como texto); (3) `full[i]` sin `id` == `original[i]` por igualdad profunda; (4) ids únicos y conjuntos iguales en ligera, full y `ids.txt`; (5) la ligera no tiene `motivo` ni `contexto`, ningún texto vacío, referencias con `nombre` y `url_o_path` iguales a full. **Avisos no bloqueantes** (el agente relee cada uno): cifras, rutas, ids citados y marcadores (`sustituye|matiza|completa|SUPERADA|excepci|salvo|también|nunca|siempre`) presentes en la `regla`/`nota` del original y ausentes en la ligera (lo que solo estaba en `motivo` puede quedarse en full); y **posible desfase**: si las palabras de `ligera[i]` se parecen más a otra entrada del original que a la suya.
+
+**Antes de fiarte de un resultado verde, demuestra que el script detecta errores:** pásale el borrador con dos entradas intercambiadas y DEBE fallar; y con solo los **textos** de dos reglas intercambiados (ids y fechas en su sitio) DEBE avisar. Un desfase de una posición empareja cada resumen con el motivo de otra regla, y ni comparar `full/` byte a byte ni los ids lo detectan.
+
+#### 6.8.7 (A) Escritura por sustitución de bloque — nunca un volcado del archivo entero
+
+Localiza cada bloque **por su clave** (`grep -n '^feedback:'`), nunca por número de línea: va desde la clave hasta la siguiente clave de primer nivel (sin los comentarios que la encabezan). Sustituye como texto solo ese bloque. En `metadata` toca solo `file_version: "0.2.0"` y `ultima_actualizacion`, y añade la traza `# Migrado a dos capas (ADR-033) el <FECHA>; retorno: <commit|history/…>`. Después: el archivo parsea con la estructura esperada; el texto **fuera** de los bloques sustituidos es idéntico byte a byte al de antes; `git diff --stat` (o `diff` contra la copia de `history/`); recuento final antes = full = ligera.
+
+> **Por qué este es el único caso en que el updater toca el `file_version` de un dato (ADR-017):** en un dato, `file_version` declara a qué esquema se ajusta el contenido. Tras 6.8 el contenido sigue el esquema ligero de `memory-template.yaml`; dejarlo en 0.1.0 es una señal falsa. Es metadato, como `memsys3_version` en el Paso 7. **Por qué sustituir bloques:** un volcado del archivo entero borra comentarios y reformatea secciones que no se tocaban.
+
+#### 6.8.8 (B, D) Histórico y `actualizado_por` a `history/`
+
+Script `mover_bloque` (literal, sin volcado): crea `history/project-status_historico_hasta_<FECHA>.yaml` con una cabecera-comentario («movido el <FECHA> (ADR-033); el log canónico es `full/sessions.yaml`; no se lee al arrancar») y el **bloque de texto literal** `<H_KEY>:` movido tal cual (conserva comentarios y la clave original del proyecto). Si D: añade `actualizado_por_original:` con el literal (el Paso 7 lo sobrescribirá). Si también migras C: en el mismo archivo, el bloque literal de pendientes **copiado** (no movido: C lo reescribe después) con la clave renombrada a `<P_KEY>_originales` (solo esa primera línea). Script `verificar_movido` (acepta claves movidas y copiadas con nombre nuevo): `parse(history)[clave] == parse(original)[clave]` con recuento; tras quitar el bloque, `parse(project-status nuevo)` == `parse(antes)` salvo esa clave; texto fuera del bloque idéntico byte a byte.
+
+#### 6.8.9 (C) Pendientes → índice + `full/tasks.yaml`
+
+Script `inventario_pendientes` (acepta lista de strings, lista de dicts y mapping —en un mapping la clave es candidata a id—): tabla numerada con tipo, longitud, primeros 100 caracteres y punteros que ya contiene (rutas `backlog/…`, README, id de sesión); **candidato a cerrado** si los primeros ~160 caracteres del texto principal (en un dict, su primer campo de texto: `tarea`/`titulo`) llevan, en mayúsculas exactas, `✅|HECHO|RESUELTO|CERRADO|DECIDIDO|ARCHIVADO|ABSORBIDO|CADUCADO|DESCARTADO|DONE|FET|TANCAT`, o un campo `estado`/`status` cerrado («PARCIAL» en mayúsculas cuenta como abierto). Es una propuesta: lo cerrado sin marca solo lo ve el usuario.
+
+El agente propone, en una sola tabla, el destino de cada pendiente —cerrado / índice / solo `tasks.yaml` (sin fecha ni acción próxima)— y pide **un solo OK** (el usuario corrige números si quiere). Cerrados → salen del índice (quedan literales en `<P_KEY>_originales` de `history/`). Abiertos → una línea `"[<estado/fecha> · <TEMA>] <qué toca, con cifras y fechas> → <puntero>"` de ≤300 caracteres (caracteres, no bytes); el puntero es lo que sigue al último «→», como ruta desde la raíz del proyecto: el expediente si lo tiene, `memsys3/memory/full/sessions.yaml#<id>` si vive en una sesión y, si no, `memsys3/memory/full/tasks.yaml#<id>` con una entrada `{id, fecha, estado: abierto, detalle: <texto literal del original>}` generada por script.
+
+Verificación por recuento: cada pendiente original acaba en `history/` y, si sigue abierto, en una línea del índice con puntero que existe (cerrados + índice = N; ids de `tasks.yaml` únicos; `detalle` == literal). Escritura: sustituye como texto el bloque `<P_KEY>:` por la lista índice (la clave del proyecto se conserva) y añade al array `tasks:` de `full/tasks.yaml` (créalo desde el scaffold si no existe). Mismas comprobaciones posteriores que en 6.8.7.
+
+#### 6.8.10 Cierre del paso
+
+Recuento final (antes → después, por archivo) y ruta del retorno; esa línea va a la entrada de `sessions.yaml` del Paso 10 y al resumen final. `rm -rf "$PROJECT_ROOT/memsys3_migracion_temp"`. Muestra el tamaño de la ligera frente a `techo_bytes`: si se pasa, «la fusión de familias se hace en compile-context, con OK» — no aquí.
+
 ---
 
 ## Paso 7: Actualizar Metadata de Versión
@@ -944,6 +1063,7 @@ metadata:
 **IMPORTANTE:**
 - NO toques `visio_general`, `estat_actual`, `features`, `stack_tecnologic`, etc.
 - Solo actualiza el bloque `metadata`
+- Si `actualizado_por` es largo (>400 B: un deploy antiguo lo encadenaba en vez de sobrescribirlo) y el Paso 6.8 no lo guardó (migración pospuesta), copia antes el literal a `memory/history/project-status_actualizado_por_hasta_<FECHA>.yaml`. Sobrescribir sin guardar es pérdida silenciosa.
 
 **Verificar que el cambio se aplicó:**
 ```bash
@@ -1225,6 +1345,7 @@ Antes de dar por terminada la actualización, verifica:
 - [ ] `AGENTS.md` raíz sincronizado (Paso 6.6.5, Capa 2 ADR-027)
 - [ ] Stubs Capa 3 sincronizados o paso silencioso si no hay (Paso 6.6.6)
 - [ ] Drift de cabecera reportado sin auto-corregir (Paso 6.4.6)
+- [ ] Datos pre-ADR-033: migrados con recuento verificado por script y retorno anotado, o pospuestos y registrados en sessions.yaml (Paso 6.8)
 - [ ] `docs/` copiada (`ls memsys3/docs/reference.md`)
 - [ ] `backlog/` existe (`ls memsys3/backlog/`)
 - [ ] history/ creado (si no existía)
@@ -1262,4 +1383,4 @@ Antes de dar por cerrada la actualización, presenta al usuario:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.5.2 -->
+<!-- version: 0.6.0 -->
