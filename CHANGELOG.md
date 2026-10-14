@@ -7,6 +7,14 @@ Versionado según [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.35.1] - 2026-10-14
+
+### Fixed
+- **`actualizar.md` (0.6.0 → 0.6.1), dos hallazgos de la primera validación en campo del Paso 6.8 (proyecto cursos, 2026-10-13/14):**
+  - **6.2 paso 3b, bloqueante:** tras editar cada archivo de `prompts/` o `agents/`, cada línea que el proyecto había añadido sobre la base (diff base → destino viejo, copia del Paso 5) debe seguir en el destino nuevo (`grep -qxF`, texto sin `\r`); si falta alguna, se listan y se PARA en ese archivo. Origen: el agente «reinsertó» 16 líneas propias en `compile-context.md`, su script falló por CRLF y siguió sin ellas. Se retira la frase «el único caso en que el destino acaba idéntico al template»: aunque el destino sea igual a la base, el archivo que se escribe es el del proyecto; el upstream nunca es punto de partida.
+  - **6.8.0 / 6.8.3, claves YAML duplicadas:** la detección contaba guiones, no entradas; una entrada con 4 pares `regla:`/`motivo:` bajo un guion sumaba 1 y un parser se tragaba 3 reglas en silencio (43 contadas, 46 reales). 6.8.0 avisa cuando hay más claves de texto que guiones (memoria e histórico); 6.8.3 carga con detección de duplicadas, detiene A y propone el saneado (insertar los guiones que faltan) con OK antes de seguir.
+- ADR-033: `update_2026_10_13_migracion_implementada` (la migración de deploys existentes, consecuencia negativa que quedó sin receptor, ya tiene implementación en 6.8).
+
 ## [0.35.0] - 2026-10-13
 
 ### Added
