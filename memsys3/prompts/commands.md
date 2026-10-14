@@ -15,6 +15,7 @@
 Comandos que funcionan desde **cualquier proyecto** sin necesidad de tener memsys3 desplegado localmente:
 
 - **`/deploy-memsys3`** — Desplegar memsys3 en proyecto nuevo. Crea scaffold canónico (ADR-023): agents, prompts, templates, memory/full vacíos, backlog, `PRINCIPLES.md` (ADR-022), bridge `MEMORY.md` opcional para Claude Code (ADR-020), `.gitignore` con consulta interactiva.
+- **`/root`** — Volver al directorio con el que arrancó la sesión (un `cd` en un comando mueve el cwd y rompe las rutas relativas y el autocompletado de `@`). Copia global de `memsys3/prompts/root.md`.
 - **`/actualizar-memsys3`** — Actualizar memsys3 en proyecto desplegado. Sustitución diferencial de templates schema (ADR-018, Paso 6.4) + deprecation contextualizada (ADR-019, Paso 6.4.5) + sincronización `PRINCIPLES.md` (Paso 6.6) + preservación de archivos custom del usuario.
 
 Se instalan en `~/.claude/commands/` y Claude Code los reconoce automáticamente.
@@ -39,12 +40,13 @@ Lista de comandos que se van a instalar:
 
 1. **deploy-memsys3.md** - Deployment inicial de memsys3
 2. **actualizar-memsys3.md** - Actualización de memsys3 existente
+3. **root.md** - Volver al directorio de arranque de la sesión
 
 Verifica si ya existen:
 
 ```bash
 echo "Comandos actuales en ~/.claude/commands/:"
-ls -1 "$HOME/.claude/commands/" | grep -E "deploy-memsys3|actualizar-memsys3" || echo "  (ninguno instalado)"
+ls -1 "$HOME/.claude/commands/" | grep -E "deploy-memsys3|actualizar-memsys3|^root.md|root.md$" || echo "  (ninguno instalado)"
 ```
 
 **Si alguno ya existe:**
@@ -155,12 +157,24 @@ echo "✅ /actualizar-memsys3 creado"
 
 ---
 
+### 3.3 Crear /root
+
+Copia literal del prompt agnóstico, con cabecera de comando:
+
+```bash
+{ printf -- '---\ndescription: Vuelve al directorio de trabajo con el que arrancó la sesión (arregla rutas relativas y el autocompletado @ tras un cd)\n---\n\n'; cat memsys3/prompts/root.md; } > "$HOME/.claude/commands/root.md"
+```
+
+Si `memsys3/prompts/root.md` no existe en este proyecto (deploy anterior a su introducción), descárgalo antes: `curl -sL https://raw.githubusercontent.com/iv0nis/memsys3/master/memsys3_templates/prompts/root.md -o memsys3/prompts/root.md`.
+
+---
+
 ## Paso 4: Verificar instalación
 
 ```bash
 echo ""
 echo "📋 Comandos globales instalados:"
-ls -lh "$HOME/.claude/commands/" | grep -E "deploy-memsys3|actualizar-memsys3"
+ls -lh "$HOME/.claude/commands/" | grep -E "deploy-memsys3|actualizar-memsys3|^root.md|root.md$"
 
 echo ""
 echo "✅ Instalación completada"
@@ -168,6 +182,7 @@ echo ""
 echo "Comandos disponibles desde cualquier proyecto:"
 echo "  /deploy-memsys3      - Desplegar memsys3 en proyecto nuevo"
 echo "  /actualizar-memsys3  - Actualizar memsys3 existente"
+echo "  /root                - Volver al directorio de arranque de la sesión"
 ```
 
 ---
