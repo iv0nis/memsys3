@@ -1137,6 +1137,21 @@ adrs:
       context-template 0.2.0→0.3.0, endSession 0.5.0→0.6.0. ADR-020 queda matizada (no superseded:
       su núcleo —memory.yaml agnóstica, append+datado, MA escribe— sigue vigente).
 
+    update_2026_10_13_migracion_implementada: |
+      La primera consecuencia negativa («migración de deploys existentes vía /actualizar-memsys3»)
+      quedó sin receptor hasta que neuroMaquina (2026-10-10, arranque ~198K «en v0.33») la hizo a
+      mano. Implementada como Paso 6.8 de actualizar.md 0.6.0 (v0.35.0): detección por tres señales
+      independientes y por prefijo de clave (las claves cambian con el idioma del proyecto), pregunta
+      migrar ahora / en sesión nueva / no ahora, respaldo durable (commit de retorno o history/),
+      capa completa por script con ids, ligera condensada por el agente con muestra previa,
+      verificador bloqueante posición a posición con prueba obligatoria de fallo, escritura por
+      sustitución de bloque, histórico literal a history/, pendientes a índice + full/tasks.yaml.
+      No fusiona (D3 sigue siendo del CA). Única excepción a ADR-017 sobre datos: memory.yaml pasa
+      a file_version 0.2.0 porque declara el esquema del contenido. Verificado con la migración real
+      de este repo (49/49 entradas, 90+36 del histórico, 5/5 mutaciones detectadas) y la detección
+      con 9 deploys reales. Queda abierto: criterios de condensación a-c en memory-template y
+      compile-context (tasks.yaml#criterios-condensacion-a-template).
+
   - id: "035"
     titulo: "PRINCIPLES #3 ampliado: «Un cerebro, una carpeta» (minimalismo digital) — lo mínimo se mide en mecanismos, no en archivos"
     data: "2026-10-10"

@@ -666,12 +666,27 @@ fi
 
 **3. Edita el destino.** Aplícale al archivo del proyecto los cambios de upstream, **conservando lo que es del proyecto**:
 
-- Si el proyecto no cambió nada sobre la base (el primer diff está vacío), el resultado de aplicar upstream coincide con el origen — es el único caso en que el destino acaba idéntico al template, y llegas ahí editando, no pisando.
+- Aunque el destino sea igual a la base (el primer diff está vacío), el archivo que escribes es el del proyecto; el upstream nunca es punto de partida.
 - Si el cambio del proyecto toca una zona que upstream reescribió, **adapta** el cambio del proyecto a la estructura nueva; no lo descartes por incómodo.
 - Si un cambio del proyecto y uno de upstream son genuinamente incompatibles, **pregunta al usuario** con ambos delante. No decidas tú una pérdida.
 - **Nunca** resuelvas "a favor del template porque es lo canónico": el template siempre se recupera del repo; lo del proyecto puede no existir en ningún otro sitio.
 - Sin base recuperable, la misma operación con menos certeza: ante cualquier duda de a quién pertenece una línea, conserva y pregunta.
 - El archivo resultante lleva el **`file_version` de upstream** (la versión del template sobre la que ahora se asienta la adaptación del proyecto), para que la próxima actualización recupere la base correcta. Si reubicaste o adaptaste una personalización, dilo en la entrada del Paso 10.
+
+**3b. Comprueba que no se ha caído nada del proyecto — bloqueante, archivo por archivo.** Después de editar cada archivo, cada línea que el proyecto había añadido sobre la base tiene que seguir en el destino nuevo. Si falta alguna, lista las ausentes y PARA en ese archivo (repón o pregunta); no pases al siguiente.
+
+```bash
+OLD="$BACKUP_DIR/$REL"            # destino ANTES de editar (copia del Paso 5)
+diff "$BASE_FILE" "$OLD" | grep '^> ' | sed 's/^> //' | tr -d '\r' > /tmp/lineas_proyecto.txt
+FALTAN=0
+while IFS= read -r L; do
+  [ -z "$L" ] && continue
+  tr -d '\r' < "$DST" | grep -qxF -- "$L" || { echo "❌ falta: $L"; FALTAN=$((FALTAN+1)); }
+done < /tmp/lineas_proyecto.txt
+[ "$FALTAN" -eq 0 ] && echo "✅ $REL: las $(wc -l < /tmp/lineas_proyecto.txt) líneas del proyecto siguen presentes" || echo "⛔ $REL: $FALTAN líneas del proyecto ausentes — PARAR aquí"
+```
+
+> **Por qué existe 3b (caso de campo, 2026-10-13):** al actualizar `compile-context.md` de un proyecto, el agente partió del upstream y «reinsertó» las 16 líneas propias del proyecto; su script falló por CRLF, siguió sin ellas y se detectó desde fuera. La comprobación se hace sobre texto sin `\r` y bloquea: la pérdida silenciosa es justo lo que este paso existe para impedir.
 
 **4. Reporta SIEMPRE.** Todo cambio del proyecto que hayas encontrado entra en el registro de reconciliación con: ruta, qué era (diff concreto), qué hiciste con él (conservado / adaptado / preguntado al usuario), y ruta del backup del Paso 5. Esa información viaja al resumen final, al Checklist, a `operations.log` (Paso 11) y a `sessions.yaml` del proyecto (Paso 10). *La pérdida silenciosa es peor que el conflicto ruidoso.*
 
@@ -963,12 +978,20 @@ read P_N P_DICT P_MAP P_LIN P_ENORMES < <(awk -v k="^$P_KEY:" '
   } END{print n+0, d+0, map+0, lin+0, h+0}' "$PS")
 C=no; { [ "$P_DICT" -gt 0 ] || [ "$P_MAP" -eq 1 ] || [ "$P_ENORMES" -gt 0 ] || [ "$P_LIN" -gt $((2*P_N+2)) ]; } && C=SI
 
+# (A') entradas escondidas: más claves de texto que guiones = pares regla/motivo bajo un mismo guion (claves YAML duplicadas que un parser se traga en silencio)
+A_TXT=0; [ -f "$MEM" ] && A_TXT=$(awk '/^[A-Za-z_]+:/{sec=$1;sub(/:.*/,"",sec)} sec~/^(usuario|feedback|referencias)$/ && /^[[:space:]]+(regla|nota|nombre):/' "$MEM" | wc -l)
+H_TIT=0; [ -n "$H_KEY" ] && H_TIT=$(awk -v k="^$H_KEY:" '$0~k{f=1;next} f&&/^[^[:space:]#-]/{f=0} f&&/^[[:space:]]+(titulo|title|títol):/{n++} END{print n+0}' "$PS")
+DUP=""; [ "$A_TXT" -gt "$A_ENT" ] && DUP="$DUP memory.yaml:+$((A_TXT-A_ENT))"; [ "$H_TIT" -gt "$H_N" ] && DUP="$DUP histórico:+$((H_TIT-H_N))"
+
 # (D) actualizado_por encadenado (el Paso 7 lo sobrescribe: si es largo, se guarda antes el literal)
 AP_B=$(grep -m1 -E '^[[:space:]]+actualizado_por:' "$PS" | wc -c); D=no; [ "$AP_B" -gt 400 ] && D=SI
 
 echo "memory.yaml $(kb "$MEM") · entradas $A_ENT · ids $A_IDS · con motivo/contexto $A_MOT · ids en full/ ${F_IDS:-0} → A=$A"
 echo "project-status $(kb "$PS") · ${H_KEY:-sin histórico} ($H_N) → B=$([ "$H_N" -gt 0 ] && echo SI || echo no) · ${P_KEY:-pendientes} $P_N entradas ($P_LIN líneas, $P_DICT dicts, mapping=$P_MAP) → C=$C · actualizado_por ${AP_B} B → D=$D"
+[ -n "$DUP" ] && echo "⚠️ posibles entradas escondidas bajo un mismo guion:$DUP — el recuento real es mayor; 6.8.3 lo confirma con el parser y propone el saneado"
 ```
+
+Los recuentos de arriba cuentan **guiones**, no entradas: si un archivo lleva dos pares `regla:`/`motivo:` bajo el mismo guion, el guion cuenta uno y un parser conserva solo el último par. Por eso `A'` compara claves de texto con guiones y 6.8.3 lo verifica de verdad.
 
 Lo que **no** dispara migración (`file_version` y tamaño no son señal: hay deploys migrados a mano que siguen en 0.1.0 y ligeras por encima del techo): capa ligera > `techo_bytes` → informar «la fusión de familias la hace compile-context»; ids de `full/` sin línea en la ligera → listarlos, no corregir; dos capas ya hechas pero `file_version 0.1.0` → ofrecer solo ese metadato (6.8.7).
 
@@ -999,7 +1022,7 @@ Para cada archivo que se va a tocar (`memory.yaml`, `full/memory_full.yaml`, `pr
 
 #### 6.8.3 (A) Inventario e ids — el script lee, el agente propone lo que falte
 
-Script `inventario` (contrato): carga `memory.yaml` con un parser seguro; por sección (`usuario`, `feedback`, `referencias`) informa nº de entradas, claves presentes y cuántas **sin `id`**; lista las claves de primer nivel ajenas a `metadata/usuario/feedback/referencias` (se informan, no se tocan); lista los **comentarios dentro de los bloques** que el parser pierde (ahí suelen vivir marcas como «# SUPERADA por …»: el usuario decide si pasan a texto en la ligera o en full); vuelca las entradas por trozos de ~25 a `memsys3_migracion_temp/orig_<sec>_<n>.yaml` para no leer 170 KB de golpe.
+Script `inventario` (contrato): carga `memory.yaml` con un parser seguro **que detecte claves duplicadas dentro de una misma entrada** (en PyYAML, un constructor de mappings que falle o anote cuando una clave se repite; `safe_load` a secas se queda con el último valor sin avisar). **Si hay duplicadas, A se detiene aquí:** muestra las líneas afectadas y propone el saneado —insertar el guion que falta delante de cada par escondido, con la `fecha` de la entrada padre si el par no trae la suya— y, con el OK del usuario, lo aplica como texto (solo se añaden líneas `- fecha:`), anota el retorno y vuelve a 6.8.0 para que las cifras del plan sean las reales. Caso de campo (2026-10-14): una entrada con 4 pares regla/motivo bajo un guion; el oráculo decía 43 entradas y eran 46. Después, por sección (`usuario`, `feedback`, `referencias`) informa nº de entradas, claves presentes y cuántas **sin `id`**; lista las claves de primer nivel ajenas a `metadata/usuario/feedback/referencias` (se informan, no se tocan); lista los **comentarios dentro de los bloques** que el parser pierde (ahí suelen vivir marcas como «# SUPERADA por …»: el usuario decide si pasan a texto en la ligera o en full); vuelca las entradas por trozos de ~25 a `memsys3_migracion_temp/orig_<sec>_<n>.yaml` para no leer 170 KB de golpe.
 
 Faltar ids es lo normal en deploys antiguos. El agente escribe `ids.txt` (un id por línea; orden: usuario, feedback, referencias, y dentro de cada sección el del archivo; las entradas que ya tienen id lo conservan). Script `validar_ids`: nº de ids = nº de entradas; formato `^[a-z0-9]+(-[a-z0-9]+)*$`, solo ASCII, preferiblemente ≤40 caracteres (aviso, no bloqueo); únicos entre las tres secciones y frente a los que ya haya en `full/`.
 
@@ -1383,4 +1406,4 @@ Antes de dar por cerrada la actualización, presenta al usuario:
 **¡Actualización completada!** 🎉
 
 El sistema memsys3 de este proyecto ahora está actualizado a la última versión, conservando todos los datos históricos y personalizaciones.
-<!-- version: 0.6.0 -->
+<!-- version: 0.6.1 -->
